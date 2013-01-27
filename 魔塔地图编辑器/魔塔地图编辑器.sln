@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "魔塔地图编辑器", "魔塔地图编辑器\魔塔地图编辑器.vcxproj", "{A706D22B-12B0-481C-A65D-BB21A5C7C6F1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A706D22B-12B0-481C-A65D-BB21A5C7C6F1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A706D22B-12B0-481C-A65D-BB21A5C7C6F1}.Debug|Win32.Build.0 = Debug|Win32
+		{A706D22B-12B0-481C-A65D-BB21A5C7C6F1}.Release|Win32.ActiveCfg = Release|Win32
+		{A706D22B-12B0-481C-A65D-BB21A5C7C6F1}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
