@@ -96,6 +96,20 @@ struct tagBlock
 };
 typedef struct tagBlock Block;
 
+struct tagConfig
+{
+	int level;
+	tagConfig()
+	{
+		clear();
+	}
+	void clear()
+	{
+		level = -1;
+	}
+};
+typedef struct tagConfig Config;
+
 enum LBUTTON_STATE
 {
 	LBUTTON_DOWN,

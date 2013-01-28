@@ -25,6 +25,7 @@ HINSTANCE hInst;								// 当前实例
 TCHAR szTitle[MAX_LOADSTRING];					// 标题栏文本
 TCHAR szWindowClass[MAX_LOADSTRING];			// 主窗口类名
 char g_fileName[MAX_PATH];
+char g_level[MAX_PATH];
 
 // 此代码模块中包含的函数的前向声明:
 ATOM				MyRegisterClass(HINSTANCE hInstance);
@@ -32,6 +33,7 @@ BOOL				InitInstance(HINSTANCE, int);
 LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	InputFileNameProc(HWND, UINT, WPARAM, LPARAM);
+INT_PTR CALLBACK ConfigMapProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
 
 int APIENTRY WinMain(HINSTANCE hInstance,
 	HINSTANCE hPrevInstance,
@@ -276,8 +278,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			Application::sInstance().setMarkup(newXml);
 			break;
 		case IDM_SAVEFILE:
+			if(Application::sInstance().getConfig().level==-1)
+			{
+				DialogBox(hInst, MAKEINTRESOURCE(IDD_CONFIGMAP), hWnd, ConfigMapProc);
+				return 0;
+			}
 			if(Application::sInstance().saveMapToXml())
-				popFileSaveDlg(hWnd);
+					popFileSaveDlg(hWnd);
+				
 			return 0;
 		case IDM_OPENFILE:
 			if(Application::sInstance().getMarkup()==NULL)
@@ -287,6 +295,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			}
 			popFileOpenDlg(hWnd);
 			return 0;
+		case IDM_CONFIG:
+			DialogBox(hInst, MAKEINTRESOURCE(IDD_CONFIGMAP), hWnd, ConfigMapProc);
+			break;
 		case IDM_ABOUT:
 			DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
 			break;
@@ -348,6 +359,43 @@ INT_PTR CALLBACK InputFileNameProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 		if (LOWORD(wParam) == IDOK)
 		{
 			GetDlgItemText(hDlg,IDC_EDIT1,g_fileName,MAX_PATH);
+			EndDialog(hDlg, LOWORD(wParam));
+			return (INT_PTR)TRUE;
+		}
+		else if(LOWORD(wParam) == IDCANCEL)
+		{
+			EndDialog(hDlg, LOWORD(wParam));
+			return (INT_PTR)FALSE;
+		}
+		break;
+	}
+	return (INT_PTR)FALSE;
+}
+
+//关卡设置对话框
+INT_PTR CALLBACK ConfigMapProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	UNREFERENCED_PARAMETER(lParam);
+	switch (message)
+	{
+	case WM_INITDIALOG:
+		{
+			Config& config = Application::sInstance().getConfig();
+			if(config.level != -1)
+			{
+				char strLevel[50] = {0};
+				sprintf(strLevel,"%d",config.level);
+				SetDlgItemText(hDlg,IDC_EDIT2,strLevel);
+			}
+			return (INT_PTR)TRUE;
+		}
+	case WM_COMMAND:
+		if (LOWORD(wParam) == IDOK)
+		{
+			Config& config = Application::sInstance().getConfig();
+			config.clear();
+			GetDlgItemText(hDlg,IDC_EDIT2,g_level,MAX_PATH);
+			config.level = atoi(g_level);
 			EndDialog(hDlg, LOWORD(wParam));
 			return (INT_PTR)TRUE;
 		}

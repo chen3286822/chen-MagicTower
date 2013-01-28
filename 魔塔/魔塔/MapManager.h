@@ -37,6 +37,7 @@ public:
 	~MapManager(void);
 
 	bool LoadMaps(std::string path);
+	Map* getMap(int level);
 	void render();
 	void update();
 

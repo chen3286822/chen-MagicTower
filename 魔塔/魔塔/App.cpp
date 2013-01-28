@@ -48,10 +48,15 @@ void App::loadResource()
 {
 	MapManager::sCreate();
 	TexManager::sCreate();
-
-	if(!TexManager::sInstance().LoadTex("C:\\Users\\Chen\\Documents\\Visual Studio 2010\\Projects\\Ä§ËþµØÍ¼±à¼­Æ÷\\Debug\\res\\tex") ||
-		!TexManager::sInstance().LoadMap("C:\\Users\\Chen\\Documents\\Visual Studio 2010\\Projects\\Ä§ËþµØÍ¼±à¼­Æ÷\\Debug\\res\\map") ||
-		!MapManager::sInstance().LoadMaps("C:\\Users\\Chen\\Desktop"))
+	char pBuf[MAX_PATH];
+	char pathTex[MAX_PATH],pathMap[MAX_PATH],pathMaps[MAX_PATH];
+	GetCurrentDirectory(MAX_PATH,pBuf);
+	sprintf(pathTex,"%s\\Ä§ËþµØÍ¼±à¼­Æ÷\\Debug\\res\\tex",pBuf);
+	sprintf(pathMap,"%s\\Ä§ËþµØÍ¼±à¼­Æ÷\\Debug\\res\\map",pBuf);
+	sprintf(pathMaps,"%s\\res\\Maps",pBuf);
+	if(!TexManager::sInstance().LoadTex(pathTex) ||
+		!TexManager::sInstance().LoadMap(pathMap) ||
+		!MapManager::sInstance().LoadMaps(pathMaps))
 	{
 		MessageBox(NULL, "ÎÆÀí»òÕß¹Ø¿¨ÔØÈëÊ§°Ü", "Error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
 		return;

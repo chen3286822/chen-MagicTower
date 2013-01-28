@@ -139,22 +139,48 @@ bool MapManager::LoadMaps(std::string path)
 	if(m_vMaps.empty())
 		return false;
 	std::sort(m_vMaps.begin(),m_vMaps.end(),Map::less_than);
-	setCurrentLevel(1);
+	setCurrentLevel(m_vMaps[0]->getLevel());
 	return true;
+}
+
+Map* MapManager::getMap(int level)
+{
+	for (int i=0;i<m_vMaps.size();i++)
+	{
+		if(level == m_vMaps[i]->getLevel())
+			return m_vMaps[i];
+	}
+	return NULL;
 }
 
 void MapManager::render()
 {
-	if (!m_vMaps.empty() && m_vMaps.size() >= m_iCurrentLevel &&m_vMaps[m_iCurrentLevel]!=NULL)
+	static int oldLevel = -1;
+	static Map* currentMap = NULL;
+	if (oldLevel != m_iCurrentLevel)
 	{
-		m_vMaps[m_iCurrentLevel-1]->render();
+		currentMap = getMap(m_iCurrentLevel);
+		oldLevel = m_iCurrentLevel;
+	}
+	else
+	{
+		if(currentMap!=NULL)
+			currentMap->render();
 	}
 }
 
 void MapManager::update()
 {
-	if (!m_vMaps.empty() && m_vMaps.size() >= m_iCurrentLevel &&m_vMaps[m_iCurrentLevel]!=NULL)
+	static int oldLevel = -1;
+	static Map* currentMap = NULL;
+	if (oldLevel != m_iCurrentLevel)
 	{
-		m_vMaps[m_iCurrentLevel-1]->render();
+		currentMap = getMap(m_iCurrentLevel);
+		oldLevel = m_iCurrentLevel;
+	}
+	else
+	{
+		if(currentMap!=NULL)
+			currentMap->update();
 	}
 }

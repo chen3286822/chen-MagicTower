@@ -304,6 +304,7 @@ Application::~Application(void)
  {
 	 m_markUp->SetDoc("");
 	 m_markUp->AddElem("map");
+	 m_markUp->AddAttrib("level",m_config.level);
 	 m_markUp->AddAttrib("width",MAP_WIDTH_NUM);
 	 m_markUp->AddAttrib("length",MAP_LENGTH_NUM);
 	 m_markUp->IntoElem();
@@ -348,6 +349,7 @@ Application::~Application(void)
 
  bool Application::loadMapFromXml()
  {
+	 m_config.clear();
 	 for(int i=0;i<MAP_WIDTH_NUM*MAP_LENGTH_NUM;i++)
 		 if(m_vMapObject[i]!=NULL)
 		 {
@@ -359,17 +361,19 @@ Application::~Application(void)
 		 return false;
 	 int _ID = 0;
 	 int _width=0,_length=0;
+	 int _level=-1;
 	 int _Action = 0;
 	 int _xpos = 0;
 	 int _ypos = 0;
 	 m_markUp->ResetMainPos();
 	 if(m_markUp->FindElem("map"))
 	 {
-		 
+		 _level = atoi(m_markUp->GetAttrib("level").c_str());
 		 _width = atoi(m_markUp->GetAttrib("width").c_str());
 		 _length = atoi(m_markUp->GetAttrib("length").c_str());
-		 if( _width==0 || _length==0)
+		 if( _width==0 || _length==0 || _level==-1)
 			 return false;
+		 m_config.level = _level;
 	 }
 	 m_markUp->IntoElem();
 	 if(m_markUp->FindElem("Block"))

@@ -34,6 +34,9 @@ public:
 	bool	saveMapToXml();
 	bool	loadMapFromXml();
 
+	inline void	clearCfg(){m_config.clear();}
+	Config& getConfig(){return m_config;}
+
 private:
 	HGE* hge;
 	hgeGUI* gui;
@@ -55,6 +58,8 @@ private:
 	std::vector<MapObject*> m_vMapObject;	//存储显示在地图上的物体
 
 	CMarkup*	m_markUp;	//xml parser
+
+	Config m_config;	//关卡配置
 
 private:
 	void drawMapLine();
