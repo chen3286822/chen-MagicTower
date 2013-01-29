@@ -43,6 +43,7 @@ public:
 	void		SetSpeed(float FPS) { fSpeed=1.0f/FPS; }
 	void		SetFrame(int n);
 	void		SetFrames(int n) { nFrames=n; }
+	void		ResetFrames(float x1,float y1,float w,float h,int nframes,float FPS,bool searchDown);
 
 	int			GetMode() const { return Mode; }
 	float		GetSpeed() const { return 1.0f/fSpeed; }
@@ -63,6 +64,8 @@ private:
 	int			nDelta;
 	int			nFrames;
 	int			nCurFrame;
+
+	bool		bSearchDown;
 };
 
 

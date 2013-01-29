@@ -112,4 +112,13 @@ LBUTTON_STATE getLButtonState(HGE* hge);
 void getFiles( std::string path, std::map<std::string,std::string>& files,char* type,int maxFileNum);
 
 #define gSafeDelete(X)		{	if((X)){delete (X); (X) = NULL;} }
+
+enum Direction
+{
+	None,
+	DOWN,
+	LEFT,
+	RIGHT,
+	UP,
+};
 #endif

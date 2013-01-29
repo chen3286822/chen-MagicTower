@@ -101,6 +101,15 @@ bool App::appUpdate()
 {
 	if (hge->Input_GetKeyState(HGEK_ESCAPE))
 		return true;
+	if (hge->Input_GetKeyState(HGEK_W))
+		player->move(UP);
+	else if (hge->Input_GetKeyState(HGEK_S))
+		player->move(DOWN);
+	else if (hge->Input_GetKeyState(HGEK_A))
+		player->move(LEFT);
+	else if (hge->Input_GetKeyState(HGEK_D))
+		player->move(RIGHT);
+
 	float dt = hge->Timer_GetDelta();
 	player->update();
 

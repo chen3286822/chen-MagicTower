@@ -27,6 +27,10 @@ void Character::init(HTEXTURE tex,int _ID,int _Num,Block _block)
 	m_Num = _Num;
 	m_block.xpos = _block.xpos;
 	m_block.ypos = _block.ypos;
+	m_xpos = (MAP_RECT-FLOAT_PIC_SQUARE_WIDTH)/2+MAP_OFF_X +MAP_RECT*m_block.xpos;
+	m_ypos = MAP_OFF_Y+MAP_RECT*m_block.ypos;
+	m_LeftDistance = 0;
+	m_MoveDir = None;
 	m_ani->SetMode(HGEANIM_LOOP|HGEANIM_FWD);
 	m_ani->Play();
 }
@@ -34,14 +38,63 @@ void Character::init(HTEXTURE tex,int _ID,int _Num,Block _block)
 void Character::render()
 {
 	if(m_ani)
-		m_ani->Render((MAP_RECT-FLOAT_PIC_SQUARE_WIDTH)/2+MAP_OFF_X +MAP_RECT*m_block.xpos,MAP_OFF_Y+MAP_RECT*m_block.ypos);
+		m_ani->Render(m_xpos,m_ypos);
 }
 
 void Character::update()
 {
+	static int startX = m_block.xpos;
+	static int startY = m_block.ypos;
+	static int lastFrame = m_ani->GetFrame();
+
+	if(m_bCanMove)
+	{
+		if(m_MoveDir == None)
+			return;
+
+		if(m_LeftDistance > 0)
+		{
+			
+		}
+	}
+
 	if(m_ani)
+	{
+		char test[50];
+		if(lastFrame != m_ani->GetFrame())
+		{
+			sprintf(test,"%d",m_ani->GetFrame());
+			OutputDebugString(test);
+			lastFrame = m_ani->GetFrame();
+		}
+// 		if ((m_ani->GetFrame() >= 15 && m_MoveDir==UP))
+// 			m_ani->SetFrame((m_MoveDir-1)*4);
+// 		else if(m_ani->GetFrame() >= (m_MoveDir*4))
+// 			m_ani->SetFrame((m_MoveDir-1)*4);
+		
 		m_ani->Update(App::sInstance().getHGE()->Timer_GetDelta());
+	}
+}
 
-//	if(m_bCanMove)
+//每调用一次move，将会朝着该方向移动一格子
+void Character::move(Direction dir)
+{
+	if(dir == None)
+		return;
 
+	if(dir != m_MoveDir)	//改变移动方向
+	{
+		m_MoveDir = dir;
+		m_LeftDistance = 1;
+		
+//		m_ani->Stop();
+//		m_ani->SetFrame((m_MoveDir-1)*4);
+//		m_ani->SetTextureRect((m_MoveDir-1)*FLOAT_PIC_SQUARE_WIDTH,(m_MoveDir-1)*FLOAT_PIC_SQUARE_HEIGHT,FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT);
+//		m_ani->Play();
+		m_ani->ResetFrames((m_MoveDir-1)*FLOAT_PIC_SQUARE_WIDTH,(m_MoveDir-1)*FLOAT_PIC_SQUARE_HEIGHT,
+			FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT,4,8,false);
+		return;
+	}
+
+	m_LeftDistance++;
 }
