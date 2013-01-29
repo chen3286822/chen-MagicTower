@@ -44,9 +44,14 @@ local.properties
 # Build results
 [Rr]elease/
 hge/hge181/doc/
+hge/hge181/src/fontconv/
+hge/hge181/src/core/
+hge/hge181/src/fonted/
+hge/hge181/src/pngopt/
+hge/hge181/src/particleed/
+hge/hge181/src/texasm/
 hge/hge181/tools/
 hge/hge181/tutorials/
-hge/hge181/src/
 hge/hge181/lib/bc/
 hge/hge181/lib/gcc/
 *.log
