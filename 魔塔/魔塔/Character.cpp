@@ -41,20 +41,36 @@ void Character::render()
 		m_ani->Render(m_xpos,m_ypos);
 }
 
-void Character::update()
+void Character::update(float delta)
 {
-	static int startX = m_block.xpos;
-	static int startY = m_block.ypos;
+	static float startX = m_xpos;
+	static float startY = m_ypos;
 	static int lastFrame = m_ani->GetFrame();
 
 	if(m_bCanMove)
 	{
 		if(m_MoveDir == None)
 			return;
+		
+		if(abs(m_xpos-startX) >= MAP_RECT || abs(m_ypos-startY) >= MAP_RECT)
+		{
+			m_LeftDistance -= 1;
+			startX = m_xpos;
+			startY = m_ypos;
+			if(m_LeftDistance == 0)
+				m_MoveDir = None;
+		}
 
 		if(m_LeftDistance > 0)
 		{
-			
+			if(m_MoveDir == UP)
+				m_ypos -= delta*30;
+			else if(m_MoveDir == DOWN)
+				m_ypos += delta*30;
+			else if(m_MoveDir == LEFT)
+				m_xpos -= delta*30;
+			else if(m_MoveDir == RIGHT)
+				m_xpos += delta*30;
 		}
 	}
 

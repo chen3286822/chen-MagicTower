@@ -20,6 +20,34 @@ LBUTTON_STATE getLButtonState(HGE* hge)
 	return state;
 }
 
+//对于不同的key，需要重置state
+KEY_STATE getKeyState(HGE* hge,int Key)
+{
+	static int lastKey = -1;
+	static bool lastPressed = false;
+	static bool currentPressed = false;
+	KEY_STATE state = KEY_NULL;
+	if (lastKey != Key)
+	{
+		lastPressed = false;
+		currentPressed = false;
+		lastKey = Key;
+	}
+	currentPressed = hge->Input_GetKeyState(Key);
+
+	if (currentPressed==false && lastPressed==false)
+		state =  KEY_NULL;
+	else if(currentPressed==true && lastPressed==false)
+		state =  KEY_DOWN;
+	else if(currentPressed==true && lastPressed==true)
+		state =  KEY_HOLD;
+	else if(currentPressed==false && lastPressed==true)
+		state =  KEY_UP;
+
+	lastPressed = currentPressed;
+	return state;
+}
+
 void getFiles( std::string path, std::map<std::string,std::string>& files,char* type,int maxFileNum)
 {
 	std::string* mapNames = new std::string[maxFileNum];

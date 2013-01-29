@@ -101,17 +101,17 @@ bool App::appUpdate()
 {
 	if (hge->Input_GetKeyState(HGEK_ESCAPE))
 		return true;
-	if (hge->Input_GetKeyState(HGEK_W))
+	if (getKeyState(hge,HGEK_W)==KEY_DOWN)
 		player->move(UP);
-	else if (hge->Input_GetKeyState(HGEK_S))
+	else if (getKeyState(hge,HGEK_S)==KEY_DOWN)
 		player->move(DOWN);
-	else if (hge->Input_GetKeyState(HGEK_A))
+	else if (getKeyState(hge,HGEK_A)==KEY_DOWN)
 		player->move(LEFT);
-	else if (hge->Input_GetKeyState(HGEK_D))
+	else if (getKeyState(hge,HGEK_D)==KEY_DOWN)
 		player->move(RIGHT);
 
 	float dt = hge->Timer_GetDelta();
-	player->update();
+	player->update(dt);
 
 	MapManager::sInstance().update();
 	return false;

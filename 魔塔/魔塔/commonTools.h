@@ -108,7 +108,16 @@ enum LBUTTON_STATE
 	LBUTTON_HOLD,
 	LBUTTON_NULL
 };
+enum KEY_STATE
+{
+	KEY_DOWN,
+	KEY_UP,
+	KEY_HOLD,
+	KEY_NULL,
+};
 LBUTTON_STATE getLButtonState(HGE* hge);
+KEY_STATE getKeyState(HGE* hge,int Key);
+
 void getFiles( std::string path, std::map<std::string,std::string>& files,char* type,int maxFileNum);
 
 #define gSafeDelete(X)		{	if((X)){delete (X); (X) = NULL;} }

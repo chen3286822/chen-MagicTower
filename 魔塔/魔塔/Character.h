@@ -10,7 +10,7 @@ public:
 	~Character(void);
 
 	void render();
-	void update(); 
+	void update(float delta); 
 
 	void init(HTEXTURE tex,int _ID,int _Num,Block _block);
 	void move(Direction dir);		//以格子为单位移动
