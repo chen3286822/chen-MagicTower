@@ -16,6 +16,8 @@ public:
 	bool appUpdate();
 	bool appRender();
 
+	void drawSmallRect(float x,float y);
+
 	inline HGE* App::getHGE(){return hge;}
 
 private:

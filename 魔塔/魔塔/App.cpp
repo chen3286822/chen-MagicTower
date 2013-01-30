@@ -91,10 +91,49 @@ bool App::appRender()
 	hge->Gfx_BeginScene();
 
 	MapManager::sInstance().render();
+	float xpos,ypos;
+	hge->Input_GetMousePos(&xpos,&ypos);
+	if(xpos >= MAP_OFF_X && xpos < MAP_OFF_X+MAP_WIDTH && ypos >= MAP_OFF_Y && ypos < MAP_OFF_Y+MAP_LENGTH)
+	{
+		drawSmallRect(xpos,ypos);
+	}
 	player->render();
 
 	hge->Gfx_EndScene();
 	return false;
+}
+
+void App::drawSmallRect(float x,float y)
+{
+	float xMap,yMap;
+	xMap = x - MAP_OFF_X;
+	yMap = y - MAP_OFF_Y;
+	int xNum = 0,yNum = 0;
+	xNum = (int)(xMap/MAP_RECT);
+	yNum = (int)(yMap/MAP_RECT);
+
+	hgeQuad quad;
+	quad.v[0].x = MAP_OFF_X + xNum*MAP_RECT;
+	quad.v[0].y = MAP_OFF_Y + yNum*MAP_RECT;
+	quad.v[0].tx = 0;		quad.v[0].ty = 0;
+	quad.v[1].x = MAP_OFF_X + xNum*MAP_RECT + MAP_RECT;
+	quad.v[1].y = MAP_OFF_Y + yNum*MAP_RECT;
+	quad.v[1].tx = 1;		quad.v[1].ty = 0;
+	quad.v[2].x = MAP_OFF_X + xNum*MAP_RECT + MAP_RECT;
+	quad.v[2].y = MAP_OFF_Y + yNum*MAP_RECT + MAP_RECT;
+	quad.v[2].tx = 1;		quad.v[2].ty = 1;
+	quad.v[3].x = MAP_OFF_X + xNum*MAP_RECT;
+	quad.v[3].y = MAP_OFF_Y + yNum*MAP_RECT + MAP_RECT;
+	quad.v[3].tx = 0;		quad.v[3].ty = 1;
+
+	for (int i=0;i<4;i++)
+	{
+		quad.v[i].col = 0x4F48A4D5;
+		quad.v[i].z = 0.5;
+	}
+	quad.blend = BLEND_DEFAULT_Z;
+	quad.tex = 0;
+	hge->Gfx_RenderQuad(&quad);
 }
 
 bool App::appUpdate()

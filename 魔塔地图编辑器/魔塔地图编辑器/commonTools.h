@@ -95,6 +95,17 @@ struct tagBlock
 		ypos = 0;
 		attri = 0x0;
 	}
+	tagBlock& operator=(tagBlock& block)
+	{
+		xpos = block.xpos;
+		ypos = block.ypos;
+		attri = block.attri;
+		return *this;
+	}
+	static bool less_than( tagBlock &b1, tagBlock &b2)
+	{
+		return b1.ypos*MAP_WIDTH_NUM+b1.xpos < b2.ypos*MAP_WIDTH_NUM+b2.xpos;
+	}
 };
 typedef struct tagBlock Block;
 

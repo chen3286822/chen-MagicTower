@@ -270,7 +270,7 @@ Application::~Application(void)
 
 	 for (int i=0;i<4;i++)
 	 {
-		 quad.v[i].col = 0x4F7F7F7F;
+		 quad.v[i].col = 0x4F48A4D5;
 		 quad.v[i].z = 0.5;
 	 }
 	 quad.blend = BLEND_DEFAULT_Z;
