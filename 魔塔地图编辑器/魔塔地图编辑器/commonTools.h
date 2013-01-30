@@ -70,10 +70,12 @@ enum		//表示地图格子的属性位
 
 #define IsCanStandOn(a)	(((a) & CanStandOn) == 1)		//测试是否可以站立
 #define setStandOn(a,b)		(a = ((b)==1 ? (a) | 0x01 : (a) & 0xFFFFFFFE))		//设定该格子是否可以站立
-#define IsOccupied(a)			((IsCanStandOn(a)) && (((a) & BeOccupied) == 1))		//测试是否正在被单位占用
+//#define IsOccupied(a)			((IsCanStandOn(a)) && (((a) & BeOccupied) == 1))		//测试是否正在被单位占用
+#define IsOccupied(a)			(IsCanStandOn(a)==0 || (IsCanStandOn(a) && (((a) & BeOccupied) == 1)))		//测试是否正在被单位占用，不可通过同样视为占用
 #define setOccupied(a,b)	(a = (IsCanStandOn(a) ? ((b)==1?(a)|0x02:(a)&0xFFFFFFFD) : a))	//设定该格子是否正在被单位占用
 #define getTerrain(a)			((a) & WhatTerrain)		//返回该格子的地形类别
 #define setTerrain(a,b)		(a = (((a) & 0xFFFFFFC3) | (b)))	//设定该格子的地形类别
+#define IsCanCross(a)		((IsOccupied(a) || (getTerrain(a) & HillTop) || (getTerrain(a) & CityWall))? 0:1)	//测试格子是否可以通过，包括单位以及地形的影响
 
 struct tagBlock
 {

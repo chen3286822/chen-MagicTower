@@ -324,7 +324,10 @@ Application::~Application(void)
 	 for (int i=0;i<MAP_WIDTH_NUM*MAP_LENGTH_NUM;i++)
 	 {
 		 m_markUp->AddElem("Terrain");
-		 m_markUp->AddAttrib("type",Road);
+		 //ÉèÖÃµØÍ¼¿éÊôÐÔ
+		 int attr = Road;
+		 setStandOn(attr,1);
+		 m_markUp->AddAttrib("type",attr);
 		 m_markUp->AddAttrib("xpos",i%MAP_WIDTH_NUM);
 		 m_markUp->AddAttrib("ypos",i/MAP_WIDTH_NUM);
 	 }

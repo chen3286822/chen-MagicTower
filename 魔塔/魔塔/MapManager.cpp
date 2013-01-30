@@ -42,6 +42,22 @@ void Map::update()
 
 }
 
+MapObject* Map::getObject(int x,int y)
+{
+	for (int i=0;i<m_vObjList.size();i++)
+	{
+		if(m_vObjList[i]->xpos == x && m_vObjList[i]->ypos == y)
+			return m_vObjList[i];
+	}
+	return NULL;
+}
+
+Block* Map::getBlock(int x,int y)
+{
+	if(x < 0 || x > MAP_WIDTH_NUM || y < 0 || y > MAP_LENGTH_NUM)
+		return NULL;
+	return &(m_vBlocks[x+y*MAP_WIDTH_NUM]);
+}
 
 MapManager::MapManager(void)
 {
@@ -60,13 +76,12 @@ MapManager::~MapManager(void)
 	}
 }
 
-
 bool MapManager::LoadMaps(std::string path)
 {
 	if(m_markUp==NULL)
 		m_markUp = new CMarkup;
 	std::map<std::string,std::string> files;
-	getFiles(path,files,".xml",LEVEL_NUM);
+	g_getFiles(path,files,".xml",LEVEL_NUM);
 	
 	for (std::map<std::string,std::string>::iterator mit=files.begin();mit!=files.end();mit++)
 	{
@@ -103,9 +118,15 @@ bool MapManager::LoadMaps(std::string path)
 				_xpos = atoi(m_markUp->GetAttrib("xpos").c_str());
 				_ypos = atoi(m_markUp->GetAttrib("ypos").c_str());
 				Block _block(_xpos,_ypos);
-				setTerrain(_block.attri,_type);
+// 				setTerrain(_block.attri,_type);
+// 				if (_type == HillTop || _type == CityWall)
+// 				{
+// 					setStandOn(_type,0);
+// 				}
+				_block.attri = _type;
 				level->addBlock(_block);
 			}
+			std::sort(level->getVBlock().begin(),level->getVBlock().end(),Block::less_than);
 			m_markUp->OutOfElem();
 		}
 		if(m_markUp->FindElem("Object"))
@@ -127,6 +148,9 @@ bool MapManager::LoadMaps(std::string path)
 				mo->action		=	_Action;
 				mo->xpos			=	_xpos;
 				mo->ypos			=	_ypos;
+				Block* theBlock = level->getBlock(mo->xpos,mo->ypos);
+				if(theBlock != NULL)
+					setOccupied((theBlock->attri),1);
 				level->addObject(mo);
 			}
 			m_markUp->OutOfElem();

@@ -17,6 +17,13 @@ public:
 	inline void setWidthLength(int _width,int _length){m_width = _width; m_length = _length;}
 	inline void getWidthLength(int& _width,int& _length){_width = m_width; _length = m_length;}
 
+	//根据位于地图的位置取得当前位置的生物和地图块
+	MapObject* getObject(int x,int y);
+	Block* getBlock(int x,int y);
+
+	inline std::vector<MapObject*>& getVObject(){return m_vObjList;}
+	inline std::vector<Block>&	getVBlock(){return m_vBlocks;}
+
 	//为了支持stl的sort算法
 	static bool less_than( Map* &m1, Map* &m2) {return m1->m_ilevel < m2->m_ilevel;}
 
@@ -38,6 +45,7 @@ public:
 
 	bool LoadMaps(std::string path);
 	Map* getMap(int level);
+	inline Map* getCurrentMap(){return getMap(m_iCurrentLevel);}
 	void render();
 	void update();
 

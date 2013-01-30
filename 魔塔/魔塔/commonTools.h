@@ -54,15 +54,15 @@ typedef struct tagMapObject MapObject;
 
 enum
 {
-	Road			=		0x0000004,		//路面	0x0000100
-	River			=		0x0000008,		//河流	0x0001000
-	Mountain		=		0x000000C,		//山地	0x0001100
-	HillTop			=		0x0000010,		//山顶	0x0010000
-	CityWall		=		0x0000014,		//城墙	0x0010100
-	Forest			=		0x0000018,		//树林	0x0011000
-	Desert			=		0x000001C,		//沙漠	0x0011100
-	CityRoad		=		0x0000020,		//城内	0x0100000
-	City				=		0x0000024,		//城市	0x0100100
+	Road			=		0x0000004,		//路面	0000100b
+	River			=		0x0000008,		//河流	0001000b
+	Mountain		=		0x000000C,		//山地	0001100b
+	HillTop			=		0x0000010,		//山顶	0010000b
+	CityWall		=		0x0000014,		//城墙	0010100b
+	Forest			=		0x0000018,		//树林	0011000b
+	Desert			=		0x000001C,		//沙漠	0011100b
+	CityRoad		=		0x0000020,		//城内	0100000b
+	City				=		0x0000024,		//城市	0100100b
 };
 
 enum		//表示地图格子的属性位
@@ -72,12 +72,13 @@ enum		//表示地图格子的属性位
 	WhatTerrain			=		0x0000003C,			//表示该格子是哪种地形
 };
 
-#define IsCanStandOn(a)	(((a) & CanStandOn) == 1)		//测试是否可以站立
+#define IsCanStandOn(a)	((a) & CanStandOn)		//测试是否可以站立
 #define setStandOn(a,b)		(a = ((b)==1 ? (a) | 0x01 : (a) & 0xFFFFFFFE))		//设定该格子是否可以站立
-#define IsOccupied(a)			((IsCanStandOn(a)) && (((a) & BeOccupied) == 1))		//测试是否正在被单位占用
+#define IsOccupied(a)			(IsCanStandOn(a)==0 || (IsCanStandOn(a) && ((a) & BeOccupied)))		//测试是否正在被单位占用，不可通过同样视为占用
 #define setOccupied(a,b)	(a = (IsCanStandOn(a) ? ((b)==1?(a)|0x02:(a)&0xFFFFFFFD) : a))	//设定该格子是否正在被单位占用
 #define getTerrain(a)			((a) & WhatTerrain)		//返回该格子的地形类别
 #define setTerrain(a,b)		(a = (((a) & 0xFFFFFFC3) | (b)))	//设定该格子的地形类别
+#define IsCanCross(a)		((IsOccupied(a) || (getTerrain(a) == HillTop) || (getTerrain(a) == CityWall))? 0:1)	//测试格子是否可以通过，包括单位以及地形的影响
 
 
 struct tagBlock
@@ -98,6 +99,17 @@ struct tagBlock
 		ypos = 0;
 		attri = 0x0;
 	}
+	tagBlock& operator=(tagBlock& block)
+	{
+		xpos = block.xpos;
+		ypos = block.ypos;
+		attri = block.attri;
+		return *this;
+	}
+	static bool less_than( tagBlock &b1, tagBlock &b2)
+	{
+		return b1.ypos*MAP_WIDTH_NUM+b1.xpos < b2.ypos*MAP_WIDTH_NUM+b2.xpos;
+	}
 };
 typedef struct tagBlock Block;
 
@@ -115,10 +127,10 @@ enum KEY_STATE
 	KEY_HOLD,
 	KEY_NULL,
 };
-LBUTTON_STATE getLButtonState(HGE* hge);
-KEY_STATE getKeyState(HGE* hge,int Key);
+LBUTTON_STATE g_getLButtonState(HGE* hge);
+KEY_STATE g_getKeyState(HGE* hge,int Key);
 
-void getFiles( std::string path, std::map<std::string,std::string>& files,char* type,int maxFileNum);
+void g_getFiles( std::string path, std::map<std::string,std::string>& files,char* type,int maxFileNum);
 
 #define gSafeDelete(X)		{	if((X)){delete (X); (X) = NULL;} }
 
@@ -130,4 +142,6 @@ enum Direction
 	RIGHT,
 	UP,
 };
+int g_getKeyNum(int Key);	//根据按键编号取得该按键在数组中的位置
+#define KEY_NUM 36
 #endif
