@@ -17,6 +17,9 @@ public:
 
 	void setMove(bool _move){m_bCanMove = _move;}
 	bool getMove(){return m_bCanMove;}
+
+	int getID(){return m_ID;}
+	int getNum(){return m_Num;}
 private:
 	hgeAnimation* m_ani;
 	int m_ID;		//代表单位类别的ID号
@@ -31,3 +34,5 @@ private:
 	int m_LeftDistance;	//剩余需要移动的格子数
 };
 
+
+typedef std::vector<Character*> VCharacter;

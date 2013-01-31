@@ -46,7 +46,6 @@ void Character::update(float delta)
 {
 	static float startX = m_xpos;
 	static float startY = m_ypos;
-	static int lastFrame = m_ani->GetFrame();
 
 	if(m_bCanMove)
 	{

@@ -97,6 +97,7 @@
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="commonTools.cpp" />
+    <ClCompile Include="CreatureManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MapManager.cpp" />
     <ClCompile Include="Markup.cpp" />
@@ -106,6 +107,7 @@
     <ClInclude Include="App.h" />
     <ClInclude Include="Character.h" />
     <ClInclude Include="commonTools.h" />
+    <ClInclude Include="CreatureManager.h" />
     <ClInclude Include="MapManager.h" />
     <ClInclude Include="Markup.h" />
     <ClInclude Include="Singleton.h" />
