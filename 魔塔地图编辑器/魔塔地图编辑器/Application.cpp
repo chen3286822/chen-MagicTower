@@ -204,6 +204,7 @@ Application::~Application(void)
 			 mo->action			=	m_action;
 			 mo->xpos			=	xNum;
 			 mo->ypos			=	yNum;
+			 mo->camp			=	Enemy;		//先设成敌人，后面需要配置
 			 m_vMapObject[xNum+yNum*MAP_WIDTH_NUM] = mo;
 		 }
 
@@ -344,6 +345,7 @@ Application::~Application(void)
 			 m_markUp->AddAttrib("Action",m_vMapObject[i]->action);
 			 m_markUp->AddAttrib("xpos",m_vMapObject[i]->xpos);
 			 m_markUp->AddAttrib("ypos",m_vMapObject[i]->ypos);
+			 m_markUp->AddAttrib("camp",m_vMapObject[i]->camp);
 		 }
 	 }
 	 m_markUp->OutOfElem();
@@ -368,6 +370,7 @@ Application::~Application(void)
 	 int _Action = 0;
 	 int _xpos = 0;
 	 int _ypos = 0;
+	 Camp _camp = Neutral;
 	 m_markUp->ResetMainPos();
 	 if(m_markUp->FindElem("map"))
 	 {
@@ -404,6 +407,7 @@ Application::~Application(void)
 			_Action = atoi(m_markUp->GetAttrib("Action").c_str());
 			_xpos = atoi(m_markUp->GetAttrib("xpos").c_str());
 			_ypos = atoi(m_markUp->GetAttrib("ypos").c_str());
+			_camp = (Camp)(atoi(m_markUp->GetAttrib("camp").c_str()));
 
 			MapObject* mo = new MapObject;
 			HTEXTURE tempTex;
@@ -424,6 +428,7 @@ Application::~Application(void)
 			mo->action		=	_Action;
 			mo->xpos			=	_xpos;
 			mo->ypos			=	_ypos;
+			mo->camp		=	_camp;
 			m_vMapObject[_xpos+_ypos*MAP_WIDTH_NUM] = mo;
 		}
 		m_markUp->OutOfElem();

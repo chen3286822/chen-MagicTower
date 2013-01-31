@@ -2,6 +2,7 @@
 #include "MapManager.h"
 #include "TexManager.h"
 #include "Character.h"
+#include "CreatureManager.h"
 
 bool update();
 bool render();
@@ -48,6 +49,7 @@ void App::loadResource()
 {
 	MapManager::sCreate();
 	TexManager::sCreate();
+	CreatureManager::sCreate();
 	char pBuf[MAX_PATH];
 	char pathTex[MAX_PATH],pathMap[MAX_PATH],pathMaps[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH,pBuf);
@@ -75,8 +77,9 @@ void App::freeResource()
 {
 	gSafeDelete(player);
 
-	MapManager::sDestroy();
+	CreatureManager::sDestroy();
 	TexManager::sDestroy();
+	MapManager::sDestroy();
 }
 
 void App::cleanUp()

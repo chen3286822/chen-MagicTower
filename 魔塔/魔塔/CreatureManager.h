@@ -1,7 +1,7 @@
 #ifndef CREATURE_MANAGER_H
 #define CREATURE_MANAGER_H
 
-#include "Singleton.h"
+#include "commonTools.h"
 #include "Character.h"
 
 class CreatureManager : public Singleton<CreatureManager>
@@ -18,6 +18,7 @@ public:
 	void ClearFriend(){m_VFriendList.clear();}
 
 	Character* GetNextEnemy();
+	Character* GetEnemy(int x,int  y);
 	Character* GetFriend(int x,int  y);
 
 private:

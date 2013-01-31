@@ -39,6 +39,14 @@
 #define MAP_WIDTH		MAP_RECT*MAP_WIDTH_NUM
 #define MAP_LENGTH		MAP_RECT*MAP_LENGTH_NUM	
 
+//阵营
+enum Camp
+{
+	Friend = 0,
+	Enemy,
+	Neutral,
+};
+
 struct  tagMapObject
 {
 	hgeSprite* spr;	//物体的贴图
@@ -46,6 +54,7 @@ struct  tagMapObject
 	int action;			//物体动作ID
 	int xpos;				//物体在地图的绘制坐标x
 	int ypos;				//物体在地图的绘制坐标y
+	Camp camp;		//物体所在阵营
 };
 typedef struct tagMapObject MapObject;
 

@@ -17,6 +17,9 @@ public:
 
 	void setMove(bool _move){m_bCanMove = _move;}
 	bool getMove(){return m_bCanMove;}
+	void setFinish(bool _finish){m_bFinishAct = _finish;}
+	bool getFinish(){return m_bFinishAct;}
+	Block&	getBlock(){return m_block;}
 
 	int getID(){return m_ID;}
 	int getNum(){return m_Num;}
@@ -28,6 +31,7 @@ private:
 	float m_xpos,m_ypos;	//单位的实际坐标
 	bool m_bCanMove;		//代表该单位是否可以移动
 	int m_MoveAbility;		//代表移动力
+	bool m_bFinishAct;	//代表是否行动过
 //	std::vector<Block>
 
 	Direction m_MoveDir;	//移动的方向

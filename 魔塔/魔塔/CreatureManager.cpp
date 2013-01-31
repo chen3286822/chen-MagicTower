@@ -1,4 +1,5 @@
 #include "CreatureManager.h"
+#include "MapManager.h"
 
 CreatureManager::CreatureManager()
 {
@@ -42,10 +43,32 @@ void CreatureManager::RemoveFriend(Character* _friend)
 
 Character* CreatureManager::GetNextEnemy()
 {
-
+	for (VCharacter::iterator it=m_VEnemyList.begin();it!=m_VEnemyList.end();it++)
+	{
+		if((*it)->getFinish() == false)	//尚未行动
+			return *it;
+	}
+	return NULL;	//所有人都行动过，理应等待下个回合
 }
 
+//根据地图中某格子的位置，取得该格子上的敌方
+Character* CreatureManager::GetEnemy(int x,int  y)
+{
+	for (VCharacter::iterator it=m_VEnemyList.begin();it!=m_VEnemyList.end();it++)
+	{
+		if((*it)->getBlock().xpos==x && (*it)->getBlock().ypos==y)
+			return *it;
+	}
+	return NULL;
+}
+
+//根据地图中某格子的位置，取得该格子上的友方
 Character* CreatureManager::GetFriend(int x,int  y)
 {
-
+	for (VCharacter::iterator it=m_VFriendList.begin();it!=m_VFriendList.end();it++)
+	{
+		if((*it)->getBlock().xpos==x && (*it)->getBlock().ypos==y)
+			return *it;
+	}
+	return NULL;
 }
