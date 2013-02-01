@@ -10,6 +10,9 @@ public:
 	CreatureManager();
 	~CreatureManager();
 
+	void Render();
+	void Update(float delta);
+
 	void AddEnemy(Character* _enemy){m_VEnemyList.push_back(_enemy);}
 	void AddFriend(Character* _friend){m_VFriendList.push_back(_friend);}
 	void RemoveEnemy(Character* _enemy);
@@ -19,11 +22,21 @@ public:
 
 	Character* GetNextEnemy();
 	Character* GetEnemy(int x,int  y);
+	Character* GetEnemy(int num);
 	Character* GetFriend(int x,int  y);
+
+	//只有当所有单位都行动过后才能重置，相当于开始下一回合
+	bool ResetAllCreature();
+
+	//AI行动策略
+	void Strategy();
+	int	GetCurrentActionCreature(){return m_ActionCreatureNum;}
 
 private:
 	VCharacter  m_VFriendList;
 	VCharacter	m_VEnemyList;
+
+	int m_ActionCreatureNum;	//表示当前正在行动中的单位号，没有表示为-1
 };
 
 

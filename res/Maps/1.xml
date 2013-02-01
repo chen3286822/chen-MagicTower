@@ -65,10 +65,10 @@
 <Terrain type="5" xpos="6" ypos="7"/>
 <Terrain type="5" xpos="7" ypos="7"/>
 </Block>
-<Object>
+<Creature>
 <Man ID="5" Action="4" xpos="2" ypos="2" camp="1"/>
 <Man ID="4" Action="1" xpos="4" ypos="3" camp="1"/>
-<Man ID="16" Action="11" xpos="1" ypos="6" camp="1"/>
-<Man ID="16" Action="11" xpos="4" ypos="6" camp="1"/>
-</Object>
+<Man ID="16" Action="3" xpos="1" ypos="6" camp="1"/>
+<Man ID="16" Action="2" xpos="4" ypos="6" camp="1"/>
+</Creature>
 </map>

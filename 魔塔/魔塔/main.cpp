@@ -4,13 +4,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
 	App::sCreate();
 
-	if(App::sInstance().systemInit())
+	if(App::sInstance().SystemInit())
 	{
-		App::sInstance().loadResource();
-		App::sInstance().run();
-		App::sInstance().freeResource();
+		App::sInstance().LoadResource();
+		App::sInstance().Run();
+		App::sInstance().FreeResource();
 	}
-	App::sInstance().cleanUp();
+	App::sInstance().CleanUp();
 
 	App::sDestroy();
 	return 0;

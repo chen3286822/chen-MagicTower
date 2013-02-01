@@ -7,20 +7,23 @@ public:
 	App(void);
 	~App(void);
 
-	bool systemInit();
-	void loadResource();
-	void run();
-	void freeResource();
-	void cleanUp();
+	bool SystemInit();
+	void LoadResource();
+	void Run();
+	void FreeResource();
+	void CleanUp();
 
-	bool appUpdate();
-	bool appRender();
+	bool AppUpdate();
+	bool AppRender();
 
-	void drawSmallRect(float x,float y);
-
-	inline HGE* App::getHGE(){return hge;}
+	inline HGE* App::GetHGE(){return hge;}
 
 private:
 	HGE* hge;
+
+	//画出鼠标位置的方格
+	void DrawMouseRect();
+	//画出小方格
+	void DrawSmallRect(float x,float y);
 };
 

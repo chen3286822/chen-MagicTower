@@ -3,6 +3,7 @@
 #include "TexManager.h"
 #include "Character.h"
 #include "CreatureManager.h"
+#include "TipWnd.h"
 
 bool update();
 bool render();
@@ -18,7 +19,7 @@ App::~App(void)
 {
 }
 
-bool App::systemInit()
+bool App::SystemInit()
 {
 	hge = hgeCreate(HGE_VERSION);
 
@@ -45,11 +46,13 @@ bool App::systemInit()
 	}
 }
 
-void App::loadResource()
+void App::LoadResource()
 {
 	MapManager::sCreate();
 	TexManager::sCreate();
 	CreatureManager::sCreate();
+	TipWnd::sCreate();
+
 	char pBuf[MAX_PATH];
 	char pathTex[MAX_PATH],pathMap[MAX_PATH],pathMaps[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH,pBuf);
@@ -65,48 +68,57 @@ void App::loadResource()
 	}
 
 	player = new Character;
-	player->init(TexManager::sInstance().getTex(1),1,1,Block(5,5));
+	player->Init(TexManager::sInstance().GetTex(1),1,1,1,Block(5,5));
 }
 
-void App::run()
+void App::Run()
 {
 	hge->System_Start();
+	hge->Random_Seed();
 }
 
-void App::freeResource()
+void App::FreeResource()
 {
 	gSafeDelete(player);
 
+	TipWnd::sDestroy();
 	CreatureManager::sDestroy();
 	TexManager::sDestroy();
 	MapManager::sDestroy();
 }
 
-void App::cleanUp()
+void App::CleanUp()
 {
 	hge->System_Shutdown();
 	hge->Release();
 }
 
-bool App::appRender()
+bool App::AppRender()
 {
 	hge->Gfx_Clear(0X00000000);
 	hge->Gfx_BeginScene();
 
-	MapManager::sInstance().render();
-	float xpos,ypos;
-	hge->Input_GetMousePos(&xpos,&ypos);
-	if(xpos >= MAP_OFF_X && xpos < MAP_OFF_X+MAP_WIDTH && ypos >= MAP_OFF_Y && ypos < MAP_OFF_Y+MAP_LENGTH)
-	{
-		drawSmallRect(xpos,ypos);
-	}
-	player->render();
+	MapManager::sInstance().Render();
+	CreatureManager::sInstance().Render();
+	DrawMouseRect();
+	player->Render();
+	TipWnd::sInstance().Render();
 
 	hge->Gfx_EndScene();
 	return false;
 }
 
-void App::drawSmallRect(float x,float y)
+void App::DrawMouseRect()
+{
+	float xpos,ypos;
+	hge->Input_GetMousePos(&xpos,&ypos);
+	if(xpos >= MAP_OFF_X && xpos < MAP_OFF_X+MAP_WIDTH && ypos >= MAP_OFF_Y && ypos < MAP_OFF_Y+MAP_LENGTH)
+	{
+		DrawSmallRect(xpos,ypos);
+	}
+}
+
+void App::DrawSmallRect(float x,float y)
 {
 	float xMap,yMap;
 	xMap = x - MAP_OFF_X;
@@ -139,32 +151,36 @@ void App::drawSmallRect(float x,float y)
 	hge->Gfx_RenderQuad(&quad);
 }
 
-bool App::appUpdate()
+bool App::AppUpdate()
 {
 	if (hge->Input_GetKeyState(HGEK_ESCAPE))
 		return true;
 	if (g_getKeyState(hge,HGEK_W)==KEY_DOWN)
-		player->move(UP);
+		player->Move(UP);
 	else if (g_getKeyState(hge,HGEK_S)==KEY_DOWN)
-		player->move(DOWN);
+		player->Move(DOWN);
 	else if (g_getKeyState(hge,HGEK_A)==KEY_DOWN)
-		player->move(LEFT);
+		player->Move(LEFT);
 	else if (g_getKeyState(hge,HGEK_D)==KEY_DOWN)
-		player->move(RIGHT);
+		player->Move(RIGHT);
 
 	float dt = hge->Timer_GetDelta();
-	player->update(dt);
+	player->Update(dt);
 
-	MapManager::sInstance().update();
+	CreatureManager::sInstance().Strategy();
+
+	MapManager::sInstance().Update();
+	CreatureManager::sInstance().Update(dt);
+	TipWnd::sInstance().Update(dt);
 	return false;
 }
 
 bool update()
 {
-	return App::sInstance().appUpdate();
+	return App::sInstance().AppUpdate();
 }
 
 bool render()
 {
-	return App::sInstance().appRender();
+	return App::sInstance().AppRender();
 }

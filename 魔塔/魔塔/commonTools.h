@@ -1,5 +1,9 @@
 #ifndef COMMON_TOOLS_H
 #define COMMON_TOOLS_H
+
+#pragma warning(disable: 4244)
+#pragma warning(disable: 4018)
+
 #include <windows.h>
 #include <hge.h>
 #include <hgesprite.h>
@@ -42,15 +46,46 @@
 #define MAP_WIDTH		MAP_RECT*MAP_WIDTH_NUM
 #define MAP_LENGTH		MAP_RECT*MAP_LENGTH_NUM	
 
-struct  tagMapObject
+#define KEY_NUM 36
+
+
+//阵营
+enum Camp
 {
-	hgeSprite* spr;	//物体的贴图
-	int ID;					//物体ID
-	int action;			//物体动作ID
-	int xpos;				//物体在地图的绘制坐标x
-	int ypos;				//物体在地图的绘制坐标y
+	Friend = 0,
+	Enemy,
+	Neutral,
 };
-typedef struct tagMapObject MapObject;
+
+enum Direction
+{
+	None,
+	DOWN,
+	LEFT,
+	RIGHT,
+	UP,
+};
+
+enum LBUTTON_STATE
+{
+	LBUTTON_DOWN,
+	LBUTTON_UP,
+	LBUTTON_HOLD,
+	LBUTTON_NULL
+};
+
+enum KEY_STATE
+{
+	KEY_DOWN,
+	KEY_UP,
+	KEY_HOLD,
+	KEY_NULL,
+};
+
+enum FontType
+{
+	DefaultType,
+};
 
 enum
 {
@@ -80,6 +115,17 @@ enum		//表示地图格子的属性位
 #define setTerrain(a,b)		(a = (((a) & 0xFFFFFFC3) | (b)))	//设定该格子的地形类别
 #define IsCanCross(a)		((IsOccupied(a) || (getTerrain(a) == HillTop) || (getTerrain(a) == CityWall))? 0:1)	//测试格子是否可以通过，包括单位以及地形的影响
 
+#define gSafeDelete(X)		{	if((X)){delete (X); (X) = NULL;} }
+
+struct  tagMapObject
+{
+	hgeSprite* spr;	//物体的贴图
+	int ID;					//物体ID
+	int action;			//物体动作ID
+	int xpos;				//物体在地图的绘制坐标x
+	int ypos;				//物体在地图的绘制坐标y
+};
+typedef struct tagMapObject MapObject;
 
 struct tagBlock
 {
@@ -113,35 +159,9 @@ struct tagBlock
 };
 typedef struct tagBlock Block;
 
-enum LBUTTON_STATE
-{
-	LBUTTON_DOWN,
-	LBUTTON_UP,
-	LBUTTON_HOLD,
-	LBUTTON_NULL
-};
-enum KEY_STATE
-{
-	KEY_DOWN,
-	KEY_UP,
-	KEY_HOLD,
-	KEY_NULL,
-};
 LBUTTON_STATE g_getLButtonState(HGE* hge);
 KEY_STATE g_getKeyState(HGE* hge,int Key);
-
 void g_getFiles( std::string path, std::map<std::string,std::string>& files,char* type,int maxFileNum);
-
-#define gSafeDelete(X)		{	if((X)){delete (X); (X) = NULL;} }
-
-enum Direction
-{
-	None,
-	DOWN,
-	LEFT,
-	RIGHT,
-	UP,
-};
 int g_getKeyNum(int Key);	//根据按键编号取得该按键在数组中的位置
-#define KEY_NUM 36
+
 #endif

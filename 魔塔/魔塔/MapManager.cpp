@@ -1,5 +1,7 @@
 #include "MapManager.h"
 #include "TexManager.h"
+#include "Character.h"
+#include "CreatureManager.h"
 
 Map::Map()
 {
@@ -21,11 +23,11 @@ Map::~Map()
 	gSafeDelete(m_mapSpr);
 }
 
-void Map::render()
+void Map::Render()
 {
 	for (std::vector<Block>::iterator it=m_vBlocks.begin();it!=m_vBlocks.end();it++)
 	{
-		blockInfo _blockInfo(TexManager::sInstance().getBlock(getTerrain(it->attri)));
+		blockInfo _blockInfo(TexManager::sInstance().GetBlock(getTerrain(it->attri)));
 		m_mapSpr->SetTexture(_blockInfo.tex);
 		m_mapSpr->SetTextureRect(_blockInfo.x,_blockInfo.y,_blockInfo.width,_blockInfo.height);
 		m_mapSpr->RenderStretch(MAP_OFF_X +MAP_RECT*(*it).xpos,MAP_OFF_Y+MAP_RECT*(*it).ypos,MAP_OFF_X +MAP_RECT*(*it).xpos+MAP_RECT,MAP_OFF_Y+MAP_RECT*(*it).ypos+MAP_RECT);
@@ -37,12 +39,12 @@ void Map::render()
 	}
 }
 
-void Map::update()
+void Map::Update()
 {
 
 }
 
-MapObject* Map::getObject(int x,int y)
+MapObject* Map::GetObject(int x,int y)
 {
 	for (int i=0;i<m_vObjList.size();i++)
 	{
@@ -52,7 +54,7 @@ MapObject* Map::getObject(int x,int y)
 	return NULL;
 }
 
-Block* Map::getBlock(int x,int y)
+Block* Map::GetBlock(int x,int y)
 {
 	if(x < 0 || x > MAP_WIDTH_NUM || y < 0 || y > MAP_LENGTH_NUM)
 		return NULL;
@@ -93,6 +95,8 @@ bool MapManager::LoadMaps(std::string path)
 		int _Action = 0;
 		int _xpos = 0;
 		int _ypos = 0;
+		Camp _camp = Neutral;
+		int num = 0;
 		m_markUp->ResetMainPos();
 		if(m_markUp->FindElem("map"))
 		{
@@ -101,8 +105,8 @@ bool MapManager::LoadMaps(std::string path)
 			_length = atoi(m_markUp->GetAttrib("length").c_str());
 			if(_level!=0 && _width!=0 && _length!=0)
 			{
-				level->setLevel(_level);
-				level->setWidthLength(_width,_length);
+				level->SetLevel(_level);
+				level->SetWidthLength(_width,_length);
 			}
 			else
 				return false;
@@ -124,12 +128,12 @@ bool MapManager::LoadMaps(std::string path)
 // 					setStandOn(_type,0);
 // 				}
 				_block.attri = _type;
-				level->addBlock(_block);
+				level->AddBlock(_block);
 			}
-			std::sort(level->getVBlock().begin(),level->getVBlock().end(),Block::less_than);
+			std::sort(level->GetVBlock().begin(),level->GetVBlock().end(),Block::less_than);
 			m_markUp->OutOfElem();
 		}
-		if(m_markUp->FindElem("Object"))
+		if(m_markUp->FindElem("Creature"))
 		{
 			m_markUp->IntoElem();
 			while(m_markUp->FindElem("Man"))
@@ -138,20 +142,23 @@ bool MapManager::LoadMaps(std::string path)
 				_Action = atoi(m_markUp->GetAttrib("Action").c_str());
 				_xpos = atoi(m_markUp->GetAttrib("xpos").c_str());
 				_ypos = atoi(m_markUp->GetAttrib("ypos").c_str());
+				_camp = (Camp)(atoi(m_markUp->GetAttrib("camp").c_str()));
 
+				Character* cha = new Character;
 				MapObject* mo = new MapObject;
-				float xNum=0,yNum=0;
-				xNum = _Action%(FLOAT_PIC_WIDTH/FLOAT_PIC_SQUARE_WIDTH);
-				yNum = _Action/(FLOAT_PIC_WIDTH/FLOAT_PIC_SQUARE_WIDTH);
-				mo->spr			=	new hgeSprite(TexManager::sInstance().getTex(_ID),xNum*FLOAT_PIC_SQUARE_WIDTH,yNum*FLOAT_PIC_SQUARE_HEIGHT,FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT);
-				mo->ID				=	_ID;
-				mo->action		=	_Action;
-				mo->xpos			=	_xpos;
-				mo->ypos			=	_ypos;
-				Block* theBlock = level->getBlock(mo->xpos,mo->ypos);
+				cha->Init(TexManager::sInstance().GetTex(_ID),_ID,num,_Action,Block(_xpos,_ypos));
+				Block* theBlock = level->GetBlock(_xpos,_ypos);
 				if(theBlock != NULL)
 					setOccupied((theBlock->attri),1);
-				level->addObject(mo);
+				if (_camp == Friend)
+				{
+					CreatureManager::sInstance().AddFriend(cha);
+				}
+				else if (_camp == Enemy)
+				{
+					CreatureManager::sInstance().AddEnemy(cha);
+				}
+				num++;
 			}
 			m_markUp->OutOfElem();
 		}
@@ -162,49 +169,49 @@ bool MapManager::LoadMaps(std::string path)
 	//load 完所有地图文件，设置当前关卡为第一关
 	if(m_vMaps.empty())
 		return false;
-	std::sort(m_vMaps.begin(),m_vMaps.end(),Map::less_than);
-	setCurrentLevel(m_vMaps[0]->getLevel());
+	std::sort(m_vMaps.begin(),m_vMaps.end(),Map::Less_than);
+	SetCurrentLevel(m_vMaps[0]->GetLevel());
 	return true;
 }
 
-Map* MapManager::getMap(int level)
+Map* MapManager::GetMap(int level)
 {
 	for (int i=0;i<m_vMaps.size();i++)
 	{
-		if(level == m_vMaps[i]->getLevel())
+		if(level == m_vMaps[i]->GetLevel())
 			return m_vMaps[i];
 	}
 	return NULL;
 }
 
-void MapManager::render()
+void MapManager::Render()
 {
 	static int oldLevel = -1;
 	static Map* currentMap = NULL;
 	if (oldLevel != m_iCurrentLevel)
 	{
-		currentMap = getMap(m_iCurrentLevel);
+		currentMap = GetMap(m_iCurrentLevel);
 		oldLevel = m_iCurrentLevel;
 	}
 	else
 	{
 		if(currentMap!=NULL)
-			currentMap->render();
+			currentMap->Render();
 	}
 }
 
-void MapManager::update()
+void MapManager::Update()
 {
 	static int oldLevel = -1;
 	static Map* currentMap = NULL;
 	if (oldLevel != m_iCurrentLevel)
 	{
-		currentMap = getMap(m_iCurrentLevel);
+		currentMap = GetMap(m_iCurrentLevel);
 		oldLevel = m_iCurrentLevel;
 	}
 	else
 	{
 		if(currentMap!=NULL)
-			currentMap->update();
+			currentMap->Update();
 	}
 }

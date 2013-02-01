@@ -333,7 +333,7 @@ Application::~Application(void)
 		 m_markUp->AddAttrib("ypos",i/MAP_WIDTH_NUM);
 	 }
 	 m_markUp->OutOfElem();
-	 m_markUp->AddElem("Object");
+	 m_markUp->AddElem("Creature");
 	 m_markUp->IntoElem();
 	 //Ìí¼Óµ¥Î»
 	 for (int i=0;i<MAP_WIDTH_NUM*MAP_LENGTH_NUM;i++)

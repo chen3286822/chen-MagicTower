@@ -9,26 +9,27 @@ public:
 	Character(void);
 	~Character(void);
 
-	void render();
-	void update(float delta); 
+	void Render();
+	void Update(float delta); 
 
-	void init(HTEXTURE tex,int _ID,int _Num,Block _block);
-	void move(Direction dir);		//以格子为单位移动
+	void Init(HTEXTURE tex,int _ID,int _Num,int _Action,Block _block);
+	void Move(Direction dir);		//以格子为单位移动
 
-	void setMove(bool _move){m_bCanMove = _move;}
-	bool getMove(){return m_bCanMove;}
-	void setFinish(bool _finish){m_bFinishAct = _finish;}
-	bool getFinish(){return m_bFinishAct;}
-	Block&	getBlock(){return m_block;}
+	void SetMove(bool _move){m_bCanMove = _move;}
+	bool GetMove(){return m_bCanMove;}
+	void SetFinish(bool _finish){m_bFinishAct = _finish;}
+	bool GetFinish(){return m_bFinishAct;}
+	Block&	GetBlock(){return m_block;}
 
-	int getID(){return m_ID;}
-	int getNum(){return m_Num;}
+	int GetID(){return m_ID;}
+	int GetNum(){return m_Num;}
 private:
 	hgeAnimation* m_ani;
 	int m_ID;		//代表单位类别的ID号
 	int m_Num;	//代表出现在当前关卡的单位号
 	Block m_block;//处于当前关卡的哪个格子中
 	float m_xpos,m_ypos;	//单位的实际坐标
+	float m_StartX,m_StartY;	//单位每次行动前的起点位置
 	bool m_bCanMove;		//代表该单位是否可以移动
 	int m_MoveAbility;		//代表移动力
 	bool m_bFinishAct;	//代表是否行动过

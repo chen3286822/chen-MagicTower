@@ -13,11 +13,11 @@ TexManager::~TexManager(void)
 {
 	for (std::map<int,HTEXTURE>::iterator mit=m_mTex.begin();mit!=m_mTex.end();mit++)
 	{
-		App::sInstance().getHGE()->Texture_Free(mit->second);
+		App::sInstance().GetHGE()->Texture_Free(mit->second);
 	}
 	for (std::map<int,HTEXTURE>::iterator mit=m_mMap.begin();mit!=m_mMap.end();mit++)
 	{
-		App::sInstance().getHGE()->Texture_Free(mit->second);
+		App::sInstance().GetHGE()->Texture_Free(mit->second);
 	}
 }
 
@@ -37,7 +37,7 @@ bool TexManager::LoadTex(std::string path)
 			strncpy(strID,mit->second.c_str(),found);
 			strID[found] = '\0';
 			ID = atoi(strID) - 1;
-			m_mTex[ID] = App::sInstance().getHGE()->Texture_Load(mit->first.c_str());
+			m_mTex[ID] = App::sInstance().GetHGE()->Texture_Load(mit->first.c_str());
 		}
 	}
 	if (m_mTex.empty())
@@ -65,7 +65,7 @@ bool TexManager::LoadMap(std::string path)
 			strID[found] = '\0';
 			ID = atoi(strID) - 1;
 			//ÔØÈëµØÍ¼
-			m_mMap[ID] = App::sInstance().getHGE()->Texture_Load(mit->first.c_str());
+			m_mMap[ID] = App::sInstance().GetHGE()->Texture_Load(mit->first.c_str());
 		}
 	}
 	if (m_mMap.empty())
@@ -80,7 +80,7 @@ bool TexManager::LoadMap(std::string path)
 	return true;
 }
 
-HTEXTURE TexManager::getTex(int _ID)
+HTEXTURE TexManager::GetTex(int _ID)
 {
 	if(!m_mTex.empty() && m_mTex.find(_ID) != m_mTex.end())
 		return m_mTex[_ID];
@@ -88,7 +88,7 @@ HTEXTURE TexManager::getTex(int _ID)
 	return 0;
 }
 
-blockInfo TexManager::getBlock(int _type)
+blockInfo TexManager::GetBlock(int _type)
 {
 	if (!m_mMapInfo.empty() && m_mMapInfo.find(_type) != m_mMapInfo.end())
 		return m_mMapInfo[_type];

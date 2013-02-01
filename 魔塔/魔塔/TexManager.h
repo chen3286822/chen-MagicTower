@@ -36,8 +36,8 @@ public:
 	bool LoadTex(std::string path);
 	bool LoadMap(std::string path);
 
-	HTEXTURE getTex(int _ID);
-	blockInfo	getBlock(int _type);
+	HTEXTURE GetTex(int _ID);
+	blockInfo	GetBlock(int _type);
 
 private:
 	std::map<int,HTEXTURE> m_mTex;		//所有单位的图片
