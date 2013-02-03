@@ -98,6 +98,7 @@
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="commonTools.cpp" />
     <ClCompile Include="CreatureManager.cpp" />
+    <ClCompile Include="FontManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MapManager.cpp" />
     <ClCompile Include="Markup.cpp" />

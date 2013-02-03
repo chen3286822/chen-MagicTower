@@ -84,7 +84,18 @@ enum KEY_STATE
 
 enum FontType
 {
-	DefaultType,
+	MSYaHei,
+	MSYaHeiBold,
+	DefaultType = MSYaHei,
+};
+
+enum FontSize
+{
+	FontSmall = 10,
+	FontMiddle = 12,
+	FontBig = 14,
+
+	FontSizeNum = 3,
 };
 
 enum
@@ -161,7 +172,8 @@ typedef struct tagBlock Block;
 
 LBUTTON_STATE g_getLButtonState(HGE* hge);
 KEY_STATE g_getKeyState(HGE* hge,int Key);
-void g_getFiles( std::string path, std::map<std::string,std::string>& files,char* type,int maxFileNum);
+void g_getFiles( std::string path, std::map<std::string,std::string>& files,char* type,int maxFileNum,bool useDefaultName);
 int g_getKeyNum(int Key);	//根据按键编号取得该按键在数组中的位置
+void g_CTW(const char* text,wchar_t* out);
 
 #endif

@@ -1,6 +1,7 @@
 #include "TipWnd.h"
-#include "GfxFont.h"
 #include "App.h"
+#include "FontManager.h"
+#include "GfxFont.h"
 
 TipWnd::TipWnd()
 {
@@ -9,12 +10,10 @@ TipWnd::TipWnd()
 	char pathFont[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH,pBuf);
 	sprintf(pathFont,"%s\\res\\Font\\msyh.ttf",pBuf);
-	m_GfxFont = new GfxFont(pBuf,14);
 }
 
 TipWnd::~TipWnd()
 {
-	gSafeDelete(m_GfxFont);
 	Clear();
 }
 
@@ -72,10 +71,12 @@ void TipWnd::Render()
 	App::sInstance().GetHGE()->Gfx_RenderQuad(&quad);
 
 	//»æÖÆÎÄ×Ö
-	
+	int ypos = m_OffY;
 	for (VStringLine::iterator it=m_vStringLine.begin();it!=m_vStringLine.end();it++)
 	{
-		m_GfxFont->Render(m_OffX,m_OffY,(*it).str.c_str());
+		GfxFont* font = FontManager::sInstance().GetFont(FontAttr(it->fontType,FontSmall));
+		font->Render(m_OffX,ypos,(*it).str.c_str());
+		ypos += FontSmall;
 	}
 }
 

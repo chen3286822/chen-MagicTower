@@ -4,9 +4,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
 	App::sCreate();
 
-	if(App::sInstance().SystemInit())
+	if(App::sInstance().SystemInit() && App::sInstance().LoadResource())
 	{
-		App::sInstance().LoadResource();
 		App::sInstance().Run();
 		App::sInstance().FreeResource();
 	}

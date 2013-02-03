@@ -8,7 +8,7 @@ public:
 	~App(void);
 
 	bool SystemInit();
-	void LoadResource();
+	bool LoadResource();
 	void Run();
 	void FreeResource();
 	void CleanUp();

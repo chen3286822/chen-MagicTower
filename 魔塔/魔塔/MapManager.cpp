@@ -92,7 +92,7 @@ bool MapManager::LoadMaps(std::string path)
 	if(m_markUp==NULL)
 		m_markUp = new CMarkup;
 	std::map<std::string,std::string> files;
-	g_getFiles(path,files,".xml",LEVEL_NUM);
+	g_getFiles(path,files,".xml",LEVEL_NUM,true);
 	
 	for (std::map<std::string,std::string>::iterator mit=files.begin();mit!=files.end();mit++)
 	{

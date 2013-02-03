@@ -4,6 +4,7 @@
 #include "Character.h"
 #include "CreatureManager.h"
 #include "TipWnd.h"
+#include "FontManager.h"
 
 bool update();
 bool render();
@@ -46,37 +47,40 @@ bool App::SystemInit()
 	}
 }
 
-void App::LoadResource()
+bool App::LoadResource()
 {
 	MapManager::sCreate();
 	TexManager::sCreate();
+	FontManager::sCreate();
 	CreatureManager::sCreate();
 	TipWnd::sCreate();
 
 	char pBuf[MAX_PATH];
-	char pathTex[MAX_PATH],pathMap[MAX_PATH],pathMaps[MAX_PATH];
+	char pathTex[MAX_PATH],pathMap[MAX_PATH],pathMaps[MAX_PATH],pathFonts[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH,pBuf);
 	sprintf(pathTex,"%s\\Ä§ËþµØÍ¼±à¼­Æ÷\\Debug\\res\\tex",pBuf);
 	sprintf(pathMap,"%s\\Ä§ËþµØÍ¼±à¼­Æ÷\\Debug\\res\\map",pBuf);
 	sprintf(pathMaps,"%s\\res\\Maps",pBuf);
+	sprintf(pathFonts,"%s\\res\\Font",pBuf);
 	if(!TexManager::sInstance().LoadTex(pathTex) ||
 		!TexManager::sInstance().LoadMap(pathMap) ||
-		!MapManager::sInstance().LoadMaps(pathMaps))
+		!MapManager::sInstance().LoadMaps(pathMaps) ||
+		!FontManager::sInstance().LoadFonts(pathFonts))
 	{
 		MessageBox(NULL, "ÎÆÀí»òÕß¹Ø¿¨ÔØÈëÊ§°Ü", "Error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
-		return;
+		return false;
 	}
 
 	player = new Character;
 	player->Init(TexManager::sInstance().GetTex(1),MapManager::sInstance().GetCurrentMap()->GetLevel(),1,1,1,Block(5,5));
-	const char *pFilePathName = "ÄãºÃ";
-	size_t nLen = strlen(pFilePathName) + 1;
-	size_t nwLen = MultiByteToWideChar(CP_ACP, 0, (const char*)pFilePathName, (int)nLen, NULL, 0);
 
-	wchar_t lpszFile[256];
-	MultiByteToWideChar(CP_ACP, 0, pFilePathName, nLen, lpszFile, nwLen);
+	wchar_t out[256];
+	g_CTW("ÄãºÃ",out);
+	TipWnd::sInstance().AddText(out);
+	g_CTW("AAAA",out);
+	TipWnd::sInstance().AddText(out);
 
-	TipWnd::sInstance().AddText(lpszFile);
+	return true;
 }
 
 void App::Run()
@@ -91,6 +95,7 @@ void App::FreeResource()
 
 	TipWnd::sDestroy();
 	CreatureManager::sDestroy();
+	FontManager::sDestroy();
 	TexManager::sDestroy();
 	MapManager::sDestroy();
 }

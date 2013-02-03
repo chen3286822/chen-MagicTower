@@ -24,7 +24,7 @@ TexManager::~TexManager(void)
 bool TexManager::LoadTex(std::string path)
 {
 	std::map<std::string,std::string> files;
-	g_getFiles(path,files,".png",50);
+	g_getFiles(path,files,".png",50,true);
 
 	size_t found = 0;
 	int ID = 0;
@@ -51,7 +51,7 @@ bool TexManager::LoadTex(std::string path)
 bool TexManager::LoadMap(std::string path)
 {
 	std::map<std::string,std::string> files;
-	g_getFiles(path,files,".png",50);
+	g_getFiles(path,files,".png",50,true);
 
 	size_t found = 0;
 	int ID = 0;

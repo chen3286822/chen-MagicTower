@@ -30,7 +30,6 @@ struct StringLine
 };
 typedef std::vector<StringLine> VStringLine;
 
-class GfxFont;
 class TipWnd : public Singleton<TipWnd>
 {
 public:
@@ -50,7 +49,6 @@ private:
 	VStringLine m_vStringLine;
 	float m_OffX,m_OffY;	//绘制的tip相对于父窗口的偏移
 	int m_Width,m_Height;	//tip窗口的宽度和长度
-	GfxFont* m_GfxFont;	//用于绘制字体
 };
 
 

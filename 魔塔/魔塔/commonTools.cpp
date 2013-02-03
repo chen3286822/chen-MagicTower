@@ -1,4 +1,14 @@
 #include "commonTools.h"
+#include "GfxFont.h"
+
+const unsigned char GfxFont::g_byAlphaLevel[65] = 
+{
+	0,  4,  8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48,
+	52, 56, 60, 64, 68, 72, 76, 80, 84, 88, 92, 96,100,
+	104,108,112,116,120,124,128,132,136,140,144,148,152,
+	156,160,164,168,172,176,180,184,188,192,196,200,204,
+	208,212,216,220,224,228,232,236,240,244,248,252,255
+};
 
 LBUTTON_STATE g_getLButtonState(HGE* hge)
 {
@@ -59,14 +69,17 @@ KEY_STATE g_getKeyState(HGE* hge,int Key)
 	return state;
 }
 
-void g_getFiles( std::string path, std::map<std::string,std::string>& files,char* type,int maxFileNum)
+void g_getFiles( std::string path, std::map<std::string,std::string>& files,char* type,int maxFileNum,bool useDefaultName)
 {
 	std::string* mapNames = new std::string[maxFileNum];
-	for (int i=0;i<maxFileNum;i++)
+	if (useDefaultName)
 	{
-		char filename[50];
-		sprintf(filename,"%d%s",i,type);
-		mapNames[i].assign(filename);
+		for (int i=0;i<maxFileNum;i++)
+		{
+			char filename[50];
+			sprintf(filename,"%d%s",i,type);
+			mapNames[i].assign(filename);
+		}
 	}
 
 	//нд╪Ч╬Д╠З
@@ -83,17 +96,24 @@ void g_getFiles( std::string path, std::map<std::string,std::string>& files,char
 			if((fileinfo.attrib &  _A_SUBDIR))
 			{
 				if(strcmp(fileinfo.name,".") != 0  &&  strcmp(fileinfo.name,"..") != 0)
-					g_getFiles( p.assign(path).append("\\").append(fileinfo.name), files,type,maxFileNum );
+					g_getFiles( p.assign(path).append("\\").append(fileinfo.name), files,type,maxFileNum,useDefaultName );
 			}
 			else
 			{
-				for(int i=0;i<maxFileNum;i++)
+				if(useDefaultName)
 				{
-					if(strcmp(fileinfo.name,mapNames[i].c_str()) == 0)
+					for(int i=0;i<maxFileNum;i++)
 					{
-						files[p.assign(path).append("\\").append(fileinfo.name)] = fileinfo.name;
-						break;
+						if(strcmp(fileinfo.name,mapNames[i].c_str()) == 0)
+						{
+							files[p.assign(path).append("\\").append(fileinfo.name)] = fileinfo.name;
+							break;
+						}
 					}
+				}
+				else
+				{
+					files[p.assign(path).append("\\").append(fileinfo.name)] = fileinfo.name;
 				}
 			}
 		}while(_findnext(hFile, &fileinfo)  == 0);
@@ -101,4 +121,13 @@ void g_getFiles( std::string path, std::map<std::string,std::string>& files,char
 	}
 
 	delete[] mapNames;
+}
+
+void g_CTW(const char* text,wchar_t* out)
+{
+	const char *ptext = text;
+	size_t nLen = strlen(ptext) + 1;
+	size_t nwLen = MultiByteToWideChar(CP_ACP, 0, (const char*)ptext, (int)nLen, NULL, 0);
+
+	MultiByteToWideChar(CP_ACP, 0, ptext, nLen, out, nwLen);
 }
