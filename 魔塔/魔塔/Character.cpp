@@ -6,6 +6,7 @@
 Character::Character(void)
 {
 	m_ani = NULL;
+	m_Level = 0;
 	m_ID = 0;
 	m_Num = 0;
 	m_block.xpos = 0;
@@ -21,11 +22,12 @@ Character::~Character(void)
 	gSafeDelete(m_ani);
 }
 
-void Character::Init(HTEXTURE tex,int _ID,int _Num,int _Action,Block _block)
+void Character::Init(HTEXTURE tex,int _Level,int _ID,int _Num,int _Action,Block _block)
 {
 	if(m_ani)
 		gSafeDelete(m_ani);
 	m_ani = new hgeAnimation(tex,4,8,0,FLOAT_PIC_SQUARE_HEIGHT*(_Action-1),FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT);
+	m_Level = _Level;
 	m_ID = _ID;
 	m_Num = _Num;
 	m_block = _block;
@@ -33,6 +35,10 @@ void Character::Init(HTEXTURE tex,int _ID,int _Num,int _Action,Block _block)
 	m_StartY = m_ypos = MAP_OFF_Y+MAP_RECT*m_block.ypos;
 	m_LeftDistance = 0;
 	m_MoveDir = None;
+	//为初始化的人物所在地图块设置属性
+	Map* theMap = MapManager::sInstance().GetMap(m_Level);
+	theMap->SetBlockOccupied(_block.xpos,_block.ypos);
+
 	m_ani->SetMode(HGEANIM_LOOP|HGEANIM_FWD);
 	m_ani->Play();
 }
@@ -88,43 +94,28 @@ void Character::Update(float delta)
 			if (m_MoveDir == RIGHT)
 			{
 				newBlock = theMap->GetBlock(m_block.xpos+1,m_block.ypos);
-				if(newBlock!=NULL)
-				{
-					m_block = *newBlock;
-					setOccupied((newBlock->attri),1);
-				}
+				m_block = (newBlock==NULL)?m_block:(*newBlock);
 				m_xpos = (MAP_RECT-FLOAT_PIC_SQUARE_WIDTH)/2+MAP_OFF_X +MAP_RECT*m_block.xpos;
 			}
 			else if(m_MoveDir == LEFT)
 			{
 				newBlock = theMap->GetBlock(m_block.xpos-1,m_block.ypos);
-				if(newBlock!=NULL)
-				{
-					m_block = *newBlock;
-					setOccupied((newBlock->attri),1);
-				}
+				m_block = (newBlock==NULL)?m_block:(*newBlock);
 				m_xpos = (MAP_RECT-FLOAT_PIC_SQUARE_WIDTH)/2+MAP_OFF_X +MAP_RECT*m_block.xpos;
 			}
 			else if(m_MoveDir == UP)
 			{
 				newBlock = theMap->GetBlock(m_block.xpos,m_block.ypos-1);
-				if(newBlock!=NULL)
-				{
-					m_block = *newBlock;
-					setOccupied((newBlock->attri),1);
-				}
+				m_block = (newBlock==NULL)?m_block:(*newBlock);
 				m_ypos = MAP_OFF_Y+MAP_RECT*m_block.ypos;
 			}
 			else if(m_MoveDir == DOWN)
 			{
 				newBlock = theMap->GetBlock(m_block.xpos,m_block.ypos+1);
-				if(newBlock!=NULL)
-				{
-					m_block = *newBlock;
-					setOccupied((newBlock->attri),1);
-				}
+				m_block = (newBlock==NULL)?m_block:(*newBlock);
 				m_ypos = MAP_OFF_Y+MAP_RECT*m_block.ypos;
 			}
+			theMap->SetBlockOccupied(m_block.xpos,m_block.ypos);
 			m_StartX = m_xpos;
 			m_StartY = m_ypos;
 			if(m_LeftDistance == 0)

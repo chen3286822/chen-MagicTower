@@ -5,10 +5,16 @@
 TipWnd::TipWnd()
 {
 	Clear();
+	char pBuf[MAX_PATH];
+	char pathFont[MAX_PATH];
+	GetCurrentDirectory(MAX_PATH,pBuf);
+	sprintf(pathFont,"%s\\res\\Font\\msyh.ttf",pBuf);
+	m_GfxFont = new GfxFont(pBuf,14);
 }
 
 TipWnd::~TipWnd()
 {
+	gSafeDelete(m_GfxFont);
 	Clear();
 }
 
@@ -21,7 +27,7 @@ void TipWnd::Clear()
 	m_Height = 50;
 }
 
-void TipWnd::AddText(const char* str,DWORD color/* =0xFFFFFFFF */,float x/* =-1 */,float y/* =-1 */,FontType type/* =DefaultType */,bool autoEnter/* =true */,int maxWidth)
+void TipWnd::AddText(const wchar_t* str,DWORD color/* =0xFFFFFFFF */,float x/* =-1 */,float y/* =-1 */,FontType type/* =DefaultType */,bool autoEnter/* =true */,int maxWidth)
 {
 	StringLine line(str,color,type);
 	if(!autoEnter)
@@ -35,7 +41,7 @@ void TipWnd::AddText(const char* str,DWORD color/* =0xFFFFFFFF */,float x/* =-1 
 
 void TipWnd::AddEmptyLine()
 {
-	StringLine line("",0xFFFFFFFF,DefaultType);
+	StringLine line((wchar_t*)"",0xFFFFFFFF,DefaultType);
 	m_vStringLine.push_back(line);
 }
 
@@ -66,9 +72,11 @@ void TipWnd::Render()
 	App::sInstance().GetHGE()->Gfx_RenderQuad(&quad);
 
 	//»æÖÆÎÄ×Ö
-// 	for ()
-// 	{
-// 	}
+	
+	for (VStringLine::iterator it=m_vStringLine.begin();it!=m_vStringLine.end();it++)
+	{
+		m_GfxFont->Render(m_OffX,m_OffY,(*it).str.c_str());
+	}
 }
 
 void TipWnd::Update(float delta)

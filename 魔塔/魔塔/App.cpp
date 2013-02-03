@@ -68,7 +68,15 @@ void App::LoadResource()
 	}
 
 	player = new Character;
-	player->Init(TexManager::sInstance().GetTex(1),1,1,1,Block(5,5));
+	player->Init(TexManager::sInstance().GetTex(1),MapManager::sInstance().GetCurrentMap()->GetLevel(),1,1,1,Block(5,5));
+	const char *pFilePathName = "ÄãºÃ";
+	size_t nLen = strlen(pFilePathName) + 1;
+	size_t nwLen = MultiByteToWideChar(CP_ACP, 0, (const char*)pFilePathName, (int)nLen, NULL, 0);
+
+	wchar_t lpszFile[256];
+	MultiByteToWideChar(CP_ACP, 0, pFilePathName, nLen, lpszFile, nwLen);
+
+	TipWnd::sInstance().AddText(lpszFile);
 }
 
 void App::Run()

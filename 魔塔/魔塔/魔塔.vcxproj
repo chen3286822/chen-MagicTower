@@ -70,7 +70,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
-      <IgnoreSpecificDefaultLibraries>libc.lib</IgnoreSpecificDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>libc.lib;libcmtd.lib</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -109,6 +109,7 @@
     <ClInclude Include="Character.h" />
     <ClInclude Include="commonTools.h" />
     <ClInclude Include="CreatureManager.h" />
+    <ClInclude Include="FontManager.h" />
     <ClInclude Include="GfxFont.h" />
     <ClInclude Include="MapManager.h" />
     <ClInclude Include="Markup.h" />

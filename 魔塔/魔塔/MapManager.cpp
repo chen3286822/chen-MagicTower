@@ -56,9 +56,18 @@ MapObject* Map::GetObject(int x,int y)
 
 Block* Map::GetBlock(int x,int y)
 {
-	if(x < 0 || x > MAP_WIDTH_NUM || y < 0 || y > MAP_LENGTH_NUM)
+	if(x < 0 || x >= MAP_WIDTH_NUM || y < 0 || y >= MAP_LENGTH_NUM)
 		return NULL;
 	return &(m_vBlocks[x+y*MAP_WIDTH_NUM]);
+}
+
+void Map::SetBlockOccupied(int xpos,int ypos)
+{
+	Block* block = GetBlock(xpos,ypos);
+	if(block!=NULL)
+	{
+		setOccupied((block->attri),1);
+	}
 }
 
 MapManager::MapManager(void)
@@ -133,6 +142,8 @@ bool MapManager::LoadMaps(std::string path)
 			std::sort(level->GetVBlock().begin(),level->GetVBlock().end(),Block::less_than);
 			m_markUp->OutOfElem();
 		}
+		m_vMaps.push_back(level);
+
 		if(m_markUp->FindElem("Creature"))
 		{
 			m_markUp->IntoElem();
@@ -146,10 +157,11 @@ bool MapManager::LoadMaps(std::string path)
 
 				Character* cha = new Character;
 				MapObject* mo = new MapObject;
-				cha->Init(TexManager::sInstance().GetTex(_ID),_ID,num,_Action,Block(_xpos,_ypos));
-				Block* theBlock = level->GetBlock(_xpos,_ypos);
-				if(theBlock != NULL)
-					setOccupied((theBlock->attri),1);
+				cha->Init(TexManager::sInstance().GetTex(_ID),level->GetLevel(),_ID,num,_Action,Block(_xpos,_ypos));
+				//地图格子由于单位生成，属性变化移动到单位创建中完成
+// 				Block* theBlock = level->GetBlock(_xpos,_ypos);
+// 				if(theBlock != NULL)
+// 					setOccupied((theBlock->attri),1);
 				if (_camp == Friend)
 				{
 					CreatureManager::sInstance().AddFriend(cha);
@@ -161,8 +173,7 @@ bool MapManager::LoadMaps(std::string path)
 				num++;
 			}
 			m_markUp->OutOfElem();
-		}
-		m_vMaps.push_back(level);
+		}	
 	}
 
 	//将所有地图文件按照level属性进行排序

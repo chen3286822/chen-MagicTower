@@ -5,7 +5,7 @@
 
 struct StringLine
 {
-	std::string str;
+	std::wstring str;
 	DWORD color;
 	FontType fontType;
 	float x,y;
@@ -13,7 +13,7 @@ struct StringLine
 	{
 		clear();
 	}
-	StringLine(const char* _str,DWORD _color,FontType _type)
+	StringLine(const wchar_t* _str,DWORD _color,FontType _type)
 	{
 		str = _str;
 		color = _color;
@@ -22,7 +22,7 @@ struct StringLine
 	}
 	void clear()
 	{
-		str = "";
+		str = (wchar_t*)"";
 		color = 0xFFFFFFFF;
 		fontType = DefaultType;
 		x = y = -1;
@@ -43,7 +43,7 @@ public:
 	void SetOffset(float offx,float offy){m_OffX = offx;m_OffY = offy;}
 
 	//当autoEnter为false时，x，y值被视为有效;maxWidth为0表示不限制tip窗口的宽度
-	void AddText(const char* str,DWORD color=0xFFFFFFFF,float x=-1,float y=-1,FontType type=DefaultType,bool autoEnter=true,int maxWidth=0);
+	void AddText(const wchar_t* str,DWORD color=0xFFFFFFFF,float x=-1,float y=-1,FontType type=DefaultType,bool autoEnter=true,int maxWidth=0);
 	void AddEmptyLine();
 
 private:

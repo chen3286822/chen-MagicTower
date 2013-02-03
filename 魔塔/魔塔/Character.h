@@ -12,7 +12,7 @@ public:
 	void Render();
 	void Update(float delta); 
 
-	void Init(HTEXTURE tex,int _ID,int _Num,int _Action,Block _block);
+	void Init(HTEXTURE tex,int _Level,int _ID,int _Num,int _Action,Block _block);
 	void Move(Direction dir);		//以格子为单位移动
 
 	void SetMove(bool _move){m_bCanMove = _move;}
@@ -25,6 +25,7 @@ public:
 	int GetNum(){return m_Num;}
 private:
 	hgeAnimation* m_ani;
+	int m_Level;	//所在关卡
 	int m_ID;		//代表单位类别的ID号
 	int m_Num;	//代表出现在当前关卡的单位号
 	Block m_block;//处于当前关卡的哪个格子中
