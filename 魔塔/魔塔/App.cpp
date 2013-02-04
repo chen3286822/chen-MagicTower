@@ -55,17 +55,17 @@ bool App::LoadResource()
 	CreatureManager::sCreate();
 	TipWnd::sCreate();
 
+	FontManager::sInstance().InitFont();
+
 	char pBuf[MAX_PATH];
-	char pathTex[MAX_PATH],pathMap[MAX_PATH],pathMaps[MAX_PATH],pathFonts[MAX_PATH];
+	char pathTex[MAX_PATH],pathMap[MAX_PATH],pathMaps[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH,pBuf);
 	sprintf(pathTex,"%s\\魔塔地图编辑器\\Debug\\res\\tex",pBuf);
 	sprintf(pathMap,"%s\\魔塔地图编辑器\\Debug\\res\\map",pBuf);
 	sprintf(pathMaps,"%s\\res\\Maps",pBuf);
-	sprintf(pathFonts,"%s\\res\\Font",pBuf);
 	if(!TexManager::sInstance().LoadTex(pathTex) ||
 		!TexManager::sInstance().LoadMap(pathMap) ||
-		!MapManager::sInstance().LoadMaps(pathMaps) ||
-		!FontManager::sInstance().LoadFonts(pathFonts))
+		!MapManager::sInstance().LoadMaps(pathMaps))
 	{
 		MessageBox(NULL, "纹理或者关卡载入失败", "Error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
 		return false;
@@ -74,11 +74,13 @@ bool App::LoadResource()
 	player = new Character;
 	player->Init(TexManager::sInstance().GetTex(1),MapManager::sInstance().GetCurrentMap()->GetLevel(),1,1,1,Block(5,5));
 
-	wchar_t out[256];
-	g_CTW("你好",out);
-	TipWnd::sInstance().AddText(out);
-	g_CTW("AAAA",out);
-	TipWnd::sInstance().AddText(out);
+
+	TipWnd::sInstance().AddText("卧室",0xFFFF0000,20.0f,10.0f,MSYaHei,FontBig,false);
+	TipWnd::sInstance().AddText("aBCDEFTG",0xFFFF0000,30.0f,30.0f,Calibri,FontBig,false);
+	TipWnd::sInstance().AddText("a我B是C中D国E人F啊T卧G艹",0xFFFF0000,45.0f,50.0f,SongTi,FontBig,false,100);
+ 	TipWnd::sInstance().AddText("AAA",0xFF00FF00,-1.0f,-1.0f,Calibri,FontBig);
+ 	TipWnd::sInstance().AddText("我是中国人",0xFF00FF00,-1.0f,-1.0f,SongTi,FontBig,false);
+ 	TipWnd::sInstance().AddText("我是中国人",0xFF000000,-1.0f,-1.0f,MSYaHei,FontBig);
 
 	return true;
 }

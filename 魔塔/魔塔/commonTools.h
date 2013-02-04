@@ -84,9 +84,15 @@ enum KEY_STATE
 
 enum FontType
 {
+	SongTi = 0,
+	Calibri,
 	MSYaHei,
-	MSYaHeiBold,
+	SystemFont,
+
+
 	DefaultType = MSYaHei,
+
+	SystemFontNum = SystemFont,
 };
 
 enum FontSize

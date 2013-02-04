@@ -8,16 +8,20 @@ struct StringLine
 	std::wstring str;
 	DWORD color;
 	FontType fontType;
+	FontSize size;
+	bool autoEnter;
 	float x,y;
 	StringLine()
 	{
 		clear();
 	}
-	StringLine(const wchar_t* _str,DWORD _color,FontType _type)
+	StringLine(const wchar_t* _str,DWORD _color,FontType _type,FontSize _size,bool _autoEnter)
 	{
 		str = _str;
 		color = _color;
 		fontType = _type;
+		size = _size;
+		autoEnter = _autoEnter;
 		x = y = -1;
 	}
 	void clear()
@@ -25,6 +29,8 @@ struct StringLine
 		str = (wchar_t*)"";
 		color = 0xFFFFFFFF;
 		fontType = DefaultType;
+		size = FontSmall;
+		autoEnter = true;
 		x = y = -1;
 	}
 };
@@ -42,13 +48,14 @@ public:
 	void SetOffset(float offx,float offy){m_OffX = offx;m_OffY = offy;}
 
 	//当autoEnter为false时，x，y值被视为有效;maxWidth为0表示不限制tip窗口的宽度
-	void AddText(const wchar_t* str,DWORD color=0xFFFFFFFF,float x=-1,float y=-1,FontType type=DefaultType,bool autoEnter=true,int maxWidth=0);
+	void AddText(const char* str,DWORD color=0xFFFFFFFF,float x=-1,float y=-1,FontType type=DefaultType,FontSize size=FontSmall,bool autoEnter=true,int maxWidth=0);
 	void AddEmptyLine();
 
 private:
 	VStringLine m_vStringLine;
 	float m_OffX,m_OffY;	//绘制的tip相对于父窗口的偏移
 	int m_Width,m_Height;	//tip窗口的宽度和长度
+	int m_LastX,m_LastY;		//下一行绘制的起始位置
 };
 
 

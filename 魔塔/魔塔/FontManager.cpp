@@ -1,15 +1,28 @@
 #include "FontManager.h"
 #include "GfxFont.h"
 
+//文件加载
 MFontTable FontManager::sCreateFileTable()
 {
 	MFontTable table;
 	table["msyh"] = MSYaHei;
-	table["msyhbd"] = MSYaHeiBold;
 	return table;
 }
 
 MFontTable FontManager::sm_mFileTable = sCreateFileTable();
+
+
+//系统自带
+MSystemFontTable FontManager::sCreateSystemFontTable()
+{
+	MSystemFontTable table;
+	table[Calibri] = "Calibri";
+	table[SongTi] = "宋体";
+	table[MSYaHei] = "微软雅黑";
+	return table;
+}
+
+MSystemFontTable FontManager::sm_mSystemFontTable = sCreateSystemFontTable();
 
 
 
@@ -25,6 +38,22 @@ FontManager::~FontManager()
 		gSafeDelete((mit->second));
 	}
 	m_mFonts.clear();
+}
+
+void FontManager::InitFont()
+{
+	FontAttr attr;
+	for (int j=0;j<SystemFontNum;j++)
+	{
+		attr.type = (FontType)j;
+		for (int i=0;i<FontSizeNum;i++)
+		{
+			attr.size = FontSmall + 2*i;
+			GfxFont* font = new GfxFont(sm_mSystemFontTable[(FontType)j].c_str(),attr.size);
+			m_mFonts[attr] = font;
+		}
+	}
+
 }
 
 bool FontManager::LoadFonts(std::string path)
