@@ -75,12 +75,13 @@ bool App::LoadResource()
 	player->Init(TexManager::sInstance().GetTex(1),MapManager::sInstance().GetCurrentMap()->GetLevel(),1,1,1,Block(5,5));
 
 
-	TipWnd::sInstance().AddText("卧室",0xFFFF0000,20.0f,10.0f,MSYaHei,FontBig,false);
-	TipWnd::sInstance().AddText("aBCDEFTG",0xFFFF0000,30.0f,30.0f,Calibri,FontBig,false);
-	TipWnd::sInstance().AddText("a我B是C中D国E人F啊T卧G艹",0xFFFF0000,45.0f,50.0f,SongTi,FontBig,false,100);
- 	TipWnd::sInstance().AddText("AAA",0xFF00FF00,-1.0f,-1.0f,Calibri,FontBig);
- 	TipWnd::sInstance().AddText("我是中国人",0xFF00FF00,-1.0f,-1.0f,SongTi,FontBig,false);
- 	TipWnd::sInstance().AddText("我是中国人",0xFF000000,-1.0f,-1.0f,MSYaHei,FontBig);
+//  	TipWnd::sInstance().AddText("卧室",0xFFFF0000,20.0f,10.0f,MSYaHei,FontBig,false);
+//  	TipWnd::sInstance().AddText("aBCDEFTG",0xFFFF0000,30.0f,30.0f,Calibri,FontBig,false);
+//  	TipWnd::sInstance().AddText("a我B是C中D国E人F啊T卧G艹",0xFFFF0000,45.0f,50.0f,SongTi,FontBig,false,100);
+//   	TipWnd::sInstance().AddText("AAA",0xFF00FF00,-1.0f,-1.0f,Calibri,FontBig,false);
+//   	TipWnd::sInstance().AddText("我是中国人",0xFF00FF00,-1.0f,-1.0f,SongTi,FontBig,false);
+//   	TipWnd::sInstance().AddText("我是中国人",0xFF000000,-1.0f,-1.0f,MSYaHei,FontBig);
+// 	TipWnd::sInstance().SetShow(true);
 
 	return true;
 }
@@ -114,8 +115,8 @@ bool App::AppRender()
 	hge->Gfx_BeginScene();
 
 	MapManager::sInstance().Render();
-	CreatureManager::sInstance().Render();
 	DrawMouseRect();
+	CreatureManager::sInstance().Render();
 	player->Render();
 	TipWnd::sInstance().Render();
 
@@ -125,22 +126,13 @@ bool App::AppRender()
 
 void App::DrawMouseRect()
 {
-	float xpos,ypos;
-	hge->Input_GetMousePos(&xpos,&ypos);
-	if(xpos >= MAP_OFF_X && xpos < MAP_OFF_X+MAP_WIDTH && ypos >= MAP_OFF_Y && ypos < MAP_OFF_Y+MAP_LENGTH)
-	{
-		DrawSmallRect(xpos,ypos);
-	}
+	if(m_Block.xpos!=-1 && m_Block.ypos!=-1)
+		DrawSmallRect(m_Block);
 }
 
-void App::DrawSmallRect(float x,float y)
+void App::DrawSmallRect(Block block)
 {
-	float xMap,yMap;
-	xMap = x - MAP_OFF_X;
-	yMap = y - MAP_OFF_Y;
-	int xNum = 0,yNum = 0;
-	xNum = (int)(xMap/MAP_RECT);
-	yNum = (int)(yMap/MAP_RECT);
+	int xNum = block.xpos,yNum = block.ypos;
 
 	hgeQuad quad;
 	quad.v[0].x = MAP_OFF_X + xNum*MAP_RECT;
@@ -170,6 +162,23 @@ bool App::AppUpdate()
 {
 	if (hge->Input_GetKeyState(HGEK_ESCAPE))
 		return true;
+
+	float xpos,ypos;
+	hge->Input_GetMousePos(&xpos,&ypos);
+	if(xpos >= MAP_OFF_X && xpos < MAP_OFF_X+MAP_WIDTH && ypos >= MAP_OFF_Y && ypos < MAP_OFF_Y+MAP_LENGTH)
+	{
+		float xMap,yMap;
+		xMap = xpos - MAP_OFF_X;
+		yMap = ypos - MAP_OFF_Y;
+		m_Block.xpos = (int)(xMap/MAP_RECT);
+		m_Block.ypos = (int)(yMap/MAP_RECT);
+	}
+	else
+	{
+		m_Block.xpos = -1;
+		m_Block.ypos = -1;
+	}
+
 	if (g_getKeyState(hge,HGEK_W)==KEY_DOWN)
 		player->Move(UP);
 	else if (g_getKeyState(hge,HGEK_S)==KEY_DOWN)

@@ -47,15 +47,21 @@ public:
 	void Clear();
 	void SetOffset(float offx,float offy){m_OffX = offx;m_OffY = offy;}
 
-	//当autoEnter为false时，x，y值被视为有效;maxWidth为0表示不限制tip窗口的宽度
+	//当autoEnter为false时，x，y值被视为有效;maxWidth为0表示不限制tip窗口的宽度，则以最长的那一行文本为最大宽度
 	void AddText(const char* str,DWORD color=0xFFFFFFFF,float x=-1,float y=-1,FontType type=DefaultType,FontSize size=FontSmall,bool autoEnter=true,int maxWidth=0);
 	void AddEmptyLine();
+
+	void SetBoardOffSet(int _offLeft,int _offRight,int _offTop,int _offBottom){m_OffLeft=_offLeft;m_OffRight=_offRight;m_OffTop=_offTop;m_OffBottom=_offBottom;}
+	void SetShow(bool _show){m_Show=_show;}
+	bool IsShow(){return m_Show;}
 
 private:
 	VStringLine m_vStringLine;
 	float m_OffX,m_OffY;	//绘制的tip相对于父窗口的偏移
 	int m_Width,m_Height;	//tip窗口的宽度和长度
 	int m_LastX,m_LastY;		//下一行绘制的起始位置
+	int m_OffLeft,m_OffRight,m_OffTop,m_OffBottom;	//tip窗口上下左右预留的空白位置
+	bool m_Show;	//是否显示tip窗口
 };
 
 

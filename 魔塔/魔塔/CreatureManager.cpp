@@ -1,6 +1,7 @@
 #include "CreatureManager.h"
 #include "MapManager.h"
 #include "App.h"
+#include "TipWnd.h"
 
 CreatureManager::CreatureManager()
 {
@@ -36,6 +37,38 @@ void CreatureManager::Update(float delta)
 		if(cha->GetFinish())
 			m_ActionCreatureNum = -1;
 	}
+	ShowCreatureInfo();
+}
+
+void CreatureManager::ShowCreatureInfo()
+{
+	Block block = App::sInstance().GetMouseBlock();
+	if (block.xpos!=-1 && block.ypos!=-1)
+	{
+		Character* cha = GetEnemy(block.xpos,block.ypos);
+		if(cha == NULL)
+		{
+			cha = GetFriend(block.xpos,block.ypos);
+			if(cha == NULL)
+			{
+				TipWnd::sInstance().Clear();
+				TipWnd::sInstance().SetShow(false);
+				return;
+			}
+		}
+		//得到单位，显示其信息
+		char temp[256] = {0};
+		TipWnd::sInstance().Clear();
+		sprintf(temp," ID: %d",cha->GetID());
+		TipWnd::sInstance().AddText(temp,0xFFFFFFFF,-1,-1,MSYaHei,FontMiddle);
+		TipWnd::sInstance().SetShow(true);
+	}
+	else
+	{
+		TipWnd::sInstance().Clear();
+		TipWnd::sInstance().SetShow(false);
+	}
+
 }
 
 void CreatureManager::Strategy()

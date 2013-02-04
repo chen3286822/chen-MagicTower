@@ -25,6 +25,9 @@ public:
 	Character* GetEnemy(int num);
 	Character* GetFriend(int x,int  y);
 
+	//显示该单位的相关信息
+	void ShowCreatureInfo();
+
 	//只有当所有单位都行动过后才能重置，相当于开始下一回合
 	bool ResetAllCreature();
 
