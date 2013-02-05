@@ -404,7 +404,7 @@ Application::~Application(void)
 		 m_markUp->OutOfElem();
 	 }
 
-	if(m_markUp->FindElem("Object"))
+	if(m_markUp->FindElem("Creature"))
 	{
 		m_markUp->IntoElem();
 		while (m_markUp->FindElem("Man"))
