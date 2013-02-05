@@ -54,6 +54,7 @@ public:
 	void SetBoardOffSet(int _offLeft,int _offRight,int _offTop,int _offBottom){m_OffLeft=_offLeft;m_OffRight=_offRight;m_OffTop=_offTop;m_OffBottom=_offBottom;}
 	void SetShow(bool _show){m_Show=_show;}
 	bool IsShow(){return m_Show;}
+	void SetPos(int xpos,int ypos){m_XPos=xpos;m_YPos=ypos;}
 
 private:
 	VStringLine m_vStringLine;
@@ -62,6 +63,7 @@ private:
 	int m_LastX,m_LastY;		//下一行绘制的起始位置
 	int m_OffLeft,m_OffRight,m_OffTop,m_OffBottom;	//tip窗口上下左右预留的空白位置
 	bool m_Show;	//是否显示tip窗口
+	int m_XPos,m_YPos;	//显示tip窗口时所在的格子，用于固定tip窗口位置
 };
 
 

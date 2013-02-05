@@ -25,6 +25,7 @@ void TipWnd::Clear()
 	m_OffLeft = m_OffRight = 5;
 	m_OffTop = m_OffBottom = 5;
 	m_Show = false;
+	m_XPos = m_YPos = -1;
 }
 
 void TipWnd::AddText(const char* str,DWORD color/* =0xFFFFFFFF */,float x/* =-1 */,float y/* =-1 */,FontType type/* =DefaultType */,FontSize size,bool autoEnter/* =true */,int maxWidth)
@@ -101,7 +102,7 @@ void TipWnd::Render()
 				int height = it->y;
 				//采用一个一个字符绘制来控制文本宽度不超过tip窗口最大宽度
 				SIZE size = font->GetTextSize((*it).str.c_str());
-				if(size.cx + it->x < m_Width)
+				if(size.cx + it->x <= m_Width)
 				{
 					if(height + size.cy >= m_Height)
 						m_Height += size.cy;
@@ -132,7 +133,7 @@ void TipWnd::Render()
 						memcpy(temp,oneChar,2);
 						temp[1] = '\0';
 						charSize = font->GetTextSize(temp);
-						if(width + charSize.cx < m_Width)
+						if(width + charSize.cx <= m_Width)
 						{
 							if (height + charSize.cy >= m_Height)
 							{
@@ -172,7 +173,7 @@ void TipWnd::Render()
 				int width = m_LastX - m_OffX;
 				int height = m_LastY - m_OffY;
 				SIZE size = font->GetTextSize((*it).str.c_str());
-				if (size.cx + width < m_Width)
+				if (size.cx + width <= m_Width)
 				{
 					if(size.cy + height >= m_Height)
 						m_Height += size.cy;
@@ -199,7 +200,7 @@ void TipWnd::Render()
 						memcpy(temp,oneChar,2);
 						temp[1] = '\0';
 						charSize = font->GetTextSize(temp);
-						if(width + charSize.cx < m_Width)
+						if(width + charSize.cx <= m_Width)
 						{
 							if (height + charSize.cy >= m_Height)
 							{
@@ -242,9 +243,25 @@ void TipWnd::Update(float delta)
 {
 	if (m_Show && !m_vStringLine.empty())
 	{
-		float xpos,ypos;
-		App::sInstance().GetHGE()->Input_GetMousePos(&xpos,&ypos);
-		m_OffX = xpos  + 5 + m_OffLeft;
-		m_OffY = ypos + 5 + m_OffTop;
+		int xpos,ypos;
+// 		App::sInstance().GetHGE()->Input_GetMousePos(&xpos,&ypos);
+// 		m_OffX = xpos  + 5 + m_OffLeft;
+// 		m_OffY = ypos + 5 + m_OffTop;
+
+		//判断tip窗口应该显示在格子的哪边
+		xpos = m_XPos*MAP_RECT;
+		ypos = m_YPos*MAP_RECT;
+		if (xpos+MAP_RECT+m_Width+m_OffLeft >= MAP_RECT*MAP_WIDTH_NUM)
+		{
+			m_OffX = xpos-m_Width-m_OffRight + MAP_OFF_X;
+		}
+		else
+			m_OffX = xpos + MAP_RECT + m_OffLeft + MAP_OFF_X;
+		if (ypos + m_Height+m_OffTop >= MAP_RECT*MAP_LENGTH_NUM)
+		{
+			m_OffY = ypos - (MAP_LENGTH_NUM*MAP_RECT-ypos-m_Height-m_OffTop) + MAP_OFF_Y;
+		}
+		else
+			m_OffY = ypos + m_OffTop + MAP_OFF_Y;
 	}
 }

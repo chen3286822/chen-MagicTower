@@ -59,9 +59,12 @@ void CreatureManager::ShowCreatureInfo()
 		//得到单位，显示其信息
 		char temp[256] = {0};
 		TipWnd::sInstance().Clear();
-		sprintf(temp," ID: %d",cha->GetID());
+		sprintf(temp," ID   : %d",cha->GetID());
+		TipWnd::sInstance().AddText(temp,0xFFFFFFFF,-1,-1,MSYaHei,FontMiddle);
+		sprintf(temp," 坐标 : %d , %d",cha->GetBlock().xpos,cha->GetBlock().ypos);
 		TipWnd::sInstance().AddText(temp,0xFFFFFFFF,-1,-1,MSYaHei,FontMiddle);
 		TipWnd::sInstance().SetShow(true);
+		TipWnd::sInstance().SetPos(block.xpos,block.ypos);
 	}
 	else
 	{
