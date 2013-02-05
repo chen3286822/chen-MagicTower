@@ -11,9 +11,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{A706D22B-12B0-481C-A65D-BB21A5C7C6F1}</ProjectGuid>
-    <RootNamespace>魔塔地图编辑器</RootNamespace>
+    <ProjectGuid>{56E29226-8D54-4191-BAED-494300413E86}</ProjectGuid>
+    <RootNamespace>魔塔</RootNamespace>
     <Keyword>Win32Proj</Keyword>
+    <ProjectName>MagicTower</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -64,14 +65,13 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <AdditionalDependencies>hge.lib;hgehelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <IgnoreSpecificDefaultLibraries>libc.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
+      <IgnoreSpecificDefaultLibraries>libc.lib;libcmtd.lib</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -95,26 +95,29 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Application.cpp" />
+    <ClCompile Include="App.cpp" />
+    <ClCompile Include="Character.cpp" />
     <ClCompile Include="commonTools.cpp" />
+    <ClCompile Include="CreatureManager.cpp" />
+    <ClCompile Include="FontManager.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MapManager.cpp" />
     <ClCompile Include="Markup.cpp" />
-    <ClCompile Include="PictureController.cpp" />
+    <ClCompile Include="TexManager.cpp" />
+    <ClCompile Include="TipWnd.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Application.h" />
+    <ClInclude Include="App.h" />
+    <ClInclude Include="Character.h" />
     <ClInclude Include="commonTools.h" />
+    <ClInclude Include="CreatureManager.h" />
+    <ClInclude Include="FontManager.h" />
+    <ClInclude Include="GfxFont.h" />
+    <ClInclude Include="MapManager.h" />
     <ClInclude Include="Markup.h" />
-    <ClInclude Include="PictureController.h" />
-    <ClInclude Include="Resource.h" />
     <ClInclude Include="Singleton.h" />
-    <ClInclude Include="targetver.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="resource.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="magictower.ico" />
+    <ClInclude Include="TexManager.h" />
+    <ClInclude Include="TipWnd.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

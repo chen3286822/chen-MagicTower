@@ -25,7 +25,6 @@ bool App::SystemInit()
 	hge = hgeCreate(HGE_VERSION);
 
 	// Set up log file, frame function, render function and window title
-	hge->System_SetState(HGE_LOGFILE, "MagicTowerlog");
 	hge->System_SetState(HGE_FRAMEFUNC, update);
 	hge->System_SetState(HGE_RENDERFUNC,render);
 	hge->System_SetState(HGE_TITLE, "Magic Tower");
@@ -60,8 +59,8 @@ bool App::LoadResource()
 	char pBuf[MAX_PATH];
 	char pathTex[MAX_PATH],pathMap[MAX_PATH],pathMaps[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH,pBuf);
-	sprintf(pathTex,"%s\\Ä§ËþµØÍ¼±à¼­Æ÷\\Debug\\res\\tex",pBuf);
-	sprintf(pathMap,"%s\\Ä§ËþµØÍ¼±à¼­Æ÷\\Debug\\res\\map",pBuf);
+	sprintf(pathTex,"%s\\res\\tex",pBuf);
+	sprintf(pathMap,"%s\\res\\map",pBuf);
 	sprintf(pathMaps,"%s\\res\\Maps",pBuf);
 	if(!TexManager::sInstance().LoadTex(pathTex) ||
 		!TexManager::sInstance().LoadMap(pathMap) ||

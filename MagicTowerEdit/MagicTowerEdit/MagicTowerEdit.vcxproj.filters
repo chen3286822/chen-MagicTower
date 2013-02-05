@@ -4,9 +4,6 @@
     <ClCompile Include="Application.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="commonTools.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Markup.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -16,11 +13,11 @@
     <ClCompile Include="PictureController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\MagicTower\MagicTower\commonTools.cpp">
+      <Filter>Required Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="commonTools.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Application.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -52,6 +49,9 @@
     </Filter>
     <Filter Include="Source Files">
       <UniqueIdentifier>{96ccd7f0-4f02-49c0-89e4-2d7e4a78cdca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Required Files">
+      <UniqueIdentifier>{ad4cd939-34d4-4622-8f38-aecfb12d1d23}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

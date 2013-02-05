@@ -1,19 +1,32 @@
 #ifndef COMMON_TOOLS_H
 #define COMMON_TOOLS_H
+
+#pragma warning(disable: 4244)
+#pragma warning(disable: 4018)
+
 #include <windows.h>
 #include <CommDlg.h>
 #include <Shlobj.h.>
 #include <hge.h>
+#include <hgesprite.h>
+#include <hgeanim.h>
 #include <hgeguictrls.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <vector>
+#include <map>
+#include <algorithm>
 #include "Singleton.h"
-#include "Resource.h"
+#include "MagicTowerEdit\MagicTowerEdit\Resource.h"
 
 
 #include "Markup.h"
+#include <io.h>
+
+
+
+#define LEVEL_NUM 20
 
 
 
@@ -39,6 +52,9 @@
 #define MAP_WIDTH		MAP_RECT*MAP_WIDTH_NUM
 #define MAP_LENGTH		MAP_RECT*MAP_LENGTH_NUM	
 
+#define KEY_NUM 36
+
+
 //阵营
 enum Camp
 {
@@ -46,6 +62,7 @@ enum Camp
 	Enemy,
 	Neutral,
 };
+
 
 struct  tagMapObject
 {
@@ -58,16 +75,65 @@ struct  tagMapObject
 };
 typedef struct tagMapObject MapObject;
 
+
+enum Direction
+{
+	None,
+	DOWN,
+	LEFT,
+	RIGHT,
+	UP,
+};
+
+enum LBUTTON_STATE
+{
+	LBUTTON_DOWN,
+	LBUTTON_UP,
+	LBUTTON_HOLD,
+	LBUTTON_NULL
+};
+
+enum KEY_STATE
+{
+	KEY_DOWN,
+	KEY_UP,
+	KEY_HOLD,
+	KEY_NULL,
+};
+
+enum FontType
+{
+	SongTi = 0,
+	Calibri,
+	MSYaHei,
+	SystemFont,
+
+
+	DefaultType = MSYaHei,
+
+	SystemFontNum = SystemFont,
+};
+
+enum FontSize
+{
+	FontSmall = 10,
+	FontMiddle = 12,
+	FontBig = 14,
+
+	FontSizeNum = 3,
+};
+
 enum
 {
-	Road			=		0x0000004,		//路面	0x0000100
-	River			=		0x0000008,		//河流	0x0001000
-	Mountain		=		0x000000C,		//山地	0x0001100
-	HillTop			=		0x0000010,		//山顶	0x0010000
-	CityWall		=		0x0000014,		//城墙	0x0010100
-	Forest			=		0x0000018,		//树林	0x0011000
-	Desert			=		0x000001C,		//沙漠	0x0011100
-	City				=		0x0000020,		//城内	0x0100000
+	Road			=		0x0000004,		//路面	0000100b
+	River			=		0x0000008,		//河流	0001000b
+	Mountain		=		0x000000C,		//山地	0001100b
+	HillTop			=		0x0000010,		//山顶	0010000b
+	CityWall		=		0x0000014,		//城墙	0010100b
+	Forest			=		0x0000018,		//树林	0011000b
+	Desert			=		0x000001C,		//沙漠	0011100b
+	CityRoad		=		0x0000020,		//城内道路	0100000b
+	City				=		0x0000024,		//城内	0100100b
 };
 
 enum		//表示地图格子的属性位
@@ -79,12 +145,13 @@ enum		//表示地图格子的属性位
 
 #define IsCanStandOn(a)	(((a) & CanStandOn) == 1)		//测试是否可以站立
 #define setStandOn(a,b)		(a = ((b)==1 ? (a) | 0x01 : (a) & 0xFFFFFFFE))		//设定该格子是否可以站立
-//#define IsOccupied(a)			((IsCanStandOn(a)) && (((a) & BeOccupied) == 1))		//测试是否正在被单位占用
 #define IsOccupied(a)			(IsCanStandOn(a)==0 || (IsCanStandOn(a) && (((a) & BeOccupied) == 1)))		//测试是否正在被单位占用，不可通过同样视为占用
 #define setOccupied(a,b)	(a = (IsCanStandOn(a) ? ((b)==1?(a)|0x02:(a)&0xFFFFFFFD) : a))	//设定该格子是否正在被单位占用
 #define getTerrain(a)			((a) & WhatTerrain)		//返回该格子的地形类别
 #define setTerrain(a,b)		(a = (((a) & 0xFFFFFFC3) | (b)))	//设定该格子的地形类别
-#define IsCanCross(a)		((IsOccupied(a) || (getTerrain(a) & HillTop) || (getTerrain(a) & CityWall))? 0:1)	//测试格子是否可以通过，包括单位以及地形的影响
+#define IsCanCross(a)		((IsOccupied(a) || (getTerrain(a) == HillTop) || (getTerrain(a) == CityWall))? 0:1)	//测试格子是否可以通过，包括单位以及地形的影响
+
+#define gSafeDelete(X)		{	if((X)){delete (X); (X) = NULL;} }
 
 struct tagBlock
 {
@@ -132,14 +199,11 @@ struct tagConfig
 };
 typedef struct tagConfig Config;
 
-enum LBUTTON_STATE
-{
-	LBUTTON_DOWN,
-	LBUTTON_UP,
-	LBUTTON_HOLD,
-	LBUTTON_NULL
-};
-LBUTTON_STATE getLButtonState(HGE* hge);
 
-#define gSafeDelete(X)		{	if((X)){delete (X); (X) = NULL;} }
+KEY_STATE g_getKeyState(HGE* hge,int Key);
+void g_getFiles( std::string path, std::map<std::string,std::string>& files,char* type,int maxFileNum,bool useDefaultName);
+int g_getKeyNum(int Key);	//根据按键编号取得该按键在数组中的位置
+void g_CTW(const char* text,wchar_t* out);	//char* to wchar_t*
+LBUTTON_STATE g_getLButtonState(HGE* hge);
+
 #endif

@@ -1,7 +1,7 @@
 #ifndef	APPLICATION_H
 #define APPLICATION_H
 
-#include "commonTools.h"
+#include "MagicTower\MagicTower\commonTools.h"
 
 class PictureController;
 

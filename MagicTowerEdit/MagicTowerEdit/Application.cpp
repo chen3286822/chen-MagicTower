@@ -1,7 +1,6 @@
 #include "Application.h"
 #include "PictureController.h"
 
-
 bool update();
 bool render();
 
@@ -47,7 +46,6 @@ Application::~Application(void)
 	hge = hgeCreate(HGE_VERSION);
 
 	// Set up log file, frame function, render function and window title
-	hge->System_SetState(HGE_LOGFILE, "MagicTowerEditor.log");
 	hge->System_SetState(HGE_FRAMEFUNC, update);
 	hge->System_SetState(HGE_RENDERFUNC,render);
 	hge->System_SetState(HGE_TITLE, "Magic Tower Editor");
@@ -91,7 +89,11 @@ Application::~Application(void)
 	 m_Blocks.resize(MAP_WIDTH_NUM*MAP_LENGTH_NUM);
 //	 m_vMapObject.clear();
 
-	 tex = hge->Texture_Load("res/tex/1.png");
+	 char buffer[MAX_PATH];
+	 char path[MAX_PATH];
+	 GetCurrentDirectory(MAX_PATH,buffer);
+	 sprintf(path,"%s\\res\\tex\\1.png",buffer);
+	 tex = hge->Texture_Load(path);
 	 nextButton = new hgeGUIButton(ID_CTRL_BTN_1,600,48,48,64,tex,0,0);
 	 lastButton = new hgeGUIButton(ID_CTRL_BTN_2,664,48,48,64,tex,0,0);
 	 pic = new PictureController(hge,600,100,800,550,18);
@@ -170,20 +172,24 @@ Application::~Application(void)
 		 setNext(true);
 		 gui->Leave();
 	 }
-
 	 updateMap();
 	 return false;
  }
 
  void Application::updateMap()
  {
-	 if(getLButtonState(hge) == LBUTTON_DOWN &&
+	 if(g_getLButtonState(hge) == LBUTTON_DOWN &&
 		 m_mouseSpr!=NULL)
 	 {
 		 float xpos,ypos;
 		 hge->Input_GetMousePos(&xpos,&ypos);
 		 if(xpos >= MAP_OFF_X && xpos < MAP_OFF_X+MAP_WIDTH && ypos >= MAP_OFF_Y && ypos < MAP_OFF_Y+MAP_LENGTH)
 		 {
+			 if (m_markUp==NULL)
+			 {
+				 MessageBox(NULL,TEXT("xml Î´³õÊ¼»¯£¬ÇëÏÈnew file"),"Error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
+				 return;
+			 }
 			 float xMap,yMap;
 			 xMap = xpos - MAP_OFF_X;
 			 yMap = ypos - MAP_OFF_Y;

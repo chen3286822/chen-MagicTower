@@ -1,5 +1,5 @@
 #include "PictureController.h"
-#include "commonTools.h"
+#include "MagicTower\MagicTower\commonTools.h"
 #include "Application.h"
 
 
@@ -278,15 +278,16 @@ bool PictureController::MouseLButton(bool bDown)
 void PictureController::loadTexList()
 {
 	int picId = 0;
-	char buffer[20];
-	char path[20];
+	char buffer[MAX_PATH];
+	char path[MAX_PATH];
+	GetCurrentDirectory(MAX_PATH,buffer);
 	for(int i=1;i<=m_PicNum;i++)
 	{
-		strcpy(path,"res/tex/");
-		picId = i;
-		itoa(i,buffer,10);
-		strcat(path,buffer);
-		strcat(path,".png");
+		sprintf(path,"%s\\res\\tex\\%d.png",buffer,i);
+// 		picId = i;
+// 		itoa(i,buffer,10);
+// 		strcat(path,buffer);
+// 		strcat(path,".png");
 		m_TexList[i-1] = m_hge->Texture_Load(path);
 		m_mTexNum[m_TexList[i-1]] = i-1;
 		memset(path,0,20);
