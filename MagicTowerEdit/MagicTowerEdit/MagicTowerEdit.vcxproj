@@ -97,14 +97,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\MagicTower\MagicTower\commonTools.cpp" />
+    <ClCompile Include="..\..\MagicTower\MagicTower\Markup.cpp" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Markup.cpp" />
     <ClCompile Include="PictureController.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
-    <ClInclude Include="Markup.h" />
     <ClInclude Include="PictureController.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Singleton.h" />

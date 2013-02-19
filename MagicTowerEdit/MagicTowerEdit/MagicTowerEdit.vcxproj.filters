@@ -4,9 +4,6 @@
     <ClCompile Include="Application.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Markup.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -16,12 +13,12 @@
     <ClCompile Include="..\..\MagicTower\MagicTower\commonTools.cpp">
       <Filter>Required Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\MagicTower\MagicTower\Markup.cpp">
+      <Filter>Required Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Markup.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PictureController.h">
