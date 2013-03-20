@@ -1,9 +1,13 @@
 #ifndef GDIFONT_H
 #define GDIFONT_H
 
-#include <hgesprite.h>
-#include <atlbase.h>
-#include <stdio.h>
+#include "commonTools.h"
+//#ifdef _WINDOWS_
+//#undef _WINDOWS_
+//#endif
+
+
+
 #pragma comment(linker,"/NODEFAULTLIB:libc.lib")
 
 	__inline float _floor(float f)

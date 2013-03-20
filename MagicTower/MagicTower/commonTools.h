@@ -4,13 +4,21 @@
 #pragma warning(disable: 4244)
 #pragma warning(disable: 4018)
 
+//#define MARKUP_STL
 #include <windows.h>
+//#ifdef _WINDOWS_
+//#undef _WINDOWS_
+ #include <atlbase.h>
+//#endif
+
+
 #include <CommDlg.h>
 #include <Shlobj.h.>
 #include <hge.h>
 #include <hgesprite.h>
 #include <hgeanim.h>
 #include <hgeguictrls.h>
+#include <string>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

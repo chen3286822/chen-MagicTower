@@ -1,5 +1,6 @@
-#include "FontManager.h"
 #include "GfxFont.h"
+#include "FontManager.h"
+
 
 //нд╪Ч╪сть
 MFontTable FontManager::sCreateFileTable()
