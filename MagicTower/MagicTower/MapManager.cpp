@@ -7,10 +7,10 @@ Map::Map()
 {
 	m_vObjList.clear();
 	m_vBlocks.clear();
-	m_ilevel = 0;
-	m_width = 0;
-	m_length = 0;
-	m_mapSpr = new hgeSprite(0,0,0,0,0);
+	m_nlevel = 0;
+	m_nWidth = 0;
+	m_nLength = 0;
+	m_pMapSpr = new hgeSprite(0,0,0,0,0);
 }
 
 Map::~Map()
@@ -20,7 +20,7 @@ Map::~Map()
 		gSafeDelete((*it)->spr);
 		gSafeDelete(*it);
 	}
-	gSafeDelete(m_mapSpr);
+	gSafeDelete(m_pMapSpr);
 }
 
 void Map::Render()
@@ -28,9 +28,9 @@ void Map::Render()
 	for (std::vector<Block>::iterator it=m_vBlocks.begin();it!=m_vBlocks.end();it++)
 	{
 		blockInfo _blockInfo(TexManager::sInstance().GetBlock(getTerrain(it->attri)));
-		m_mapSpr->SetTexture(_blockInfo.tex);
-		m_mapSpr->SetTextureRect(_blockInfo.x,_blockInfo.y,_blockInfo.width,_blockInfo.height);
-		m_mapSpr->RenderStretch(MAP_OFF_X +MAP_RECT*(*it).xpos,MAP_OFF_Y+MAP_RECT*(*it).ypos,MAP_OFF_X +MAP_RECT*(*it).xpos+MAP_RECT,MAP_OFF_Y+MAP_RECT*(*it).ypos+MAP_RECT);
+		m_pMapSpr->SetTexture(_blockInfo.m_iTex);
+		m_pMapSpr->SetTextureRect(_blockInfo.m_fX,_blockInfo.m_fY,_blockInfo.m_fWidth,_blockInfo.m_fHeight);
+		m_pMapSpr->RenderStretch(MAP_OFF_X +MAP_RECT*(*it).xpos,MAP_OFF_Y+MAP_RECT*(*it).ypos,MAP_OFF_X +MAP_RECT*(*it).xpos+MAP_RECT,MAP_OFF_Y+MAP_RECT*(*it).ypos+MAP_RECT);
 	}
 
 	for (std::vector<MapObject*>::iterator it=m_vObjList.begin();it!=m_vObjList.end();it++)
@@ -73,14 +73,14 @@ void Map::SetBlockOccupied(int xpos,int ypos)
 MapManager::MapManager(void)
 {
 	m_vMaps.clear();
-	m_markUp = NULL;
-	m_iCurrentLevel = 0;
+	m_pMarkUp = NULL;
+	m_nCurrentLevel = 0;
 }
 
 
 MapManager::~MapManager(void)
 {
-	gSafeDelete(m_markUp);
+	gSafeDelete(m_pMarkUp);
 	for (std::vector<Map*>::iterator it=m_vMaps.begin();it!=m_vMaps.end();it++)
 	{
 		gSafeDelete((*it));
@@ -89,14 +89,14 @@ MapManager::~MapManager(void)
 
 bool MapManager::LoadMaps(std::string path)
 {
-	if(m_markUp==NULL)
-		m_markUp = new CMarkup;
+	if(m_pMarkUp==NULL)
+		m_pMarkUp = new CMarkup;
 	std::map<std::string,std::string> files;
 	g_getFiles(path,files,".xml",LEVEL_NUM,true);
 	
 	for (std::map<std::string,std::string>::iterator mit=files.begin();mit!=files.end();mit++)
 	{
-		m_markUp->Load(mit->first);
+		m_pMarkUp->Load(mit->first);
 		Map* level = new Map;
 		int _level = 0;
 		int _width = 0,_length = 0;
@@ -106,12 +106,12 @@ bool MapManager::LoadMaps(std::string path)
 		int _ypos = 0;
 		Camp _camp = Neutral;
 		int num = 0;
-		m_markUp->ResetMainPos();
-		if(m_markUp->FindElem("map"))
+		m_pMarkUp->ResetMainPos();
+		if(m_pMarkUp->FindElem("map"))
 		{
-			_level = atoi(m_markUp->GetAttrib("level").c_str());
-			_width = atoi(m_markUp->GetAttrib("width").c_str());
-			_length = atoi(m_markUp->GetAttrib("length").c_str());
+			_level = atoi(m_pMarkUp->GetAttrib("level").c_str());
+			_width = atoi(m_pMarkUp->GetAttrib("width").c_str());
+			_length = atoi(m_pMarkUp->GetAttrib("length").c_str());
 			if(_level!=0 && _width!=0 && _length!=0)
 			{
 				level->SetLevel(_level);
@@ -120,16 +120,16 @@ bool MapManager::LoadMaps(std::string path)
 			else
 				return false;
 		}
-		m_markUp->IntoElem();
-		if(m_markUp->FindElem("Block"))
+		m_pMarkUp->IntoElem();
+		if(m_pMarkUp->FindElem("Block"))
 		{
-			m_markUp->IntoElem();
+			m_pMarkUp->IntoElem();
 			int _type = 0;
-			while(m_markUp->FindElem("Terrain"))
+			while(m_pMarkUp->FindElem("Terrain"))
 			{
-				_type = atoi(m_markUp->GetAttrib("type").c_str());
-				_xpos = atoi(m_markUp->GetAttrib("xpos").c_str());
-				_ypos = atoi(m_markUp->GetAttrib("ypos").c_str());
+				_type = atoi(m_pMarkUp->GetAttrib("type").c_str());
+				_xpos = atoi(m_pMarkUp->GetAttrib("xpos").c_str());
+				_ypos = atoi(m_pMarkUp->GetAttrib("ypos").c_str());
 				Block _block(_xpos,_ypos);
 // 				setTerrain(_block.attri,_type);
 // 				if (_type == HillTop || _type == CityWall)
@@ -140,23 +140,23 @@ bool MapManager::LoadMaps(std::string path)
 				level->AddBlock(_block);
 			}
 			std::sort(level->GetVBlock().begin(),level->GetVBlock().end(),Block::less_than);
-			m_markUp->OutOfElem();
+			m_pMarkUp->OutOfElem();
 		}
 		m_vMaps.push_back(level);
 
-		if(m_markUp->FindElem("Creature"))
+		if(m_pMarkUp->FindElem("Creature"))
 		{
-			m_markUp->IntoElem();
-			while(m_markUp->FindElem("Man"))
+			m_pMarkUp->IntoElem();
+			while(m_pMarkUp->FindElem("Man"))
 			{
-				_ID = atoi(m_markUp->GetAttrib("ID").c_str());
-				_Action = atoi(m_markUp->GetAttrib("Action").c_str());
-				_xpos = atoi(m_markUp->GetAttrib("xpos").c_str());
-				_ypos = atoi(m_markUp->GetAttrib("ypos").c_str());
-				_camp = (Camp)(atoi(m_markUp->GetAttrib("camp").c_str()));
+				_ID = atoi(m_pMarkUp->GetAttrib("ID").c_str());
+				_Action = atoi(m_pMarkUp->GetAttrib("Action").c_str());
+				_xpos = atoi(m_pMarkUp->GetAttrib("xpos").c_str());
+				_ypos = atoi(m_pMarkUp->GetAttrib("ypos").c_str());
+				_camp = (Camp)(atoi(m_pMarkUp->GetAttrib("camp").c_str()));
 
 				Character* cha = new Character;
-				MapObject* mo = new MapObject;
+//				MapObject* mo = new MapObject;
 				cha->Init(TexManager::sInstance().GetTex(_ID),level->GetLevel(),_ID,num,_Action,Block(_xpos,_ypos));
 				//地图格子由于单位生成，属性变化移动到单位创建中完成
 // 				Block* theBlock = level->GetBlock(_xpos,_ypos);
@@ -172,7 +172,7 @@ bool MapManager::LoadMaps(std::string path)
 				}
 				num++;
 			}
-			m_markUp->OutOfElem();
+			m_pMarkUp->OutOfElem();
 		}	
 	}
 
@@ -199,10 +199,10 @@ void MapManager::Render()
 {
 	static int oldLevel = -1;
 	static Map* currentMap = NULL;
-	if (oldLevel != m_iCurrentLevel)
+	if (oldLevel != m_nCurrentLevel)
 	{
-		currentMap = GetMap(m_iCurrentLevel);
-		oldLevel = m_iCurrentLevel;
+		currentMap = GetMap(m_nCurrentLevel);
+		oldLevel = m_nCurrentLevel;
 	}
 	else
 	{
@@ -215,10 +215,10 @@ void MapManager::Update()
 {
 	static int oldLevel = -1;
 	static Map* currentMap = NULL;
-	if (oldLevel != m_iCurrentLevel)
+	if (oldLevel != m_nCurrentLevel)
 	{
-		currentMap = GetMap(m_iCurrentLevel);
-		oldLevel = m_iCurrentLevel;
+		currentMap = GetMap(m_nCurrentLevel);
+		oldLevel = m_nCurrentLevel;
 	}
 	else
 	{

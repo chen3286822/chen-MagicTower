@@ -22,26 +22,26 @@ App::~App(void)
 
 bool App::SystemInit()
 {
-	hge = hgeCreate(HGE_VERSION);
+	m_pHge = hgeCreate(HGE_VERSION);
 
 	// Set up log file, frame function, render function and window title
-	hge->System_SetState(HGE_FRAMEFUNC, update);
-	hge->System_SetState(HGE_RENDERFUNC,render);
-	hge->System_SetState(HGE_TITLE, "Magic Tower");
-	hge->System_SetState(HGE_HIDEMOUSE,false);
+	m_pHge->System_SetState(HGE_FRAMEFUNC, update);
+	m_pHge->System_SetState(HGE_RENDERFUNC,render);
+	m_pHge->System_SetState(HGE_TITLE, "Magic Tower");
+	m_pHge->System_SetState(HGE_HIDEMOUSE,false);
 
 	// Set up video mode
-	hge->System_SetState(HGE_WINDOWED, true);
-	hge->System_SetState(HGE_SCREENWIDTH, APP_WIDTH);
-	hge->System_SetState(HGE_SCREENHEIGHT, APP_HEIGHT);
-	hge->System_SetState(HGE_SCREENBPP, 32);
-	hge->System_SetState(HGE_ZBUFFER,true);
+	m_pHge->System_SetState(HGE_WINDOWED, true);
+	m_pHge->System_SetState(HGE_SCREENWIDTH, APP_WIDTH);
+	m_pHge->System_SetState(HGE_SCREENHEIGHT, APP_HEIGHT);
+	m_pHge->System_SetState(HGE_SCREENBPP, 32);
+	m_pHge->System_SetState(HGE_ZBUFFER,true);
 
-	if(hge->System_Initiate())
+	if(m_pHge->System_Initiate())
 		return true;
 	else
 	{
-		MessageBox(NULL, hge->System_GetErrorMessage(), "Error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
+		MessageBox(NULL, m_pHge->System_GetErrorMessage(), "Error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
 		return false;
 	}
 }
@@ -87,8 +87,8 @@ bool App::LoadResource()
 
 void App::Run()
 {
-	hge->System_Start();
-	hge->Random_Seed();
+	m_pHge->System_Start();
+	m_pHge->Random_Seed();
 }
 
 void App::FreeResource()
@@ -104,14 +104,14 @@ void App::FreeResource()
 
 void App::CleanUp()
 {
-	hge->System_Shutdown();
-	hge->Release();
+	m_pHge->System_Shutdown();
+	m_pHge->Release();
 }
 
 bool App::AppRender()
 {
-	hge->Gfx_Clear(0X00000000);
-	hge->Gfx_BeginScene();
+	m_pHge->Gfx_Clear(0X00000000);
+	m_pHge->Gfx_BeginScene();
 
 	MapManager::sInstance().Render();
 	DrawMouseRect();
@@ -119,14 +119,14 @@ bool App::AppRender()
 	player->Render();
 	TipWnd::sInstance().Render();
 
-	hge->Gfx_EndScene();
+	m_pHge->Gfx_EndScene();
 	return false;
 }
 
 void App::DrawMouseRect()
 {
-	if(m_Block.xpos!=-1 && m_Block.ypos!=-1)
-		DrawSmallRect(m_Block);
+	if(m_iBlock.xpos!=-1 && m_iBlock.ypos!=-1)
+		DrawSmallRect(m_iBlock);
 }
 
 void App::DrawSmallRect(Block block)
@@ -154,40 +154,40 @@ void App::DrawSmallRect(Block block)
 	}
 	quad.blend = BLEND_DEFAULT_Z;
 	quad.tex = 0;
-	hge->Gfx_RenderQuad(&quad);
+	m_pHge->Gfx_RenderQuad(&quad);
 }
 
 bool App::AppUpdate()
 {
-	if (hge->Input_GetKeyState(HGEK_ESCAPE))
+	if (m_pHge->Input_GetKeyState(HGEK_ESCAPE))
 		return true;
 
 	float xpos,ypos;
-	hge->Input_GetMousePos(&xpos,&ypos);
+	m_pHge->Input_GetMousePos(&xpos,&ypos);
 	if(xpos >= MAP_OFF_X && xpos < MAP_OFF_X+MAP_WIDTH && ypos >= MAP_OFF_Y && ypos < MAP_OFF_Y+MAP_LENGTH)
 	{
 		float xMap,yMap;
 		xMap = xpos - MAP_OFF_X;
 		yMap = ypos - MAP_OFF_Y;
-		m_Block.xpos = (int)(xMap/MAP_RECT);
-		m_Block.ypos = (int)(yMap/MAP_RECT);
+		m_iBlock.xpos = (int)(xMap/MAP_RECT);
+		m_iBlock.ypos = (int)(yMap/MAP_RECT);
 	}
 	else
 	{
-		m_Block.xpos = -1;
-		m_Block.ypos = -1;
+		m_iBlock.xpos = -1;
+		m_iBlock.ypos = -1;
 	}
 
-	if (g_getKeyState(hge,HGEK_W)==KEY_DOWN)
+	if (g_getKeyState(m_pHge,HGEK_W)==KEY_DOWN)
 		player->Move(UP);
-	else if (g_getKeyState(hge,HGEK_S)==KEY_DOWN)
+	else if (g_getKeyState(m_pHge,HGEK_S)==KEY_DOWN)
 		player->Move(DOWN);
-	else if (g_getKeyState(hge,HGEK_A)==KEY_DOWN)
+	else if (g_getKeyState(m_pHge,HGEK_A)==KEY_DOWN)
 		player->Move(LEFT);
-	else if (g_getKeyState(hge,HGEK_D)==KEY_DOWN)
+	else if (g_getKeyState(m_pHge,HGEK_D)==KEY_DOWN)
 		player->Move(RIGHT);
 
-	float dt = hge->Timer_GetDelta();
+	float dt = m_pHge->Timer_GetDelta();
 	player->Update(dt);
 
 	CreatureManager::sInstance().Strategy();

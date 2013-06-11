@@ -46,11 +46,11 @@ void FontManager::InitFont()
 	FontAttr attr;
 	for (int j=0;j<SystemFontNum;j++)
 	{
-		attr.type = (FontType)j;
+		attr.m_eType = (FontType)j;
 		for (int i=0;i<FontSizeNum;i++)
 		{
-			attr.size = FontSmall + 2*i;
-			GfxFont* font = new GfxFont(sm_mSystemFontTable[(FontType)j].c_str(),attr.size);
+			attr.m_nSize = FontSmall + 2*i;
+			GfxFont* font = new GfxFont(sm_mSystemFontTable[(FontType)j].c_str(),attr.m_nSize);
 			m_mFonts[attr] = font;
 		}
 	}
@@ -76,12 +76,12 @@ bool FontManager::LoadFonts(std::string path)
  			{
  				if(strcmp(it->first.c_str(),strID)==0)
  				{
- 					attr.type = it->second;
+ 					attr.m_eType = it->second;
  					//载入字体，包含数种大小
  					for (int i=0;i<FontSizeNum;i++)
  					{
- 						attr.size = FontSmall + 2*i;
- 						GfxFont* font = new GfxFont(mit->first.c_str(),attr.size);
+ 						attr.m_nSize = FontSmall + 2*i;
+ 						GfxFont* font = new GfxFont(mit->first.c_str(),attr.m_nSize);
  						m_mFonts[attr] = font;
  					}
  				}
@@ -97,7 +97,7 @@ GfxFont* FontManager::GetFont(FontAttr _attr)
 {
 	for (MFont::iterator mit=m_mFonts.begin();mit!=m_mFonts.end();mit++)
 	{
-		if(mit->first.size == _attr.size && mit->first.type== _attr.type)
+		if(mit->first.m_nSize == _attr.m_nSize && mit->first.m_eType== _attr.m_eType)
 			return mit->second;
 	}
 	return NULL;

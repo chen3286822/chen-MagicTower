@@ -6,24 +6,24 @@
 class GfxFont;
 typedef struct tagFontAttr
 {
-	FontType type;
-	int size;
+	FontType m_eType;
+	int m_nSize;
 	tagFontAttr()
 	{
-		type = DefaultType;
-		size = 10;
+		m_eType = DefaultType;
+		m_nSize = 10;
 	}
 	tagFontAttr(FontType _type,FontSize _size)
 	{
-		type = _type;
-		size = _size;
+		m_eType = _type;
+		m_nSize = _size;
 	}
 	bool operator <(const tagFontAttr& fa) const
 	{
-		if(type < fa.type)
+		if(m_eType < fa.m_eType)
 			return true;
-		else if(type == fa.type)
-			return size<fa.size;
+		else if(m_eType == fa.m_eType)
+			return m_nSize<fa.m_nSize;
 		else
 			return false;
 	}

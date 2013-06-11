@@ -16,13 +16,13 @@ public:
 	bool AppUpdate();
 	bool AppRender();
 
-	inline HGE* App::GetHGE(){return hge;}
+	inline HGE* App::GetHGE(){return m_pHge;}
 
-	Block GetMouseBlock(){return m_Block;}
+	Block GetMouseBlock(){return m_iBlock;}
 
 private:
-	HGE* hge;
-	Block m_Block;	//鼠标所在block
+	HGE* m_pHge;
+	Block m_iBlock;	//鼠标所在block
 
 	//画出鼠标位置的方格
 	void DrawMouseRect();

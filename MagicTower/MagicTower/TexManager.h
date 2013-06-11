@@ -3,27 +3,27 @@
 
 struct blockInfo
 {
-	float x,y;
-	float width;
-	float height;
-	HTEXTURE tex;
+	float m_fX,m_fY;
+	float m_fWidth;
+	float m_fHeight;
+	HTEXTURE m_iTex;
 
 	blockInfo()
 	{
-		x = 0;
-		y = 0;
-		width = 0;
-		height = 0;
-		tex = 0;
+		m_fX = 0;
+		m_fY = 0;
+		m_fWidth = 0;
+		m_fHeight = 0;
+		m_iTex = 0;
 	}
 
 	blockInfo(float _x,float _y,float _width,float _height,HTEXTURE _tex)
 	{
-		x = _x;
-		y = _y;
-		width = _width;
-		height = _height;
-		tex = _tex;
+		m_fX = _x;
+		m_fY = _y;
+		m_fWidth = _width;
+		m_fHeight = _height;
+		m_iTex = _tex;
 	}
 };
 

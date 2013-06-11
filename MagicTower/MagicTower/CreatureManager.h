@@ -33,13 +33,13 @@ public:
 
 	//AI行动策略
 	void Strategy();
-	int	GetCurrentActionCreature(){return m_ActionCreatureNum;}
+	int	GetCurrentActionCreature(){return m_nActionCreatureNum;}
 
 private:
 	VCharacter  m_VFriendList;
 	VCharacter	m_VEnemyList;
 
-	int m_ActionCreatureNum;	//表示当前正在行动中的单位号，没有表示为-1
+	int m_nActionCreatureNum;	//表示当前正在行动中的单位号，没有表示为-1
 };
 
 

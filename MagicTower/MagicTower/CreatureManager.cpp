@@ -7,7 +7,7 @@ CreatureManager::CreatureManager()
 {
 	m_VFriendList.clear();
 	m_VEnemyList.clear();
-	m_ActionCreatureNum = -1;
+	m_nActionCreatureNum = -1;
 }
 
 CreatureManager::~CreatureManager()
@@ -31,11 +31,11 @@ void CreatureManager::Update(float delta)
 	for (VCharacter::iterator it=m_VFriendList.begin();it!=m_VFriendList.end();it++)
 		(*it)->Update(delta);
 
-	if(m_ActionCreatureNum != -1)
+	if(m_nActionCreatureNum != -1)
 	{
-		Character* cha = GetEnemy(m_ActionCreatureNum);
+		Character* cha = GetEnemy(m_nActionCreatureNum);
 		if(cha->GetFinish())
-			m_ActionCreatureNum = -1;
+			m_nActionCreatureNum = -1;
 	}
 	ShowCreatureInfo();
 }
@@ -77,7 +77,7 @@ void CreatureManager::ShowCreatureInfo()
 void CreatureManager::Strategy()
 {
 	//当前有单位行动中，等待其行动完成
-	if(m_ActionCreatureNum != -1)
+	if(m_nActionCreatureNum != -1)
 		return;
 
 	ResetAllCreature();
@@ -85,7 +85,7 @@ void CreatureManager::Strategy()
 	Character* enemy = GetNextEnemy();
 	if(enemy == NULL)
 		return;
-	m_ActionCreatureNum = enemy->GetNum();
+	m_nActionCreatureNum = enemy->GetNum();
 	enemy->Move((Direction)(App::sInstance().GetHGE()->Random_Int(0,4)));
 }
 

@@ -12,10 +12,10 @@ public:
 
 	inline void AddObject(MapObject* mo){m_vObjList.push_back(mo);}
 	inline void AddBlock(Block _block){m_vBlocks.push_back(_block);}
-	inline void SetLevel(int _level){m_ilevel = _level;}
-	inline int	GetLevel(){return m_ilevel;}
-	inline void SetWidthLength(int _width,int _length){m_width = _width; m_length = _length;}
-	inline void GetWidthLength(int& _width,int& _length){_width = m_width; _length = m_length;}
+	inline void SetLevel(int _level){m_nlevel = _level;}
+	inline int	GetLevel(){return m_nlevel;}
+	inline void SetWidthLength(int _width,int _length){m_nWidth = _width; m_nLength = _length;}
+	inline void GetWidthLength(int& _width,int& _length){_width = m_nWidth; _length = m_nLength;}
 
 	//根据位于地图的位置取得当前位置的物件和地图块
 	MapObject* GetObject(int x,int y);
@@ -27,16 +27,16 @@ public:
 	void SetBlockOccupied(int xpos,int ypos);
 
 	//为了支持stl的sort算法
-	static bool Less_than( Map* &m1, Map* &m2) {return m1->m_ilevel < m2->m_ilevel;}
+	static bool Less_than( Map* &m1, Map* &m2) {return m1->m_nlevel < m2->m_nlevel;}
 
 private:
 	std::vector<MapObject*> m_vObjList;	//代表地图上所有物件,一些静态物体
 	std::vector<Block> m_vBlocks; //代表地图上所有格子
-	int m_ilevel;
-	int m_width;
-	int m_length;
+	int m_nlevel;
+	int m_nWidth;
+	int m_nLength;
 
-	hgeSprite* m_mapSpr;
+	hgeSprite* m_pMapSpr;
 };
 
 class MapManager : public Singleton<MapManager>
@@ -47,16 +47,16 @@ public:
 
 	bool LoadMaps(std::string path);
 	Map* GetMap(int level);
-	inline Map* GetCurrentMap(){return GetMap(m_iCurrentLevel);}
+	inline Map* GetCurrentMap(){return GetMap(m_nCurrentLevel);}
 	void Render();
 	void Update();
 
 private:
 	std::vector<Map*> m_vMaps;
-	int m_iCurrentLevel;
+	int m_nCurrentLevel;
 
-	CMarkup*	m_markUp;
+	CMarkup*	m_pMarkUp;
 
-	inline void SetCurrentLevel(int _level){m_iCurrentLevel = _level;}
+	inline void SetCurrentLevel(int _level){m_nCurrentLevel = _level;}
 };
 
