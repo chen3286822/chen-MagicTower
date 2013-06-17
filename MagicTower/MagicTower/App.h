@@ -20,13 +20,13 @@ public:
 
 	Block GetMouseBlock(){return m_iBlock;}
 
+	//画出小方格
+	void DrawSmallRect(Block block,DWORD color);
 private:
 	HGE* m_pHge;
 	Block m_iBlock;	//鼠标所在block
 
 	//画出鼠标位置的方格
 	void DrawMouseRect();
-	//画出小方格
-	void DrawSmallRect(Block block);
 };
 

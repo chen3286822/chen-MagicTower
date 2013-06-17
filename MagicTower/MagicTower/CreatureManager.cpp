@@ -8,6 +8,7 @@ CreatureManager::CreatureManager()
 	m_VFriendList.clear();
 	m_VEnemyList.clear();
 	m_nActionCreatureNum = -1;
+	m_nSelectNum = 1;
 }
 
 CreatureManager::~CreatureManager()
@@ -22,6 +23,9 @@ void CreatureManager::Render()
 		(*it)->Render();
 	for (VCharacter::iterator it=m_VFriendList.begin();it!=m_VFriendList.end();it++)
 		(*it)->Render();
+
+	if(m_nSelectNum >= 0)
+		ShowMoveRange();
 }
 
 void CreatureManager::Update(float delta)
@@ -38,6 +42,47 @@ void CreatureManager::Update(float delta)
 			m_nActionCreatureNum = -1;
 	}
 	ShowCreatureInfo();
+}
+
+void CreatureManager::ShowMoveRange()
+{
+	Character* selectChar = GetCreature(m_nSelectNum);
+	if (selectChar)
+	{
+		int moveAbility = selectChar->GetMoveAbility();	
+		Block charBlock = selectChar->GetBlock();
+		Map* currentMap = MapManager::sInstance().GetCurrentMap();
+		int mapWidth = 0,mapLength = 0;
+		currentMap->GetWidthLength(mapWidth,mapLength);
+		int offX = 0,offY = 0;
+		DWORD color = 0;
+		if(selectChar->GetCamp() == Friend)
+			color = 0x4F3737DF;
+		else if(selectChar->GetCamp() == Enemy)
+			color = 0x4FEB2323;
+		for (int i=charBlock.xpos-moveAbility;i<=charBlock.xpos+moveAbility;i++)
+		{
+			if(i >= 0 && i< mapWidth)
+			{
+				for (int j=charBlock.ypos-moveAbility;j<=charBlock.ypos+moveAbility;j++)
+				{
+					if (j >= 0 && j < mapLength)
+					{
+						offX = abs(i - charBlock.xpos);
+						offY = abs(j - charBlock.ypos);
+						if((offX + offY > moveAbility) || (i==charBlock.xpos && j==charBlock.ypos))
+							continue;
+
+						if (!currentMap->GetBlockOccupied(i,j))
+						{
+							//画方格表示可以移动
+							App::sInstance().DrawSmallRect(Block(i,j),color);
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 void CreatureManager::ShowCreatureInfo()
@@ -157,6 +202,34 @@ Character* CreatureManager::GetFriend(int x,int  y)
 			return *it;
 	}
 	return NULL;
+}
+
+Character* CreatureManager::GetFriend(int num)
+{
+	for (VCharacter::iterator it=m_VFriendList.begin();it!=m_VFriendList.end();it++)
+	{
+		if((*it)->GetNum() == num)
+			return *it;
+	}
+	return NULL;
+}
+
+Character* CreatureManager::GetCreature(int x,int  y)
+{
+	Character* temp = GetEnemy(x,y);
+	if(temp == NULL)
+		temp = GetFriend(x,y);
+
+	return temp;
+}
+
+Character* CreatureManager::GetCreature(int num)
+{
+	Character* temp = GetEnemy(num);
+	if(temp == NULL)
+		temp = GetFriend(num);
+
+	return temp;
 }
 
 bool CreatureManager::ResetAllCreature()

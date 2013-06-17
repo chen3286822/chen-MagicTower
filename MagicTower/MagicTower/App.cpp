@@ -126,10 +126,10 @@ bool App::AppRender()
 void App::DrawMouseRect()
 {
 	if(m_iBlock.xpos!=-1 && m_iBlock.ypos!=-1)
-		DrawSmallRect(m_iBlock);
+		DrawSmallRect(m_iBlock,0x4F48A4D5);
 }
 
-void App::DrawSmallRect(Block block)
+void App::DrawSmallRect(Block block,DWORD color)
 {
 	int xNum = block.xpos,yNum = block.ypos;
 
@@ -149,7 +149,7 @@ void App::DrawSmallRect(Block block)
 
 	for (int i=0;i<4;i++)
 	{
-		quad.v[i].col = 0x4F48A4D5;
+		quad.v[i].col = color;
 		quad.v[i].z = 0.5;
 	}
 	quad.blend = BLEND_DEFAULT_Z;

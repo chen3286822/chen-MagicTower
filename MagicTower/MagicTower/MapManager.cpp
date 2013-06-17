@@ -70,6 +70,26 @@ void Map::SetBlockOccupied(int xpos,int ypos)
 	}
 }
 
+bool Map::GetBlockOccupied(int xpos,int ypos)
+{
+	Block* block = GetBlock(xpos,ypos);
+	if(block!=NULL)
+	{
+		return IsOccupied(block->attri);
+	}
+	return false;
+}
+
+
+std::vector<Block*> Map::FindPath(int startX,int startY,int endX,int endY)
+{
+	std::vector<Block*> vPath;
+	
+	//调用A* 算法得到路径
+
+	return vPath;
+}
+
 MapManager::MapManager(void)
 {
 	m_vMaps.clear();
@@ -162,12 +182,17 @@ bool MapManager::LoadMaps(std::string path)
 // 				Block* theBlock = level->GetBlock(_xpos,_ypos);
 // 				if(theBlock != NULL)
 // 					setOccupied((theBlock->attri),1);
+				//测试移动力
+				cha->SetMoveAbility(4);
+
 				if (_camp == Friend)
 				{
+					cha->SetCamp(Friend);
 					CreatureManager::sInstance().AddFriend(cha);
 				}
 				else if (_camp == Enemy)
 				{
+					cha->SetCamp(Enemy);
 					CreatureManager::sInstance().AddEnemy(cha);
 				}
 				num++;

@@ -15,6 +15,7 @@ Character::Character(void)
 	m_bCanMove = true;
 	m_nMoveAbility = 0;
 	m_bFinishAct = false;
+	m_nCamp = Neutral;
 }
 
 Character::~Character(void)

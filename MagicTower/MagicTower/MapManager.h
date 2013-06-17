@@ -24,7 +24,10 @@ public:
 	inline std::vector<MapObject*>& GetVObject(){return m_vObjList;}
 	inline std::vector<Block>&	GetVBlock(){return m_vBlocks;}
 
+	std::vector<Block*> FindPath(int startX,int startY,int endX,int endY);
+
 	void SetBlockOccupied(int xpos,int ypos);
+	bool GetBlockOccupied(int xpos,int ypos);
 
 	//为了支持stl的sort算法
 	static bool Less_than( Map* &m1, Map* &m2) {return m1->m_nlevel < m2->m_nlevel;}

@@ -24,9 +24,14 @@ public:
 	Character* GetEnemy(int x,int  y);
 	Character* GetEnemy(int num);
 	Character* GetFriend(int x,int  y);
+	Character* GetFriend(int num);
+	Character* GetCreature(int x,int  y);
+	Character* GetCreature(int num);
 
 	//显示该单位的相关信息
 	void ShowCreatureInfo();
+	//显示该单位移动范围
+	void ShowMoveRange();
 
 	//只有当所有单位都行动过后才能重置，相当于开始下一回合
 	bool ResetAllCreature();
@@ -40,6 +45,7 @@ private:
 	VCharacter	m_VEnemyList;
 
 	int m_nActionCreatureNum;	//表示当前正在行动中的单位号，没有表示为-1
+	int m_nSelectNum;	//表示当前被选中的单位号
 };
 
 

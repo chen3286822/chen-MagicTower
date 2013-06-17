@@ -22,6 +22,8 @@ public:
 	Block&	GetBlock(){return m_iBlock;}
 	void	SetMoveAbility(int _ability){m_nMoveAbility = _ability;}
 	int	GetMoveAbility(){return m_nMoveAbility;}
+	void SetCamp(int _camp){m_nCamp = _camp;}
+	int GetCamp(){return m_nCamp;}
 
 	int GetID(){return m_nID;}
 	int GetNum(){return m_nNum;}
@@ -36,7 +38,7 @@ private:
 	bool m_bCanMove;		//代表该单位是否可以移动
 	int m_nMoveAbility;		//代表移动力
 	bool m_bFinishAct;	//代表是否行动过
-//	std::vector<Block>
+	int	m_nCamp;		//单位阵营
 
 	Direction m_eMoveDir;	//移动的方向
 	int m_nLeftDistance;	//剩余需要移动的格子数
