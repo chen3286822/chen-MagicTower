@@ -62,6 +62,8 @@
 
 #define KEY_NUM 36
 
+#define MAX_DISTANCE  100000;
+
 
 //ÕóÓª
 enum Camp
