@@ -131,3 +131,47 @@ void g_CTW(const char* text,wchar_t* out)
 
 	MultiByteToWideChar(CP_ACP, 0, ptext, nLen, out, nwLen);
 }
+
+
+/*
+µØÐÎÏûºÄ
+Road -- 1
+River -- 4
+Mountain -- 3
+HillTop -- 200
+CityWall -- 200
+Forest -- 2
+Desert -- 2
+CityRoad -- 1
+City -- 1
+*/
+int g_getTerrainCost(int terrain)
+{
+	int cost = 1;
+	switch(terrain)
+	{
+	case Road:
+	case CityRoad:
+	case City:
+		cost = 1;
+		break;
+	case Forest:
+	case Desert:
+		cost = 2;
+		break;
+	case Mountain:
+		cost = 3;
+		break;
+	case River:
+		cost = 4;
+		break;
+	case HillTop:
+	case CityWall:
+		cost = 200;
+		break;
+	default:
+		break;
+	}
+
+	return cost;
+}

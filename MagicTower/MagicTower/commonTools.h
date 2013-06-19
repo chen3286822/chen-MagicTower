@@ -62,7 +62,7 @@
 
 #define KEY_NUM 36
 
-#define MAX_DISTANCE  100000;
+#define MAX_DISTANCE  100000
 
 
 //阵营
@@ -215,5 +215,6 @@ void g_getFiles( std::string path, std::map<std::string,std::string>& files,char
 int g_getKeyNum(int Key);	//根据按键编号取得该按键在数组中的位置
 void g_CTW(const char* text,wchar_t* out);	//char* to wchar_t*
 LBUTTON_STATE g_getLButtonState(HGE* hge);
+int g_getTerrainCost(int terrain);	//根据地形取得消耗
 
 #endif

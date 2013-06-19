@@ -1,6 +1,7 @@
 #ifndef BINARY_HEAP
 #define BINARY_HEAP
 #include "commonTools.h"
+using namespace std;
 
 
 struct Node
