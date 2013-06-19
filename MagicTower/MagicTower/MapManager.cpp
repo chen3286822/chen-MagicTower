@@ -86,6 +86,7 @@ std::vector<Block*> Map::FindPath(int startX,int startY,int endX,int endY)
 	std::vector<Block*> vPath;
 	
 	//调用A* 算法得到路径
+	m_iPathFinder.run(startX,startY,endX,endY);
 
 	return vPath;
 }

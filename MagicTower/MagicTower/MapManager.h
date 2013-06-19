@@ -1,5 +1,6 @@
 #pragma once
 #include "commonTools.h"
+#include "AStar.h"
 
 class Map
 {
@@ -40,6 +41,7 @@ private:
 	int m_nLength;
 
 	hgeSprite* m_pMapSpr;
+	AStar m_iPathFinder;
 };
 
 class MapManager : public Singleton<MapManager>
