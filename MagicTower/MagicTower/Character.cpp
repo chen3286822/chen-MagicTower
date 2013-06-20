@@ -35,7 +35,7 @@ void Character::Init(HTEXTURE tex,int _Level,int _ID,int _Num,int _Action,Block 
 	m_fStartX = m_fXPos = (MAP_RECT-FLOAT_PIC_SQUARE_WIDTH)/2+MAP_OFF_X +MAP_RECT*m_iBlock.xpos;
 	m_fStartY = m_fYPos = MAP_OFF_Y+MAP_RECT*m_iBlock.ypos;
 	m_nLeftDistance = 0;
-	m_eMoveDir = None;
+	m_eCurMoveDir = None;
 	//为初始化的人物所在地图块设置属性
 	Map* theMap = MapManager::sInstance().GetMap(m_nLevel);
 	theMap->SetBlockOccupied(_block.xpos,_block.ypos);
@@ -54,16 +54,16 @@ void Character::Update(float delta)
 {
 	if(m_bCanMove)
 	{
-		if(m_eMoveDir == None)
+		if(m_eCurMoveDir == None)
 			return;
 
 		//禁止超过地图边界
-		if ((m_iBlock.xpos<=0 && m_eMoveDir==LEFT)
-			|| (m_iBlock.xpos>=MAP_WIDTH_NUM-1 && m_eMoveDir==RIGHT)
-			|| (m_iBlock.ypos<=0 && m_eMoveDir==UP)
-			|| (m_iBlock.ypos>=MAP_LENGTH_NUM-1 && m_eMoveDir==DOWN))
+		if ((m_iBlock.xpos<=0 && m_eCurMoveDir==LEFT)
+			|| (m_iBlock.xpos>=MAP_WIDTH_NUM-1 && m_eCurMoveDir==RIGHT)
+			|| (m_iBlock.ypos<=0 && m_eCurMoveDir==UP)
+			|| (m_iBlock.ypos>=MAP_LENGTH_NUM-1 && m_eCurMoveDir==DOWN))
 		{
-			m_eMoveDir = None;
+			m_eCurMoveDir = None;
 			m_bFinishAct = true;
 			m_nLeftDistance = 0;
 			return;
@@ -71,12 +71,12 @@ void Character::Update(float delta)
 
 		//前方如果无法通过则停止
 		Map* theMap = MapManager::sInstance().GetCurrentMap();
-		if (m_eMoveDir==UP && !IsCanCross((theMap->GetBlock(m_iBlock.xpos,m_iBlock.ypos-1)->attri))
-			|| m_eMoveDir==DOWN && !IsCanCross((theMap->GetBlock(m_iBlock.xpos,m_iBlock.ypos+1)->attri))
-			||m_eMoveDir==LEFT && !IsCanCross((theMap->GetBlock(m_iBlock.xpos-1,m_iBlock.ypos)->attri))
-			||m_eMoveDir==RIGHT && !IsCanCross((theMap->GetBlock(m_iBlock.xpos+1,m_iBlock.ypos)->attri)))
+		if (m_eCurMoveDir==UP && !IsCanCross((theMap->GetBlock(m_iBlock.xpos,m_iBlock.ypos-1)->attri))
+			|| m_eCurMoveDir==DOWN && !IsCanCross((theMap->GetBlock(m_iBlock.xpos,m_iBlock.ypos+1)->attri))
+			||m_eCurMoveDir==LEFT && !IsCanCross((theMap->GetBlock(m_iBlock.xpos-1,m_iBlock.ypos)->attri))
+			||m_eCurMoveDir==RIGHT && !IsCanCross((theMap->GetBlock(m_iBlock.xpos+1,m_iBlock.ypos)->attri)))
 		{
-			m_eMoveDir = None;
+			m_eCurMoveDir = None;
 			m_bFinishAct = true;
 			m_nLeftDistance = 0;
 			return;
@@ -92,25 +92,25 @@ void Character::Update(float delta)
 				setOccupied((oldBlock->attri),0);
 			Block* newBlock = NULL;
 			//更新地图位置，并且矫正偏移
-			if (m_eMoveDir == RIGHT)
+			if (m_eCurMoveDir == RIGHT)
 			{
 				newBlock = theMap->GetBlock(m_iBlock.xpos+1,m_iBlock.ypos);
 				m_iBlock = (newBlock==NULL)?m_iBlock:(*newBlock);
 				m_fXPos = (MAP_RECT-FLOAT_PIC_SQUARE_WIDTH)/2+MAP_OFF_X +MAP_RECT*m_iBlock.xpos;
 			}
-			else if(m_eMoveDir == LEFT)
+			else if(m_eCurMoveDir == LEFT)
 			{
 				newBlock = theMap->GetBlock(m_iBlock.xpos-1,m_iBlock.ypos);
 				m_iBlock = (newBlock==NULL)?m_iBlock:(*newBlock);
 				m_fXPos = (MAP_RECT-FLOAT_PIC_SQUARE_WIDTH)/2+MAP_OFF_X +MAP_RECT*m_iBlock.xpos;
 			}
-			else if(m_eMoveDir == UP)
+			else if(m_eCurMoveDir == UP)
 			{
 				newBlock = theMap->GetBlock(m_iBlock.xpos,m_iBlock.ypos-1);
 				m_iBlock = (newBlock==NULL)?m_iBlock:(*newBlock);
 				m_fYPos = MAP_OFF_Y+MAP_RECT*m_iBlock.ypos;
 			}
-			else if(m_eMoveDir == DOWN)
+			else if(m_eCurMoveDir == DOWN)
 			{
 				newBlock = theMap->GetBlock(m_iBlock.xpos,m_iBlock.ypos+1);
 				m_iBlock = (newBlock==NULL)?m_iBlock:(*newBlock);
@@ -121,20 +121,20 @@ void Character::Update(float delta)
 			m_fStartY = m_fYPos;
 			if(m_nLeftDistance == 0)
 			{
-				m_eMoveDir = None;
+				m_eCurMoveDir = None;
 				m_bFinishAct = true;
 			}
 		}
 
 		if(m_nLeftDistance > 0)
 		{
-			if(m_eMoveDir == UP)
+			if(m_eCurMoveDir == UP)
 				m_fYPos -= delta*60;
-			else if(m_eMoveDir == DOWN)
+			else if(m_eCurMoveDir == DOWN)
 				m_fYPos += delta*60;
-			else if(m_eMoveDir == LEFT)
+			else if(m_eCurMoveDir == LEFT)
 				m_fXPos -= delta*60;
-			else if(m_eMoveDir == RIGHT)
+			else if(m_eCurMoveDir == RIGHT)
 				m_fXPos += delta*60;
 		}
 	}
@@ -157,6 +157,15 @@ void Character::Update(float delta)
 	}
 }
 
+void Character::Move(int tarX,int tarY)
+{
+	vector<Block*> path = MapManager::sInstance().GetCurrentMap()->FindPath(m_iBlock.xpos,m_iBlock.ypos,tarX,tarY);
+	if(!path.empty())
+	{
+		//将移动保存起来
+	}
+}
+
 //每调用一次move，将会朝着该方向移动一格子
 void Character::Move(Direction dir)
 {
@@ -166,9 +175,9 @@ void Character::Move(Direction dir)
 		return;
 	}
 	//改变移动方向
-	if(dir != m_eMoveDir && m_eMoveDir==None)	
+	if(dir != m_eCurMoveDir && m_eCurMoveDir==None)	
 	{
-		m_eMoveDir = dir;
+		m_eCurMoveDir = dir;
 		m_nLeftDistance = 1;
 		
 //		m_ani->Stop();
@@ -176,10 +185,10 @@ void Character::Move(Direction dir)
 //		m_ani->SetTextureRect((m_MoveDir-1)*FLOAT_PIC_SQUARE_WIDTH,(m_MoveDir-1)*FLOAT_PIC_SQUARE_HEIGHT,FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT);
 //		m_ani->Play();
 //(m_MoveDir-1)*FLOAT_PIC_SQUARE_WIDTH
-		m_pAnimation->ResetFrames(0,(m_eMoveDir-1)*FLOAT_PIC_SQUARE_HEIGHT,
+		m_pAnimation->ResetFrames(0,(m_eCurMoveDir-1)*FLOAT_PIC_SQUARE_HEIGHT,
 			FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT,4,8,false);
 		return;
 	}
-	else if(dir == m_eMoveDir)
+	else if(dir == m_eCurMoveDir)
 		m_nLeftDistance++;
 }

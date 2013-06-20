@@ -7,7 +7,8 @@ class Map
 public:
 	Map();
 	~Map();
-	
+
+	void Init();
 	void Render();
 	void Update();
 

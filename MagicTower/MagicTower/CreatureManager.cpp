@@ -131,7 +131,7 @@ void CreatureManager::Strategy()
 	if(enemy == NULL)
 		return;
 	m_nActionCreatureNum = enemy->GetNum();
-	enemy->Move((Direction)(App::sInstance().GetHGE()->Random_Int(0,4)));
+//	enemy->Move((Direction)(App::sInstance().GetHGE()->Random_Int(0,4)));
 }
 
 void CreatureManager::RemoveEnemy(Character* _enemy)

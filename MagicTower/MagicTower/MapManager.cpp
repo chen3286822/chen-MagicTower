@@ -23,6 +23,11 @@ Map::~Map()
 	gSafeDelete(m_pMapSpr);
 }
 
+void Map::Init()
+{
+	m_iPathFinder.Init();
+}
+
 void Map::Render()
 {
 	for (std::vector<Block>::iterator it=m_vBlocks.begin();it!=m_vBlocks.end();it++)
@@ -86,7 +91,23 @@ std::vector<Block*> Map::FindPath(int startX,int startY,int endX,int endY)
 	std::vector<Block*> vPath;
 	
 	//调用A* 算法得到路径
-	m_iPathFinder.run(startX,startY,endX,endY);
+	m_iPathFinder.UpdateMap();
+	m_iPathFinder.Run(startX,startY,endX,endY);
+	list<pNode> path = m_iPathFinder.GetPath();
+	if (!path.empty())
+	{
+		for (list<pNode>::iterator it=path.begin();it!=path.end();it++)
+		{
+			Block* pathBlock = GetBlock((*it)->postionX,(*it)->postionY);
+			if(!pathBlock)
+				vPath.push_back(pathBlock);
+			else
+			{
+				//路线有问题，此时需要清空路线
+				vPath.clear();
+			}
+		}
+	}
 
 	return vPath;
 }
@@ -203,11 +224,12 @@ bool MapManager::LoadMaps(std::string path)
 	}
 
 	//将所有地图文件按照level属性进行排序
-	//load 完所有地图文件，设置当前关卡为第一关
+	//load 完所有地图文件，设置当前关卡为第一关并初始化
 	if(m_vMaps.empty())
 		return false;
 	std::sort(m_vMaps.begin(),m_vMaps.end(),Map::Less_than);
 	SetCurrentLevel(m_vMaps[0]->GetLevel());
+	GetCurrentMap()->Init();
 	return true;
 }
 

@@ -94,6 +94,7 @@ enum Direction
 	RIGHT,
 	UP,
 };
+typedef std::vector<Direction> VDirection;
 
 enum LBUTTON_STATE
 {
