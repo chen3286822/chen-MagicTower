@@ -66,6 +66,7 @@ void Character::Update(float delta)
 			m_eCurMoveDir = None;
 			m_bFinishAct = true;
 			m_nLeftDistance = 0;
+			m_lPathDir.clear();
 			return;
 		}
 
@@ -79,6 +80,7 @@ void Character::Update(float delta)
 			m_eCurMoveDir = None;
 			m_bFinishAct = true;
 			m_nLeftDistance = 0;
+			m_lPathDir.clear();
 			return;
 		}
 		
@@ -119,10 +121,21 @@ void Character::Update(float delta)
 			theMap->SetBlockOccupied(m_iBlock.xpos,m_iBlock.ypos);
 			m_fStartX = m_fXPos;
 			m_fStartY = m_fYPos;
+
+			//弹出下一个方向
+			if(!m_lPathDir.empty())
+			{	
+				m_eCurMoveDir = m_lPathDir.front();
+				m_lPathDir.pop_front();
+				m_pAnimation->ResetFrames(0,(m_eCurMoveDir-1)*FLOAT_PIC_SQUARE_HEIGHT,
+					FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT,4,8,false);
+			}
+
 			if(m_nLeftDistance == 0)
 			{
 				m_eCurMoveDir = None;
 				m_bFinishAct = true;
+				m_lPathDir.clear();
 			}
 		}
 
@@ -159,10 +172,39 @@ void Character::Update(float delta)
 
 void Character::Move(int tarX,int tarY)
 {
+	//当前移动未结束，不可寻路
+	if(m_eCurMoveDir != None)
+		return; 
+
 	vector<Block*> path = MapManager::sInstance().GetCurrentMap()->FindPath(m_iBlock.xpos,m_iBlock.ypos,tarX,tarY);
 	if(!path.empty())
 	{
 		//将移动保存起来
+		Direction dir = None;
+		Block* current = path.front();
+		Block* next = NULL;
+		for (vector<Block*>::iterator it=(++path.begin());it!=path.end();it++)
+		{
+			next = *it;
+			if(next != NULL)
+			{
+				if(next->xpos == current->xpos)
+				{
+					if(next->ypos == current->ypos+1)
+						Move(DOWN);
+					else if(next->ypos == current->ypos-1)
+						Move(UP);
+				}
+				else if(next->ypos == current->ypos)
+				{
+					if(next->xpos == current->xpos+1)
+						Move(RIGHT);
+					else if(next->xpos == current->xpos-1)
+						Move(LEFT);
+				}
+			}
+			current = next;
+		}
 	}
 }
 
@@ -174,7 +216,7 @@ void Character::Move(Direction dir)
 		m_bFinishAct = true;
 		return;
 	}
-	//改变移动方向
+/*	//改变移动方向
 	if(dir != m_eCurMoveDir && m_eCurMoveDir==None)	
 	{
 		m_eCurMoveDir = dir;
@@ -190,5 +232,16 @@ void Character::Move(Direction dir)
 		return;
 	}
 	else if(dir == m_eCurMoveDir)
-		m_nLeftDistance++;
+		m_nLeftDistance++;*/
+
+	m_lPathDir.push_back(dir);
+	m_nLeftDistance++;
+
+	if(m_eCurMoveDir == None)
+	{
+		m_eCurMoveDir = m_lPathDir.front();
+		m_pAnimation->ResetFrames(0,(m_eCurMoveDir-1)*FLOAT_PIC_SQUARE_HEIGHT,
+			FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT,4,8,false);
+		m_lPathDir.pop_front();
+	}
 }

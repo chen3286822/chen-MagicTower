@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <vector>
+#include <list>
 #include <map>
 #include <algorithm>
 #include "Singleton.h"
@@ -94,7 +95,7 @@ enum Direction
 	RIGHT,
 	UP,
 };
-typedef std::vector<Direction> VDirection;
+typedef std::list<Direction> LDirection;
 
 enum LBUTTON_STATE
 {

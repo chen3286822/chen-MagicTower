@@ -20,7 +20,7 @@ list<pNode> AStar::GetNeighbor(pNode current)
 {
 	list<pNode> neighbor;
 	neighbor.clear();
-	if(current->postionX>=1)
+	if(current->postionX>=1 && m_iMap[current->postionX-1][current->postionY].achiveble)
 	{
 		neighbor.push_back(&m_iMap[current->postionX-1][current->postionY]);	//top
 // 		if(current->postionY>=1)
@@ -28,7 +28,7 @@ list<pNode> AStar::GetNeighbor(pNode current)
 // 		if(current->postionY+1<=MAP_LENGTH_NUM-1)
 // 			neighbor.push_back(&map[current->postionX-1][current->postionY+1]);	 //right top		
 	}
-	if(current->postionX+1<=MAP_WIDTH_NUM-1)
+	if(current->postionX+1<=MAP_WIDTH_NUM-1 && m_iMap[current->postionX+1][current->postionY].achiveble)
 	{
 		neighbor.push_back(&m_iMap[current->postionX+1][current->postionY]);	//bottom
 // 		if(current->postionY>=1)
@@ -36,9 +36,9 @@ list<pNode> AStar::GetNeighbor(pNode current)
 // 		if(current->postionY+1<=MAP_LENGTH_NUM-1)
 // 			neighbor.push_back(&map[current->postionX+1][current->postionY+1]);	//right bottom
 	}
-	if(current->postionY>=1)
+	if(current->postionY>=1 && m_iMap[current->postionX][current->postionY-1].achiveble)
 		neighbor.push_back(&m_iMap[current->postionX][current->postionY-1]);	//left
-	if(current->postionY+1<=MAP_LENGTH_NUM-1)
+	if(current->postionY+1<=MAP_LENGTH_NUM-1 && m_iMap[current->postionX][current->postionY+1].achiveble)
 		neighbor.push_back(&m_iMap[current->postionX][current->postionY+1]);	//right
 	return neighbor;
 }

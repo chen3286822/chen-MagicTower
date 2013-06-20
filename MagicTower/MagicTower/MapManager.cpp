@@ -99,7 +99,7 @@ std::vector<Block*> Map::FindPath(int startX,int startY,int endX,int endY)
 		for (list<pNode>::iterator it=path.begin();it!=path.end();it++)
 		{
 			Block* pathBlock = GetBlock((*it)->postionX,(*it)->postionY);
-			if(!pathBlock)
+			if(pathBlock)
 				vPath.push_back(pathBlock);
 			else
 			{

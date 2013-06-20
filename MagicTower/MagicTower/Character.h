@@ -42,7 +42,7 @@ private:
 	int	m_nCamp;		//单位阵营
 
 	Direction m_eCurMoveDir;	//当前移动的方向
-	VDirection m_vPathDir;	//整个路径的移动方向
+	LDirection m_lPathDir;	//整个路径的移动方向
 	int m_nLeftDistance;	//剩余需要移动的格子数
 };
 
