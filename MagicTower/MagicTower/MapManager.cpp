@@ -89,6 +89,14 @@ bool Map::GetBlockOccupied(int xpos,int ypos)
 std::vector<Block*> Map::FindPath(int startX,int startY,int endX,int endY)
 {
 	std::vector<Block*> vPath;
+
+	//过滤不正确点
+	if (startX < 0 || startX >= m_nWidth || startY < 0 || startY >= m_nLength
+		|| endX < 0 || endX >= m_nWidth || endY <0 || endY >= m_nLength)
+	{
+		vPath.clear();
+		return vPath;
+	}
 	
 	//调用A* 算法得到路径
 	m_iPathFinder.UpdateMap();

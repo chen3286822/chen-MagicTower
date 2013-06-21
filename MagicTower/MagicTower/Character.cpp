@@ -174,7 +174,9 @@ void Character::Move(int tarX,int tarY)
 {
 	//当前移动未结束，不可寻路
 	if(m_eCurMoveDir != None)
+	{
 		return; 
+	}
 
 	vector<Block*> path = MapManager::sInstance().GetCurrentMap()->FindPath(m_iBlock.xpos,m_iBlock.ypos,tarX,tarY);
 	if(!path.empty())
@@ -205,6 +207,11 @@ void Character::Move(int tarX,int tarY)
 			}
 			current = next;
 		}
+	}
+	//没有找到路径，需要结束行动
+	else
+	{
+		m_bFinishAct = true;
 	}
 }
 

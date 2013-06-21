@@ -131,6 +131,12 @@ void CreatureManager::Strategy()
 	if(enemy == NULL)
 		return;
 	m_nActionCreatureNum = enemy->GetNum();
+	m_nSelectNum = m_nActionCreatureNum;
+	int xMove = App::sInstance().GetHGE()->Random_Int(0,enemy->GetMoveAbility());
+	int yMove = enemy->GetMoveAbility() - xMove;
+	int xDir = (App::sInstance().GetHGE()->Random_Int(0,1)==0)?-1:1;
+	int yDir = (App::sInstance().GetHGE()->Random_Int(0,1)==0)?-1:1;
+	enemy->Move(enemy->GetBlock().xpos+xMove*xDir,enemy->GetBlock().ypos+yMove*yDir);
 //	enemy->Move((Direction)(App::sInstance().GetHGE()->Random_Int(0,4)));
 }
 
