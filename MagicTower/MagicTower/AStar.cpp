@@ -1,16 +1,30 @@
 #include "AStar.h"
 #include "MapManager.h"
 
-void AStar::Init()
+void AStar::Init(int width,int height)
 {
 	Map* currentMap = MapManager::sInstance().GetCurrentMap();
 	Block* block = NULL;
-	for (int i=0;i<MAP_WIDTH_NUM;i++)
+	m_nWidth = width;
+	m_nHeight = height;
+	m_ppiMap = new Node*[m_nWidth];
+	m_ppnHeightGraph = new int*[m_nWidth];
+	m_ppnGScore = new int*[m_nWidth];
+	m_ppnFScore = new int*[m_nWidth];
+	m_ppnHScore = new int*[m_nWidth];
+	m_ppbIsInCloseList = new bool*[m_nWidth];
+	for (int i=0;i<m_nWidth;i++)
 	{
-		for (int j=0;j<MAP_LENGTH_NUM;j++)
+		m_ppiMap[i] = new Node[m_nHeight];
+		m_ppnHeightGraph[i] = new int[m_nHeight];
+		m_ppnGScore[i] = new int[m_nHeight];
+		m_ppnFScore[i] = new int[m_nHeight];
+		m_ppnHScore[i] = new int[m_nHeight];
+		m_ppbIsInCloseList[i] = new bool[m_nHeight];
+		for (int j=0;j<m_nHeight;j++)
 		{
 			block = currentMap->GetBlock(i,j);
-			m_nHeightGraph[i][j] = g_getTerrainCost(getTerrain(block->attri));
+			m_ppnHeightGraph[i][j] = g_getTerrainCost(getTerrain(block->attri));
 		}
 	}
 }
@@ -20,26 +34,26 @@ list<pNode> AStar::GetNeighbor(pNode current)
 {
 	list<pNode> neighbor;
 	neighbor.clear();
-	if(current->postionX>=1 && m_iMap[current->postionX-1][current->postionY].achiveble)
+	if(current->postionX>=1 && m_ppiMap[current->postionX-1][current->postionY].achiveble)
 	{
-		neighbor.push_back(&m_iMap[current->postionX-1][current->postionY]);	//top
+		neighbor.push_back(&m_ppiMap[current->postionX-1][current->postionY]);	//top
 // 		if(current->postionY>=1)
 // 			neighbor.push_back(&map[current->postionX-1][current->postionY-1]); //left top
 // 		if(current->postionY+1<=MAP_LENGTH_NUM-1)
 // 			neighbor.push_back(&map[current->postionX-1][current->postionY+1]);	 //right top		
 	}
-	if(current->postionX+1<=MAP_WIDTH_NUM-1 && m_iMap[current->postionX+1][current->postionY].achiveble)
+	if(current->postionX+1<=m_nWidth-1 && m_ppiMap[current->postionX+1][current->postionY].achiveble)
 	{
-		neighbor.push_back(&m_iMap[current->postionX+1][current->postionY]);	//bottom
+		neighbor.push_back(&m_ppiMap[current->postionX+1][current->postionY]);	//bottom
 // 		if(current->postionY>=1)
 // 			neighbor.push_back(&map[current->postionX+1][current->postionY-1]);	//left bottom
 // 		if(current->postionY+1<=MAP_LENGTH_NUM-1)
 // 			neighbor.push_back(&map[current->postionX+1][current->postionY+1]);	//right bottom
 	}
-	if(current->postionY>=1 && m_iMap[current->postionX][current->postionY-1].achiveble)
-		neighbor.push_back(&m_iMap[current->postionX][current->postionY-1]);	//left
-	if(current->postionY+1<=MAP_LENGTH_NUM-1 && m_iMap[current->postionX][current->postionY+1].achiveble)
-		neighbor.push_back(&m_iMap[current->postionX][current->postionY+1]);	//right
+	if(current->postionY>=1 && m_ppiMap[current->postionX][current->postionY-1].achiveble)
+		neighbor.push_back(&m_ppiMap[current->postionX][current->postionY-1]);	//left
+	if(current->postionY+1<=m_nHeight-1 && m_ppiMap[current->postionX][current->postionY+1].achiveble)
+		neighbor.push_back(&m_ppiMap[current->postionX][current->postionY+1]);	//right
 	return neighbor;
 }
 
@@ -53,7 +67,7 @@ int AStar::Distance(pNode current,pNode neighbor)
 // 	int result = abs(_heightGraph[neighbor->postionX][neighbor->postionY]-_heightGraph[current->postionX][current->postionY]);
 // 	if(neighbor->postionX!=current->postionX && neighbor->postionY!=current->postionY)
 // 		return result*14/10;
-	int result = m_nHeightGraph[neighbor->postionX][neighbor->postionY];
+	int result = m_ppnHeightGraph[neighbor->postionX][neighbor->postionY];
 
 	return result;
 }
@@ -84,21 +98,21 @@ bool AStar::FindNode(pNode node,list<pNode> nodeList)
 void AStar::UpdateMap()
 {
 	Map* currentMap = MapManager::sInstance().GetCurrentMap();
-	for (int i=0;i<MAP_WIDTH_NUM;i++)
+	for (int i=0;i<m_nWidth;i++)
 	{
-		for (int j=0;j<MAP_LENGTH_NUM;j++)
+		for (int j=0;j<m_nHeight;j++)
 		{
-			m_iMap[i][j].postionX = i;
-			m_iMap[i][j].postionY = j;
-			m_iMap[i][j].previous = NULL;
-			m_iMap[i][j].achiveble = true;
+			m_ppiMap[i][j].postionX = i;
+			m_ppiMap[i][j].postionY = j;
+			m_ppiMap[i][j].previous = NULL;
+			m_ppiMap[i][j].achiveble = true;
 // 			if(heightGraph[i][j] >= 200 && !((i==startX && j==startY) ||(i==endX && j==endY)))
 // 				map[i][j].achiveble = false;
 
 			//地形因素不可达
 			//单位在上面不可达
 			if(!IsCanCross(currentMap->GetBlock(i,j)->attri))
-				m_iMap[i][j].achiveble = false;
+				m_ppiMap[i][j].achiveble = false;
 		}
 	}
 	m_lPath.clear();
@@ -106,43 +120,61 @@ void AStar::UpdateMap()
 
 void AStar::Release()
 {
+	for (int i=0;i<m_nWidth;i++)
+	{
+		delete[] m_ppiMap[i];
+		delete[] m_ppnHeightGraph[i];
+		delete[] m_ppnGScore[i];
+		delete[] m_ppnFScore[i];
+		delete[] m_ppnHScore[i];
+		delete[] m_ppbIsInCloseList[i];
+	}
+	delete[] m_ppiMap;
+	delete[] m_ppnHeightGraph;
+	delete[] m_ppnGScore;
+	delete[] m_ppnFScore;
+	delete[] m_ppnHScore;
+	delete[] m_ppbIsInCloseList;
 }
 
 
 void AStar::SetPath(int startX,int startY,int endX,int endY)
 {
-	pNode temp = &m_iMap[endX][endY];
+	pNode temp = &m_ppiMap[endX][endY];
 	while (temp->previous!=NULL)
 	{
 		m_lPath.push_front(temp);
 		temp = temp->previous;
 	}
-	m_lPath.push_front(&m_iMap[startX][startY]);
+	m_lPath.push_front(&m_ppiMap[startX][startY]);
 }
 
 void AStar::Run(int startX,int startY,int endX,int endY)
 {
-	int gScore[MAP_WIDTH_NUM][MAP_LENGTH_NUM];
-	int fScore[MAP_WIDTH_NUM][MAP_LENGTH_NUM];
-	int hScore[MAP_WIDTH_NUM][MAP_LENGTH_NUM];
-	Binary_heap openHeap;
+	Binary_heap openHeap(m_nWidth,m_nHeight);
 	list<pNode> closeList;
-	bool isInCloseList[MAP_WIDTH_NUM][MAP_LENGTH_NUM];
-	for (int i=0;i<MAP_WIDTH_NUM;i++)
-		for (int j=0;j<MAP_LENGTH_NUM;j++)
-			isInCloseList[i][j] = false;
+	for (int i=0;i<m_nWidth;i++)
+	{
+		for (int j=0;j<m_nHeight;j++)
+		{
+			m_ppnGScore[i][j] = 0;
+			m_ppnFScore[i][j] = 0;
+			m_ppnHScore[i][j] = 0;
+			m_ppbIsInCloseList[i][j] = false;
+		}
+	}
 
 
 	closeList.clear();
-	gScore[startX][startY] = 0;
-	hScore[startX][startY] = GetHScore(&m_iMap[startX][startY],&m_iMap[endX][endY]);
-	fScore[startX][startY] = gScore[startX][startY] + hScore[startX][startY];
-	openHeap.push(&m_iMap[startX][startY],fScore);
+	m_ppnGScore[startX][startY] = 0;
+	m_ppnHScore[startX][startY] = GetHScore(&m_ppiMap[startX][startY],&m_ppiMap[endX][endY]);
+	m_ppnFScore[startX][startY] = m_ppnGScore[startX][startY] + m_ppnHScore[startX][startY];
+	openHeap.push(&m_ppiMap[startX][startY],m_ppnFScore,m_nWidth,m_nHeight);
 
 	while(!openHeap.empty())
 	{
 		pNode current = openHeap.front();
-		openHeap.pop(fScore);
+		openHeap.pop(m_ppnFScore,m_nWidth,m_nHeight);
 
 		if(current->postionX == endX && current->postionY == endY)
 		{
@@ -151,34 +183,34 @@ void AStar::Run(int startX,int startY,int endX,int endY)
 		}
 
 		closeList.push_back(current);
-		isInCloseList[current->postionX][current->postionY] = true;
+		m_ppbIsInCloseList[current->postionX][current->postionY] = true;
 
 		list<pNode> neighbor = GetNeighbor(current);
 		for (list<pNode>::iterator itn=neighbor.begin();itn!=neighbor.end();itn++)
 		{
-			if(isInCloseList[(*itn)->postionX][(*itn)->postionY])
+			if(m_ppbIsInCloseList[(*itn)->postionX][(*itn)->postionY])
 				continue;
-			int tempGScore = gScore[current->postionX][current->postionY] + Distance(current,*itn);
+			int tempGScore = m_ppnGScore[current->postionX][current->postionY] + Distance(current,*itn);
 			if(tempGScore >= MAX_DISTANCE)
 				continue;
 
 			if(!openHeap.find((*itn)))	//不在openHeap中
 			{
 				(*itn)->previous = current;
-				hScore[(*itn)->postionX][(*itn)->postionY] = GetHScore(*itn,&m_iMap[endX][endY]);
-				gScore[(*itn)->postionX][(*itn)->postionY] = tempGScore;
-				fScore[(*itn)->postionX][(*itn)->postionY] = tempGScore + hScore[(*itn)->postionX][(*itn)->postionY];
-				openHeap.push((*itn),fScore);
+				m_ppnHScore[(*itn)->postionX][(*itn)->postionY] = GetHScore(*itn,&m_ppiMap[endX][endY]);
+				m_ppnGScore[(*itn)->postionX][(*itn)->postionY] = tempGScore;
+				m_ppnFScore[(*itn)->postionX][(*itn)->postionY] = tempGScore + m_ppnHScore[(*itn)->postionX][(*itn)->postionY];
+				openHeap.push((*itn),m_ppnFScore,m_nWidth,m_nHeight);
 
 				// 				if((*itn)->postionX == endX && (*itn)->postionY == endY)
 				// 					return; 
 			}
-			else if(tempGScore < gScore[(*itn)->postionX][(*itn)->postionY])
+			else if(tempGScore < m_ppnGScore[(*itn)->postionX][(*itn)->postionY])
 			{
 				(*itn)->previous = current;
-				gScore[(*itn)->postionX][(*itn)->postionY] = tempGScore;
-				fScore[(*itn)->postionX][(*itn)->postionY] = tempGScore + hScore[(*itn)->postionX][(*itn)->postionY];
-				openHeap.update((*itn),fScore);
+				m_ppnGScore[(*itn)->postionX][(*itn)->postionY] = tempGScore;
+				m_ppnFScore[(*itn)->postionX][(*itn)->postionY] = tempGScore + m_ppnHScore[(*itn)->postionX][(*itn)->postionY];
+				openHeap.update((*itn),m_ppnFScore,m_nWidth,m_nHeight);
 			}
 		}
 	}

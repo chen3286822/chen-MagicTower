@@ -10,15 +10,21 @@ public:
 	{
 	}
 	void Run(int startX,int startY,int endX,int endY);
-	void Init();
+	void Init(int width,int height);
 	void UpdateMap();
 	void Release();
 	list<pNode> GetPath(){return m_lPath;}
 
 protected:
-	Node m_iMap[MAP_WIDTH_NUM][MAP_LENGTH_NUM];
+	Node** m_ppiMap;
 	list<pNode> m_lPath;
-	int m_nHeightGraph[MAP_WIDTH_NUM][MAP_LENGTH_NUM];
+	int** m_ppnHeightGraph;
+	int m_nWidth;
+	int m_nHeight;
+	int** m_ppnGScore;
+	int** m_ppnFScore;
+	int** m_ppnHScore;
+	bool** m_ppbIsInCloseList;
 
 	list<pNode> GetNeighbor(pNode current);
 	int Distance(pNode current,pNode neighbor);

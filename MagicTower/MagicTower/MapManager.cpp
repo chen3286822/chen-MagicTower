@@ -25,7 +25,7 @@ Map::~Map()
 
 void Map::Init()
 {
-	m_iPathFinder.Init();
+	m_iPathFinder.Init(m_nWidth,m_nLength);
 }
 
 void Map::Render()

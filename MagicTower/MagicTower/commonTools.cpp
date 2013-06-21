@@ -132,6 +132,10 @@ void g_CTW(const char* text,wchar_t* out)
 	MultiByteToWideChar(CP_ACP, 0, ptext, nLen, out, nwLen);
 }
 
+int g_getPointToPointValueByIndex(int** array,int n,int i,int j)
+{
+	return *((int*)array + n*i + j); 
+}
 
 /*
 µØÐÎÏûºÄ
