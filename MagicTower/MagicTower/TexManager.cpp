@@ -3,7 +3,9 @@
 
 TexManager::TexManager(void)
 {
-	m_mTex.clear();
+	m_mWalkTex.clear();
+	m_mFightTex.clear();
+	m_mDeadTex.clear();
 	m_mMap.clear();
 	m_mMapInfo.clear();
 }
@@ -11,7 +13,15 @@ TexManager::TexManager(void)
 
 TexManager::~TexManager(void)
 {
-	for (std::map<int,HTEXTURE>::iterator mit=m_mTex.begin();mit!=m_mTex.end();mit++)
+	for (std::map<int,HTEXTURE>::iterator mit=m_mWalkTex.begin();mit!=m_mWalkTex.end();mit++)
+	{
+		App::sInstance().GetHGE()->Texture_Free(mit->second);
+	}
+	for (std::map<int,HTEXTURE>::iterator mit=m_mFightTex.begin();mit!=m_mFightTex.end();mit++)
+	{
+		App::sInstance().GetHGE()->Texture_Free(mit->second);
+	}
+	for (std::map<int,HTEXTURE>::iterator mit=m_mDeadTex.begin();mit!=m_mDeadTex.end();mit++)
 	{
 		App::sInstance().GetHGE()->Texture_Free(mit->second);
 	}
@@ -24,10 +34,11 @@ TexManager::~TexManager(void)
 bool TexManager::LoadTex(std::string path)
 {
 	std::map<std::string,std::string> files;
-	g_getFiles(path,files,".png",50,true);
+	g_getFiles(path,files,".png",20,true,true);
 
 	size_t found = 0;
 	int ID = 0;
+	int IDEx = 0;
 	for (std::map<std::string,std::string>::iterator mit=files.begin();mit!=files.end();mit++)
 	{
 		found = mit->second.find('.');
@@ -36,11 +47,16 @@ bool TexManager::LoadTex(std::string path)
 			char strID[10];
 			strncpy(strID,mit->second.c_str(),found);
 			strID[found] = '\0';
-			ID = atoi(strID) - 1;
-			m_mTex[ID] = App::sInstance().GetHGE()->Texture_Load(mit->first.c_str());
+			sscanf(strID,"%d-%d",&ID,&IDEx);
+			ID--;
+			m_mWalkTex[ID] = App::sInstance().GetHGE()->Texture_Load(mit->first.c_str());
+			if(IDEx == 1)
+				m_mFightTex[ID] = App::sInstance().GetHGE()->Texture_Load(mit->first.c_str());
+			else if(IDEx == 2)
+				m_mDeadTex[ID] = App::sInstance().GetHGE()->Texture_Load(mit->first.c_str());
 		}
 	}
-	if (m_mTex.empty())
+	if (m_mWalkTex.empty())
 	{
 		return false;
 	}
@@ -80,12 +96,17 @@ bool TexManager::LoadMap(std::string path)
 	return true;
 }
 
-HTEXTURE TexManager::GetTex(int _ID)
+std::map<int,HTEXTURE> TexManager::GetTex(int _ID)
 {
-	if(!m_mTex.empty() && m_mTex.find(_ID) != m_mTex.end())
-		return m_mTex[_ID];
-	
-	return 0;
+	std::map<int,HTEXTURE> mapTex;
+	if(!m_mWalkTex.empty() && m_mWalkTex.find(_ID) != m_mWalkTex.end())
+		mapTex[Walk] =  m_mWalkTex[_ID];
+	if(!m_mFightTex.empty() && m_mFightTex.find(_ID) != m_mFightTex.end())
+		mapTex[Fight] =  m_mFightTex[_ID];
+	if(!m_mDeadTex.empty() && m_mDeadTex.find(_ID) != m_mDeadTex.end())
+		mapTex[Dead] =  m_mDeadTex[_ID];
+
+	return mapTex;
 }
 
 blockInfo TexManager::GetBlock(int _type)

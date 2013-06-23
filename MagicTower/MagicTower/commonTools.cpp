@@ -69,9 +69,12 @@ KEY_STATE g_getKeyState(HGE* hge,int Key)
 	return state;
 }
 
-void g_getFiles( std::string path, std::map<std::string,std::string>& files,char* type,int maxFileNum,bool useDefaultName)
+void g_getFiles( std::string path, std::map<std::string,std::string>& files,char* type,int maxFileNum,bool useDefaultName,bool isCharacter)
 {
 	std::string* mapNames = new std::string[maxFileNum];
+	std::string* charFightNames = new std::string[maxFileNum];
+	std::string* charDeadNames = new std::string[maxFileNum];
+
 	if (useDefaultName)
 	{
 		for (int i=0;i<maxFileNum;i++)
@@ -79,8 +82,16 @@ void g_getFiles( std::string path, std::map<std::string,std::string>& files,char
 			char filename[50];
 			sprintf(filename,"%d%s",i,type);
 			mapNames[i].assign(filename);
+			if (isCharacter)
+			{
+				sprintf(filename,"%d-1%s",i,type);
+				charFightNames[i].assign(filename);
+				sprintf(filename,"%d-2%s",i,type);
+				charDeadNames[i].assign(filename);
+			}
 		}
 	}
+
 
 	//нд╪Ч╬Д╠З
 	long   hFile   =   0;
@@ -96,7 +107,7 @@ void g_getFiles( std::string path, std::map<std::string,std::string>& files,char
 			if((fileinfo.attrib &  _A_SUBDIR))
 			{
 				if(strcmp(fileinfo.name,".") != 0  &&  strcmp(fileinfo.name,"..") != 0)
-					g_getFiles( p.assign(path).append("\\").append(fileinfo.name), files,type,maxFileNum,useDefaultName );
+					g_getFiles( p.assign(path).append("\\").append(fileinfo.name), files,type,maxFileNum,useDefaultName,isCharacter );
 			}
 			else
 			{
@@ -104,7 +115,8 @@ void g_getFiles( std::string path, std::map<std::string,std::string>& files,char
 				{
 					for(int i=0;i<maxFileNum;i++)
 					{
-						if(strcmp(fileinfo.name,mapNames[i].c_str()) == 0)
+						if(strcmp(fileinfo.name,mapNames[i].c_str()) == 0 || 
+							(isCharacter && (strcmp(fileinfo.name,charFightNames[i].c_str()) == 0 || strcmp(fileinfo.name,charDeadNames[i].c_str()) == 0)))
 						{
 							files[p.assign(path).append("\\").append(fileinfo.name)] = fileinfo.name;
 							break;
@@ -120,6 +132,8 @@ void g_getFiles( std::string path, std::map<std::string,std::string>& files,char
 		_findclose(hFile);
 	}
 
+	delete[] charDeadNames;
+	delete[] charFightNames;
 	delete[] mapNames;
 }
 

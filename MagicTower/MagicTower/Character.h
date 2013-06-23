@@ -12,7 +12,7 @@ public:
 	void Render();
 	void Update(float delta); 
 
-	void Init(HTEXTURE tex,int _Level,int _ID,int _Num,int _Action,Block _block);
+	void Init(int _Level,int _ID,int _Num,int _Action,Block _block);
 	void Move(int tarX,int tarY);	//向目标移动
 	void Move(Direction dir);		//以格子为单位移动
 
@@ -28,8 +28,11 @@ public:
 
 	int GetID(){return m_nID;}
 	int GetNum(){return m_nNum;}
+
+	void testHit();
 private:
 	hgeAnimation* m_pAnimation;
+	std::map<int,HTEXTURE> m_mCharTex; //存储单位的各个图片动作
 	int m_nLevel;	//所在关卡
 	int m_nID;		//代表单位类别的ID号
 	int m_nNum;	//代表出现在当前关卡的单位号

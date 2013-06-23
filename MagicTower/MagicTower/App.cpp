@@ -71,7 +71,7 @@ bool App::LoadResource()
 	}
 
 	player = new Character;
-	player->Init(TexManager::sInstance().GetTex(1),MapManager::sInstance().GetCurrentMap()->GetLevel(),1,1,1,Block(5,5));
+	player->Init(MapManager::sInstance().GetCurrentMap()->GetLevel(),1,1,1,Block(5,5));
 
 
 //  	TipWnd::sInstance().AddText("ÎÔÊÒ",0xFFFF0000,20.0f,10.0f,MSYaHei,FontBig,false);
@@ -191,6 +191,8 @@ bool App::AppUpdate()
 		player->Move(LEFT);
 	else if (g_getKeyState(m_pHge,HGEK_D)==KEY_DOWN)
 		player->Move(RIGHT);
+	else if (g_getKeyState(m_pHge,HGEK_SPACE)==KEY_DOWN)
+		player->testHit();
 
 	float dt = m_pHge->Timer_GetDelta();
 	player->Update(dt);

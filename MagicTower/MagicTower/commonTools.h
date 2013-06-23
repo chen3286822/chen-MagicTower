@@ -48,6 +48,7 @@
 #define ID_CTRL_BTN_1									0x000020
 #define ID_CTRL_BTN_2									0x000021
 
+//Walk 图大小
 #define FLOAT_PIC_SQUARE_WIDTH			48
 #define FLOAT_PIC_SQUARE_HEIGHT			64
 #define FLOAT_PIC_WIDTH							192
@@ -72,6 +73,14 @@ enum Camp
 	Friend = 0,
 	Enemy,
 	Neutral,
+};
+
+//单位图片动作号
+enum CharActionNum
+{
+	Walk = 0,
+	Fight = 1,
+	Dead = 2,
 };
 
 
@@ -213,7 +222,7 @@ typedef struct tagConfig Config;
 
 
 KEY_STATE g_getKeyState(HGE* hge,int Key);
-void g_getFiles( std::string path, std::map<std::string,std::string>& files,char* type,int maxFileNum,bool useDefaultName);
+void g_getFiles( std::string path, std::map<std::string,std::string>& files,char* type,int maxFileNum,bool useDefaultName,bool isCharacter=false);
 int g_getKeyNum(int Key);	//根据按键编号取得该按键在数组中的位置
 void g_CTW(const char* text,wchar_t* out);	//char* to wchar_t*
 int g_getPointToPointValueByIndex(int** array,int n,int i,int j);

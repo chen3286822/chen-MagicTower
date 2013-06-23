@@ -1,11 +1,13 @@
 #include "Character.h"
 #include "App.h"
 #include "MapManager.h"
+#include "TexManager.h"
 
 
 Character::Character(void)
 {
 	m_pAnimation = NULL;
+	m_mCharTex.clear();
 	m_nLevel = 0;
 	m_nID = 0;
 	m_nNum = 0;
@@ -23,11 +25,17 @@ Character::~Character(void)
 	gSafeDelete(m_pAnimation);
 }
 
-void Character::Init(HTEXTURE tex,int _Level,int _ID,int _Num,int _Action,Block _block)
+void Character::Init(int _Level,int _ID,int _Num,int _Action,Block _block)
 {
 	if(m_pAnimation)
 		gSafeDelete(m_pAnimation);
-	m_pAnimation = new hgeAnimation(tex,4,8,0,FLOAT_PIC_SQUARE_HEIGHT*(_Action-1),FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT);
+
+	m_mCharTex = TexManager::sInstance().GetTex(_ID);
+	//³õÊ¼»¯Ê§°Ü
+	if(m_mCharTex.empty())
+		return;
+
+	m_pAnimation = new hgeAnimation(m_mCharTex[Walk],4,8,0,FLOAT_PIC_SQUARE_HEIGHT*(_Action-1),FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT);
 	m_nLevel = _Level;
 	m_nID = _ID;
 	m_nNum = _Num;
@@ -249,6 +257,15 @@ void Character::Move(Direction dir)
 		m_eCurMoveDir = m_lPathDir.front();
 		m_pAnimation->ResetFrames(0,(m_eCurMoveDir-1)*FLOAT_PIC_SQUARE_HEIGHT,
 			FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT,4,8,false);
+		m_pAnimation->SetMode(HGEANIM_LOOP|HGEANIM_FWD);
 		m_lPathDir.pop_front();
 	}
+}
+
+void Character::testHit()
+{
+	m_pAnimation->SetTexture(m_mCharTex[Fight]);
+	m_pAnimation->ResetFrames(0,(m_eCurMoveDir-1)*FLOAT_PIC_SQUARE_HEIGHT,
+		FLOAT_PIC_SQUARE_HEIGHT,FLOAT_PIC_SQUARE_HEIGHT,4,8,false);
+	m_pAnimation->SetMode(HGEANIM_FWD | HGEANIM_NOLOOP);
 }

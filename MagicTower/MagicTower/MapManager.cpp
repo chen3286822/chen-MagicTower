@@ -207,7 +207,7 @@ bool MapManager::LoadMaps(std::string path)
 
 				Character* cha = new Character;
 //				MapObject* mo = new MapObject;
-				cha->Init(TexManager::sInstance().GetTex(_ID),level->GetLevel(),_ID,num,_Action,Block(_xpos,_ypos));
+				cha->Init(level->GetLevel(),_ID,num,_Action,Block(_xpos,_ypos));
 				//地图格子由于单位生成，属性变化移动到单位创建中完成
 // 				Block* theBlock = level->GetBlock(_xpos,_ypos);
 // 				if(theBlock != NULL)
