@@ -67,6 +67,7 @@ private:
 	int m_nSrc; //攻击自己的单位
 	int m_nTar;	//攻击目标
 	AttackState m_eAttackState; //攻击子状态，用于处理攻击流程
+	DWORD m_dwRecordTime;	//用于动作计时
 };
 
 

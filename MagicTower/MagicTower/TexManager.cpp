@@ -61,6 +61,9 @@ bool TexManager::LoadTex(std::string path)
 				m_mDeadTex[ID] = App::sInstance().GetHGE()->Texture_Load(mit->first.c_str());
 			else if(IDEx == 3)
 				m_mDefendTex[ID] = App::sInstance().GetHGE()->Texture_Load(mit->first.c_str());
+
+			ID = 0;
+			IDEx = 0;
 		}
 	}
 	if (m_mWalkTex.empty())

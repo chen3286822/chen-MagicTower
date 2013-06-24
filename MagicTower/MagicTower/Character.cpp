@@ -20,7 +20,8 @@ Character::Character(void)
 	m_bFinishAct = false;
 	m_nCamp = Neutral;
 	m_eCharState = Stand;
-	m_nTar = 3;
+	m_nTar = 0;
+	m_dwRecordTime = 0;
 }
 
 Character::~Character(void)
@@ -69,7 +70,7 @@ void Character::Render()
 
 void Character::Update(float delta)
 {
-	if(m_eCharState == Stand)
+	if(m_eCharState == Stand || (m_eCharState==Fight && m_eAttackState==Waiting))
 		return;
 
 	if (m_eCharState == Walk)
@@ -186,21 +187,37 @@ void Character::Update(float delta)
 	{
 		if (m_eAttackState == Ready)
 		{
-			if (m_pAnimation->GetFrame() == 0)
+			DWORD currentTime = GetTickCount();
+			if(m_dwRecordTime == 0)
+				m_dwRecordTime = GetTickCount();
+			//0.1秒后再通知攻击者
+			if(currentTime >= m_dwRecordTime + 100)
 			{
-				m_eCharState = Stand;
-				CreatureManager::sInstance().Notify(m_nNum,m_nSrc,Notify_ReadyToBeAttacked,0);
+				if (m_pAnimation->GetFrame() == 0)
+				{
+					m_eCharState = Stand;
+					CreatureManager::sInstance().Notify(m_nNum,m_nSrc,Notify_ReadyToBeAttacked,0);
+				}
+				m_dwRecordTime = 0;
 			}
 		}
 		else if (m_eAttackState == Attackeding)
 		{
-			if (m_pAnimation->GetFrame() == 0)
+			DWORD currentTime = GetTickCount();
+			if(m_dwRecordTime == 0)
+				m_dwRecordTime = GetTickCount();
+			//0.1秒后再通知攻击者
+			if(currentTime >= m_dwRecordTime + 1000)
 			{
-				m_pAnimation->SetTexture(m_mCharTex[Walk]);
-				m_pAnimation->ResetFrames(0,(m_eCurDir-1)*FLOAT_PIC_SQUARE_HEIGHT,
-					FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT,4,8,false);
-				m_pAnimation->SetMode(HGEANIM_LOOP|HGEANIM_FWD);
-				m_eCharState = Stand;
+				if (m_pAnimation->GetFrame() == 0)
+				{
+					m_pAnimation->SetTexture(m_mCharTex[Walk]);
+					m_pAnimation->ResetFrames(0,(m_eCurDir-1)*FLOAT_PIC_SQUARE_HEIGHT,
+						FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT,4,8,false);
+					m_pAnimation->SetMode(HGEANIM_LOOP|HGEANIM_FWD);
+					m_eCharState = Stand;
+				}
+				m_dwRecordTime = 0;
 			}
 		}
 	}
@@ -335,7 +352,7 @@ int Character::TowardToAttacker(int src,int dir)
 			break;
 		}
 		m_pAnimation->ResetFrames(0,(m_eCurDir-1)*FLOAT_PIC_SQUARE_HEIGHT,
-			FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT,4,8,false);
+			FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT,1,8,false);
 		m_pAnimation->SetMode(HGEANIM_LOOP|HGEANIM_FWD);
 
 		return Notify_Success;
@@ -370,9 +387,9 @@ void Character::Attacked()
 	else if(m_eCurDir == LEFT || m_eCurDir == RIGHT)
 		offset = 2;
 	m_pAnimation->SetTexture(m_mCharTex[Defend]);
-	m_pAnimation->ResetFrames(0,offset*FLOAT_PIC_SQUARE_HEIGHT,
+	m_pAnimation->ResetFrames(0,offset*FLOAT_PIC_SQUARE_WIDTH,
 		FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_WIDTH,1,8,false);
-	m_pAnimation->SetMode(HGEANIM_FWD | HGEANIM_LOOP);
+	m_pAnimation->SetMode(HGEANIM_FWD | HGEANIM_NOLOOP);
 
 
 	//设置被攻击子状态

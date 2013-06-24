@@ -66,7 +66,7 @@
 <Terrain type="5" xpos="7" ypos="7"/>
 </Block>
 <Creature>
-<Man ID="13" Action="5" xpos="1" ypos="0" camp="1"/>
+<Man ID="0" Action="5" xpos="1" ypos="0" camp="1"/>
 <Man ID="8" Action="7" xpos="4" ypos="1" camp="1"/>
 <Man ID="13" Action="5" xpos="6" ypos="1" camp="1"/>
 <Man ID="5" Action="4" xpos="2" ypos="2" camp="1"/>
