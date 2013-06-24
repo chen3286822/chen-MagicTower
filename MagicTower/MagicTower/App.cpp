@@ -71,7 +71,8 @@ bool App::LoadResource()
 	}
 
 	player = new Character;
-	player->Init(MapManager::sInstance().GetCurrentMap()->GetLevel(),1,1,1,Block(5,5));
+	player->Init(MapManager::sInstance().GetCurrentMap()->GetLevel(),1,100,1,Block(5,5));
+	CreatureManager::sInstance().AddFriend(player);
 
 
 //  	TipWnd::sInstance().AddText("ÎÔÊÒ",0xFFFF0000,20.0f,10.0f,MSYaHei,FontBig,false);
@@ -116,7 +117,6 @@ bool App::AppRender()
 	MapManager::sInstance().Render();
 	DrawMouseRect();
 	CreatureManager::sInstance().Render();
-	player->Render();
 	TipWnd::sInstance().Render();
 
 	m_pHge->Gfx_EndScene();
@@ -191,11 +191,10 @@ bool App::AppUpdate()
 		player->Move(LEFT);
 	else if (g_getKeyState(m_pHge,HGEK_D)==KEY_DOWN)
 		player->Move(RIGHT);
-	else if (g_getKeyState(m_pHge,HGEK_SPACE)==KEY_DOWN)
-		player->testHit();
+	else if (g_getKeyState(m_pHge,HGEK_J)==KEY_DOWN)
+		player->GeginHit();
 
 	float dt = m_pHge->Timer_GetDelta();
-	player->Update(dt);
 
 	CreatureManager::sInstance().Strategy();
 

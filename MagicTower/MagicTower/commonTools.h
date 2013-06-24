@@ -75,12 +75,31 @@ enum Camp
 	Neutral,
 };
 
-//单位图片动作号
-enum CharActionNum
+//单位状态
+enum CharacterState
 {
+	Stand = -1,
 	Walk = 0,
 	Fight = 1,
 	Dead = 2,
+	Defend = 3,
+};
+//攻击子状态
+enum AttackState
+{
+	Waiting = 1,
+	Ready,
+	Attacking,
+	Attackeding,
+};
+//单位间通知事件及结果
+enum Notification
+{
+	Notify_Success = 0,
+	Notify_TowardToAttacker,
+	Notify_NoTarget,
+	Notify_ReadyToBeAttacked,
+	Notify_CannotBeAttacked,
 };
 
 

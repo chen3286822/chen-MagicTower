@@ -1,6 +1,16 @@
 #pragma once
 #include "commonTools.h"
 
+/*
+单位状态变化：
+Stand --Move--> Walk ----> Stand
+Stand --Attack--> Fight ----> Stand
+
+当单位处于Stand时，其行动方向一定是None
+当单位处于Walk时，其行动方向一定不是None
+
+*/
+
 
 //表示所有单位
 class Character
@@ -29,7 +39,12 @@ public:
 	int GetID(){return m_nID;}
 	int GetNum(){return m_nNum;}
 
-	void testHit();
+	//战斗相关
+	void GeginHit();
+	int TowardToAttacker(int src,int dir);	//面对着攻击者
+	void Attack();	//开始攻击
+	void Attacked();	//开始被攻击
+	void Defending(); //开始防御
 private:
 	hgeAnimation* m_pAnimation;
 	std::map<int,HTEXTURE> m_mCharTex; //存储单位的各个图片动作
@@ -44,9 +59,14 @@ private:
 	bool m_bFinishAct;	//代表是否行动过
 	int	m_nCamp;		//单位阵营
 
-	Direction m_eCurMoveDir;	//当前移动的方向
+	CharacterState m_eCharState; //单位当前的状态 
+	Direction m_eCurDir;	//当前方向
 	LDirection m_lPathDir;	//整个路径的移动方向
 	int m_nLeftDistance;	//剩余需要移动的格子数
+
+	int m_nSrc; //攻击自己的单位
+	int m_nTar;	//攻击目标
+	AttackState m_eAttackState; //攻击子状态，用于处理攻击流程
 };
 
 

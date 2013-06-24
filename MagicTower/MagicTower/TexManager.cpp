@@ -6,6 +6,7 @@ TexManager::TexManager(void)
 	m_mWalkTex.clear();
 	m_mFightTex.clear();
 	m_mDeadTex.clear();
+	m_mDefendTex.clear();
 	m_mMap.clear();
 	m_mMapInfo.clear();
 }
@@ -22,6 +23,10 @@ TexManager::~TexManager(void)
 		App::sInstance().GetHGE()->Texture_Free(mit->second);
 	}
 	for (std::map<int,HTEXTURE>::iterator mit=m_mDeadTex.begin();mit!=m_mDeadTex.end();mit++)
+	{
+		App::sInstance().GetHGE()->Texture_Free(mit->second);
+	}
+	for (std::map<int,HTEXTURE>::iterator mit=m_mDefendTex.begin();mit!=m_mDefendTex.end();mit++)
 	{
 		App::sInstance().GetHGE()->Texture_Free(mit->second);
 	}
@@ -54,6 +59,8 @@ bool TexManager::LoadTex(std::string path)
 				m_mFightTex[ID] = App::sInstance().GetHGE()->Texture_Load(mit->first.c_str());
 			else if(IDEx == 2)
 				m_mDeadTex[ID] = App::sInstance().GetHGE()->Texture_Load(mit->first.c_str());
+			else if(IDEx == 3)
+				m_mDefendTex[ID] = App::sInstance().GetHGE()->Texture_Load(mit->first.c_str());
 		}
 	}
 	if (m_mWalkTex.empty())
@@ -105,6 +112,8 @@ std::map<int,HTEXTURE> TexManager::GetTex(int _ID)
 		mapTex[Fight] =  m_mFightTex[_ID];
 	if(!m_mDeadTex.empty() && m_mDeadTex.find(_ID) != m_mDeadTex.end())
 		mapTex[Dead] =  m_mDeadTex[_ID];
+	if(!m_mDefendTex.empty() && m_mDefendTex.find(_ID) != m_mDefendTex.end())
+		mapTex[Defend] =  m_mDefendTex[_ID];
 
 	return mapTex;
 }

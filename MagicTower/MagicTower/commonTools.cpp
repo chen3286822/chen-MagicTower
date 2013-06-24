@@ -71,9 +71,20 @@ KEY_STATE g_getKeyState(HGE* hge,int Key)
 
 void g_getFiles( std::string path, std::map<std::string,std::string>& files,char* type,int maxFileNum,bool useDefaultName,bool isCharacter)
 {
-	std::string* mapNames = new std::string[maxFileNum];
-	std::string* charFightNames = new std::string[maxFileNum];
-	std::string* charDeadNames = new std::string[maxFileNum];
+	std::string* mapNames = NULL;
+	std::string* charFightNames = NULL;
+	std::string* charDeadNames = NULL;
+	std::string* charDefendNames = NULL;
+	if (useDefaultName)
+	{
+		mapNames = new std::string[maxFileNum];
+		if (isCharacter)
+		{
+			charFightNames = new std::string[maxFileNum];
+			charDeadNames = new std::string[maxFileNum];
+			charDefendNames = new std::string[maxFileNum];
+		}
+	}
 
 	if (useDefaultName)
 	{
@@ -88,6 +99,8 @@ void g_getFiles( std::string path, std::map<std::string,std::string>& files,char
 				charFightNames[i].assign(filename);
 				sprintf(filename,"%d-2%s",i,type);
 				charDeadNames[i].assign(filename);
+				sprintf(filename,"%d-3%s",i,type);
+				charDefendNames[i].assign(filename);
 			}
 		}
 	}
@@ -116,7 +129,7 @@ void g_getFiles( std::string path, std::map<std::string,std::string>& files,char
 					for(int i=0;i<maxFileNum;i++)
 					{
 						if(strcmp(fileinfo.name,mapNames[i].c_str()) == 0 || 
-							(isCharacter && (strcmp(fileinfo.name,charFightNames[i].c_str()) == 0 || strcmp(fileinfo.name,charDeadNames[i].c_str()) == 0)))
+							(isCharacter && (strcmp(fileinfo.name,charFightNames[i].c_str()) == 0 || strcmp(fileinfo.name,charDeadNames[i].c_str()) == 0|| strcmp(fileinfo.name,charDefendNames[i].c_str()) == 0)))
 						{
 							files[p.assign(path).append("\\").append(fileinfo.name)] = fileinfo.name;
 							break;
@@ -132,9 +145,16 @@ void g_getFiles( std::string path, std::map<std::string,std::string>& files,char
 		_findclose(hFile);
 	}
 
-	delete[] charDeadNames;
-	delete[] charFightNames;
-	delete[] mapNames;
+	if(useDefaultName)
+	{
+		if (isCharacter)
+		{
+			delete[] charDefendNames;
+			delete[] charDeadNames;
+			delete[] charFightNames;
+		}
+		delete[] mapNames;
+	}
 }
 
 void g_CTW(const char* text,wchar_t* out)

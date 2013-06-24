@@ -43,6 +43,7 @@ private:
 	std::map<int,HTEXTURE> m_mWalkTex;		//所有单位的行动图片
 	std::map<int,HTEXTURE> m_mFightTex;		//所有单位的战斗图片
 	std::map<int,HTEXTURE> m_mDeadTex;		//所有单位的死亡图片
+	std::map<int,HTEXTURE> m_mDefendTex;		//所有单位的防御图片
 	std::map<int,HTEXTURE> m_mMap;		//所有包含地图图块的图片
 	std::map<int,blockInfo> m_mMapInfo;	//所有地图图块在各图片中的位置大小信息
 };

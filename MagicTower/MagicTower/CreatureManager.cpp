@@ -136,7 +136,7 @@ void CreatureManager::Strategy()
 	int yMove = enemy->GetMoveAbility() - xMove;
 	int xDir = (App::sInstance().GetHGE()->Random_Int(0,1)==0)?-1:1;
 	int yDir = (App::sInstance().GetHGE()->Random_Int(0,1)==0)?-1:1;
-	enemy->Move(enemy->GetBlock().xpos+xMove*xDir,enemy->GetBlock().ypos+yMove*yDir);
+//	enemy->Move(enemy->GetBlock().xpos+xMove*xDir,enemy->GetBlock().ypos+yMove*yDir);
 //	enemy->Move((Direction)(App::sInstance().GetHGE()->Random_Int(0,4)));
 }
 
@@ -256,4 +256,36 @@ bool CreatureManager::ResetAllCreature()
 	for (VCharacter::iterator it=m_VFriendList.begin();it!=m_VFriendList.end();it++)
 		(*it)->SetFinish(false);
 	return true;
+}
+
+int CreatureManager::Notify(int src,int tar,int messageID,int param)
+{
+	int result = -1;
+	Character* target = GetCreature(tar);
+	if (!target)
+		result = Notify_NoTarget;
+
+	switch(messageID)
+	{
+	case Notify_TowardToAttacker:
+		result = target->TowardToAttacker(src,param);
+		break;
+	case Notify_ReadyToBeAttacked:
+		{
+			target->Attack();
+			result = Notify_Success;
+		}
+		break;
+	default:
+		break;
+	}
+
+	return result;
+}
+
+void CreatureManager::CalculateResult(int src,int tar)
+{
+	//²âÊÔ£¬ÈÃtarget ÊÜÉËº¦
+	Character* target = GetCreature(tar);
+	target->Attacked();
 }

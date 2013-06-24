@@ -40,6 +40,13 @@ public:
 	void Strategy();
 	int	GetCurrentActionCreature(){return m_nActionCreatureNum;}
 
+	//单位间通信
+	//包括攻击前通知、攻击类型通知、
+	int Notify(int src,int tar,int messageID,int param);
+
+	//计算攻击结果
+	void CalculateResult(int src,int tar);
+
 private:
 	VCharacter  m_VFriendList;
 	VCharacter	m_VEnemyList;

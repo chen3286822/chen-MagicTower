@@ -150,6 +150,40 @@ void hgeSprite::Render4V(float x0, float y0, float x1, float y1, float x2, float
 	hge->Gfx_RenderQuad(&quad);
 }
 
+void hgeSprite::RenderSymmetry(float x, float y,int axis)
+{
+	float tempx1, tempy1, tempx2, tempy2;
+
+	tempx1 = x-hotX;
+	tempy1 = y-hotY;
+	tempx2 = x+width-hotX;
+	tempy2 = y+height-hotY;
+
+	if(axis == 0)
+	{
+		quad.v[0].x = tempx1; quad.v[0].y = tempy1*-1;
+		quad.v[1].x = tempx2; quad.v[1].y = tempy1*-1;
+		quad.v[2].x = tempx2; quad.v[2].y = tempy2*-1;
+		quad.v[3].x = tempx1; quad.v[3].y = tempy2*-1;
+	}
+	else if (axis == 1)
+	{
+		quad.v[0].x = tempx1*-1; quad.v[0].y = tempy1;
+		quad.v[1].x = tempx2*-1; quad.v[1].y = tempy1;
+		quad.v[2].x = tempx2*-1; quad.v[2].y = tempy2;
+		quad.v[3].x = tempx1*-1; quad.v[3].y = tempy2;
+	}
+	else if (axis == 2)
+	{
+		quad.v[0].x = tempx1*-1; quad.v[0].y = tempy1*-1;
+		quad.v[1].x = tempx2*-1; quad.v[1].y = tempy1*-1;
+		quad.v[2].x = tempx2*-1; quad.v[2].y = tempy2*-1;
+		quad.v[3].x = tempx1*-1; quad.v[3].y = tempy2*-1;
+	}
+
+
+	hge->Gfx_RenderQuad(&quad);
+}
 
 hgeRect* hgeSprite::GetBoundingBoxEx(float x, float y, float rot, float hscale, float vscale, hgeRect *rect) const
 {
