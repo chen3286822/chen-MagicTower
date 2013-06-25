@@ -30,6 +30,26 @@ eLButtonState g_getLButtonState(HGE* hge)
 	return state;
 }
 
+eRButtonState g_getRButtonState(HGE* hge)
+{
+	static bool lastPressed = false;
+	static bool currentPressed = false;
+	eRButtonState state = eRButtonState_Null;
+	currentPressed = hge->Input_GetKeyState(HGEK_RBUTTON);
+
+	if (currentPressed==false && lastPressed==false)
+		state =  eRButtonState_Null;
+	else if(currentPressed==true && lastPressed==false)
+		state =  eRButtonState_Down;
+	else if(currentPressed==true && lastPressed==true)
+		state =  eRButtonState_Hold;
+	else if(currentPressed==false && lastPressed==true)
+		state =  eRButtonState_Up;
+
+	lastPressed = currentPressed;
+	return state;
+}
+
 int g_getKeyNum(int Key)
 {
 	if(Key >= HGEK_0 && Key <= HGEK_9)

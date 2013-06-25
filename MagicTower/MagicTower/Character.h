@@ -35,7 +35,8 @@ public:
 	int	GetMoveAbility(){return m_nMoveAbility;}
 	void SetCamp(int _camp){m_nCamp = _camp;}
 	int GetCamp(){return m_nCamp;}
-
+	void SetAttackRange(eAttackRange _attackRange){m_eAttackRange = _attackRange;}
+	eAttackRange GetAttackRange(){return m_eAttackRange;}
 	int GetID(){return m_nID;}
 	int GetNum(){return m_nNum;}
 

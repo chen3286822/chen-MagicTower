@@ -148,6 +148,14 @@ enum eLButtonState
 	eLButtonState_Null
 };
 
+enum eRButtonState
+{
+	eRButtonState_Down,
+	eRButtonState_Up,
+	eRButtonState_Hold,
+	eRButtonState_Null
+};
+
 enum eKeyState
 {
 	eKeyState_Down,
@@ -261,6 +269,7 @@ int g_getKeyNum(int Key);	//根据按键编号取得该按键在数组中的位置
 void g_CTW(const char* text,wchar_t* out);	//char* to wchar_t*
 int g_getPointToPointValueByIndex(int** array,int n,int i,int j);
 eLButtonState g_getLButtonState(HGE* hge);
+eRButtonState g_getRButtonState(HGE* hge);
 int g_getTerrainCost(int terrain);	//根据地形取得消耗
 
 #endif

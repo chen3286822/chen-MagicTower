@@ -32,6 +32,8 @@ public:
 	void ShowCreatureInfo();
 	//显示该单位移动范围
 	void ShowMoveRange();
+	//显示该单位攻击范围
+	void ShowAttackRange();
 
 	//只有当所有单位都行动过后才能重置，相当于开始下一回合
 	bool ResetAllCreature();
@@ -47,6 +49,12 @@ public:
 	//计算攻击结果
 	void CalculateResult(int src,int tar);
 
+	//选中单位
+	void SelectCreature();
+	//取消选中
+	void UnSelectCreature();
+	//对于选中单位的处理
+	void ProcessSelectCreature();
 private:
 	VCharacter  m_VFriendList;
 	VCharacter	m_VEnemyList;

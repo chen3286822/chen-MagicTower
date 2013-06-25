@@ -8,7 +8,7 @@ CreatureManager::CreatureManager()
 	m_VFriendList.clear();
 	m_VEnemyList.clear();
 	m_nActionCreatureNum = -1;
-	m_nSelectNum = 1;
+	m_nSelectNum = -1;
 }
 
 CreatureManager::~CreatureManager()
@@ -41,6 +41,9 @@ void CreatureManager::Update(float delta)
 		if(cha->GetFinish())
 			m_nActionCreatureNum = -1;
 	}
+
+	SelectCreature();
+	UnSelectCreature();
 	ShowCreatureInfo();
 }
 
@@ -50,6 +53,47 @@ void CreatureManager::ShowMoveRange()
 	if (selectChar)
 	{
 		int moveAbility = selectChar->GetMoveAbility();	
+		Block charBlock = selectChar->GetBlock();
+		Map* currentMap = MapManager::sInstance().GetCurrentMap();
+		int mapWidth = 0,mapLength = 0;
+		currentMap->GetWidthLength(mapWidth,mapLength);
+		int offX = 0,offY = 0;
+		DWORD color = 0;
+		if(selectChar->GetCamp() == eCamp_Friend)
+			color = 0x4F3737DF;
+		else if(selectChar->GetCamp() == eCamp_Enemy)
+			color = 0x4FEB2323;
+		for (int i=charBlock.xpos-moveAbility;i<=charBlock.xpos+moveAbility;i++)
+		{
+			if(i >= 0 && i< mapWidth)
+			{
+				for (int j=charBlock.ypos-moveAbility;j<=charBlock.ypos+moveAbility;j++)
+				{
+					if (j >= 0 && j < mapLength)
+					{
+						offX = abs(i - charBlock.xpos);
+						offY = abs(j - charBlock.ypos);
+						if((offX + offY > moveAbility) || (i==charBlock.xpos && j==charBlock.ypos))
+							continue;
+
+						if (!currentMap->GetBlockOccupied(i,j))
+						{
+							//画方格表示可以移动
+							App::sInstance().DrawSmallRect(Block(i,j),color);
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+void CreatureManager::ShowAttackRange()
+{
+	Character* selectChar = GetCreature(m_nSelectNum);
+	if (selectChar)
+	{
+		eAttackRange attackRange = selectChar->GetAttackRange();	
 		Block charBlock = selectChar->GetBlock();
 		Map* currentMap = MapManager::sInstance().GetCurrentMap();
 		int mapWidth = 0,mapLength = 0;
@@ -288,4 +332,41 @@ void CreatureManager::CalculateResult(int src,int tar)
 	//测试，让target 受伤害
 	Character* target = GetCreature(tar);
 	target->Attacked();
+}
+
+void CreatureManager::SelectCreature()
+{
+	Block mouseBlock = App::sInstance().GetMouseBlock();
+	Character* selectChar = NULL;
+	if (mouseBlock.xpos!=-1 && mouseBlock.ypos!=-1)
+	{
+		selectChar = GetCreature(mouseBlock.xpos,mouseBlock.ypos);
+		if(selectChar!=NULL)
+		{
+			if (g_getLButtonState(App::sInstance().GetHGE()) == eLButtonState_Up)
+			{
+				m_nSelectNum = selectChar->GetNum();
+			}
+		}
+	}
+}
+
+void CreatureManager::UnSelectCreature()
+{
+	if (m_nSelectNum >= 0)
+	{
+		if (g_getRButtonState(App::sInstance().GetHGE()) == eRButtonState_Up)
+		{
+			m_nSelectNum = -1;
+		}
+	}
+}
+
+void CreatureManager::ProcessSelectCreature()
+{
+	if (m_nSelectNum>=0)
+	{
+		ShowMoveRange();
+	}
+	
 }

@@ -172,10 +172,10 @@ bool App::AppUpdate()
 		m_iBlock.xpos = (int)(xMap/MAP_RECT);
 		m_iBlock.ypos = (int)(yMap/MAP_RECT);
 
-		if(g_getLButtonState(m_pHge) == eLButtonState_Up)
-		{
-			player->Move(m_iBlock.xpos,m_iBlock.ypos);
-		}
+// 		if(g_getLButtonState(m_pHge) == eLButtonState_Up)
+// 		{
+// 			player->Move(m_iBlock.xpos,m_iBlock.ypos);
+// 		}
 	}
 	else
 	{
