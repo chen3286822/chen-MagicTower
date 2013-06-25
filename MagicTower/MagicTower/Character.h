@@ -24,7 +24,7 @@ public:
 
 	void Init(int _Level,int _ID,int _Num,int _Action,Block _block);
 	void Move(int tarX,int tarY);	//向目标移动
-	void Move(Direction dir);		//以格子为单位移动
+	void Move(eDirection dir);		//以格子为单位移动
 
 	void SetMove(bool _move){m_bCanMove = _move;}
 	bool GetMove(){return m_bCanMove;}
@@ -44,7 +44,7 @@ public:
 	int TowardToAttacker(int src,int dir);	//面对着攻击者
 	void Attack();	//开始攻击
 	void Attacked();	//开始被攻击
-	void Defending(); //开始防御
+	void Defend(); //开始防御
 private:
 	hgeAnimation* m_pAnimation;
 	std::map<int,HTEXTURE> m_mCharTex; //存储单位的各个图片动作
@@ -59,14 +59,15 @@ private:
 	bool m_bFinishAct;	//代表是否行动过
 	int	m_nCamp;		//单位阵营
 
-	CharacterState m_eCharState; //单位当前的状态 
-	Direction m_eCurDir;	//当前方向
+	eCharacterState m_eCharState; //单位当前的状态 
+	eDirection m_eCurDir;	//当前方向
 	LDirection m_lPathDir;	//整个路径的移动方向
 	int m_nLeftDistance;	//剩余需要移动的格子数
 
+	eAttackRange m_eAttackRange;	//单位攻击范围类型
 	int m_nSrc; //攻击自己的单位
 	int m_nTar;	//攻击目标
-	AttackState m_eAttackState; //攻击子状态，用于处理攻击流程
+	eAttackState m_eAttackState; //攻击子状态，用于处理攻击流程
 	DWORD m_dwRecordTime;	//用于动作计时
 };
 

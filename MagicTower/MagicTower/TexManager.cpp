@@ -99,10 +99,10 @@ bool TexManager::LoadMap(std::string path)
 		return false;
 	}
 	//载入地图中图块信息
-	m_mMapInfo[Road]			=	blockInfo(96.0f,32.0f,32.0f,32.0f,m_mMap[0]);
-	m_mMapInfo[CityRoad]		=	blockInfo(96.0f,64.0f,32.0f,32.0f,m_mMap[0]);
-	m_mMapInfo[Forest]			=	blockInfo(96.0f,0.0f,32.0f,32.0f,m_mMap[0]);
-	m_mMapInfo[City]				=	blockInfo(64.0f,192.0f,32.0f,32.0f,m_mMap[0]);
+	m_mMapInfo[eTerrain_Road]			=	blockInfo(96.0f,32.0f,32.0f,32.0f,m_mMap[0]);
+	m_mMapInfo[eTerrain_CityRoad]		=	blockInfo(96.0f,64.0f,32.0f,32.0f,m_mMap[0]);
+	m_mMapInfo[eTerrain_Forest]			=	blockInfo(96.0f,0.0f,32.0f,32.0f,m_mMap[0]);
+	m_mMapInfo[eTerrain_City]				=	blockInfo(64.0f,192.0f,32.0f,32.0f,m_mMap[0]);
 	return true;
 }
 
@@ -110,13 +110,13 @@ std::map<int,HTEXTURE> TexManager::GetTex(int _ID)
 {
 	std::map<int,HTEXTURE> mapTex;
 	if(!m_mWalkTex.empty() && m_mWalkTex.find(_ID) != m_mWalkTex.end())
-		mapTex[Walk] =  m_mWalkTex[_ID];
+		mapTex[eCharacterState_Walk] =  m_mWalkTex[_ID];
 	if(!m_mFightTex.empty() && m_mFightTex.find(_ID) != m_mFightTex.end())
-		mapTex[Fight] =  m_mFightTex[_ID];
+		mapTex[eCharacterState_Fight] =  m_mFightTex[_ID];
 	if(!m_mDeadTex.empty() && m_mDeadTex.find(_ID) != m_mDeadTex.end())
-		mapTex[Dead] =  m_mDeadTex[_ID];
+		mapTex[eCharacterState_Dead] =  m_mDeadTex[_ID];
 	if(!m_mDefendTex.empty() && m_mDefendTex.find(_ID) != m_mDefendTex.end())
-		mapTex[Defend] =  m_mDefendTex[_ID];
+		mapTex[eCharacterState_Defense] =  m_mDefendTex[_ID];
 
 	return mapTex;
 }

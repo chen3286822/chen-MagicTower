@@ -28,7 +28,7 @@ void TipWnd::Clear()
 	m_XPos = m_YPos = -1;
 }
 
-void TipWnd::AddText(const char* str,DWORD color/* =0xFFFFFFFF */,float x/* =-1 */,float y/* =-1 */,FontType type/* =DefaultType */,FontSize size,bool autoEnter/* =true */,int maxWidth)
+void TipWnd::AddText(const char* str,DWORD color/* =0xFFFFFFFF */,float x/* =-1 */,float y/* =-1 */,eFontType type/* =DefaultType */,eFontSize size,bool autoEnter/* =true */,int maxWidth)
 {
 	wchar_t out[256];
 	g_CTW(str,out);
@@ -53,7 +53,7 @@ void TipWnd::AddText(const char* str,DWORD color/* =0xFFFFFFFF */,float x/* =-1 
 
 void TipWnd::AddEmptyLine()
 {
-	StringLine line((wchar_t*)"",0xFFFFFFFF,DefaultType,FontSmall,true);
+	StringLine line((wchar_t*)"",0xFFFFFFFF,eFontType_DefaultType,eFontSize_FontSmall,true);
 	m_vStringLine.push_back(line);
 }
 

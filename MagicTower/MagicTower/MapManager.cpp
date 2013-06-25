@@ -154,7 +154,7 @@ bool MapManager::LoadMaps(std::string path)
 		int _Action = 0;
 		int _xpos = 0;
 		int _ypos = 0;
-		Camp _camp = Neutral;
+		eCamp _camp = eCamp_Neutral;
 		int num = 0;
 		m_pMarkUp->ResetMainPos();
 		if(m_pMarkUp->FindElem("map"))
@@ -203,7 +203,7 @@ bool MapManager::LoadMaps(std::string path)
 				_Action = atoi(m_pMarkUp->GetAttrib("Action").c_str());
 				_xpos = atoi(m_pMarkUp->GetAttrib("xpos").c_str());
 				_ypos = atoi(m_pMarkUp->GetAttrib("ypos").c_str());
-				_camp = (Camp)(atoi(m_pMarkUp->GetAttrib("camp").c_str()));
+				_camp = (eCamp)(atoi(m_pMarkUp->GetAttrib("camp").c_str()));
 
 				Character* cha = new Character;
 //				MapObject* mo = new MapObject;
@@ -215,14 +215,14 @@ bool MapManager::LoadMaps(std::string path)
 				//²âÊÔÒÆ¶¯Á¦
 				cha->SetMoveAbility(4);
 
-				if (_camp == Friend)
+				if (_camp == eCamp_Friend)
 				{
-					cha->SetCamp(Friend);
+					cha->SetCamp(eCamp_Friend);
 					CreatureManager::sInstance().AddFriend(cha);
 				}
-				else if (_camp == Enemy)
+				else if (_camp == eCamp_Enemy)
 				{
-					cha->SetCamp(Enemy);
+					cha->SetCamp(eCamp_Enemy);
 					CreatureManager::sInstance().AddEnemy(cha);
 				}
 				num++;

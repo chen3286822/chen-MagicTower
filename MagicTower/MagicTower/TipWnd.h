@@ -7,15 +7,15 @@ struct StringLine
 {
 	std::wstring str;
 	DWORD color;
-	FontType fontType;
-	FontSize size;
+	eFontType fontType;
+	eFontSize size;
 	bool autoEnter;
 	float x,y;
 	StringLine()
 	{
 		clear();
 	}
-	StringLine(const wchar_t* _str,DWORD _color,FontType _type,FontSize _size,bool _autoEnter)
+	StringLine(const wchar_t* _str,DWORD _color,eFontType _type,eFontSize _size,bool _autoEnter)
 	{
 		str = _str;
 		color = _color;
@@ -28,8 +28,8 @@ struct StringLine
 	{
 		str = (wchar_t*)"";
 		color = 0xFFFFFFFF;
-		fontType = DefaultType;
-		size = FontSmall;
+		fontType = eFontType_DefaultType;
+		size = eFontSize_FontSmall;
 		autoEnter = true;
 		x = y = -1;
 	}
@@ -48,7 +48,7 @@ public:
 	void SetOffset(float offx,float offy){m_OffX = offx;m_OffY = offy;}
 
 	//当autoEnter为false时，x，y值被视为有效;maxWidth为0表示不限制tip窗口的宽度，则以最长的那一行文本为最大宽度
-	void AddText(const char* str,DWORD color=0xFFFFFFFF,float x=-1,float y=-1,FontType type=DefaultType,FontSize size=FontSmall,bool autoEnter=true,int maxWidth=0);
+	void AddText(const char* str,DWORD color=0xFFFFFFFF,float x=-1,float y=-1,eFontType type=eFontType_DefaultType,eFontSize size=eFontSize_FontSmall,bool autoEnter=true,int maxWidth=0);
 	void AddEmptyLine();
 
 	void SetBoardOffSet(int _offLeft,int _offRight,int _offTop,int _offBottom){m_OffLeft=_offLeft;m_OffRight=_offRight;m_OffTop=_offTop;m_OffBottom=_offBottom;}

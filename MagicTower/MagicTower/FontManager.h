@@ -6,14 +6,14 @@
 class GfxFont;
 typedef struct tagFontAttr
 {
-	FontType m_eType;
+	eFontType m_eType;
 	int m_nSize;
 	tagFontAttr()
 	{
-		m_eType = DefaultType;
+		m_eType = eFontType_DefaultType;
 		m_nSize = 10;
 	}
-	tagFontAttr(FontType _type,FontSize _size)
+	tagFontAttr(eFontType _type,eFontSize _size)
 	{
 		m_eType = _type;
 		m_nSize = _size;
@@ -30,8 +30,8 @@ typedef struct tagFontAttr
 }FontAttr;
 
 typedef std::map<FontAttr,GfxFont*> MFont;
-typedef std::map<std::string,FontType> MFontTable;
-typedef std::map<FontType,std::string> MSystemFontTable;
+typedef std::map<std::string,eFontType> MFontTable;
+typedef std::map<eFontType,std::string> MSystemFontTable;
 
 
 class FontManager : public Singleton<FontManager>

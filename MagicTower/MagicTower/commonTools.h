@@ -68,40 +68,55 @@
 
 
 //阵营
-enum Camp
+enum eCamp
 {
-	Friend = 0,
-	Enemy,
-	Neutral,
+	eCamp_Friend = 0,
+	eCamp_Enemy,
+	eCamp_Neutral,
 };
 
 //单位状态
-enum CharacterState
+enum eCharacterState
 {
-	Stand = -1,
-	Walk = 0,
-	Fight = 1,
-	Dead = 2,
-	Defend = 3,
+	eCharacterState_Stand = -1,
+	eCharacterState_Walk = 0,
+	eCharacterState_Fight = 1,
+	eCharacterState_Dead = 2,
+	eCharacterState_Defense = 3,
 };
 //攻击子状态
-enum AttackState
+enum eAttackState
 {
-	Waiting = 1,
-	Ready,
-	Attacking,
-	Attackeding,
+	eAttackState_Waiting = 1,
+	eAttackState_Ready,
+	eAttackState_Attacking,
+	eAttackState_Attackeding,
+	eAttackState_Defending,
 };
 //单位间通知事件及结果
-enum Notification
+enum eNotification
 {
-	Notify_Success = 0,
-	Notify_TowardToAttacker,
-	Notify_NoTarget,
-	Notify_ReadyToBeAttacked,
-	Notify_CannotBeAttacked,
+	eNotify_Success = 0,
+	eNotify_TowardToAttacker,
+	eNotify_NoTarget,
+	eNotify_ReadyToBeAttacked,
+	eNotify_CannotBeAttacked,
 };
 
+/*
+	十字型：单位上下左右可以攻击，范围为1
+	方块型：单位周围8格可以攻击
+	大十字型：单位上下左右可以攻击，范围为2
+	弓箭型：单位可以攻击距离自己上下左右1格范围，可以攻击斜向1格范围
+*/
+//攻击范围类型
+enum eAttackRange
+{
+	eAttackRange_Cross = 0,		//十字型
+	eAttackRange_Box = 1,			//方块型
+	eAttackRange_BigCross = 2, //大十字型
+	eAttackRange_Arrow = 3,		//弓箭型
+};
 
 struct  tagMapObject
 {
@@ -110,86 +125,86 @@ struct  tagMapObject
 	int action;			//物体动作ID
 	int xpos;				//物体在地图的绘制坐标x
 	int ypos;				//物体在地图的绘制坐标y
-	Camp camp;		//物体所在阵营
+	eCamp camp;		//物体所在阵营
 };
 typedef struct tagMapObject MapObject;
 
 
-enum Direction
+enum eDirection
 {
-	None,
-	DOWN,
-	LEFT,
-	RIGHT,
-	UP,
+	eDirection_None,
+	eDirection_Down,
+	eDirection_Left,
+	eDirection_Right,
+	eDirection_Up,
 };
-typedef std::list<Direction> LDirection;
+typedef std::list<eDirection> LDirection;
 
-enum LBUTTON_STATE
+enum eLButtonState
 {
-	LBUTTON_DOWN,
-	LBUTTON_UP,
-	LBUTTON_HOLD,
-	LBUTTON_NULL
-};
-
-enum KEY_STATE
-{
-	KEY_DOWN,
-	KEY_UP,
-	KEY_HOLD,
-	KEY_NULL,
+	eLButtonState_Down,
+	eLButtonState_Up,
+	eLButtonState_Hold,
+	eLButtonState_Null
 };
 
-enum FontType
+enum eKeyState
 {
-	SongTi = 0,
-	Calibri,
-	MSYaHei,
-	SystemFont,
-
-
-	DefaultType = MSYaHei,
-
-	SystemFontNum = SystemFont,
+	eKeyState_Down,
+	eKeyState_Up,
+	eKeyState_Hold,
+	eKeyState_Null,
 };
 
-enum FontSize
+enum eFontType
 {
-	FontSmall = 10,
-	FontMiddle = 12,
-	FontBig = 14,
+	eFontType_SongTi = 0,
+	eFontType_Calibri,
+	eFontType_MSYaHei,
+	eFontType_SystemFont,
 
-	FontSizeNum = 3,
+
+	eFontType_DefaultType = eFontType_MSYaHei,
+
+	eFontType_SystemFontNum = eFontType_SystemFont,
 };
 
-enum
+enum eFontSize
 {
-	Road			=		0x0000004,		//路面	0000100b
-	River			=		0x0000008,		//河流	0001000b
-	Mountain		=		0x000000C,		//山地	0001100b
-	HillTop			=		0x0000010,		//山顶	0010000b
-	CityWall		=		0x0000014,		//城墙	0010100b
-	Forest			=		0x0000018,		//树林	0011000b
-	Desert			=		0x000001C,		//沙漠	0011100b
-	CityRoad		=		0x0000020,		//城内道路	0100000b
-	City				=		0x0000024,		//城内	0100100b
+	eFontSize_FontSmall = 10,
+	eFontSize_FontMiddle = 12,
+	eFontSize_FontBig = 14,
+
+	eFontSize_FontSizeNum = 3,
 };
 
-enum		//表示地图格子的属性位
+enum eTerrain
 {
-	CanStandOn			=		0x00000001,			//该格子是否可以站立,若格子为某些地形：山顶、城墙，则不可站立
-	BeOccupied				=		0x00000002,			//该格子是否被单位占用
-	WhatTerrain			=		0x0000003C,			//表示该格子是哪种地形
+	eTerrain_Road			=		0x0000004,		//路面	0000100b
+	eTerrain_River			=		0x0000008,		//河流	0001000b
+	eTerrain_Mountain		=		0x000000C,		//山地	0001100b
+	eTerrain_HillTop			=		0x0000010,		//山顶	0010000b
+	eTerrain_CityWall		=		0x0000014,		//城墙	0010100b
+	eTerrain_Forest			=		0x0000018,		//树林	0011000b
+	eTerrain_Desert			=		0x000001C,		//沙漠	0011100b
+	eTerrain_CityRoad		=		0x0000020,		//城内道路	0100000b
+	eTerrain_City				=		0x0000024,		//城内	0100100b
 };
 
-#define IsCanStandOn(a)	(((a) & CanStandOn) == CanStandOn)		//测试是否可以站立
+enum eBlockAttribute		//表示地图格子的属性位
+{
+	eBlockAttribute_CanStandOn			=		0x00000001,			//该格子是否可以站立,若格子为某些地形：山顶、城墙，则不可站立
+	eBlockAttribute_BeOccupied				=		0x00000002,			//该格子是否被单位占用
+	eBlockAttribute_WhatTerrain			=		0x0000003C,			//表示该格子是哪种地形
+};
+
+#define IsCanStandOn(a)	(((a) & eBlockAttribute_CanStandOn) == eBlockAttribute_CanStandOn)		//测试是否可以站立
 #define setStandOn(a,b)		(a = ((b)==1 ? (a) | 0x01 : (a) & 0xFFFFFFFE))		//设定该格子是否可以站立
-#define IsOccupied(a)			(IsCanStandOn(a)==0 || (IsCanStandOn(a) && (((a) & BeOccupied) == BeOccupied)))		//测试是否正在被单位占用，不可通过同样视为占用
+#define IsOccupied(a)			(IsCanStandOn(a)==0 || (IsCanStandOn(a) && (((a) & eBlockAttribute_BeOccupied) == eBlockAttribute_BeOccupied)))		//测试是否正在被单位占用，不可通过同样视为占用
 #define setOccupied(a,b)	(a = (IsCanStandOn(a) ? ((b)==1?(a)|0x02:(a)&0xFFFFFFFD) : a))	//设定该格子是否正在被单位占用
-#define getTerrain(a)			((a) & WhatTerrain)		//返回该格子的地形类别
+#define getTerrain(a)			((a) & eBlockAttribute_WhatTerrain)		//返回该格子的地形类别
 #define setTerrain(a,b)		(a = (((a) & 0xFFFFFFC3) | (b)))	//设定该格子的地形类别
-#define IsCanCross(a)		((IsOccupied(a) || (getTerrain(a) == HillTop) || (getTerrain(a) == CityWall))? 0:1)	//测试格子是否可以通过，包括单位以及地形的影响
+#define IsCanCross(a)		((IsOccupied(a) || (getTerrain(a) == eTerrain_HillTop) || (getTerrain(a) == eTerrain_CityWall))? 0:1)	//测试格子是否可以通过，包括单位以及地形的影响
 
 #define gSafeDelete(X)		{	if((X)){delete (X); (X) = NULL;} }
 
@@ -240,12 +255,12 @@ struct tagConfig
 typedef struct tagConfig Config;
 
 
-KEY_STATE g_getKeyState(HGE* hge,int Key);
+eKeyState g_getKeyState(HGE* hge,int Key);
 void g_getFiles( std::string path, std::map<std::string,std::string>& files,char* type,int maxFileNum,bool useDefaultName,bool isCharacter=false);
 int g_getKeyNum(int Key);	//根据按键编号取得该按键在数组中的位置
 void g_CTW(const char* text,wchar_t* out);	//char* to wchar_t*
 int g_getPointToPointValueByIndex(int** array,int n,int i,int j);
-LBUTTON_STATE g_getLButtonState(HGE* hge);
+eLButtonState g_getLButtonState(HGE* hge);
 int g_getTerrainCost(int terrain);	//根据地形取得消耗
 
 #endif

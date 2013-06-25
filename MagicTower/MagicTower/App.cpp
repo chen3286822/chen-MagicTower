@@ -172,7 +172,7 @@ bool App::AppUpdate()
 		m_iBlock.xpos = (int)(xMap/MAP_RECT);
 		m_iBlock.ypos = (int)(yMap/MAP_RECT);
 
-		if(g_getLButtonState(m_pHge) == LBUTTON_UP)
+		if(g_getLButtonState(m_pHge) == eLButtonState_Up)
 		{
 			player->Move(m_iBlock.xpos,m_iBlock.ypos);
 		}
@@ -183,15 +183,15 @@ bool App::AppUpdate()
 		m_iBlock.ypos = -1;
 	}
 
-	if (g_getKeyState(m_pHge,HGEK_W)==KEY_DOWN)
-		player->Move(UP);
-	else if (g_getKeyState(m_pHge,HGEK_S)==KEY_DOWN)
-		player->Move(DOWN);
-	else if (g_getKeyState(m_pHge,HGEK_A)==KEY_DOWN)
-		player->Move(LEFT);
-	else if (g_getKeyState(m_pHge,HGEK_D)==KEY_DOWN)
-		player->Move(RIGHT);
-	else if (g_getKeyState(m_pHge,HGEK_J)==KEY_DOWN)
+	if (g_getKeyState(m_pHge,HGEK_W)==eKeyState_Down)
+		player->Move(eDirection_Up);
+	else if (g_getKeyState(m_pHge,HGEK_S)==eKeyState_Down)
+		player->Move(eDirection_Down);
+	else if (g_getKeyState(m_pHge,HGEK_A)==eKeyState_Down)
+		player->Move(eDirection_Left);
+	else if (g_getKeyState(m_pHge,HGEK_D)==eKeyState_Down)
+		player->Move(eDirection_Right);
+	else if (g_getKeyState(m_pHge,HGEK_J)==eKeyState_Down)
 		player->GeginHit();
 
 	float dt = m_pHge->Timer_GetDelta();

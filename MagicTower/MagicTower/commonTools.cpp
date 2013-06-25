@@ -10,21 +10,21 @@ const unsigned char GfxFont::g_byAlphaLevel[65] =
 	208,212,216,220,224,228,232,236,240,244,248,252,255
 };
 
-LBUTTON_STATE g_getLButtonState(HGE* hge)
+eLButtonState g_getLButtonState(HGE* hge)
 {
 	static bool lastPressed = false;
 	static bool currentPressed = false;
-	LBUTTON_STATE state = LBUTTON_NULL;
+	eLButtonState state = eLButtonState_Null;
 	currentPressed = hge->Input_GetKeyState(HGEK_LBUTTON);
 
 	if (currentPressed==false && lastPressed==false)
-		state =  LBUTTON_NULL;
+		state =  eLButtonState_Null;
 	else if(currentPressed==true && lastPressed==false)
-		state =  LBUTTON_DOWN;
+		state =  eLButtonState_Down;
 	else if(currentPressed==true && lastPressed==true)
-		state =  LBUTTON_HOLD;
+		state =  eLButtonState_Hold;
 	else if(currentPressed==false && lastPressed==true)
-		state =  LBUTTON_UP;
+		state =  eLButtonState_Up;
 
 	lastPressed = currentPressed;
 	return state;
@@ -41,12 +41,12 @@ int g_getKeyNum(int Key)
 
 //对于不同的key，需要重置state
 //目前支持A-Z 0-9  ，扩展其他按键需要扩展静态数组KEY_NUM
-KEY_STATE g_getKeyState(HGE* hge,int Key)
+eKeyState g_getKeyState(HGE* hge,int Key)
 {
 	static int lastKey[KEY_NUM] = {-1};
 	static bool lastPressed[KEY_NUM] = {false};
 	static bool currentPressed[KEY_NUM] = {false};
-	KEY_STATE state = KEY_NULL;
+	eKeyState state = eKeyState_Null;
 	int num = g_getKeyNum(Key);
 	if (lastKey[num] != Key)
 	{
@@ -57,13 +57,13 @@ KEY_STATE g_getKeyState(HGE* hge,int Key)
 	currentPressed[num] = hge->Input_GetKeyState(Key);
 
 	if (currentPressed[num]==false && lastPressed[num]==false)
-		state =  KEY_NULL;
+		state =  eKeyState_Null;
 	else if(currentPressed[num]==true && lastPressed[num]==false)
-		state =  KEY_DOWN;
+		state =  eKeyState_Down;
 	else if(currentPressed[num]==true && lastPressed[num]==true)
-		state =  KEY_HOLD;
+		state =  eKeyState_Hold;
 	else if(currentPressed[num]==false && lastPressed[num]==true)
-		state =  KEY_UP;
+		state =  eKeyState_Up;
 
 	lastPressed[num] = currentPressed[num];
 	return state;
@@ -188,23 +188,23 @@ int g_getTerrainCost(int terrain)
 	int cost = 1;
 	switch(terrain)
 	{
-	case Road:
-	case CityRoad:
-	case City:
+	case eTerrain_Road:
+	case eTerrain_CityRoad:
+	case eTerrain_City:
 		cost = 1;
 		break;
-	case Forest:
-	case Desert:
+	case eTerrain_Forest:
+	case eTerrain_Desert:
 		cost = 2;
 		break;
-	case Mountain:
+	case eTerrain_Mountain:
 		cost = 3;
 		break;
-	case River:
+	case eTerrain_River:
 		cost = 4;
 		break;
-	case HillTop:
-	case CityWall:
+	case eTerrain_HillTop:
+	case eTerrain_CityWall:
 		cost = 200;
 		break;
 	default:

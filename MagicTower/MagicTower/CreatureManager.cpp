@@ -56,9 +56,9 @@ void CreatureManager::ShowMoveRange()
 		currentMap->GetWidthLength(mapWidth,mapLength);
 		int offX = 0,offY = 0;
 		DWORD color = 0;
-		if(selectChar->GetCamp() == Friend)
+		if(selectChar->GetCamp() == eCamp_Friend)
 			color = 0x4F3737DF;
-		else if(selectChar->GetCamp() == Enemy)
+		else if(selectChar->GetCamp() == eCamp_Enemy)
 			color = 0x4FEB2323;
 		for (int i=charBlock.xpos-moveAbility;i<=charBlock.xpos+moveAbility;i++)
 		{
@@ -105,9 +105,9 @@ void CreatureManager::ShowCreatureInfo()
 		char temp[256] = {0};
 		TipWnd::sInstance().Clear();
 		sprintf(temp," ID   : %d",cha->GetID());
-		TipWnd::sInstance().AddText(temp,0xFFFFFFFF,-1,-1,MSYaHei,FontMiddle);
+		TipWnd::sInstance().AddText(temp,0xFFFFFFFF,-1,-1,eFontType_MSYaHei,eFontSize_FontMiddle);
 		sprintf(temp," зјБъ : %d , %d",cha->GetBlock().xpos,cha->GetBlock().ypos);
-		TipWnd::sInstance().AddText(temp,0xFFFFFFFF,-1,-1,MSYaHei,FontMiddle);
+		TipWnd::sInstance().AddText(temp,0xFFFFFFFF,-1,-1,eFontType_MSYaHei,eFontSize_FontMiddle);
 		TipWnd::sInstance().SetShow(true);
 		TipWnd::sInstance().SetPos(block.xpos,block.ypos);
 	}
@@ -263,17 +263,17 @@ int CreatureManager::Notify(int src,int tar,int messageID,int param)
 	int result = -1;
 	Character* target = GetCreature(tar);
 	if (!target)
-		result = Notify_NoTarget;
+		result = eNotify_NoTarget;
 
 	switch(messageID)
 	{
-	case Notify_TowardToAttacker:
+	case eNotify_TowardToAttacker:
 		result = target->TowardToAttacker(src,param);
 		break;
-	case Notify_ReadyToBeAttacked:
+	case eNotify_ReadyToBeAttacked:
 		{
 			target->Attack();
-			result = Notify_Success;
+			result = eNotify_Success;
 		}
 		break;
 	default:

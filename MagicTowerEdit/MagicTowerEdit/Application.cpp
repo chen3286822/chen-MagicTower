@@ -178,7 +178,7 @@ Application::~Application(void)
 
  void Application::updateMap()
  {
-	 if(g_getLButtonState(hge) == LBUTTON_DOWN &&
+	 if(g_getLButtonState(hge) == eLButtonState_Down &&
 		 m_mouseSpr!=NULL)
 	 {
 		 float xpos,ypos;
@@ -210,7 +210,7 @@ Application::~Application(void)
 			 mo->action			=	m_action;
 			 mo->xpos			=	xNum;
 			 mo->ypos			=	yNum;
-			 mo->camp			=	Enemy;		//先设成敌人，后面需要配置
+			 mo->camp			=	eCamp_Enemy;		//先设成敌人，后面需要配置
 			 m_vMapObject[xNum+yNum*MAP_WIDTH_NUM] = mo;
 		 }
 
@@ -332,7 +332,7 @@ Application::~Application(void)
 	 {
 		 m_markUp->AddElem("Terrain");
 		 //设置地图块属性
-		 int attr = Road;
+		 int attr = eTerrain_Road;
 		 setStandOn(attr,1);
 		 m_markUp->AddAttrib("type",attr);
 		 m_markUp->AddAttrib("xpos",i%MAP_WIDTH_NUM);
@@ -376,7 +376,7 @@ Application::~Application(void)
 	 int _Action = 0;
 	 int _xpos = 0;
 	 int _ypos = 0;
-	 Camp _camp = Neutral;
+	 eCamp _camp = eCamp_Neutral;
 	 m_markUp->ResetMainPos();
 	 if(m_markUp->FindElem("map"))
 	 {
@@ -413,7 +413,7 @@ Application::~Application(void)
 			_Action = atoi(m_markUp->GetAttrib("Action").c_str());
 			_xpos = atoi(m_markUp->GetAttrib("xpos").c_str());
 			_ypos = atoi(m_markUp->GetAttrib("ypos").c_str());
-			_camp = (Camp)(atoi(m_markUp->GetAttrib("camp").c_str()));
+			_camp = (eCamp)(atoi(m_markUp->GetAttrib("camp").c_str()));
 
 			MapObject* mo = new MapObject;
 			HTEXTURE tempTex;

@@ -161,24 +161,24 @@ void hgeSprite::RenderSymmetry(float x, float y,int axis)
 
 	if(axis == 0)
 	{
-		quad.v[0].x = tempx1; quad.v[0].y = tempy1*-1;
-		quad.v[1].x = tempx2; quad.v[1].y = tempy1*-1;
-		quad.v[2].x = tempx2; quad.v[2].y = tempy2*-1;
-		quad.v[3].x = tempx1; quad.v[3].y = tempy2*-1;
+		quad.v[0].x = tempx1; quad.v[0].y = tempy1*-1 + tempy1+tempy2;
+		quad.v[1].x = tempx2; quad.v[1].y = tempy1*-1 + tempy1+tempy2;
+		quad.v[2].x = tempx2; quad.v[2].y = tempy2*-1 + tempy1+tempy2;
+		quad.v[3].x = tempx1; quad.v[3].y = tempy2*-1 + tempy1+tempy2;
 	}
 	else if (axis == 1)
 	{
-		quad.v[0].x = tempx1*-1 + 82*2; quad.v[0].y = tempy1;
-		quad.v[1].x = tempx2*-1 + 82*2; quad.v[1].y = tempy1;
-		quad.v[2].x = tempx2*-1 + 82*2; quad.v[2].y = tempy2;
-		quad.v[3].x = tempx1*-1 + 82*2; quad.v[3].y = tempy2;
+		quad.v[0].x = tempx1*-1 + tempx1+tempx2; quad.v[0].y = tempy1;
+		quad.v[1].x = tempx2*-1 + tempx1+tempx2; quad.v[1].y = tempy1;
+		quad.v[2].x = tempx2*-1 + tempx1+tempx2; quad.v[2].y = tempy2;
+		quad.v[3].x = tempx1*-1 + tempx1+tempx2; quad.v[3].y = tempy2;
 	}
 	else if (axis == 2)
 	{
-		quad.v[0].x = tempx1*-1; quad.v[0].y = tempy1*-1;
-		quad.v[1].x = tempx2*-1; quad.v[1].y = tempy1*-1;
-		quad.v[2].x = tempx2*-1; quad.v[2].y = tempy2*-1;
-		quad.v[3].x = tempx1*-1; quad.v[3].y = tempy2*-1;
+		quad.v[0].x = tempx1*-1 + tempx1+tempx2; quad.v[0].y = tempy1*-1 + tempy1+tempy2;
+		quad.v[1].x = tempx2*-1 + tempx1+tempx2; quad.v[1].y = tempy1*-1 + tempy1+tempy2;
+		quad.v[2].x = tempx2*-1 + tempx1+tempx2; quad.v[2].y = tempy2*-1 + tempy1+tempy2 ;
+		quad.v[3].x = tempx1*-1 + tempx1+tempx2; quad.v[3].y = tempy2*-1 + tempy1+tempy2;
 	}
 
 
