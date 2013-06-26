@@ -54,6 +54,7 @@ bool App::LoadResource()
 	CreatureManager::sCreate();
 	TipWnd::sCreate();
 
+	CreatureManager::sInstance().Init();
 	FontManager::sInstance().InitFont();
 
 	char pBuf[MAX_PATH];
@@ -72,6 +73,8 @@ bool App::LoadResource()
 
 	player = new Character;
 	player->Init(MapManager::sInstance().GetCurrentMap()->GetLevel(),1,100,1,Block(5,5));
+	player->SetCamp(eCamp_Friend);
+	player->SetMoveAbility(4);
 	CreatureManager::sInstance().AddFriend(player);
 
 
@@ -129,22 +132,20 @@ void App::DrawMouseRect()
 		DrawSmallRect(m_iBlock,0x4F48A4D5);
 }
 
-void App::DrawSmallRect(Block block,DWORD color)
+void App::DrawRect(float left,float top,float right,float bottom,DWORD color)
 {
-	int xNum = block.xpos,yNum = block.ypos;
-
 	hgeQuad quad;
-	quad.v[0].x = MAP_OFF_X + xNum*MAP_RECT;
-	quad.v[0].y = MAP_OFF_Y + yNum*MAP_RECT;
+	quad.v[0].x = left;
+	quad.v[0].y = top;
 	quad.v[0].tx = 0;		quad.v[0].ty = 0;
-	quad.v[1].x = MAP_OFF_X + xNum*MAP_RECT + MAP_RECT;
-	quad.v[1].y = MAP_OFF_Y + yNum*MAP_RECT;
+	quad.v[1].x = right;
+	quad.v[1].y = top;
 	quad.v[1].tx = 1;		quad.v[1].ty = 0;
-	quad.v[2].x = MAP_OFF_X + xNum*MAP_RECT + MAP_RECT;
-	quad.v[2].y = MAP_OFF_Y + yNum*MAP_RECT + MAP_RECT;
+	quad.v[2].x = right;
+	quad.v[2].y = bottom;
 	quad.v[2].tx = 1;		quad.v[2].ty = 1;
-	quad.v[3].x = MAP_OFF_X + xNum*MAP_RECT;
-	quad.v[3].y = MAP_OFF_Y + yNum*MAP_RECT + MAP_RECT;
+	quad.v[3].x = left;
+	quad.v[3].y = bottom;
 	quad.v[3].tx = 0;		quad.v[3].ty = 1;
 
 	for (int i=0;i<4;i++)
@@ -155,6 +156,29 @@ void App::DrawSmallRect(Block block,DWORD color)
 	quad.blend = BLEND_DEFAULT_Z;
 	quad.tex = 0;
 	m_pHge->Gfx_RenderQuad(&quad);
+}
+
+void App::DrawSmallRect(Block block,DWORD color)
+{
+	int xNum = block.xpos,yNum = block.ypos;
+
+	DrawRect(MAP_OFF_X + xNum*MAP_RECT,MAP_OFF_Y + yNum*MAP_RECT,
+		MAP_OFF_X + xNum*MAP_RECT + MAP_RECT,MAP_OFF_Y + yNum*MAP_RECT + MAP_RECT,color);
+}
+
+void App::DrawBox(Block block,DWORD color)
+{
+	int xNum = block.xpos,yNum = block.ypos;
+
+	DrawRect(MAP_OFF_X + xNum*MAP_RECT,MAP_OFF_Y + yNum*MAP_RECT,
+		MAP_OFF_X + xNum*MAP_RECT + MAP_RECT,MAP_OFF_Y + yNum*MAP_RECT + 8,color);
+	DrawRect(MAP_OFF_X + xNum*MAP_RECT,MAP_OFF_Y + yNum*MAP_RECT + 8,
+		MAP_OFF_X + xNum*MAP_RECT + 8,MAP_OFF_Y + yNum*MAP_RECT + MAP_RECT - 8,color);
+	DrawRect(MAP_OFF_X + xNum*MAP_RECT + MAP_RECT - 8,MAP_OFF_Y + yNum*MAP_RECT + 8,
+		MAP_OFF_X + xNum*MAP_RECT + MAP_RECT,MAP_OFF_Y + yNum*MAP_RECT + MAP_RECT - 8,color);
+	DrawRect(MAP_OFF_X + xNum*MAP_RECT,MAP_OFF_Y + yNum*MAP_RECT + MAP_RECT - 8,
+		MAP_OFF_X + xNum*MAP_RECT + MAP_RECT,MAP_OFF_Y + yNum*MAP_RECT + MAP_RECT,color);
+	
 }
 
 bool App::AppUpdate()

@@ -17,15 +17,51 @@ CreatureManager::~CreatureManager()
 	m_VEnemyList.clear();
 }
 
+void CreatureManager::Init()
+{
+	m_mAttackRange[eAttackRange_Cross].push_back(Pair(0,-1));
+	m_mAttackRange[eAttackRange_Cross].push_back(Pair(0,1));
+	m_mAttackRange[eAttackRange_Cross].push_back(Pair(-1,0));
+	m_mAttackRange[eAttackRange_Cross].push_back(Pair(1,0));
+
+	m_mAttackRange[eAttackRange_Box].push_back(Pair(1,0));
+	m_mAttackRange[eAttackRange_Box].push_back(Pair(0,1));
+	m_mAttackRange[eAttackRange_Box].push_back(Pair(-1,0));
+	m_mAttackRange[eAttackRange_Box].push_back(Pair(0,-1));
+	m_mAttackRange[eAttackRange_Box].push_back(Pair(-1,-1));
+	m_mAttackRange[eAttackRange_Box].push_back(Pair(-1,1));
+	m_mAttackRange[eAttackRange_Box].push_back(Pair(1,-1));
+	m_mAttackRange[eAttackRange_Box].push_back(Pair(1,1));
+
+	m_mAttackRange[eAttackRange_BigCross].push_back(Pair(0,-1));
+	m_mAttackRange[eAttackRange_BigCross].push_back(Pair(0,1));
+	m_mAttackRange[eAttackRange_BigCross].push_back(Pair(-1,0));
+	m_mAttackRange[eAttackRange_BigCross].push_back(Pair(1,0));
+	m_mAttackRange[eAttackRange_BigCross].push_back(Pair(0,-2));
+	m_mAttackRange[eAttackRange_BigCross].push_back(Pair(0,2));
+	m_mAttackRange[eAttackRange_BigCross].push_back(Pair(-2,0));
+	m_mAttackRange[eAttackRange_BigCross].push_back(Pair(2,0));
+
+	m_mAttackRange[eAttackRange_Arrow].push_back(Pair(0,-2));
+	m_mAttackRange[eAttackRange_Arrow].push_back(Pair(0,2));
+	m_mAttackRange[eAttackRange_Arrow].push_back(Pair(-2,0));
+	m_mAttackRange[eAttackRange_Arrow].push_back(Pair(2,0));
+	m_mAttackRange[eAttackRange_Arrow].push_back(Pair(-1,-1));
+	m_mAttackRange[eAttackRange_Arrow].push_back(Pair(-1,1));
+	m_mAttackRange[eAttackRange_Arrow].push_back(Pair(1,-1));
+	m_mAttackRange[eAttackRange_Arrow].push_back(Pair(1,1));
+
+	m_eCampTurn = eCampTurn_Friend;
+}
+
 void CreatureManager::Render()
 {
+	ProcessSelectCreature();
+
 	for (VCharacter::iterator it=m_VEnemyList.begin();it!=m_VEnemyList.end();it++)
 		(*it)->Render();
 	for (VCharacter::iterator it=m_VFriendList.begin();it!=m_VFriendList.end();it++)
 		(*it)->Render();
-
-	if(m_nSelectNum >= 0)
-		ShowMoveRange();
 }
 
 void CreatureManager::Update(float delta)
@@ -40,6 +76,12 @@ void CreatureManager::Update(float delta)
 		Character* cha = GetEnemy(m_nActionCreatureNum);
 		if(cha->GetFinish())
 			m_nActionCreatureNum = -1;
+
+		//测试用
+		if (cha->GetCamp() == eCamp_Enemy && cha->GetActionStage() == eActionStage_AttackStage)
+		{
+			m_nActionCreatureNum = -1;
+		}
 	}
 
 	SelectCreature();
@@ -47,21 +89,20 @@ void CreatureManager::Update(float delta)
 	ShowCreatureInfo();
 }
 
-void CreatureManager::ShowMoveRange()
+void CreatureManager::ShowMoveRange(Character* creature)
 {
-	Character* selectChar = GetCreature(m_nSelectNum);
-	if (selectChar)
+	if (creature)
 	{
-		int moveAbility = selectChar->GetMoveAbility();	
-		Block charBlock = selectChar->GetBlock();
+		int moveAbility = creature->GetMoveAbility();	
+		Block charBlock = creature->GetBlock();
 		Map* currentMap = MapManager::sInstance().GetCurrentMap();
 		int mapWidth = 0,mapLength = 0;
 		currentMap->GetWidthLength(mapWidth,mapLength);
 		int offX = 0,offY = 0;
 		DWORD color = 0;
-		if(selectChar->GetCamp() == eCamp_Friend)
+		if(creature->GetCamp() == eCamp_Friend)
 			color = 0x4F3737DF;
-		else if(selectChar->GetCamp() == eCamp_Enemy)
+		else if(creature->GetCamp() == eCamp_Enemy)
 			color = 0x4FEB2323;
 		for (int i=charBlock.xpos-moveAbility;i<=charBlock.xpos+moveAbility;i++)
 		{
@@ -88,40 +129,28 @@ void CreatureManager::ShowMoveRange()
 	}
 }
 
-void CreatureManager::ShowAttackRange()
+void CreatureManager::ShowAttackRange(Character* creature)
 {
-	Character* selectChar = GetCreature(m_nSelectNum);
-	if (selectChar)
+	if (creature)
 	{
-		eAttackRange attackRange = selectChar->GetAttackRange();	
-		Block charBlock = selectChar->GetBlock();
+		eAttackRange attackRange = creature->GetAttackRange();	
+		Block charBlock = creature->GetBlock();
 		Map* currentMap = MapManager::sInstance().GetCurrentMap();
 		int mapWidth = 0,mapLength = 0;
 		currentMap->GetWidthLength(mapWidth,mapLength);
 		int offX = 0,offY = 0;
-		DWORD color = 0;
-		if(selectChar->GetCamp() == eCamp_Friend)
-			color = 0x4F3737DF;
-		else if(selectChar->GetCamp() == eCamp_Enemy)
-			color = 0x4FEB2323;
-		for (int i=charBlock.xpos-moveAbility;i<=charBlock.xpos+moveAbility;i++)
-		{
-			if(i >= 0 && i< mapWidth)
-			{
-				for (int j=charBlock.ypos-moveAbility;j<=charBlock.ypos+moveAbility;j++)
-				{
-					if (j >= 0 && j < mapLength)
-					{
-						offX = abs(i - charBlock.xpos);
-						offY = abs(j - charBlock.ypos);
-						if((offX + offY > moveAbility) || (i==charBlock.xpos && j==charBlock.ypos))
-							continue;
 
-						if (!currentMap->GetBlockOccupied(i,j))
-						{
-							//画方格表示可以移动
-							App::sInstance().DrawSmallRect(Block(i,j),color);
-						}
+		for (MAttackRange::iterator mit=m_mAttackRange.begin();mit!=m_mAttackRange.end();mit++)
+		{
+			if(mit->first == attackRange)
+			{
+				for (vector<Pair>::iterator it=mit->second.begin();it!=mit->second.end();it++)
+				{
+					offX = it->x + charBlock.xpos;
+					offY = it->y + charBlock.ypos;
+					if (offX >= 0 && offX < mapWidth && offY >= 0 && offY < mapLength)
+					{
+						App::sInstance().DrawBox(Block(offX,offY),0xBFFF0000);
 					}
 				}
 			}
@@ -171,16 +200,24 @@ void CreatureManager::Strategy()
 
 	ResetAllCreature();
 
-	Character* enemy = GetNextEnemy();
-	if(enemy == NULL)
-		return;
-	m_nActionCreatureNum = enemy->GetNum();
-	m_nSelectNum = m_nActionCreatureNum;
-	int xMove = App::sInstance().GetHGE()->Random_Int(0,enemy->GetMoveAbility());
-	int yMove = enemy->GetMoveAbility() - xMove;
-	int xDir = (App::sInstance().GetHGE()->Random_Int(0,1)==0)?-1:1;
-	int yDir = (App::sInstance().GetHGE()->Random_Int(0,1)==0)?-1:1;
-//	enemy->Move(enemy->GetBlock().xpos+xMove*xDir,enemy->GetBlock().ypos+yMove*yDir);
+	if (m_eCampTurn == eCampTurn_Enemy)
+	{
+		Character* enemy = GetNextEnemy();
+		if(enemy == NULL)
+			return;
+		if(enemy->GetActionStage() == eActionStage_WaitStage)
+		{
+			enemy->SetActionStage(eActionStage_MoveStage);
+			m_nActionCreatureNum = enemy->GetNum();
+			//m_nSelectNum = m_nActionCreatureNum;
+			int xMove = App::sInstance().GetHGE()->Random_Int(0,enemy->GetMoveAbility());
+			int yMove = enemy->GetMoveAbility() - xMove;
+			int xDir = (App::sInstance().GetHGE()->Random_Int(0,1)==0)?-1:1;
+			int yDir = (App::sInstance().GetHGE()->Random_Int(0,1)==0)?-1:1;
+			enemy->Move(enemy->GetBlock().xpos+xMove*xDir,enemy->GetBlock().ypos+yMove*yDir);
+		}
+
+	}
 //	enemy->Move((Direction)(App::sInstance().GetHGE()->Random_Int(0,4)));
 }
 
@@ -284,16 +321,24 @@ Character* CreatureManager::GetCreature(int num)
 
 bool CreatureManager::ResetAllCreature()
 {
-	for (VCharacter::iterator it=m_VEnemyList.begin();it!=m_VEnemyList.end();it++)
-	{
-		if((*it)->GetFinish() == false)	//有敌方尚未行动
-			return false;
-	}
 	for (VCharacter::iterator it=m_VFriendList.begin();it!=m_VFriendList.end();it++)
 	{
 		if((*it)->GetFinish() == false)	//有友方尚未行动
 			return false;
 	}
+	//友方行动完，进入敌方回合
+	if (m_eCampTurn == eCampTurn_Friend)
+		m_eCampTurn = eCampTurn_Enemy;
+
+	for (VCharacter::iterator it=m_VEnemyList.begin();it!=m_VEnemyList.end();it++)
+	{
+		if((*it)->GetFinish() == false)	//有敌方尚未行动
+			return false;
+	}
+	//敌方行动完，进入下一回合
+	if (m_eCampTurn == eCampTurn_Enemy)
+		m_eCampTurn = eCampTurn_Friend;
+	
 
 	for (VCharacter::iterator it=m_VEnemyList.begin();it!=m_VEnemyList.end();it++)
 		(*it)->SetFinish(false);
@@ -336,16 +381,94 @@ void CreatureManager::CalculateResult(int src,int tar)
 
 void CreatureManager::SelectCreature()
 {
-	Block mouseBlock = App::sInstance().GetMouseBlock();
-	Character* selectChar = NULL;
-	if (mouseBlock.xpos!=-1 && mouseBlock.ypos!=-1)
+	//友方回合才可以进行选择操作，包括查看敌方行动范围
+	if (m_eCampTurn == eCampTurn_Friend)
 	{
-		selectChar = GetCreature(mouseBlock.xpos,mouseBlock.ypos);
-		if(selectChar!=NULL)
+		Block mouseBlock = App::sInstance().GetMouseBlock();
+		Character* selectChar = NULL;
+		if (mouseBlock.xpos!=-1 && mouseBlock.ypos!=-1)
 		{
-			if (g_getLButtonState(App::sInstance().GetHGE()) == eLButtonState_Up)
+			selectChar = GetCreature(mouseBlock.xpos,mouseBlock.ypos);
+			//选中单位
+			if(selectChar!=NULL)
 			{
-				m_nSelectNum = selectChar->GetNum();
+				if (g_getLButtonState(App::sInstance().GetHGE()) == eLButtonState_Up)
+				{
+					int nLastSelect = m_nSelectNum;
+					if(!selectChar->GetFinish())
+						m_nSelectNum = selectChar->GetNum();
+					if (selectChar->GetCamp() == eCamp_Friend )
+					{
+						//上次没有选择单位
+						if(nLastSelect == -1)
+						{
+							//选中的友方进入移动阶段
+							selectChar->SetActionStage(eActionStage_MoveStage);
+						}
+						//连续两次点击同一友方单位
+						else if(nLastSelect == m_nSelectNum)
+						{
+							//过滤移动阶段，进入攻击阶段
+							selectChar->SetActionStage(eActionStage_AttackStage);
+						}
+						//其他情况
+						else
+						{
+							Character* lastChar = GetCreature(nLastSelect);
+							if(lastChar != NULL)
+							{
+								//上次点的是别的友方
+								if(lastChar->GetCamp() == eCamp_Friend)
+								{
+									//上次的友方返回至待命阶段
+									lastChar->SetActionStage(eActionStage_WaitStage);
+									selectChar->SetActionStage(eActionStage_MoveStage);
+								}
+								else if(lastChar->GetCamp() == eCamp_Enemy)
+									selectChar->SetActionStage(eActionStage_MoveStage);
+							}
+							else 
+								//这里是错误分支，不可以运行到这里
+								return;
+						}
+					}
+					else if (selectChar->GetCamp() == eCamp_Enemy)
+					{
+						Character* lastChar = GetCreature(nLastSelect);
+						if(lastChar!=NULL && lastChar->GetCamp()==eCamp_Friend && lastChar->GetActionStage() == eActionStage_AttackStage)
+						{
+							//判断是否可以攻击到选中单位
+							//这里直接攻击方便测试
+							lastChar->SetTarget(selectChar->GetNum());
+							lastChar->GeginHit();
+						}
+					}
+				}
+			}
+			//点中地面
+			else
+			{
+				if (m_nSelectNum>=0)
+				{
+					selectChar = GetCreature(m_nSelectNum);
+					if (selectChar!= NULL)
+					{
+						if(selectChar->GetCamp() == eCamp_Friend && selectChar->GetActionStage() == eActionStage_MoveStage)
+						{
+							//判断是否可以移动过去
+							int length = abs(mouseBlock.xpos - selectChar->GetBlock().xpos) + abs(mouseBlock.ypos - selectChar->GetBlock().ypos);
+							//超过移动范围
+							if(length > selectChar->GetMoveAbility())
+								return;
+
+							//移动过去，记录原始位置
+							selectChar->GetOrigBlock().xpos = selectChar->GetBlock().xpos;
+							selectChar->GetOrigBlock().ypos = selectChar->GetBlock().ypos;
+							selectChar->GetOrigDirection() = selectChar->GetCurDirection();
+							selectChar->Move(mouseBlock.xpos,mouseBlock.ypos);
+						}
+					}
+				}
 			}
 		}
 	}
@@ -355,18 +478,37 @@ void CreatureManager::UnSelectCreature()
 {
 	if (m_nSelectNum >= 0)
 	{
+		int nLastSelect = m_nSelectNum;
 		if (g_getRButtonState(App::sInstance().GetHGE()) == eRButtonState_Up)
 		{
 			m_nSelectNum = -1;
+			Character* lastChar = GetCreature(nLastSelect);
+			if(lastChar!=NULL && lastChar->GetCamp()==eCamp_Friend)
+			{
+				//返回至原位置
+				if(lastChar->GetActionStage() == eActionStage_AttackStage)
+				{
+					lastChar->SetActionStage(eActionStage_MoveStage);
+					lastChar->GetBlock().xpos = lastChar->GetOrigBlock().xpos;
+					lastChar->GetBlock().ypos = lastChar->GetOrigBlock().ypos;
+					lastChar->GetCurDirection() = lastChar->GetOrigDirection();
+				}
+				//右键取消选中的友方，需要重置行动阶段
+				else if(lastChar->GetActionStage() == eActionStage_MoveStage)	
+					lastChar->SetActionStage(eActionStage_WaitStage);
+			}
 		}
 	}
 }
 
 void CreatureManager::ProcessSelectCreature()
 {
-	if (m_nSelectNum>=0)
+	if(m_nSelectNum >= 0)
 	{
-		ShowMoveRange();
+		Character* selectChar = GetCreature(m_nSelectNum);
+		ShowMoveRange(selectChar);
+		if(selectChar->GetCamp() == eCamp_Enemy || (selectChar->GetCamp()==eCamp_Friend && selectChar->GetActionStage()==eActionStage_AttackStage))
+			ShowAttackRange(selectChar);
 	}
 	
 }

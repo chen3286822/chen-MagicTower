@@ -20,9 +20,10 @@ Character::Character(void)
 	m_bFinishAct = false;
 	m_nCamp = eCamp_Neutral;
 	m_eCharState = eCharacterState_Stand;
+	m_eActionStage = eActionStage_WaitStage;
 	m_nTar = 0;
 	m_dwRecordTime = 0;
-	m_eAttackRange = eAttackRange_Cross;
+	m_eAttackRange = (eAttackRange)(App::sInstance().GetHGE()->Random_Int(0,eAttackRange_Arrow));
 }
 
 Character::~Character(void)
@@ -45,6 +46,7 @@ void Character::Init(int _Level,int _ID,int _Num,int _Action,Block _block)
 	m_nID = _ID;
 	m_nNum = _Num;
 	m_iBlock = _block;
+	m_iOrigBlock = _block;
 	m_fStartX = m_fXPos = (MAP_RECT-FLOAT_PIC_SQUARE_WIDTH)/2+MAP_OFF_X +MAP_RECT*m_iBlock.xpos;
 	m_fStartY = m_fYPos = MAP_OFF_Y+MAP_RECT*m_iBlock.ypos;
 	m_nLeftDistance = 0;
@@ -83,7 +85,7 @@ void Character::Update(float delta)
 			|| (m_iBlock.ypos>=MAP_LENGTH_NUM-1 && m_eCurDir==eDirection_Down))
 		{
 			m_eCharState = eCharacterState_Stand;
-			m_bFinishAct = true;
+//			m_bFinishAct = true;
 			m_nLeftDistance = 0;
 			m_lPathDir.clear();
 			return;
@@ -97,7 +99,7 @@ void Character::Update(float delta)
 			||m_eCurDir==eDirection_Right && !IsCanCross((theMap->GetBlock(m_iBlock.xpos+1,m_iBlock.ypos)->attri)))
 		{
 			m_eCharState = eCharacterState_Stand;
-			m_bFinishAct = true;
+//			m_bFinishAct = true;
 			m_nLeftDistance = 0;
 			m_lPathDir.clear();
 			return;
@@ -154,6 +156,7 @@ void Character::Update(float delta)
 			{
 				m_eCharState = eCharacterState_Stand;
 				m_bFinishAct = true;
+				m_eActionStage = eActionStage_AttackStage;
 				m_lPathDir.clear();
 			}
 		}

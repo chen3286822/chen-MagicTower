@@ -31,16 +31,23 @@ public:
 	void SetFinish(bool _finish){m_bFinishAct = _finish;}
 	bool GetFinish(){return m_bFinishAct;}
 	Block&	GetBlock(){return m_iBlock;}
+	Block& GetOrigBlock(){return m_iOrigBlock;}
 	void	SetMoveAbility(int _ability){m_nMoveAbility = _ability;}
 	int	GetMoveAbility(){return m_nMoveAbility;}
 	void SetCamp(int _camp){m_nCamp = _camp;}
 	int GetCamp(){return m_nCamp;}
 	void SetAttackRange(eAttackRange _attackRange){m_eAttackRange = _attackRange;}
 	eAttackRange GetAttackRange(){return m_eAttackRange;}
+	void SetActionStage(eActionStage _stage){m_eActionStage = _stage;}
+	eActionStage GetActionStage(){return m_eActionStage;}
+	eDirection& GetCurDirection(){return m_eCurDir;}
+	eDirection& GetOrigDirection(){return m_eOrigDir;}
 	int GetID(){return m_nID;}
 	int GetNum(){return m_nNum;}
 
 	//战斗相关
+	void SetTarget(int _tar){m_nTar = _tar;}
+	int GetTarget(){return m_nTar;}
 	void GeginHit();
 	int TowardToAttacker(int src,int dir);	//面对着攻击者
 	void Attack();	//开始攻击
@@ -52,6 +59,7 @@ private:
 	int m_nLevel;	//所在关卡
 	int m_nID;		//代表单位类别的ID号
 	int m_nNum;	//代表出现在当前关卡的单位号
+	Block m_iOrigBlock;	//记录单位原来处于的格子，用于右键取消行动时返回原格子
 	Block m_iBlock;//处于当前关卡的哪个格子中
 	float m_fXPos,m_fYPos;	//单位的实际坐标
 	float m_fStartX,m_fStartY;	//单位每次行动前的起点位置
@@ -59,9 +67,11 @@ private:
 	int m_nMoveAbility;		//代表移动力
 	bool m_bFinishAct;	//代表是否行动过
 	int	m_nCamp;		//单位阵营
+	eActionStage m_eActionStage;	//单位所处阶段，只有轮到该单位行动时才有效
 
 	eCharacterState m_eCharState; //单位当前的状态 
 	eDirection m_eCurDir;	//当前方向
+	eDirection m_eOrigDir;	//原先方向，用于右键取消行动时恢复到原方向
 	LDirection m_lPathDir;	//整个路径的移动方向
 	int m_nLeftDistance;	//剩余需要移动的格子数
 

@@ -4,12 +4,31 @@
 #include "commonTools.h"
 #include "Character.h"
 
+struct Pair
+{
+	int x;
+	int y;
+	Pair()
+	{
+		x = 0;
+		y = 0;
+	}
+	Pair(int _x,int _y)
+	{
+		x = _x;
+		y = _y;
+	}
+};
+typedef std::map<eAttackRange,std::vector<Pair> > MAttackRange;
+
+
 class CreatureManager : public Singleton<CreatureManager>
 {
 public:
 	CreatureManager();
 	~CreatureManager();
 
+	void Init();
 	void Render();
 	void Update(float delta);
 
@@ -31,9 +50,9 @@ public:
 	//显示该单位的相关信息
 	void ShowCreatureInfo();
 	//显示该单位移动范围
-	void ShowMoveRange();
+	void ShowMoveRange(Character* creature);
 	//显示该单位攻击范围
-	void ShowAttackRange();
+	void ShowAttackRange(Character* creature);
 
 	//只有当所有单位都行动过后才能重置，相当于开始下一回合
 	bool ResetAllCreature();
@@ -61,6 +80,9 @@ private:
 
 	int m_nActionCreatureNum;	//表示当前正在行动中的单位号，没有表示为-1
 	int m_nSelectNum;	//表示当前被选中的单位号
+
+	MAttackRange m_mAttackRange;
+	eCampTurn m_eCampTurn;	//当前所处回合
 };
 
 

@@ -75,6 +75,26 @@ enum eCamp
 	eCamp_Neutral,
 };
 
+//阵营回合
+//友方和敌方轮流行动
+enum eCampTurn
+{
+	eCampTurn_Friend,
+	eCampTurn_Enemy,
+};
+
+//行动阶段
+//待选单位处于待命阶段
+//每个选中的单位皆从移动阶段至攻击阶段
+//当处于攻击阶段，可以通过右键取消回退至移动阶段
+//攻击阶段结束后，即单位FinishAct
+ enum eActionStage
+ {
+	 eActionStage_WaitStage = 0,	//待命阶段
+	 eActionStage_MoveStage,		//移动阶段
+	 eActionStage_AttackStage,			//攻击阶段(使用物品，释放技能)
+ };	
+
 //单位状态
 enum eCharacterState
 {
