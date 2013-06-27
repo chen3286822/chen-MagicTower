@@ -155,7 +155,7 @@ void Character::Update(float delta)
 			if(m_nLeftDistance == 0)
 			{
 				m_eCharState = eCharacterState_Stand;
-				m_bFinishAct = true;
+				//m_bFinishAct = true;
 				m_eActionStage = eActionStage_AttackStage;
 				m_lPathDir.clear();
 			}
@@ -184,6 +184,10 @@ void Character::Update(float delta)
 					FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT,4,8,false);
 				m_pAnimation->SetMode(HGEANIM_LOOP|HGEANIM_FWD);
 				m_eCharState = eCharacterState_Stand;
+				m_bFinishAct = true;
+				m_iOrigBlock.xpos = m_iBlock.xpos;
+				m_iOrigBlock.ypos = m_iBlock.ypos;
+				m_eOrigDir = m_eCurDir;
 			}
 		}
 	}
@@ -263,18 +267,42 @@ void Character::Update(float delta)
 	}
 }
 
-void Character::Move(int tarX,int tarY)
+void Character::CancelMove()
+{
+	Map* currentMap = MapManager::sInstance().GetCurrentMap();
+	//取消现在格子的占据状态
+	Block* cannelBlock = currentMap->GetBlock(m_iBlock.xpos,m_iBlock.ypos);
+	if(cannelBlock)
+		setOccupied(cannelBlock->attri,0);
+	m_iBlock.xpos = m_iOrigBlock.xpos;
+	m_iBlock.ypos = m_iOrigBlock.ypos;
+	m_eCurDir = m_eOrigDir;
+	m_pAnimation->ResetFrames(0,(m_eCurDir-1)*FLOAT_PIC_SQUARE_HEIGHT,
+		FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT,4,8,false);
+
+	//原格子占据状态
+	cannelBlock = currentMap->GetBlock(m_iBlock.xpos,m_iBlock.ypos);
+	if(cannelBlock)
+		setOccupied(cannelBlock->attri,1);
+
+	m_fXPos = (MAP_RECT-FLOAT_PIC_SQUARE_WIDTH)/2+MAP_OFF_X +MAP_RECT*m_iBlock.xpos;
+	m_fYPos = MAP_OFF_Y+MAP_RECT*m_iBlock.ypos;
+	m_fStartX = m_fXPos;
+	m_fStartY = m_fYPos;
+}
+
+eErrorCode Character::Move(int tarX,int tarY)
 {
 	//单位不可移动
 	if (!m_bCanMove) 
 	{
-		return;
+		return eErrorCode_CannotMove;
 	}
 
 	//当前移动未结束，不可寻路
 	if(m_eCharState != eCharacterState_Stand)
 	{
-		return; 
+		return eErrorCode_NotStandState; 
 	}
 
 	vector<Block*> path = MapManager::sInstance().GetCurrentMap()->FindPath(m_iBlock.xpos,m_iBlock.ypos,tarX,tarY);
@@ -310,8 +338,13 @@ void Character::Move(int tarX,int tarY)
 	//没有找到路径，需要结束行动
 	else
 	{
-		m_bFinishAct = true;
+// 		//找不到路径不应该结束行动
+// 		//敌方由于AI算法未健全故可以找不到路径，为了测试方便则直接结束行动
+// 		if(m_nCamp == eCamp_Enemy)
+// 			m_bFinishAct = true;
+		return eErrorCode_NoPath;
 	}
+	return eErrorCode_Success;
 }
 
 //每调用一次move，将会朝着该方向移动一格子
@@ -320,21 +353,21 @@ void Character::Move(eDirection dir)
 	//单位不可移动
 	if (!m_bCanMove)
 	{
-		m_bFinishAct = true;
+		//m_bFinishAct = true;
 		return;
 	}
 
 	//只有在stand 或者 walk 时可以移动
 	if (m_eCharState != eCharacterState_Stand && m_eCharState != eCharacterState_Walk)
 	{
-		m_bFinishAct = true;
+		//m_bFinishAct = true;
 		return;
 	}
 
 	//无效方向
 	if(dir <= eDirection_None || dir > eDirection_Up)
 	{
-		m_bFinishAct = true;
+		//m_bFinishAct = true;
 		return;
 	}
 
@@ -405,7 +438,7 @@ void Character::Attacked()
 	m_pAnimation->SetTexture(m_mCharTex[eCharacterState_Defense]);
 	m_pAnimation->ResetFrames(0,3*FLOAT_PIC_SQUARE_WIDTH,
 		FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_WIDTH,1,8,false);
-	m_pAnimation->SetMode(HGEANIM_FWD | HGEANIM_NOLOOP);
+	m_pAnimation->SetMode(HGEANIM_FWD | HGEANIM_LOOP);
 
 
 	//设置被攻击子状态
@@ -426,7 +459,7 @@ void Character::Defend()
 	m_pAnimation->SetTexture(m_mCharTex[eCharacterState_Defense]);
 	m_pAnimation->ResetFrames(0,offset*FLOAT_PIC_SQUARE_WIDTH,
 		FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_WIDTH,1,8,false);
-	m_pAnimation->SetMode(HGEANIM_FWD | HGEANIM_NOLOOP);
+	m_pAnimation->SetMode(HGEANIM_FWD | HGEANIM_LOOP);
 
 
 	//设置被攻击子状态

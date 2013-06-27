@@ -54,6 +54,14 @@ void CreatureManager::Init()
 	m_eCampTurn = eCampTurn_Friend;
 }
 
+void CreatureManager::Release()
+{
+	for (VCharacter::iterator it=m_VEnemyList.begin();it!=m_VEnemyList.end();it++)
+		gSafeDelete(*it);
+	for (VCharacter::iterator it=m_VFriendList.begin();it!=m_VFriendList.end();it++)
+		gSafeDelete(*it);
+}
+
 void CreatureManager::Render()
 {
 	ProcessSelectCreature();
@@ -81,6 +89,7 @@ void CreatureManager::Update(float delta)
 		if (cha->GetCamp() == eCamp_Enemy && cha->GetActionStage() == eActionStage_AttackStage)
 		{
 			m_nActionCreatureNum = -1;
+			cha->SetFinish(true);
 		}
 	}
 
@@ -214,7 +223,13 @@ void CreatureManager::Strategy()
 			int yMove = enemy->GetMoveAbility() - xMove;
 			int xDir = (App::sInstance().GetHGE()->Random_Int(0,1)==0)?-1:1;
 			int yDir = (App::sInstance().GetHGE()->Random_Int(0,1)==0)?-1:1;
-			enemy->Move(enemy->GetBlock().xpos+xMove*xDir,enemy->GetBlock().ypos+yMove*yDir);
+			eErrorCode errorCode = enemy->Move(enemy->GetBlock().xpos+xMove*xDir,enemy->GetBlock().ypos+yMove*yDir);
+
+			//测试
+			if (errorCode != eErrorCode_Success)
+			{
+				enemy->SetFinish(true);
+			}
 		}
 
 	}
@@ -227,6 +242,7 @@ void CreatureManager::RemoveEnemy(Character* _enemy)
 	{
 		if((*it)->GetID() == _enemy->GetID() && (*it)->GetNum() == _enemy->GetNum())
 		{
+			gSafeDelete(*it);
 			m_VEnemyList.erase(it);
 			return;
 		}
@@ -241,6 +257,7 @@ void CreatureManager::RemoveFriend(Character* _friend)
 	{
 		if((*it)->GetID() == _friend->GetID() && (*it)->GetNum() == _friend->GetNum())
 		{
+			gSafeDelete(*it);
 			m_VFriendList.erase(it);
 			return;
 		}
@@ -341,9 +358,15 @@ bool CreatureManager::ResetAllCreature()
 	
 
 	for (VCharacter::iterator it=m_VEnemyList.begin();it!=m_VEnemyList.end();it++)
-		(*it)->SetFinish(false);
+	{
+			(*it)->SetFinish(false);
+			(*it)->SetActionStage(eActionStage_WaitStage);
+	}
 	for (VCharacter::iterator it=m_VFriendList.begin();it!=m_VFriendList.end();it++)
+	{
 		(*it)->SetFinish(false);
+		(*it)->SetActionStage(eActionStage_WaitStage);
+	}
 	return true;
 }
 
@@ -395,15 +418,17 @@ void CreatureManager::SelectCreature()
 				if (g_getLButtonState(App::sInstance().GetHGE()) == eLButtonState_Up)
 				{
 					int nLastSelect = m_nSelectNum;
-					if(!selectChar->GetFinish())
-						m_nSelectNum = selectChar->GetNum();
 					if (selectChar->GetCamp() == eCamp_Friend )
 					{
 						//上次没有选择单位
 						if(nLastSelect == -1)
 						{
-							//选中的友方进入移动阶段
-							selectChar->SetActionStage(eActionStage_MoveStage);
+							//选中的未行动友方进入移动阶段
+							if(!selectChar->GetFinish())
+							{
+								m_nSelectNum = selectChar->GetNum();
+								selectChar->SetActionStage(eActionStage_MoveStage);
+							}
 						}
 						//连续两次点击同一友方单位
 						else if(nLastSelect == m_nSelectNum)
@@ -420,12 +445,18 @@ void CreatureManager::SelectCreature()
 								//上次点的是别的友方
 								if(lastChar->GetCamp() == eCamp_Friend)
 								{
-									//上次的友方返回至待命阶段
-									lastChar->SetActionStage(eActionStage_WaitStage);
-									selectChar->SetActionStage(eActionStage_MoveStage);
+// 									//上次的友方返回至待命阶段
+// 									lastChar->SetActionStage(eActionStage_WaitStage);
+// 									selectChar->SetActionStage(eActionStage_MoveStage);
 								}
 								else if(lastChar->GetCamp() == eCamp_Enemy)
-									selectChar->SetActionStage(eActionStage_MoveStage);
+								{
+									if(!selectChar->GetFinish())
+									{
+										m_nSelectNum = selectChar->GetNum();
+										selectChar->SetActionStage(eActionStage_MoveStage);
+									}
+								}
 							}
 							else 
 								//这里是错误分支，不可以运行到这里
@@ -435,12 +466,28 @@ void CreatureManager::SelectCreature()
 					else if (selectChar->GetCamp() == eCamp_Enemy)
 					{
 						Character* lastChar = GetCreature(nLastSelect);
-						if(lastChar!=NULL && lastChar->GetCamp()==eCamp_Friend && lastChar->GetActionStage() == eActionStage_AttackStage)
+						if(lastChar!=NULL) 
 						{
-							//判断是否可以攻击到选中单位
-							//这里直接攻击方便测试
-							lastChar->SetTarget(selectChar->GetNum());
-							lastChar->GeginHit();
+							if(lastChar->GetCamp()==eCamp_Friend)
+							{
+								if(lastChar->GetActionStage() == eActionStage_AttackStage)
+								{
+									//判断是否可以攻击到选中单位
+									//这里直接攻击方便测试
+									lastChar->SetTarget(selectChar->GetNum());
+									lastChar->GeginHit();
+									//lastChar->SetFinish(true);
+									m_nSelectNum = -1;
+								}
+							}
+							else if (lastChar->GetCamp() == eCamp_Enemy)
+							{
+								m_nSelectNum = selectChar->GetNum();
+							}
+						}
+						else
+						{
+							m_nSelectNum = selectChar->GetNum();
 						}
 					}
 				}
@@ -448,24 +495,27 @@ void CreatureManager::SelectCreature()
 			//点中地面
 			else
 			{
-				if (m_nSelectNum>=0)
+				if (g_getLButtonState(App::sInstance().GetHGE()) == eLButtonState_Up)
 				{
-					selectChar = GetCreature(m_nSelectNum);
-					if (selectChar!= NULL)
+					if (m_nSelectNum>=0)
 					{
-						if(selectChar->GetCamp() == eCamp_Friend && selectChar->GetActionStage() == eActionStage_MoveStage)
+						selectChar = GetCreature(m_nSelectNum);
+						if (selectChar!= NULL)
 						{
-							//判断是否可以移动过去
-							int length = abs(mouseBlock.xpos - selectChar->GetBlock().xpos) + abs(mouseBlock.ypos - selectChar->GetBlock().ypos);
-							//超过移动范围
-							if(length > selectChar->GetMoveAbility())
-								return;
+							if(selectChar->GetCamp() == eCamp_Friend && selectChar->GetActionStage() == eActionStage_MoveStage)
+							{
+								//判断是否可以移动过去
+								int length = abs(mouseBlock.xpos - selectChar->GetBlock().xpos) + abs(mouseBlock.ypos - selectChar->GetBlock().ypos);
+								//超过移动范围
+								if(length > selectChar->GetMoveAbility())
+									return;
 
-							//移动过去，记录原始位置
-							selectChar->GetOrigBlock().xpos = selectChar->GetBlock().xpos;
-							selectChar->GetOrigBlock().ypos = selectChar->GetBlock().ypos;
-							selectChar->GetOrigDirection() = selectChar->GetCurDirection();
-							selectChar->Move(mouseBlock.xpos,mouseBlock.ypos);
+								//移动过去，记录原始位置
+								selectChar->GetOrigBlock().xpos = selectChar->GetBlock().xpos;
+								selectChar->GetOrigBlock().ypos = selectChar->GetBlock().ypos;
+								selectChar->GetOrigDirection() = selectChar->GetCurDirection();
+								selectChar->Move(mouseBlock.xpos,mouseBlock.ypos);
+							}
 						}
 					}
 				}
@@ -481,7 +531,6 @@ void CreatureManager::UnSelectCreature()
 		int nLastSelect = m_nSelectNum;
 		if (g_getRButtonState(App::sInstance().GetHGE()) == eRButtonState_Up)
 		{
-			m_nSelectNum = -1;
 			Character* lastChar = GetCreature(nLastSelect);
 			if(lastChar!=NULL && lastChar->GetCamp()==eCamp_Friend)
 			{
@@ -489,14 +538,17 @@ void CreatureManager::UnSelectCreature()
 				if(lastChar->GetActionStage() == eActionStage_AttackStage)
 				{
 					lastChar->SetActionStage(eActionStage_MoveStage);
-					lastChar->GetBlock().xpos = lastChar->GetOrigBlock().xpos;
-					lastChar->GetBlock().ypos = lastChar->GetOrigBlock().ypos;
-					lastChar->GetCurDirection() = lastChar->GetOrigDirection();
+					lastChar->CancelMove();
 				}
-				//右键取消选中的友方，需要重置行动阶段
-				else if(lastChar->GetActionStage() == eActionStage_MoveStage)	
+				//右键取消选中的友方，需要重置行动阶段，处于移动中的单位不可以当时取消
+				else if(lastChar->GetActionStage() == eActionStage_MoveStage && lastChar->GetCharacterState()==eCharacterState_Stand)	
+				{
 					lastChar->SetActionStage(eActionStage_WaitStage);
+					m_nSelectNum = -1;
+				}
 			}
+			else
+				m_nSelectNum = -1;
 		}
 	}
 }
@@ -506,7 +558,8 @@ void CreatureManager::ProcessSelectCreature()
 	if(m_nSelectNum >= 0)
 	{
 		Character* selectChar = GetCreature(m_nSelectNum);
-		ShowMoveRange(selectChar);
+		if((selectChar->GetCamp() == eCamp_Enemy) || (selectChar->GetCamp()==eCamp_Friend && selectChar->GetCharacterState()==eCharacterState_Stand && selectChar->GetActionStage() ==eActionStage_MoveStage))
+			ShowMoveRange(selectChar);
 		if(selectChar->GetCamp() == eCamp_Enemy || (selectChar->GetCamp()==eCamp_Friend && selectChar->GetActionStage()==eActionStage_AttackStage))
 			ShowAttackRange(selectChar);
 	}

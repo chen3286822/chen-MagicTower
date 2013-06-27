@@ -77,6 +77,12 @@ bool App::LoadResource()
 	player->SetMoveAbility(4);
 	CreatureManager::sInstance().AddFriend(player);
 
+	Character* player2 = new Character;
+	player2->Init(MapManager::sInstance().GetCurrentMap()->GetLevel(),1,101,1,Block(5,6));
+	player2->SetCamp(eCamp_Friend);
+	player2->SetMoveAbility(3);
+	CreatureManager::sInstance().AddFriend(player2);
+
 
 //  	TipWnd::sInstance().AddText("ÎÔÊÒ",0xFFFF0000,20.0f,10.0f,MSYaHei,FontBig,false);
 //  	TipWnd::sInstance().AddText("aBCDEFTG",0xFFFF0000,30.0f,30.0f,Calibri,FontBig,false);
@@ -97,7 +103,8 @@ void App::Run()
 
 void App::FreeResource()
 {
-	gSafeDelete(player);
+	//gSafeDelete(player);
+	CreatureManager::sInstance().Release();
 
 	TipWnd::sDestroy();
 	CreatureManager::sDestroy();
@@ -207,16 +214,16 @@ bool App::AppUpdate()
 		m_iBlock.ypos = -1;
 	}
 
-	if (g_getKeyState(m_pHge,HGEK_W)==eKeyState_Down)
-		player->Move(eDirection_Up);
-	else if (g_getKeyState(m_pHge,HGEK_S)==eKeyState_Down)
-		player->Move(eDirection_Down);
-	else if (g_getKeyState(m_pHge,HGEK_A)==eKeyState_Down)
-		player->Move(eDirection_Left);
-	else if (g_getKeyState(m_pHge,HGEK_D)==eKeyState_Down)
-		player->Move(eDirection_Right);
-	else if (g_getKeyState(m_pHge,HGEK_J)==eKeyState_Down)
-		player->GeginHit();
+// 	if (g_getKeyState(m_pHge,HGEK_W)==eKeyState_Down)
+// 		player->Move(eDirection_Up);
+// 	else if (g_getKeyState(m_pHge,HGEK_S)==eKeyState_Down)
+// 		player->Move(eDirection_Down);
+// 	else if (g_getKeyState(m_pHge,HGEK_A)==eKeyState_Down)
+// 		player->Move(eDirection_Left);
+// 	else if (g_getKeyState(m_pHge,HGEK_D)==eKeyState_Down)
+// 		player->Move(eDirection_Right);
+// 	else if (g_getKeyState(m_pHge,HGEK_J)==eKeyState_Down)
+// 		player->GeginHit();
 
 	float dt = m_pHge->Timer_GetDelta();
 

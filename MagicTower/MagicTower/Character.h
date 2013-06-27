@@ -23,7 +23,7 @@ public:
 	void Update(float delta); 
 
 	void Init(int _Level,int _ID,int _Num,int _Action,Block _block);
-	void Move(int tarX,int tarY);	//向目标移动
+	eErrorCode Move(int tarX,int tarY);	//向目标移动
 	void Move(eDirection dir);		//以格子为单位移动
 
 	void SetMove(bool _move){m_bCanMove = _move;}
@@ -40,10 +40,13 @@ public:
 	eAttackRange GetAttackRange(){return m_eAttackRange;}
 	void SetActionStage(eActionStage _stage){m_eActionStage = _stage;}
 	eActionStage GetActionStage(){return m_eActionStage;}
+	eCharacterState GetCharacterState(){return m_eCharState;}
 	eDirection& GetCurDirection(){return m_eCurDir;}
 	eDirection& GetOrigDirection(){return m_eOrigDir;}
 	int GetID(){return m_nID;}
 	int GetNum(){return m_nNum;}
+
+	void CancelMove();	//取消移动，回到原来位置
 
 	//战斗相关
 	void SetTarget(int _tar){m_nTar = _tar;}

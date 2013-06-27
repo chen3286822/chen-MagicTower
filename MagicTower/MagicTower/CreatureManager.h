@@ -31,6 +31,7 @@ public:
 	void Init();
 	void Render();
 	void Update(float delta);
+	void Release();
 
 	void AddEnemy(Character* _enemy){m_VEnemyList.push_back(_enemy);}
 	void AddFriend(Character* _friend){m_VFriendList.push_back(_friend);}

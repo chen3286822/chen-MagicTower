@@ -66,7 +66,14 @@
 
 #define MAX_DISTANCE  100000
 
-
+//错误码
+enum eErrorCode
+{
+	eErrorCode_Success = 0,
+	eErrorCode_CannotMove,		//bCanMove 为true导致
+	eErrorCode_NoPath,					//没有找到路径
+	eErrorCode_NotStandState,	//寻路时不是stand状态，不可寻路
+};
 //阵营
 enum eCamp
 {
