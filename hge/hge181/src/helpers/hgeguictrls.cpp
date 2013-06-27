@@ -75,6 +75,21 @@ hgeGUIButton::hgeGUIButton(int _id, float x, float y, float w, float h, HTEXTURE
 	sprDown = new hgeSprite(tex, tx+w, ty, w, h);
 }
 
+hgeGUIButton::hgeGUIButton(int _id, float x, float y, float w, float h, HTEXTURE tex, HTEXTURE tex2, float tx, float ty)
+{
+	id=_id;
+	bStatic=false;
+	bVisible=true;
+	bEnabled=true;
+	rect.Set(x, y, x+w, y+h);
+
+	bPressed=false;
+	bTrigger=false;
+
+	sprUp = new hgeSprite(tex, tx, ty, w, h);
+	sprDown = new hgeSprite(tex2, tx, ty, w, h);
+}
+
 hgeGUIButton::~hgeGUIButton()
 {
 	if(sprUp) delete sprUp;

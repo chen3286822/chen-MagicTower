@@ -49,6 +49,13 @@ public:
 	virtual bool	KeyClick(int key, int chr) { return false; }
 
 	virtual void	SetColor(DWORD _color) { color=_color; }
+
+	virtual void ResetPosition(float x, float y)
+	{
+		float offx = x-rect.x1;
+		float offy = x-rect.y1;
+		rect.Set(x,y,rect.x2+offx,rect.y2+offy);
+	}
 	
 	int				id;
 	bool			bStatic;

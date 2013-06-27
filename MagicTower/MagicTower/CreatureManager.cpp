@@ -473,11 +473,27 @@ void CreatureManager::SelectCreature()
 								if(lastChar->GetActionStage() == eActionStage_AttackStage)
 								{
 									//判断是否可以攻击到选中单位
-									//这里直接攻击方便测试
-									lastChar->SetTarget(selectChar->GetNum());
-									lastChar->GeginHit();
-									//lastChar->SetFinish(true);
-									m_nSelectNum = -1;
+									eAttackRange attackRange = lastChar->GetAttackRange();
+									int tarX = 0,tarY = 0;
+									for (MAttackRange::iterator mit=m_mAttackRange.begin();mit!=m_mAttackRange.end();mit++)
+									{
+										if(mit->first == attackRange)
+										{
+											for (vector<Pair>::iterator it=mit->second.begin();it!=mit->second.end();it++)
+											{
+												tarX = it->x + lastChar->GetBlock().xpos;
+												tarY = it->y + lastChar->GetBlock().ypos;
+												if(selectChar->GetBlock().xpos == tarX && selectChar->GetBlock().ypos == tarY)
+												{
+													//在攻击范围内
+													lastChar->SetTarget(selectChar->GetNum());
+													lastChar->GeginHit();
+													m_nSelectNum = -1;
+													return;
+												}
+											}
+										}
+									}
 								}
 							}
 							else if (lastChar->GetCamp() == eCamp_Enemy)

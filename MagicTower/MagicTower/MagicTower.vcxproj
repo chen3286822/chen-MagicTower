@@ -126,6 +126,10 @@
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="TexManager.h" />
     <ClInclude Include="TipWnd.h" />
+    <ClInclude Include="UI.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
