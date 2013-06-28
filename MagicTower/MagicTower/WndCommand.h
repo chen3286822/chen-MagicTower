@@ -10,7 +10,7 @@ class WndCommand : public UIWindow
 public:
 	enum eControlID
 	{
-		eControlID_AttackButton = 0,
+		eControlID_AttackButton = 1,
 		eControlID_FinishButton,
 	};
 

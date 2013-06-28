@@ -12,6 +12,11 @@ enum eUIID
 	eUIID_ButtonPress,
 };
 
+enum eWindowID
+{
+	eWindowID_Command = 0,
+};
+
 class UIButton : public hgeGUIButton
 {
 public:
@@ -24,7 +29,7 @@ public:
 		  m_fY = y;
 		  m_nID = id;
 	  }
-	UIButton(int id, float x, float y, float w, float h, HTEXTURE tex, HTEXTURE tex2, float tx, float ty) :
+	  UIButton(int id, float x, float y, float w, float h, HTEXTURE tex, HTEXTURE tex2, float tx, float ty) :
 	  hgeGUIButton(id,x,y,w,h,tex,tex2,tx,ty)
 	  {
 		  m_pFont = NULL;
@@ -33,40 +38,43 @@ public:
 		  m_fY = y;
 		  m_nID = id;
 	  }
-	virtual			~UIButton(){}
+	  virtual			~UIButton(){}
 
-	void	SetFont(eFontType _type = eFontType_MSYaHei,eFontSize _size = eFontSize_FontMiddle)
-	{
-		FontAttr attr(_type,_size);
-		GfxFont* font = FontManager::sInstance().GetFont(attr);
-		if(font)
-			m_pFont = font;
-	}
-	void	SetText(const char* str)
-	{
-		wchar_t out[256];
-		g_CTW(str,out);
-		m_wstrText = out;
-	}
+	  void	SetFont(eFontType _type = eFontType_MSYaHei,eFontSize _size = eFontSize_FontMiddle)
+	  {
+		  FontAttr attr(_type,_size);
+		  GfxFont* font = FontManager::sInstance().GetFont(attr);
+		  if(font)
+			  m_pFont = font;
+	  }
+	  void	SetText(const char* str,DWORD color=0xFFFFFFFF)
+	  {
+		  wchar_t out[256];
+		  g_CTW(str,out);
+		  m_wstrText = out;
+		  m_dwColor = color;
+	  }
 
-	virtual void	Render()
-	{
-		hgeGUIButton::Render();
-		if (m_pFont)
-		{
-			if (GetState())
-				m_pFont->Render(m_fX+1,m_fY+1,m_wstrText.c_str());
-			else
-				m_pFont->Render(m_fX,m_fY,m_wstrText.c_str());
-		}
+	  virtual void	Render()
+	  {
+		  hgeGUIButton::Render();
+		  if (m_pFont)
+		  {
+			  m_pFont->SetColor(m_dwColor);
+			  if (GetState())
+				  m_pFont->Render(m_fX+1,m_fY+1,m_wstrText.c_str());
+			  else
+				  m_pFont->Render(m_fX,m_fY,m_wstrText.c_str());
+		  }
 
-	}
+	  }
 
-	int GetID(){return m_nID;}
+	  int GetID(){return m_nID;}
 
 private:
 	GfxFont* m_pFont;
 	std::wstring m_wstrText;
+	DWORD m_dwColor;
 	float m_fX;
 	float m_fY;
 	int m_nID;
@@ -89,7 +97,7 @@ public:
 	float				GetX(){return m_fPosX;}
 	float				GetY(){return m_fPosY;}
 	void				SetRenderPositon(float _x,float _y){m_fPosX = _x; m_fPosY = _y;}
-	bool				GetShow(){return m_bShow;}
+	bool				IsShow(){return m_bShow;}
 	void				SetShow(bool _show){m_bShow = _show;}
 protected:
 	hgeGUI* m_pContainer;
@@ -103,13 +111,13 @@ protected:
 class UISystem : public Singleton<UISystem>
 {
 public:
-	UISystem();
-	~UISystem();
+	UISystem(){m_mWindows.clear();}
+	~UISystem(){}
 
 	void Init();
 	void Release();
 	void Render();
-	void Update();
+	void Update(float dt);
 private:
 	std::map<int,UIWindow*> m_mWindows;
 };

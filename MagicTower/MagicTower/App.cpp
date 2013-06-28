@@ -5,6 +5,7 @@
 #include "CreatureManager.h"
 #include "TipWnd.h"
 #include "FontManager.h"
+#include "UI.h"
 
 bool update();
 bool render();
@@ -53,9 +54,12 @@ bool App::LoadResource()
 	FontManager::sCreate();
 	CreatureManager::sCreate();
 	TipWnd::sCreate();
+	UISystem::sCreate();
 
 	CreatureManager::sInstance().Init();
 	FontManager::sInstance().InitFont();
+
+
 
 	char pBuf[MAX_PATH];
 	char pathTex[MAX_PATH],pathMap[MAX_PATH],pathMaps[MAX_PATH],pathUI[MAX_PATH];
@@ -73,6 +77,9 @@ bool App::LoadResource()
 		return false;
 	}
 
+	//ÔØÈëUI
+	UISystem::sInstance().Init();
+
 	player = new Character;
 	player->Init(MapManager::sInstance().GetCurrentMap()->GetLevel(),1,100,1,Block(5,5));
 	player->SetCamp(eCamp_Friend);
@@ -84,6 +91,7 @@ bool App::LoadResource()
 	player2->SetCamp(eCamp_Friend);
 	player2->SetMoveAbility(3);
 	CreatureManager::sInstance().AddFriend(player2);
+
 
 
 //  	TipWnd::sInstance().AddText("ÎÔÊÒ",0xFFFF0000,20.0f,10.0f,MSYaHei,FontBig,false);
@@ -107,7 +115,9 @@ void App::FreeResource()
 {
 	//gSafeDelete(player);
 	CreatureManager::sInstance().Release();
+	UISystem::sInstance().Release();
 
+	UISystem::sDestroy();
 	TipWnd::sDestroy();
 	CreatureManager::sDestroy();
 	FontManager::sDestroy();
@@ -130,6 +140,7 @@ bool App::AppRender()
 	DrawMouseRect();
 	CreatureManager::sInstance().Render();
 	TipWnd::sInstance().Render();
+	UISystem::sInstance().Render();
 
 	m_pHge->Gfx_EndScene();
 	return false;
@@ -234,6 +245,7 @@ bool App::AppUpdate()
 	MapManager::sInstance().Update();
 	CreatureManager::sInstance().Update(dt);
 	TipWnd::sInstance().Update(dt);
+	UISystem::sInstance().Update(dt);
 	return false;
 }
 

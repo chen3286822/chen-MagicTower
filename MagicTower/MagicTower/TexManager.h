@@ -38,7 +38,7 @@ public:
 	bool LoadUI(std::string path);
 
 	std::map<int,HTEXTURE> GetTex(int _ID);
-	std::map<int,HTEXTURE> GetTex(){return m_mUITex;}
+	std::map<int,HTEXTURE> GetUITex(){return m_mUITex;}
 	blockInfo	GetBlock(int _type);
 
 private:
