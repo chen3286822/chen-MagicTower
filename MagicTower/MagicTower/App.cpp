@@ -58,14 +58,16 @@ bool App::LoadResource()
 	FontManager::sInstance().InitFont();
 
 	char pBuf[MAX_PATH];
-	char pathTex[MAX_PATH],pathMap[MAX_PATH],pathMaps[MAX_PATH];
+	char pathTex[MAX_PATH],pathMap[MAX_PATH],pathMaps[MAX_PATH],pathUI[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH,pBuf);
 	sprintf(pathTex,"%s\\res\\tex",pBuf);
 	sprintf(pathMap,"%s\\res\\map",pBuf);
 	sprintf(pathMaps,"%s\\res\\Maps",pBuf);
+	sprintf(pathUI,"%s\\res\\UI",pBuf);
 	if(!TexManager::sInstance().LoadTex(pathTex) ||
 		!TexManager::sInstance().LoadMap(pathMap) ||
-		!MapManager::sInstance().LoadMaps(pathMaps))
+		!MapManager::sInstance().LoadMaps(pathMaps) ||
+		!TexManager::sInstance().LoadUI(pathUI))
 	{
 		MessageBox(NULL, "纹理或者关卡载入失败", "Error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
 		return false;

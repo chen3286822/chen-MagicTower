@@ -111,6 +111,8 @@
     <ClCompile Include="Markup.cpp" />
     <ClCompile Include="TexManager.cpp" />
     <ClCompile Include="TipWnd.cpp" />
+    <ClCompile Include="UI.cpp" />
+    <ClCompile Include="WndCommand.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h" />
@@ -127,6 +129,7 @@
     <ClInclude Include="TexManager.h" />
     <ClInclude Include="TipWnd.h" />
     <ClInclude Include="UI.h" />
+    <ClInclude Include="WndCommand.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram1.cd" />

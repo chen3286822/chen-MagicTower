@@ -106,6 +106,31 @@ bool TexManager::LoadMap(std::string path)
 	return true;
 }
 
+bool TexManager::LoadUI(std::string path)
+{
+	std::map<std::string,std::string> files;
+	g_getFiles(path,files,".png",50,true);
+	size_t found = 0;
+	int ID = 0;
+	for (std::map<std::string,std::string>::iterator mit=files.begin();mit!=files.end();mit++)
+	{
+		found = mit->second.find('.');
+		if(found != 0)
+		{
+			char strID[10];
+			strncpy(strID,mit->second.c_str(),found);
+			strID[found] = '\0';
+			ID = atoi(strID);
+			m_mUITex[ID] = App::sInstance().GetHGE()->Texture_Load(mit->first.c_str());
+		}
+	}
+	if (m_mUITex.empty())
+	{
+		return false;
+	}
+	return true;
+}
+
 std::map<int,HTEXTURE> TexManager::GetTex(int _ID)
 {
 	std::map<int,HTEXTURE> mapTex;

@@ -34,6 +34,12 @@
     <ClCompile Include="AStar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="UI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WndCommand.cpp">
+      <Filter>Windows\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
@@ -78,6 +84,9 @@
     <ClInclude Include="UI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="WndCommand.h">
+      <Filter>Windows\Head Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
@@ -85,6 +94,15 @@
     </Filter>
     <Filter Include="Source Files">
       <UniqueIdentifier>{56468091-4937-47db-ba10-ee2f953676ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows">
+      <UniqueIdentifier>{872ccf2a-96a9-4532-a7d7-474cc44afed4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\Head Files">
+      <UniqueIdentifier>{3601ddeb-dceb-4007-8343-be3e76c64e7c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows\Source Files">
+      <UniqueIdentifier>{bbc5694b-aaf7-4244-9017-960d1ca9eb1a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
