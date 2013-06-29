@@ -53,8 +53,20 @@ public:
 	virtual void ResetPosition(float x, float y)
 	{
 		float offx = x-rect.x1;
-		float offy = x-rect.y1;
+		float offy = y-rect.y1;
 		rect.Set(x,y,rect.x2+offx,rect.y2+offy);
+	}
+
+	virtual float GetX(){return rect.x1;}
+	virtual float GetY(){return rect.y1;}
+	virtual bool IsMouseOn()
+	{
+		float x=0,y = 0;
+		hge->Input_GetMousePos(&x,&y);
+		if (x>=rect.x1 && x<=rect.x2 && y>=rect.y1 && y<=rect.y2)
+			return true;
+
+		return false;
 	}
 	
 	int				id;

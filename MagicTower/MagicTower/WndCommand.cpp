@@ -5,8 +5,8 @@ WndCommand::WndCommand(HTEXTURE tex,float x,float y,float w,float h,float posX,f
 UIWindow(tex,x,y,w,h,posX,posY)
 {
 	m_pContainer = new hgeGUI;
-	m_pAttackButton = new UIButton(eControlID_AttackButton,m_fPosX+x,m_fPosY+y,83,21,TexManager::sInstance().GetUITex()[eUIID_ButtonNormal],TexManager::sInstance().GetUITex()[eUIID_ButtonPress],0,0);
-	m_pFinishButton = new UIButton(eControlID_FinishButton,m_fPosX+x,m_fPosY+y+21,83,21,TexManager::sInstance().GetUITex()[eUIID_ButtonNormal],TexManager::sInstance().GetUITex()[eUIID_ButtonPress],0,0);
+	m_pAttackButton = new UIButton(eControlID_AttackButton,m_fPosX,m_fPosY,83,21,TexManager::sInstance().GetUITex()[eUIID_ButtonNormal],TexManager::sInstance().GetUITex()[eUIID_ButtonPress],0,0);
+	m_pFinishButton = new UIButton(eControlID_FinishButton,m_fPosX,m_fPosY+21,83,21,TexManager::sInstance().GetUITex()[eUIID_ButtonNormal],TexManager::sInstance().GetUITex()[eUIID_ButtonPress],0,0);
 	m_pContainer->AddCtrl(m_pAttackButton);
 	m_pContainer->AddCtrl(m_pFinishButton);
 
@@ -21,6 +21,15 @@ WndCommand::~WndCommand()
 {
 	m_pContainer->DelCtrl(eControlID_AttackButton);
 	m_pContainer->DelCtrl(eControlID_FinishButton);
+}
+
+void WndCommand::SetRenderPositon(float _x,float _y)
+{
+	m_fPosX = _x; 
+	m_fPosY = _y;
+
+	m_pAttackButton->ResetPosition(m_fPosX,m_fPosY);
+	m_pFinishButton->ResetPosition(m_fPosX,m_fPosY+21);
 }
 
 void WndCommand::Update(float dt)
@@ -43,4 +52,9 @@ void WndCommand::Update(float dt)
 			m_pContainer->Leave();
 		}
 	}
+}
+
+bool WndCommand::IsOnControl()
+{
+	return (m_pAttackButton->IsMouseOn() || m_pFinishButton->IsMouseOn());
 }

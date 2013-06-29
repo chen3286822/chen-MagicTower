@@ -2,6 +2,7 @@
 #include "MapManager.h"
 #include "App.h"
 #include "TipWnd.h"
+#include "UI.h"
 
 CreatureManager::CreatureManager()
 {
@@ -415,7 +416,8 @@ void CreatureManager::SelectCreature()
 			//选中单位
 			if(selectChar!=NULL)
 			{
-				if (g_getLButtonState(App::sInstance().GetHGE()) == eLButtonState_Up)
+				//需要拦截点击操作界面的消息
+				if (g_getLButtonState(App::sInstance().GetHGE()) == eLButtonState_Up && !(UISystem::sInstance().GetWindow(eWindowID_Command)->IsOnControl()))
 				{
 					int nLastSelect = m_nSelectNum;
 					if (selectChar->GetCamp() == eCamp_Friend )
@@ -431,10 +433,17 @@ void CreatureManager::SelectCreature()
 							}
 						}
 						//连续两次点击同一友方单位
-						else if(nLastSelect == m_nSelectNum)
+						else if(nLastSelect == selectChar->GetNum())
 						{
 							//过滤移动阶段，进入攻击阶段
 							selectChar->SetActionStage(eActionStage_AttackStage);
+							//打开操作界面
+							UIWindow* commandWindow = UISystem::sInstance().GetWindow(eWindowID_Command);
+							if(commandWindow)
+							{
+								commandWindow->SetShow(true);
+								commandWindow->SetRenderPositon(selectChar->GetRealX() + 50,selectChar->GetRealY());
+							}
 						}
 						//其他情况
 						else
@@ -511,7 +520,7 @@ void CreatureManager::SelectCreature()
 			//点中地面
 			else
 			{
-				if (g_getLButtonState(App::sInstance().GetHGE()) == eLButtonState_Up)
+				if (g_getLButtonState(App::sInstance().GetHGE()) == eLButtonState_Up && !(UISystem::sInstance().GetWindow(eWindowID_Command)->IsOnControl()))
 				{
 					if (m_nSelectNum>=0)
 					{
@@ -555,6 +564,12 @@ void CreatureManager::UnSelectCreature()
 				{
 					lastChar->SetActionStage(eActionStage_MoveStage);
 					lastChar->CancelMove();
+					//关闭操作界面
+					UIWindow* commandWindow = UISystem::sInstance().GetWindow(eWindowID_Command);
+					if(commandWindow)
+					{
+						commandWindow->SetShow(false);
+					}
 				}
 				//右键取消选中的友方，需要重置行动阶段，处于移动中的单位不可以当时取消
 				else if(lastChar->GetActionStage() == eActionStage_MoveStage && lastChar->GetCharacterState()==eCharacterState_Stand)	

@@ -25,8 +25,6 @@ public:
 	  {
 		  m_pFont = NULL;
 		  m_wstrText = (wchar_t*)"";
-		  m_fX = x;
-		  m_fY = y;
 		  m_nID = id;
 	  }
 	  UIButton(int id, float x, float y, float w, float h, HTEXTURE tex, HTEXTURE tex2, float tx, float ty) :
@@ -34,8 +32,6 @@ public:
 	  {
 		  m_pFont = NULL;
 		  m_wstrText = (wchar_t*)"";
-		  m_fX = x;
-		  m_fY = y;
 		  m_nID = id;
 	  }
 	  virtual			~UIButton(){}
@@ -62,9 +58,9 @@ public:
 		  {
 			  m_pFont->SetColor(m_dwColor);
 			  if (GetState())
-				  m_pFont->Render(m_fX+1,m_fY+1,m_wstrText.c_str());
+				  m_pFont->Render(GetX()+1,GetY()+1,m_wstrText.c_str());
 			  else
-				  m_pFont->Render(m_fX,m_fY,m_wstrText.c_str());
+				  m_pFont->Render(GetX(),GetY(),m_wstrText.c_str());
 		  }
 
 	  }
@@ -75,8 +71,6 @@ private:
 	GfxFont* m_pFont;
 	std::wstring m_wstrText;
 	DWORD m_dwColor;
-	float m_fX;
-	float m_fY;
 	int m_nID;
 };
 
@@ -96,9 +90,10 @@ public:
 
 	float				GetX(){return m_fPosX;}
 	float				GetY(){return m_fPosY;}
-	void				SetRenderPositon(float _x,float _y){m_fPosX = _x; m_fPosY = _y;}
+	virtual void	SetRenderPositon(float _x,float _y){m_fPosX = _x; m_fPosY = _y;}
 	bool				IsShow(){return m_bShow;}
-	void				SetShow(bool _show){m_bShow = _show;}
+	void				SetShow(bool _show);
+	virtual bool	IsOnControl()=0;
 protected:
 	hgeGUI* m_pContainer;
 	hgeSprite* m_pBackGround;
@@ -118,7 +113,9 @@ public:
 	void Release();
 	void Render();
 	void Update(float dt);
+
+	UIWindow* GetWindow(eWindowID windowID);
 private:
-	std::map<int,UIWindow*> m_mWindows;
+	std::map<eWindowID,UIWindow*> m_mWindows;
 };
 #endif

@@ -34,19 +34,31 @@ void UIWindow::Render()
 	}
 }
 
+void UIWindow::SetShow(bool _show)
+{
+	m_bShow = _show;
+	if (m_bShow)
+	{
+		m_pContainer->Reset();
+		m_pContainer->Enter();		
+	}
+	else
+	{
+		m_pContainer->Leave();
+	}
+}
 
 void UISystem::Init()
 {
 	WndCommand* pWndCommand = new WndCommand(TexManager::sInstance().GetUITex()[eUIID_WndCommand],0,0,89,122,0,0);
 	m_mWindows[eWindowID_Command] = pWndCommand;
 
-	pWndCommand->SetShow(true);
 	pWndCommand->Init();
 }
 
 void UISystem::Release()
 {
-	for (std::map<int,UIWindow*>::iterator mit=m_mWindows.begin();mit!=m_mWindows.end();mit++)
+	for (std::map<eWindowID,UIWindow*>::iterator mit=m_mWindows.begin();mit!=m_mWindows.end();mit++)
 	{
 		mit->second->Release();
 		gSafeDelete(mit->second);
@@ -55,7 +67,7 @@ void UISystem::Release()
 
 void UISystem::Render()
 {
-	for (std::map<int,UIWindow*>::iterator mit=m_mWindows.begin();mit!=m_mWindows.end();mit++)
+	for (std::map<eWindowID,UIWindow*>::iterator mit=m_mWindows.begin();mit!=m_mWindows.end();mit++)
 	{
 		if (mit->second->IsShow())
 		{
@@ -66,11 +78,21 @@ void UISystem::Render()
 
 void UISystem::Update(float dt)
 {
-	for (std::map<int,UIWindow*>::iterator mit=m_mWindows.begin();mit!=m_mWindows.end();mit++)
+	for (std::map<eWindowID,UIWindow*>::iterator mit=m_mWindows.begin();mit!=m_mWindows.end();mit++)
 	{
 		if (mit->second->IsShow())
 		{
 			mit->second->Update(dt);
 		}
 	}
+}
+
+UIWindow* UISystem::GetWindow(eWindowID windowID)
+{
+	for (std::map<eWindowID,UIWindow*>::iterator mit=m_mWindows.begin();mit!=m_mWindows.end();mit++)
+	{
+		if(mit->first == windowID)
+			return mit->second;
+	}
+	return NULL;
 }

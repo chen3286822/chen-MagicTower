@@ -3,6 +3,7 @@
 #include "MapManager.h"
 #include "TexManager.h"
 #include "CreatureManager.h"
+#include "UI.h"
 
 
 Character::Character(void)
@@ -51,6 +52,7 @@ void Character::Init(int _Level,int _ID,int _Num,int _Action,Block _block)
 	m_fStartY = m_fYPos = MAP_OFF_Y+MAP_RECT*m_iBlock.ypos;
 	m_nLeftDistance = 0;
 	m_eCurDir = (eDirection)(_Action%4);
+	m_eOrigDir = m_eCurDir;
 	m_eCharState = eCharacterState_Stand;
 	//为初始化的人物所在地图块设置属性
 	Map* theMap = MapManager::sInstance().GetMap(m_nLevel);
@@ -158,6 +160,17 @@ void Character::Update(float delta)
 				//m_bFinishAct = true;
 				m_eActionStage = eActionStage_AttackStage;
 				m_lPathDir.clear();
+
+				//友方单位打开操作界面
+				if (m_nCamp == eCamp_Friend)
+				{
+					UIWindow* commandWindow = UISystem::sInstance().GetWindow(eWindowID_Command);
+					if(commandWindow)
+					{
+						commandWindow->SetShow(true);
+						commandWindow->SetRenderPositon(GetRealX() + 50,GetRealY());
+					}
+				}
 			}
 		}
 

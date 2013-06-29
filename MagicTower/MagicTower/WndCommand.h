@@ -19,7 +19,8 @@ public:
 	~WndCommand();
 
 	virtual void Update(float dt);
-
+	virtual void	SetRenderPositon(float _x,float _y);
+	virtual bool	IsOnControl();
 private:
 	UIButton* m_pAttackButton;	//¹¥»÷°´Å¥
 	UIButton* m_pFinishButton;	//´ýÃü°´Å¥
