@@ -92,17 +92,20 @@ enum eCampTurn
 
 //行动阶段
 //待选单位处于待命阶段
-//每个选中的单位皆从移动阶段至攻击阶段
-//当处于攻击阶段，可以通过右键取消回退至移动阶段
-//攻击阶段结束后，即单位FinishAct
+//每个选中的单位皆从移动阶段至操作阶段
+//当处于操作阶段，可以通过右键取消回退至移动阶段
+//操作阶段可以继而转到攻击阶段、技能阶段、使用物品阶段或者直接结束行动
  enum eActionStage
  {
 	 eActionStage_WaitStage = 0,	//待命阶段
 	 eActionStage_MoveStage,		//移动阶段
-	 eActionStage_AttackStage,			//攻击阶段(使用物品，释放技能)
+	 eActionStage_HandleStage,	//操作阶段(使用物品，释放技能)
+	 eActionStage_AttackStage,	//攻击阶段
+	 eActionStage_GoodStage,		//使用物品阶段
+	 eActionStage_SkillStage,			//使用技能阶段
  };	
 
-//单位状态
+//单位动作状态
 enum eCharacterState
 {
 	eCharacterState_Stand = -1,

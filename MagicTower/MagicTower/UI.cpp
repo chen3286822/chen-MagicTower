@@ -48,6 +48,21 @@ void UIWindow::SetShow(bool _show)
 	}
 }
 
+bool UIWindow::IsOnControl()
+{
+	if (m_bShow && m_pBackGround)
+	{
+		float x,y;
+		HGE* hge = hgeCreate(HGE_VERSION);
+		hge->Input_GetMousePos(&x,&y);
+		if (x>=m_fPosX && x<=(m_fPosX+m_pBackGround->GetWidth()) && y>=m_fPosY && y<=(m_fPosY+m_pBackGround->GetHeight()))
+			return true;
+
+		hge->Release();
+	}
+	return false;
+}
+
 void UISystem::Init()
 {
 	WndCommand* pWndCommand = new WndCommand(TexManager::sInstance().GetUITex()[eUIID_WndCommand],0,0,89,122,0,0);

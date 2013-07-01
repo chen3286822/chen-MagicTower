@@ -87,7 +87,7 @@ void CreatureManager::Update(float delta)
 			m_nActionCreatureNum = -1;
 
 		//测试用
-		if (cha->GetCamp() == eCamp_Enemy && cha->GetActionStage() == eActionStage_AttackStage)
+		if (cha->GetCamp() == eCamp_Enemy && cha->GetActionStage() == eActionStage_HandleStage)
 		{
 			m_nActionCreatureNum = -1;
 			cha->SetFinish(true);
@@ -346,7 +346,10 @@ bool CreatureManager::ResetAllCreature()
 	}
 	//友方行动完，进入敌方回合
 	if (m_eCampTurn == eCampTurn_Friend)
+	{
 		m_eCampTurn = eCampTurn_Enemy;
+		m_nSelectNum = -1;
+	}
 
 	for (VCharacter::iterator it=m_VEnemyList.begin();it!=m_VEnemyList.end();it++)
 	{
@@ -435,14 +438,17 @@ void CreatureManager::SelectCreature()
 						//连续两次点击同一友方单位
 						else if(nLastSelect == selectChar->GetNum())
 						{
-							//过滤移动阶段，进入攻击阶段
-							selectChar->SetActionStage(eActionStage_AttackStage);
-							//打开操作界面
-							UIWindow* commandWindow = UISystem::sInstance().GetWindow(eWindowID_Command);
-							if(commandWindow)
+							if(!selectChar->GetFinish())
 							{
-								commandWindow->SetShow(true);
-								commandWindow->SetRenderPositon(selectChar->GetRealX() + 50,selectChar->GetRealY());
+								//跳过移动阶段，进入操作阶段
+								selectChar->SetActionStage(eActionStage_HandleStage);
+								//打开操作界面
+								UIWindow* commandWindow = UISystem::sInstance().GetWindow(eWindowID_Command);
+								if(commandWindow)
+								{
+									commandWindow->SetShow(true);
+									commandWindow->SetBindChar(selectChar);
+								}
 							}
 						}
 						//其他情况
@@ -454,6 +460,11 @@ void CreatureManager::SelectCreature()
 								//上次点的是别的友方
 								if(lastChar->GetCamp() == eCamp_Friend)
 								{
+									if(lastChar->GetFinish() && !selectChar->GetFinish())
+									{
+										m_nSelectNum = selectChar->GetNum();
+										selectChar->SetActionStage(eActionStage_MoveStage);
+									}
 // 									//上次的友方返回至待命阶段
 // 									lastChar->SetActionStage(eActionStage_WaitStage);
 // 									selectChar->SetActionStage(eActionStage_MoveStage);
@@ -557,10 +568,11 @@ void CreatureManager::UnSelectCreature()
 		if (g_getRButtonState(App::sInstance().GetHGE()) == eRButtonState_Up)
 		{
 			Character* lastChar = GetCreature(nLastSelect);
-			if(lastChar!=NULL && lastChar->GetCamp()==eCamp_Friend)
+			if(lastChar!=NULL && lastChar->GetCamp()==eCamp_Friend && !(lastChar->GetFinish()))
 			{
 				//返回至原位置
-				if(lastChar->GetActionStage() == eActionStage_AttackStage)
+				eActionStage stage = lastChar->GetActionStage();
+				if(stage == eActionStage_HandleStage)
 				{
 					lastChar->SetActionStage(eActionStage_MoveStage);
 					lastChar->CancelMove();
@@ -571,8 +583,20 @@ void CreatureManager::UnSelectCreature()
 						commandWindow->SetShow(false);
 					}
 				}
+				//攻击阶段、技能阶段、使用物品阶段可以返回至操作阶段
+				else if(stage == eActionStage_AttackStage || stage == eActionStage_GoodStage || stage == eActionStage_SkillStage)
+				{
+					lastChar->SetActionStage(eActionStage_HandleStage);
+					//打开操作界面
+					UIWindow* commandWindow = UISystem::sInstance().GetWindow(eWindowID_Command);
+					if(commandWindow)
+					{
+						commandWindow->SetShow(true);
+						commandWindow->SetBindChar(lastChar);
+					}
+				}
 				//右键取消选中的友方，需要重置行动阶段，处于移动中的单位不可以当时取消
-				else if(lastChar->GetActionStage() == eActionStage_MoveStage && lastChar->GetCharacterState()==eCharacterState_Stand)	
+				else if(stage == eActionStage_MoveStage && lastChar->GetCharacterState()==eCharacterState_Stand)	
 				{
 					lastChar->SetActionStage(eActionStage_WaitStage);
 					m_nSelectNum = -1;
@@ -591,7 +615,7 @@ void CreatureManager::ProcessSelectCreature()
 		Character* selectChar = GetCreature(m_nSelectNum);
 		if((selectChar->GetCamp() == eCamp_Enemy) || (selectChar->GetCamp()==eCamp_Friend && selectChar->GetCharacterState()==eCharacterState_Stand && selectChar->GetActionStage() ==eActionStage_MoveStage))
 			ShowMoveRange(selectChar);
-		if(selectChar->GetCamp() == eCamp_Enemy || (selectChar->GetCamp()==eCamp_Friend && selectChar->GetActionStage()==eActionStage_AttackStage))
+		if(selectChar->GetCamp() == eCamp_Enemy || (selectChar->GetCamp()==eCamp_Friend && (selectChar->GetActionStage()==eActionStage_AttackStage || selectChar->GetActionStage()==eActionStage_SkillStage)))
 			ShowAttackRange(selectChar);
 	}
 	

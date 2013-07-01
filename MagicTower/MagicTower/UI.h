@@ -74,6 +74,7 @@ private:
 	int m_nID;
 };
 
+class Character;
 class UIWindow
 {
 public:
@@ -81,19 +82,21 @@ public:
 	UIWindow(HTEXTURE,float,float,float,float,float,float);
 	~UIWindow();
 
-	virtual void Init(){m_pContainer->Enter();}
-	virtual void Release(){}
-	virtual void Render();
-	virtual void Update(float dt){}
+	virtual void					Init(){m_pContainer->Enter();}
+	virtual void					Release(){}
+	virtual void					Render();
+	virtual void					Update(float dt){}
 
-	hgeGUI*		GetContainer(){return m_pContainer;}
+	hgeGUI*						GetContainer(){return m_pContainer;}
 
-	float				GetX(){return m_fPosX;}
-	float				GetY(){return m_fPosY;}
-	virtual void	SetRenderPositon(float _x,float _y){m_fPosX = _x; m_fPosY = _y;}
-	bool				IsShow(){return m_bShow;}
-	void				SetShow(bool _show);
-	virtual bool	IsOnControl()=0;
+	float								GetX(){return m_fPosX;}
+	float								GetY(){return m_fPosY;}
+	virtual void					SetRenderPositon(float _x,float _y){m_fPosX = _x; m_fPosY = _y;}
+	bool								IsShow(){return m_bShow;}
+	void								SetShow(bool _show);
+	virtual bool					IsOnControl();
+	virtual void					SetBindChar(Character*)=0;
+	virtual Character*	GetBindChar()=0;
 protected:
 	hgeGUI* m_pContainer;
 	hgeSprite* m_pBackGround;

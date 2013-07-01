@@ -158,7 +158,7 @@ void Character::Update(float delta)
 			{
 				m_eCharState = eCharacterState_Stand;
 				//m_bFinishAct = true;
-				m_eActionStage = eActionStage_AttackStage;
+				m_eActionStage = eActionStage_HandleStage;
 				m_lPathDir.clear();
 
 				//友方单位打开操作界面
@@ -168,7 +168,7 @@ void Character::Update(float delta)
 					if(commandWindow)
 					{
 						commandWindow->SetShow(true);
-						commandWindow->SetRenderPositon(GetRealX() + 50,GetRealY());
+						commandWindow->SetBindChar(this);
 					}
 				}
 			}
@@ -196,11 +196,7 @@ void Character::Update(float delta)
 				m_pAnimation->ResetFrames(0,(m_eCurDir-1)*FLOAT_PIC_SQUARE_HEIGHT,
 					FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT,4,8,false);
 				m_pAnimation->SetMode(HGEANIM_LOOP|HGEANIM_FWD);
-				m_eCharState = eCharacterState_Stand;
-				m_bFinishAct = true;
-				m_iOrigBlock.xpos = m_iBlock.xpos;
-				m_iOrigBlock.ypos = m_iBlock.ypos;
-				m_eOrigDir = m_eCurDir;
+				SetFinish(true);
 			}
 		}
 	}
@@ -246,7 +242,7 @@ void Character::Update(float delta)
 			DWORD currentTime = GetTickCount();
 			if(m_dwRecordTime == 0)
 				m_dwRecordTime = GetTickCount();
-			//0.3秒后再通知攻击者
+			//0.5秒后再通知攻击者
 			if(currentTime >= m_dwRecordTime + 500)
 			{
 				if (m_pAnimation->GetFrame() == 0)
@@ -277,6 +273,18 @@ void Character::Update(float delta)
 // 			m_ani->SetFrame((m_MoveDir-1)*4);
 		
 		m_pAnimation->Update(App::sInstance().GetHGE()->Timer_GetDelta());
+	}
+}
+
+void Character::SetFinish(bool _finish)
+{
+	m_bFinishAct = _finish;
+	if (m_bFinishAct)
+	{
+		m_iOrigBlock.xpos = m_iBlock.xpos;
+		m_iOrigBlock.ypos = m_iBlock.ypos;
+		m_eOrigDir = m_eCurDir;
+		m_eCharState = eCharacterState_Stand;
 	}
 }
 

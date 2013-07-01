@@ -1,5 +1,6 @@
 #include "WndCommand.h"
 #include "TexManager.h"
+#include "Character.h"
 
 WndCommand::WndCommand(HTEXTURE tex,float x,float y,float w,float h,float posX,float posY) :
 UIWindow(tex,x,y,w,h,posX,posY)
@@ -15,12 +16,32 @@ UIWindow(tex,x,y,w,h,posX,posY)
 
 	m_pFinishButton->SetFont(eFontType_MSYaHei,eFontSize_FontMiddle);
 	m_pFinishButton->SetText("´ýÃü",0xFF000000);
+
+	m_pChar = NULL;
 }
 
 WndCommand::~WndCommand()
 {
 	m_pContainer->DelCtrl(eControlID_AttackButton);
 	m_pContainer->DelCtrl(eControlID_FinishButton);
+}
+
+void	WndCommand::SetBindChar(Character* bindChar)
+{
+	m_pChar = bindChar;
+	if (bindChar)
+	{
+		m_fPosX = bindChar->GetRealX() + 50; 
+		m_fPosY = bindChar->GetRealY();
+
+		m_pAttackButton->ResetPosition(m_fPosX,m_fPosY);
+		m_pFinishButton->ResetPosition(m_fPosX,m_fPosY+21);
+	}
+}
+
+Character*	WndCommand::GetBindChar()
+{
+	return m_pChar;
 }
 
 void WndCommand::SetRenderPositon(float _x,float _y)
@@ -43,12 +64,20 @@ void WndCommand::Update(float dt)
 		}
 		else if (id == eControlID_AttackButton)
 		{
-
+			if(m_pChar)
+			{
+				m_pChar->SetActionStage(eActionStage_AttackStage);
+				SetShow(false);
+			}
 			m_pContainer->Leave();
 		}
 		else if (id == eControlID_FinishButton)
 		{
-
+			if(m_pChar)
+			{
+				m_pChar->SetFinish(true);
+				SetShow(false);
+			}
 			m_pContainer->Leave();
 		}
 	}
@@ -56,5 +85,5 @@ void WndCommand::Update(float dt)
 
 bool WndCommand::IsOnControl()
 {
-	return (m_pAttackButton->IsMouseOn() || m_pFinishButton->IsMouseOn());
+	return (m_bShow && (UIWindow::IsOnControl() || m_pAttackButton->IsMouseOn() || m_pFinishButton->IsMouseOn()));
 }

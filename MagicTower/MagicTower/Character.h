@@ -28,7 +28,7 @@ public:
 
 	void SetMove(bool _move){m_bCanMove = _move;}
 	bool GetMove(){return m_bCanMove;}
-	void SetFinish(bool _finish){m_bFinishAct = _finish;}
+	void SetFinish(bool _finish);
 	bool GetFinish(){return m_bFinishAct;}
 	Block&	GetBlock(){return m_iBlock;}
 	Block& GetOrigBlock(){return m_iOrigBlock;}
@@ -42,7 +42,7 @@ public:
 	eAttackRange GetAttackRange(){return m_eAttackRange;}
 	void SetActionStage(eActionStage _stage){m_eActionStage = _stage;}
 	eActionStage GetActionStage(){return m_eActionStage;}
-	eCharacterState GetCharacterState(){return m_eCharState;}
+	eCharacterState& GetCharacterState(){return m_eCharState;}
 	eDirection& GetCurDirection(){return m_eCurDir;}
 	eDirection& GetOrigDirection(){return m_eOrigDir;}
 	int GetID(){return m_nID;}
