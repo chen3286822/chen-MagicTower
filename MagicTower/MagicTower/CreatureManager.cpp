@@ -366,8 +366,22 @@ int CreatureManager::Notify(int src,int tar,int messageID,int param)
 		break;
 	case eNotify_ReadyToBeAttacked:
 		{
-			target->Attack();
+			//计算是否暴击
+			bool bCrit = false;
+			if (g_RandomInt(0,9) < (int)(target->GetCrit()*10))
+				bCrit = true;
+
+			if(!bCrit)
+				target->Attack();
+			else
+				target->Crit();
+
 			result = eNotify_Success;
+			break;
+		}
+	case eNotify_FinishAttack:
+		{
+			target->SetFinish(true);
 		}
 		break;
 	default:
@@ -385,10 +399,7 @@ void CreatureManager::CalculateResult(int src,int tar)
 	bool bhit = false;
 	if(g_RandomInt(0,9) >= (int)(target->GetDodge()*10))
 		bhit = true;
-	//计算是否暴击
-	bool bCrit = false;
-	if (g_RandomInt(0,9) >= (int)(cast->GetCrit()*10))
-		bCrit = true;
+
 
 	if(bhit)
 		target->Attacked();

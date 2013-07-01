@@ -119,6 +119,7 @@ enum eAttackState
 {
 	eAttackState_Waiting = 1,
 	eAttackState_Ready,
+	eAttackState_Criting,
 	eAttackState_Attacking,
 	eAttackState_Attackeding,
 	eAttackState_Defending,
@@ -131,6 +132,7 @@ enum eNotification
 	eNotify_NoTarget,
 	eNotify_ReadyToBeAttacked,
 	eNotify_CannotBeAttacked,
+	eNotify_FinishAttack,
 };
 
 /*

@@ -58,6 +58,7 @@ public:
 	void GeginHit();
 	int TowardToAttacker(int src);	//面对着攻击者
 	void Attack();	//开始攻击
+	void	Crit();		//开始暴击
 	void Attacked();	//开始被攻击
 	void Defend(); //开始防御
 

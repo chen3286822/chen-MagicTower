@@ -63,7 +63,7 @@ void Character::Init(int _Level,int _ID,int _Num,int _Action,Block _block)
 	m_eAttackType = eAttackType_Normal;
 	m_nAttack = 5;
 	m_nDefend = 2;
-	m_fCrit = 0.2f;
+	m_fCrit = 0.8f;
 	m_fDodge = 0.2f;
 	m_nHP = 10;
 	m_nMP = 10;
@@ -188,13 +188,13 @@ void Character::Update(float delta)
 		if(m_nLeftDistance > 0)
 		{
 			if(m_eCurDir == eDirection_Up)
-				m_fYPos -= delta*60;
+				m_fYPos -= delta*120;
 			else if(m_eCurDir == eDirection_Down)
-				m_fYPos += delta*60;
+				m_fYPos += delta*120;
 			else if(m_eCurDir == eDirection_Left)
-				m_fXPos -= delta*60;
+				m_fXPos -= delta*120;
 			else if(m_eCurDir == eDirection_Right)
-				m_fXPos += delta*60;
+				m_fXPos += delta*120;
 		}
 	}
 	else if (m_eCharState == eCharacterState_Fight)
@@ -207,7 +207,26 @@ void Character::Update(float delta)
 				m_pAnimation->ResetFrames(0,(m_eCurDir-1)*FLOAT_PIC_SQUARE_HEIGHT,
 					FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT,4,8,false);
 				m_pAnimation->SetMode(HGEANIM_LOOP|HGEANIM_FWD);
-				SetFinish(true);
+			}
+		}
+		else if (m_eAttackState == eAttackState_Criting)
+		{
+			if(m_dwRecordTime == 0)
+				m_dwRecordTime = GetTickCount();
+			DWORD currentTime = GetTickCount();
+			//为加深暴击视觉效果，单位颜色慢慢变红
+			int nTempColor = 255-(int)(255*(currentTime-m_dwRecordTime)/1000);
+			DWORD dwCritColor = (nTempColor + (nTempColor << 8)) | 0xFFFF0000;
+			m_pAnimation->SetColor(dwCritColor);
+			//1秒后再通知攻击者
+			if(currentTime >= m_dwRecordTime + 1000)
+			{
+				if (m_pAnimation->GetFrame() == 0)
+				{
+					m_pAnimation->SetColor(0xFFFFFFFF);
+					Attack();
+				}
+				m_dwRecordTime = 0;
 			}
 		}
 	}
@@ -244,6 +263,8 @@ void Character::Update(float delta)
 						FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT,4,8,false);
 					m_pAnimation->SetMode(HGEANIM_LOOP|HGEANIM_FWD);
 					m_eCharState = eCharacterState_Stand;
+					//通知攻击者结束行动，这里通知是为了让被攻击者动作可以播完
+					CreatureManager::sInstance().Notify(m_nNum,m_nSrc,eNotify_FinishAttack,0);
 				}
 				m_dwRecordTime = 0;
 			}
@@ -263,6 +284,8 @@ void Character::Update(float delta)
 						FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT,4,8,false);
 					m_pAnimation->SetMode(HGEANIM_LOOP|HGEANIM_FWD);
 					m_eCharState = eCharacterState_Stand;
+					//通知攻击者结束行动，这里通知是为了让被攻击者动作可以播完
+					CreatureManager::sInstance().Notify(m_nNum,m_nSrc,eNotify_FinishAttack,0);
 				}
 				m_dwRecordTime = 0;
 			}
@@ -296,6 +319,8 @@ void Character::SetFinish(bool _finish)
 		m_iOrigBlock.ypos = m_iBlock.ypos;
 		m_eOrigDir = m_eCurDir;
 		m_eCharState = eCharacterState_Stand;
+		m_pAnimation->ResetFrames(0,(m_eCurDir-1)*FLOAT_PIC_SQUARE_HEIGHT,
+			FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT,4,8,false);
 	}
 }
 
@@ -532,6 +557,18 @@ void Character::Defend()
 	//设置被攻击子状态
 	m_eCharState = eCharacterState_Defense;
 	m_eAttackState = eAttackState_Defending;
+}
+
+void Character::Crit()
+{
+	//播放攻击动作
+	m_pAnimation->SetTexture(m_mCharTex[eCharacterState_Fight]);
+	m_pAnimation->ResetFrames(0,(m_eCurDir-1)*FLOAT_PIC_SQUARE_HEIGHT,
+		FLOAT_PIC_SQUARE_HEIGHT,FLOAT_PIC_SQUARE_HEIGHT,1,8,false);
+	m_pAnimation->SetMode(HGEANIM_FWD | HGEANIM_LOOP);
+
+	//设置攻击子状态
+	m_eAttackState = eAttackState_Criting;
 }
 
 void Character::GeginHit()
