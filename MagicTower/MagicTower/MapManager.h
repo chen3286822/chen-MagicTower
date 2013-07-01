@@ -27,6 +27,8 @@ public:
 	inline std::vector<Block>&	GetVBlock(){return m_vBlocks;}
 
 	std::vector<Block*> FindPath(int startX,int startY,int endX,int endY);
+	void SetSpecificRange(std::vector<Block*>);
+	std::vector<Block*>& GetSpecificRange(){return m_vSpecificRange;}
 
 	void SetBlockOccupied(int xpos,int ypos);
 	bool GetBlockOccupied(int xpos,int ypos);
@@ -43,6 +45,7 @@ private:
 
 	hgeSprite* m_pMapSpr;
 	AStar m_iPathFinder;
+	std::vector<Block*>	m_vSpecificRange;	//限定的寻路范围 
 };
 
 class MapManager : public Singleton<MapManager>

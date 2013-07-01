@@ -98,23 +98,44 @@ bool AStar::FindNode(pNode node,list<pNode> nodeList)
 void AStar::UpdateMap()
 {
 	Map* currentMap = MapManager::sInstance().GetCurrentMap();
-	for (int i=0;i<m_nWidth;i++)
-	{
-		for (int j=0;j<m_nHeight;j++)
+	if(!(currentMap->GetSpecificRange().empty()))
+	{		
+		for (int i=0;i<m_nWidth;i++)
 		{
-			m_ppiMap[i][j].postionX = i;
-			m_ppiMap[i][j].postionY = j;
-			m_ppiMap[i][j].previous = NULL;
-			m_ppiMap[i][j].achiveble = true;
-// 			if(heightGraph[i][j] >= 200 && !((i==startX && j==startY) ||(i==endX && j==endY)))
-// 				map[i][j].achiveble = false;
-
-			//地形因素不可达
-			//单位在上面不可达
-			if(!IsCanCross(currentMap->GetBlock(i,j)->attri))
+			for (int j=0;j<m_nHeight;j++)
+			{
+				m_ppiMap[i][j].postionX = i;
+				m_ppiMap[i][j].postionY = j;
+				m_ppiMap[i][j].previous = NULL;
 				m_ppiMap[i][j].achiveble = false;
+			}
+		}
+		for (std::vector<Block*>::iterator it=currentMap->GetSpecificRange().begin();it!=currentMap->GetSpecificRange().end();it++)
+		{
+			m_ppiMap[(*it)->xpos][(*it)->ypos].achiveble = true;
+			if(!IsCanCross(currentMap->GetBlock((*it)->xpos,(*it)->ypos)->attri))
+				m_ppiMap[(*it)->xpos][(*it)->ypos].achiveble = false;
 		}
 	}
+	else
+	{
+		for (int i=0;i<m_nWidth;i++)
+		{
+			for (int j=0;j<m_nHeight;j++)
+			{
+				m_ppiMap[i][j].postionX = i;
+				m_ppiMap[i][j].postionY = j;
+				m_ppiMap[i][j].previous = NULL;
+				m_ppiMap[i][j].achiveble = true;
+
+				//地形因素不可达
+				//单位在上面不可达
+				if(!IsCanCross(currentMap->GetBlock(i,j)->attri))
+					m_ppiMap[i][j].achiveble = false;
+			}
+		}
+	}
+
 	m_lPath.clear();
 }
 

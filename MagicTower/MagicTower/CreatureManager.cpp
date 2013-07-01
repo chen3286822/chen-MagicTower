@@ -103,38 +103,16 @@ void CreatureManager::ShowMoveRange(Character* creature)
 {
 	if (creature)
 	{
-		int moveAbility = creature->GetMoveAbility();	
-		Block charBlock = creature->GetBlock();
-		Map* currentMap = MapManager::sInstance().GetCurrentMap();
-		int mapWidth = 0,mapLength = 0;
-		currentMap->GetWidthLength(mapWidth,mapLength);
-		int offX = 0,offY = 0;
 		DWORD color = 0;
 		if(creature->GetCamp() == eCamp_Friend)
 			color = 0x4F3737DF;
 		else if(creature->GetCamp() == eCamp_Enemy)
 			color = 0x4FEB2323;
-		for (int i=charBlock.xpos-moveAbility;i<=charBlock.xpos+moveAbility;i++)
+		std::vector<Block*> range = creature->CreateMoveRange(MapManager::sInstance().GetCurrentMap());
+		for (std::vector<Block*>::iterator it=range.begin();it!=range.end();it++)
 		{
-			if(i >= 0 && i< mapWidth)
-			{
-				for (int j=charBlock.ypos-moveAbility;j<=charBlock.ypos+moveAbility;j++)
-				{
-					if (j >= 0 && j < mapLength)
-					{
-						offX = abs(i - charBlock.xpos);
-						offY = abs(j - charBlock.ypos);
-						if((offX + offY > moveAbility) || (i==charBlock.xpos && j==charBlock.ypos))
-							continue;
-
-						if (!currentMap->GetBlockOccupied(i,j))
-						{
-							//画方格表示可以移动
-							App::sInstance().DrawSmallRect(Block(i,j),color);
-						}
-					}
-				}
-			}
+			//画方格表示可以移动
+			App::sInstance().DrawSmallRect(Block((*it)->xpos,(*it)->ypos),color);
 		}
 	}
 }

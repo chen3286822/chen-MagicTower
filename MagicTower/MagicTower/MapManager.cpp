@@ -85,6 +85,13 @@ bool Map::GetBlockOccupied(int xpos,int ypos)
 	return false;
 }
 
+void Map::SetSpecificRange(std::vector<Block*> _range)
+{
+	if (!_range.empty())
+	{
+		m_vSpecificRange = _range;
+	}
+}
 
 std::vector<Block*> Map::FindPath(int startX,int startY,int endX,int endY)
 {
@@ -95,6 +102,7 @@ std::vector<Block*> Map::FindPath(int startX,int startY,int endX,int endY)
 		|| endX < 0 || endX >= m_nWidth || endY <0 || endY >= m_nLength)
 	{
 		vPath.clear();
+		m_vSpecificRange.clear();
 		return vPath;
 	}
 	
@@ -116,7 +124,7 @@ std::vector<Block*> Map::FindPath(int startX,int startY,int endX,int endY)
 			}
 		}
 	}
-
+	m_vSpecificRange.clear();
 	return vPath;
 }
 
@@ -213,7 +221,7 @@ bool MapManager::LoadMaps(std::string path)
 // 				if(theBlock != NULL)
 // 					setOccupied((theBlock->attri),1);
 				//²âÊÔÒÆ¶¯Á¦
-				cha->SetMoveAbility(4);
+				cha->SetMoveAbility(4,MapManager::sInstance().GetCurrentMap());
 
 				if (_camp == eCamp_Friend)
 				{

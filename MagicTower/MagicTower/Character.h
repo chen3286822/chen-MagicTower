@@ -11,7 +11,7 @@ Stand --Attack--> Fight ----> Stand
 
 */
 
-
+class Map;
 //表示所有单位
 class Character
 {
@@ -34,7 +34,7 @@ public:
 	Block& GetOrigBlock(){return m_iOrigBlock;}
 	float GetRealX(){return m_fXPos;}
 	float GetRealY(){return m_fYPos;}
-	void	SetMoveAbility(int _ability){m_nMoveAbility = _ability;}
+	void	SetMoveAbility(int _ability,Map* map);
 	int	GetMoveAbility(){return m_nMoveAbility;}
 	void SetCamp(int _camp){m_nCamp = _camp;}
 	int GetCamp(){return m_nCamp;}
@@ -47,6 +47,8 @@ public:
 	eDirection& GetOrigDirection(){return m_eOrigDir;}
 	int GetID(){return m_nID;}
 	int GetNum(){return m_nNum;}
+
+	std::vector<Block*> CreateMoveRange(Map* map);
 
 	void CancelMove();	//取消移动，回到原来位置
 

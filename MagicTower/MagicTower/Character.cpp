@@ -312,6 +312,46 @@ void Character::CancelMove()
 	m_fStartY = m_fYPos;
 }
 
+void	Character::SetMoveAbility(int _ability,Map* map)
+{
+		m_nMoveAbility = _ability;
+		if (map)
+			CreateMoveRange(map);
+}
+
+std::vector<Block*> Character::CreateMoveRange(Map* map)
+{
+	std::vector<Block*> range;
+	if (map)
+	{
+		int mapWidth = 0,mapLength = 0;
+		map->GetWidthLength(mapWidth,mapLength);
+		int offX = 0,offY = 0;
+		for (int i=m_iBlock.xpos-m_nMoveAbility;i<=m_iBlock.xpos+m_nMoveAbility;i++)
+		{
+			if(i >= 0 && i< mapWidth)
+			{
+				for (int j=m_iBlock.ypos-m_nMoveAbility;j<=m_iBlock.ypos+m_nMoveAbility;j++)
+				{
+					if (j >= 0 && j < mapLength)
+					{
+						offX = abs(i - m_iBlock.xpos);
+						offY = abs(j - m_iBlock.ypos);
+						if((offX + offY > m_nMoveAbility) || (i==m_iBlock.xpos && j==m_iBlock.ypos))
+							continue;
+
+						if (!map->GetBlockOccupied(i,j))
+						{
+							range.push_back(map->GetBlock(i,j));
+						}
+					}
+				}
+			}
+		}
+	}
+	return range;
+}
+
 eErrorCode Character::Move(int tarX,int tarY)
 {
 	//单位不可移动
@@ -326,6 +366,7 @@ eErrorCode Character::Move(int tarX,int tarY)
 		return eErrorCode_NotStandState; 
 	}
 
+	MapManager::sInstance().GetCurrentMap()->SetSpecificRange(CreateMoveRange(MapManager::sInstance().GetCurrentMap()));
 	vector<Block*> path = MapManager::sInstance().GetCurrentMap()->FindPath(m_iBlock.xpos,m_iBlock.ypos,tarX,tarY);
 	if(!path.empty())
 	{
