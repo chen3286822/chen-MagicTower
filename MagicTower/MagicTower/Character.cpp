@@ -10,7 +10,7 @@ Character::Character(void)
 {
 	m_pAnimation = NULL;
 	m_mCharTex.clear();
-	m_nLevel = 0;
+	m_nMapLevel = 0;
 	m_nID = 0;
 	m_nNum = 0;
 	m_iBlock.xpos = 0;
@@ -24,7 +24,7 @@ Character::Character(void)
 	m_eActionStage = eActionStage_WaitStage;
 	m_nTar = 0;
 	m_dwRecordTime = 0;
-	m_eAttackRange = (eAttackRange)(App::sInstance().GetHGE()->Random_Int(0,eAttackRange_Arrow));
+	m_eAttackRange = (eAttackRange)(g_RandomInt(0,eAttackRange_Arrow));
 }
 
 Character::~Character(void)
@@ -43,7 +43,7 @@ void Character::Init(int _Level,int _ID,int _Num,int _Action,Block _block)
 		return;
 
 	m_pAnimation = new hgeAnimation(m_mCharTex[eCharacterState_Walk],4,8,0,FLOAT_PIC_SQUARE_HEIGHT*(_Action-1),FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT);
-	m_nLevel = _Level;
+	m_nMapLevel = _Level;
 	m_nID = _ID;
 	m_nNum = _Num;
 	m_iBlock = _block;
@@ -55,8 +55,19 @@ void Character::Init(int _Level,int _ID,int _Num,int _Action,Block _block)
 	m_eOrigDir = m_eCurDir;
 	m_eCharState = eCharacterState_Stand;
 	//为初始化的人物所在地图块设置属性
-	Map* theMap = MapManager::sInstance().GetMap(m_nLevel);
+	Map* theMap = MapManager::sInstance().GetMap(m_nMapLevel);
 	theMap->SetBlockOccupied(_block.xpos,_block.ypos);
+
+	//初始化单位属性(读配置+计算)
+	//测试，直接赋值
+	m_eAttackType = eAttackType_Normal;
+	m_nAttack = 5;
+	m_nDefend = 2;
+	m_fCrit = 0.2f;
+	m_fDodge = 0.2f;
+	m_nHP = 10;
+	m_nMP = 10;
+	m_nLevel = 1;
 
 	m_pAnimation->SetMode(HGEANIM_LOOP|HGEANIM_FWD);
 	m_pAnimation->Play();
@@ -207,8 +218,8 @@ void Character::Update(float delta)
 			DWORD currentTime = GetTickCount();
 			if(m_dwRecordTime == 0)
 				m_dwRecordTime = GetTickCount();
-			//0.1秒后再通知攻击者
-			if(currentTime >= m_dwRecordTime + 100)
+			//0.2秒后再通知攻击者
+			if(currentTime >= m_dwRecordTime + 200)
 			{
 				if (m_pAnimation->GetFrame() == 0)
 				{
@@ -223,8 +234,8 @@ void Character::Update(float delta)
 			DWORD currentTime = GetTickCount();
 			if(m_dwRecordTime == 0)
 				m_dwRecordTime = GetTickCount();
-			//0.3秒后再通知攻击者
-			if(currentTime >= m_dwRecordTime + 300)
+			//0.5秒后再通知攻击者
+			if(currentTime >= m_dwRecordTime + 500)
 			{
 				if (m_pAnimation->GetFrame() == 0)
 				{
@@ -447,28 +458,22 @@ void Character::Move(eDirection dir)
 	}
 }
 
-int Character::TowardToAttacker(int src,int dir)
+int Character::TowardToAttacker(int src)
 {
 	if (m_eCharState == eCharacterState_Stand)
 	{
 		m_nSrc = src;
 		m_eCharState = eCharacterState_Defense;
 		m_eAttackState = eAttackState_Ready;
-		switch(dir)
-		{
-		case eDirection_Up:
-			m_eCurDir = eDirection_Down;
-			break;
-		case eDirection_Down:
-			m_eCurDir = eDirection_Up;
-			break;
-		case eDirection_Left:
-			m_eCurDir = eDirection_Right;
-			break;
-		case eDirection_Right:
+		Block& block = CreatureManager::sInstance().GetCreature(src)->GetBlock();
+		if (block.xpos < m_iBlock.xpos)
 			m_eCurDir = eDirection_Left;
-			break;
-		}
+		else if(block.xpos > m_iBlock.xpos)
+			m_eCurDir = eDirection_Right;
+		else if(block.ypos < m_iBlock.ypos)
+			m_eCurDir = eDirection_Up;
+		else
+			m_eCurDir = eDirection_Down;
 		m_pAnimation->ResetFrames(0,(m_eCurDir-1)*FLOAT_PIC_SQUARE_HEIGHT,
 			FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT,1,8,false);
 		m_pAnimation->SetMode(HGEANIM_LOOP|HGEANIM_FWD);
@@ -533,8 +538,22 @@ void Character::GeginHit()
 {
 	if(m_eCharState == eCharacterState_Stand)
 	{
+		//自己面对目标
+		Block& block = CreatureManager::sInstance().GetCreature(m_nTar)->GetBlock();
+		if (block.xpos < m_iBlock.xpos)
+			m_eCurDir = eDirection_Left;
+		else if(block.xpos > m_iBlock.xpos)
+			m_eCurDir = eDirection_Right;
+		else if(block.ypos < m_iBlock.ypos)
+			m_eCurDir = eDirection_Up;
+		else
+			m_eCurDir = eDirection_Down;
+		m_pAnimation->ResetFrames(0,(m_eCurDir-1)*FLOAT_PIC_SQUARE_HEIGHT,
+			FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT,1,8,false);
+		m_pAnimation->SetMode(HGEANIM_LOOP|HGEANIM_FWD);
+
 		//通知目标面对自己
-		if(CreatureManager::sInstance().Notify(m_nNum,m_nTar,eNotify_TowardToAttacker,m_eCurDir) == eNotify_Success)
+		if(CreatureManager::sInstance().Notify(m_nNum,m_nTar,eNotify_TowardToAttacker,0) == eNotify_Success)
 		{
 			m_eCharState = eCharacterState_Fight;
 			m_eAttackState = eAttackState_Waiting;

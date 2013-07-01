@@ -198,10 +198,10 @@ void CreatureManager::Strategy()
 			enemy->SetActionStage(eActionStage_MoveStage);
 			m_nActionCreatureNum = enemy->GetNum();
 			//m_nSelectNum = m_nActionCreatureNum;
-			int xMove = App::sInstance().GetHGE()->Random_Int(0,enemy->GetMoveAbility());
+			int xMove = g_RandomInt(0,enemy->GetMoveAbility());
 			int yMove = enemy->GetMoveAbility() - xMove;
-			int xDir = (App::sInstance().GetHGE()->Random_Int(0,1)==0)?-1:1;
-			int yDir = (App::sInstance().GetHGE()->Random_Int(0,1)==0)?-1:1;
+			int xDir = (g_RandomInt(0,1)==0)?-1:1;
+			int yDir = (g_RandomInt(0,1)==0)?-1:1;
 			eErrorCode errorCode = enemy->Move(enemy->GetBlock().xpos+xMove*xDir,enemy->GetBlock().ypos+yMove*yDir);
 
 			//²âÊÔ
@@ -362,7 +362,7 @@ int CreatureManager::Notify(int src,int tar,int messageID,int param)
 	switch(messageID)
 	{
 	case eNotify_TowardToAttacker:
-		result = target->TowardToAttacker(src,param);
+		result = target->TowardToAttacker(src);
 		break;
 	case eNotify_ReadyToBeAttacked:
 		{
@@ -379,9 +379,21 @@ int CreatureManager::Notify(int src,int tar,int messageID,int param)
 
 void CreatureManager::CalculateResult(int src,int tar)
 {
-	//²âÊÔ£¬ÈÃtarget ÊÜÉËº¦
+	Character* cast = GetCreature(src);
 	Character* target = GetCreature(tar);
-	target->Attacked();
+	//Ê×ÏÈ¼ÆËãÃüÖĞÓë·ñ
+	bool bhit = false;
+	if(g_RandomInt(0,9) >= (int)(target->GetDodge()*10))
+		bhit = true;
+	//¼ÆËãÊÇ·ñ±©»÷
+	bool bCrit = false;
+	if (g_RandomInt(0,9) >= (int)(cast->GetCrit()*10))
+		bCrit = true;
+
+	if(bhit)
+		target->Attacked();
+	else
+		target->Defend();
 }
 
 void CreatureManager::SelectCreature()

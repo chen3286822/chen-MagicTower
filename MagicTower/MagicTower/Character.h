@@ -56,14 +56,24 @@ public:
 	void SetTarget(int _tar){m_nTar = _tar;}
 	int GetTarget(){return m_nTar;}
 	void GeginHit();
-	int TowardToAttacker(int src,int dir);	//面对着攻击者
+	int TowardToAttacker(int src);	//面对着攻击者
 	void Attack();	//开始攻击
 	void Attacked();	//开始被攻击
 	void Defend(); //开始防御
+
+	//属性相关
+	eAttackType& GetAttackType(){return m_eAttackType;}
+	int&	GetAttack(){return m_nAttack;}
+	int&	GetDefend(){return m_nDefend;}
+	float&	GetCrit(){return m_fCrit;}
+	float&	GetDodge(){return m_fDodge;}
+	int&	GetHP(){return m_nHP;}
+	int&	GetMP(){return m_nMP;}
+	int&	GetLevel(){return m_nLevel;}
 private:
 	hgeAnimation* m_pAnimation;
 	std::map<int,HTEXTURE> m_mCharTex; //存储单位的各个图片动作
-	int m_nLevel;	//所在关卡
+	int m_nMapLevel;	//所在关卡
 	int m_nID;		//代表单位类别的ID号
 	int m_nNum;	//代表出现在当前关卡的单位号
 	Block m_iOrigBlock;	//记录单位原来处于的格子，用于右键取消行动时返回原格子
@@ -87,6 +97,17 @@ private:
 	int m_nTar;	//攻击目标
 	eAttackState m_eAttackState; //攻击子状态，用于处理攻击流程
 	DWORD m_dwRecordTime;	//用于动作计时
+
+
+	//单位属性
+	eAttackType m_eAttackType;		//攻击类型
+	int m_nAttack;		//攻击力
+	int m_nDefend;	//防御力
+	float m_fCrit;			//暴击概率
+	float m_fDodge;	//闪避概率(防御概率)
+	int m_nHP;				//生命值
+	int m_nMP;				//魔法值
+	int m_nLevel;		//等级
 };
 
 

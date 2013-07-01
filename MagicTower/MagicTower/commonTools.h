@@ -148,6 +148,15 @@ enum eAttackRange
 	eAttackRange_Arrow = 3,		//弓箭型
 };
 
+
+//攻击类型
+enum eAttackType
+{
+	eAttackType_Normal = 0, //普通攻击
+	eAttackType_Distance,		//远程攻击
+	eAttackType_Magic,			//魔法攻击
+};
+
 struct  tagMapObject
 {
 	hgeSprite* spr;	//物体的贴图
@@ -301,5 +310,6 @@ int g_getPointToPointValueByIndex(int** array,int n,int i,int j);
 eLButtonState g_getLButtonState(HGE* hge);
 eRButtonState g_getRButtonState(HGE* hge);
 int g_getTerrainCost(int terrain);	//根据地形取得消耗
+int g_RandomInt(int start,int end);	//从start 到end中选取随机数，范围[start,end]
 
 #endif

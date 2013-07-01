@@ -233,3 +233,11 @@ int g_getTerrainCost(int terrain)
 
 	return cost;
 }
+
+int g_RandomInt(int start,int end)
+{
+	HGE* hge = hgeCreate(HGE_VERSION);
+	int result = hge->Random_Int(start,end);
+	hge->Release();
+	return result;
+}
