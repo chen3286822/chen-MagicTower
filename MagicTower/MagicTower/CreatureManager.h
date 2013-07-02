@@ -35,7 +35,7 @@ public:
 
 	void AddEnemy(Character* _enemy){m_VEnemyList.push_back(_enemy);}
 	void AddFriend(Character* _friend){m_VFriendList.push_back(_friend);}
-	void RemoveEnemy(Character* _enemy);
+	VCharacter::iterator RemoveEnemy(Character* _enemy);
 	void RemoveFriend(Character* _friend);
 	void ClearEnemy(){m_VEnemyList.clear();}
 	void ClearFriend(){m_VFriendList.clear();}
@@ -66,7 +66,9 @@ public:
 	//包括攻击前通知、攻击类型通知、
 	int Notify(int src,int tar,int messageID,int param);
 
-	//计算攻击结果
+	//提前计算攻击伤害
+	void CalculateHurt(Character* cast,Character* target,bool bCrit=false);
+	//计算攻击结果(命中与否)
 	void CalculateResult(int src,int tar);
 
 	//选中单位
@@ -75,9 +77,13 @@ public:
 	void UnSelectCreature();
 	//对于选中单位的处理
 	void ProcessSelectCreature();
+	//获得攻击类型范围
+	MAttackRange& GetAttackRange(){return m_mAttackRange;}
 private:
 	VCharacter  m_VFriendList;
 	VCharacter	m_VEnemyList;
+	VCharacter m_VFriendDeadList;
+	VCharacter m_VEnemyDeadList;
 
 	int m_nActionCreatureNum;	//表示当前正在行动中的单位号，没有表示为-1
 	int m_nSelectNum;	//表示当前被选中的单位号

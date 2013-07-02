@@ -55,12 +55,15 @@ public:
 	//战斗相关
 	void SetTarget(int _tar){m_nTar = _tar;}
 	int GetTarget(){return m_nTar;}
+	bool CanHitTarget(Character* target);	//是否可以攻击目标
 	void GeginHit();
 	int TowardToAttacker(int src);	//面对着攻击者
 	void Attack();	//开始攻击
-	void	Crit();		//开始暴击
+	void Crit();		//开始暴击
 	void Attacked();	//开始被攻击
 	void Defend(); //开始防御
+	void Counter();	//反击
+	void Dead();	//开始死亡动画
 
 	//属性相关
 	eAttackType& GetAttackType(){return m_eAttackType;}
@@ -71,6 +74,11 @@ public:
 	int&	GetHP(){return m_nHP;}
 	int&	GetMP(){return m_nMP;}
 	int&	GetLevel(){return m_nLevel;}
+	int&	GetExp(){return m_nExp;}
+	int&	GetExpTotal(){return m_nExpTotal;}
+	int&	GetPreHurt(){return m_nPreHurt;}
+	bool& GetDead(){return m_bDead;}
+	bool& GetCounter(){return m_bCounter;}
 private:
 	hgeAnimation* m_pAnimation;
 	std::map<int,HTEXTURE> m_mCharTex; //存储单位的各个图片动作
@@ -109,6 +117,11 @@ private:
 	int m_nHP;				//生命值
 	int m_nMP;				//魔法值
 	int m_nLevel;		//等级
+	int m_nExp;			//当前经验值
+	int m_nExpTotal;	//当前升级所需总经验值
+	bool	m_bDead;	//是否死亡
+	bool	m_bCounter;	//是否可以反击
+	int m_nPreHurt;	//下一次攻击准备打出的伤害，提前计算出以便后面扣除
 };
 
 

@@ -8,6 +8,8 @@ CreatureManager::CreatureManager()
 {
 	m_VFriendList.clear();
 	m_VEnemyList.clear();
+	m_VEnemyDeadList.clear();
+	m_VFriendDeadList.clear();
 	m_nActionCreatureNum = -1;
 	m_nSelectNum = -1;
 }
@@ -68,17 +70,45 @@ void CreatureManager::Render()
 	ProcessSelectCreature();
 
 	for (VCharacter::iterator it=m_VEnemyList.begin();it!=m_VEnemyList.end();it++)
-		(*it)->Render();
+	{
+		if((*it)->GetDead() != true)
+			(*it)->Render();
+	}
 	for (VCharacter::iterator it=m_VFriendList.begin();it!=m_VFriendList.end();it++)
-		(*it)->Render();
+	{
+		if((*it)->GetDead() != true)
+			(*it)->Render();
+	}
 }
 
 void CreatureManager::Update(float delta)
 {
 	for (VCharacter::iterator it=m_VEnemyList.begin();it!=m_VEnemyList.end();it++)
-		(*it)->Update(delta);
+	{
+		if((*it)->GetDead() == true)
+			m_VEnemyDeadList.push_back(*it);
+		else
+			(*it)->Update(delta);
+	}
 	for (VCharacter::iterator it=m_VFriendList.begin();it!=m_VFriendList.end();it++)
-		(*it)->Update(delta);
+	{
+		if((*it)->GetDead() == true)
+			m_VFriendDeadList.push_back(*it);
+		else
+			(*it)->Update(delta);
+	}
+
+	//移除死亡单位
+	for (int i=0;i<m_VEnemyDeadList.size();i++)
+	{
+		RemoveEnemy(m_VEnemyDeadList[i]);
+	}
+	m_VEnemyDeadList.clear();
+	for (int i=0;i<m_VFriendDeadList.size();i++)
+	{
+		RemoveEnemy(m_VFriendDeadList[i]);
+	}
+	m_VFriendDeadList.clear();
 
 	if(m_nActionCreatureNum != -1)
 	{
@@ -169,6 +199,8 @@ void CreatureManager::ShowCreatureInfo()
 		TipWnd::sInstance().AddText(temp,0xFFFFFFFF,-1,-1,eFontType_MSYaHei,eFontSize_FontMiddle);
 		sprintf(temp," 坐标 : %d , %d",cha->GetBlock().xpos,cha->GetBlock().ypos);
 		TipWnd::sInstance().AddText(temp,0xFFFFFFFF,-1,-1,eFontType_MSYaHei,eFontSize_FontMiddle);
+		sprintf(temp," 生命值：%d",cha->GetHP());
+		TipWnd::sInstance().AddText(temp,0xFFFFFFFF,-1,-1,eFontType_MSYaHei,eFontSize_FontMiddle);
 		TipWnd::sInstance().SetShow(true);
 		TipWnd::sInstance().SetPos(block.xpos,block.ypos);
 	}
@@ -215,19 +247,22 @@ void CreatureManager::Strategy()
 //	enemy->Move((Direction)(App::sInstance().GetHGE()->Random_Int(0,4)));
 }
 
-void CreatureManager::RemoveEnemy(Character* _enemy)
+VCharacter::iterator CreatureManager::RemoveEnemy(Character* _enemy)
 {
 	for (VCharacter::iterator it=m_VEnemyList.begin();it!=m_VEnemyList.end();)
 	{
 		if((*it)->GetID() == _enemy->GetID() && (*it)->GetNum() == _enemy->GetNum())
 		{
+			//所占格子属性变更
+			setOccupied(MapManager::sInstance().GetCurrentMap()->GetBlock(_enemy->GetBlock().xpos,_enemy->GetBlock().ypos)->attri,0);
 			gSafeDelete(*it);
 			m_VEnemyList.erase(it);
-			return;
+			return it;
 		}
 		else
 			it++;
 	}
+	return m_VEnemyList.end();
 }
 
 void CreatureManager::RemoveFriend(Character* _friend)
@@ -236,6 +271,8 @@ void CreatureManager::RemoveFriend(Character* _friend)
 	{
 		if((*it)->GetID() == _friend->GetID() && (*it)->GetNum() == _friend->GetNum())
 		{
+			//所占格子属性变更
+			setOccupied(MapManager::sInstance().GetCurrentMap()->GetBlock(_friend->GetBlock().xpos,_friend->GetBlock().ypos)->attri,0);
 			gSafeDelete(*it);
 			m_VFriendList.erase(it);
 			return;
@@ -371,6 +408,10 @@ int CreatureManager::Notify(int src,int tar,int messageID,int param)
 			if (g_RandomInt(0,9) < (int)(target->GetCrit()*10))
 				bCrit = true;
 
+			Character* _self = GetCreature(src);
+			if(_self)
+				CalculateHurt(target,_self,bCrit);
+
 			if(!bCrit)
 				target->Attack();
 			else
@@ -391,6 +432,18 @@ int CreatureManager::Notify(int src,int tar,int messageID,int param)
 	return result;
 }
 
+void CreatureManager::CalculateHurt(Character* cast,Character* target,bool bCrit)
+{
+	if(!cast || !target)
+		cast->GetPreHurt() = 0;
+
+	int hurt = cast->GetAttack() - target->GetDefend();
+	if(bCrit)
+		hurt += cast->GetAttack();
+	if(hurt > 0)
+		cast->GetPreHurt() = hurt;
+}
+
 void CreatureManager::CalculateResult(int src,int tar)
 {
 	Character* cast = GetCreature(src);
@@ -401,8 +454,14 @@ void CreatureManager::CalculateResult(int src,int tar)
 		bhit = true;
 
 
+	target->GetCounter() = true;
 	if(bhit)
+	{
+		target->GetHP() -= cast->GetPreHurt();
+		cast->GetPreHurt() = 0;
+
 		target->Attacked();
+	}
 	else
 		target->Defend();
 }
@@ -494,26 +553,12 @@ void CreatureManager::SelectCreature()
 								if(lastChar->GetActionStage() == eActionStage_AttackStage)
 								{
 									//判断是否可以攻击到选中单位
-									eAttackRange attackRange = lastChar->GetAttackRange();
-									int tarX = 0,tarY = 0;
-									for (MAttackRange::iterator mit=m_mAttackRange.begin();mit!=m_mAttackRange.end();mit++)
+									if(lastChar->CanHitTarget(selectChar))
 									{
-										if(mit->first == attackRange)
-										{
-											for (vector<Pair>::iterator it=mit->second.begin();it!=mit->second.end();it++)
-											{
-												tarX = it->x + lastChar->GetBlock().xpos;
-												tarY = it->y + lastChar->GetBlock().ypos;
-												if(selectChar->GetBlock().xpos == tarX && selectChar->GetBlock().ypos == tarY)
-												{
-													//在攻击范围内
-													lastChar->SetTarget(selectChar->GetNum());
-													lastChar->GeginHit();
-													m_nSelectNum = -1;
-													return;
-												}
-											}
-										}
+										lastChar->SetTarget(selectChar->GetNum());
+										lastChar->GeginHit();
+										m_nSelectNum = -1;
+										return;
 									}
 								}
 							}

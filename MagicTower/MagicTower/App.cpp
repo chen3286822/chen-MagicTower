@@ -88,9 +88,9 @@ bool App::LoadResource()
 
 	Character* player2 = new Character;
 	player2->Init(MapManager::sInstance().GetCurrentMap()->GetLevel(),1,101,1,Block(5,6));
-	player2->SetCamp(eCamp_Friend);
+	player2->SetCamp(eCamp_Enemy);
 	player2->SetMoveAbility(3,MapManager::sInstance().GetCurrentMap());
-	CreatureManager::sInstance().AddFriend(player2);
+	CreatureManager::sInstance().AddEnemy(player2);
 
 
 

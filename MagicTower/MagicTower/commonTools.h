@@ -123,6 +123,7 @@ enum eAttackState
 	eAttackState_Attacking,
 	eAttackState_Attackeding,
 	eAttackState_Defending,
+	eAttackState_Dead,
 };
 //单位间通知事件及结果
 enum eNotification

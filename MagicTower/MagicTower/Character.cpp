@@ -68,6 +68,11 @@ void Character::Init(int _Level,int _ID,int _Num,int _Action,Block _block)
 	m_nHP = 10;
 	m_nMP = 10;
 	m_nLevel = 1;
+	m_nExp = 0;
+	m_nExpTotal = 100;
+	m_nPreHurt = 0;
+	m_bDead = false;
+	m_bCounter = false;
 
 	m_pAnimation->SetMode(HGEANIM_LOOP|HGEANIM_FWD);
 	m_pAnimation->Play();
@@ -258,13 +263,22 @@ void Character::Update(float delta)
 			{
 				if (m_pAnimation->GetFrame() == 0)
 				{
-					m_pAnimation->SetTexture(m_mCharTex[eCharacterState_Walk]);
-					m_pAnimation->ResetFrames(0,(m_eCurDir-1)*FLOAT_PIC_SQUARE_HEIGHT,
-						FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT,4,8,false);
-					m_pAnimation->SetMode(HGEANIM_LOOP|HGEANIM_FWD);
-					m_eCharState = eCharacterState_Stand;
-					//通知攻击者结束行动，这里通知是为了让被攻击者动作可以播完
-					CreatureManager::sInstance().Notify(m_nNum,m_nSrc,eNotify_FinishAttack,0);
+					Character* cast = CreatureManager::sInstance().GetCreature(m_nSrc);
+					//是否发动反击且可以攻击到源
+					if(m_bCounter && CanHitTarget(cast))
+					{
+						Counter();			
+					}
+					else
+					{
+						m_pAnimation->SetTexture(m_mCharTex[eCharacterState_Walk]);
+						m_pAnimation->ResetFrames(0,(m_eCurDir-1)*FLOAT_PIC_SQUARE_HEIGHT,
+							FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT,4,8,false);
+						m_pAnimation->SetMode(HGEANIM_LOOP|HGEANIM_FWD);
+						m_eCharState = eCharacterState_Stand;
+						//通知攻击者结束行动，这里通知是为了让被攻击者动作可以播完
+						CreatureManager::sInstance().Notify(m_nNum,m_nSrc,eNotify_FinishAttack,0);
+					}
 				}
 				m_dwRecordTime = 0;
 			}
@@ -279,15 +293,43 @@ void Character::Update(float delta)
 			{
 				if (m_pAnimation->GetFrame() == 0)
 				{
-					m_pAnimation->SetTexture(m_mCharTex[eCharacterState_Walk]);
-					m_pAnimation->ResetFrames(0,(m_eCurDir-1)*FLOAT_PIC_SQUARE_HEIGHT,
-						FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT,4,8,false);
-					m_pAnimation->SetMode(HGEANIM_LOOP|HGEANIM_FWD);
-					m_eCharState = eCharacterState_Stand;
-					//通知攻击者结束行动，这里通知是为了让被攻击者动作可以播完
-					CreatureManager::sInstance().Notify(m_nNum,m_nSrc,eNotify_FinishAttack,0);
+					Character* cast = CreatureManager::sInstance().GetCreature(m_nSrc);
+					if(GetHP() <= 0)
+					{
+						//死亡
+						Dead();
+					}
+					//是否发动反击且可以攻击到源
+					else if(m_bCounter && CanHitTarget(cast))
+					{
+						Counter();			
+					}
+					else
+					{
+						m_pAnimation->SetTexture(m_mCharTex[eCharacterState_Walk]);
+						m_pAnimation->ResetFrames(0,(m_eCurDir-1)*FLOAT_PIC_SQUARE_HEIGHT,
+							FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT,4,8,false);
+						m_pAnimation->SetMode(HGEANIM_LOOP|HGEANIM_FWD);
+						m_eCharState = eCharacterState_Stand;
+						//通知攻击者结束行动，这里通知是为了让被攻击者动作可以播完
+						CreatureManager::sInstance().Notify(m_nNum,m_nSrc,eNotify_FinishAttack,0);
+					}
 				}
 				m_dwRecordTime = 0;
+			}
+		}
+	}
+	else if (m_eCharState == eCharacterState_Dead)
+	{
+		if(m_eAttackState == eAttackState_Dead)
+		{
+			if (m_pAnimation->GetFrame() == 3)
+			{
+				//角色死亡，准备移除
+				m_bDead = true;
+
+				//通知攻击者结束行动，这里通知是为了让被攻击者动作可以播完
+				CreatureManager::sInstance().Notify(m_nNum,m_nSrc,eNotify_FinishAttack,0);
 			}
 		}
 	}
@@ -559,6 +601,11 @@ void Character::Defend()
 	m_eAttackState = eAttackState_Defending;
 }
 
+void Character::Counter()
+{
+
+}
+
 void Character::Crit()
 {
 	//播放攻击动作
@@ -569,6 +616,43 @@ void Character::Crit()
 
 	//设置攻击子状态
 	m_eAttackState = eAttackState_Criting;
+}
+
+void Character::Dead()
+{
+	//播放攻击动作
+	m_pAnimation->SetTexture(m_mCharTex[eCharacterState_Dead]);
+	m_pAnimation->ResetFrames(0,(m_eCurDir-1)*FLOAT_PIC_SQUARE_WIDTH,
+		FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_WIDTH,4,8,false);
+	m_pAnimation->SetMode(HGEANIM_FWD | HGEANIM_NOLOOP);
+
+	//设置攻击子状态
+	m_eAttackState = eAttackState_Dead;
+	m_eCharState = eCharacterState_Dead;
+}
+
+bool Character::CanHitTarget(Character* target)
+{
+	if(!target)
+		return false;
+
+	int tarX = 0,tarY = 0;
+	for (MAttackRange::iterator mit=CreatureManager::sInstance().GetAttackRange().begin();mit!=CreatureManager::sInstance().GetAttackRange().end();mit++)
+	{
+		if(mit->first == m_eAttackRange)
+		{
+			for (vector<Pair>::iterator it=mit->second.begin();it!=mit->second.end();it++)
+			{
+				tarX = it->x + m_iBlock.xpos;
+				tarY = it->y + m_iBlock.ypos;
+				if(target->GetBlock().xpos == tarX && target->GetBlock().ypos == tarY)
+				{
+					return true;
+				}
+			}
+		}
+	}
+	return false;
 }
 
 void Character::GeginHit()
