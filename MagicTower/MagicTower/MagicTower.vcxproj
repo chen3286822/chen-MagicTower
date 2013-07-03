@@ -115,6 +115,7 @@
     <ClCompile Include="WndCommand.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ActionProcess.h" />
     <ClInclude Include="App.h" />
     <ClInclude Include="AStar.h" />
     <ClInclude Include="BinaryHeap.h" />

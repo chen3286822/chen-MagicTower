@@ -55,6 +55,7 @@ public:
 	//战斗相关
 	void SetTarget(int _tar){m_nTar = _tar;}
 	int GetTarget(){return m_nTar;}
+	int& GetCaster() {return m_nSrc;}
 	bool CanHitTarget(Character* target);	//是否可以攻击目标
 	void GeginHit();
 	int TowardToAttacker(int src);	//面对着攻击者
@@ -64,6 +65,10 @@ public:
 	void Defend(); //开始防御
 	void Counter();	//反击
 	void Dead();	//开始死亡动画
+
+	//动作
+	void TowardToAttacker(eNotification notify,Character* target,DWORD time);
+	void Crit(eNotification notify,Character* target,DWORD time);
 
 	//属性相关
 	eAttackType& GetAttackType(){return m_eAttackType;}
@@ -106,7 +111,8 @@ private:
 	int m_nTar;	//攻击目标
 	eAttackState m_eAttackState; //攻击子状态，用于处理攻击流程
 	DWORD m_dwRecordTime;	//用于动作计时
-
+	DWORD m_dwActionTime;		//动作需要时间
+	eNotification m_eNotify;			//动作通知类型
 
 	//单位属性
 	eAttackType m_eAttackType;		//攻击类型

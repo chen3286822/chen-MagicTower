@@ -4,6 +4,7 @@
 #include "TexManager.h"
 #include "CreatureManager.h"
 #include "UI.h"
+#include "ActionProcess.h"
 
 
 Character::Character(void)
@@ -24,6 +25,7 @@ Character::Character(void)
 	m_eActionStage = eActionStage_WaitStage;
 	m_nTar = 0;
 	m_dwRecordTime = 0;
+	m_dwActionTime = 0;
 	m_eAttackRange = (eAttackRange)(g_RandomInt(0,eAttackRange_Arrow));
 }
 
@@ -93,6 +95,16 @@ void Character::Update(float delta)
 {
 	if(m_eCharState == eCharacterState_Stand || (m_eCharState==eCharacterState_Fight && m_eAttackState==eAttackState_Waiting))
 		return;
+
+	if(m_dwActionTime > 0)
+	{
+		m_dwActionTime -= delta;
+		if(m_dwActionTime <= 0)
+		{
+			ActionProcess::sInstance().TimeUp();
+			m_dwActionTime = 0;
+		}
+	}
 
 	if (m_eCharState == eCharacterState_Walk)
 	{
@@ -549,6 +561,30 @@ int Character::TowardToAttacker(int src)
 	}
 
 	return eNotify_CannotBeAttacked;
+}
+
+void Character::TowardToAttacker(eNotification notify,Character* target,DWORD time)
+{
+	if (m_eCharState == eCharacterState_Stand)
+	{
+		m_eNotify = notify;
+		m_dwRecordTime = time;
+		m_nSrc = target->GetCaster();
+		m_eCharState = eCharacterState_Defense;
+		m_eAttackState = eAttackState_Ready;
+		Block& block = target->GetBlock();
+		if (block.xpos < m_iBlock.xpos)
+			m_eCurDir = eDirection_Left;
+		else if(block.xpos > m_iBlock.xpos)
+			m_eCurDir = eDirection_Right;
+		else if(block.ypos < m_iBlock.ypos)
+			m_eCurDir = eDirection_Up;
+		else
+			m_eCurDir = eDirection_Down;
+		m_pAnimation->ResetFrames(0,(m_eCurDir-1)*FLOAT_PIC_SQUARE_HEIGHT,
+			FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT,1,8,false);
+		m_pAnimation->SetMode(HGEANIM_LOOP|HGEANIM_FWD);
+	}
 }
 
 void Character::Attack()

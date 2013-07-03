@@ -130,6 +130,8 @@ enum eNotification
 {
 	eNotify_Success = 0,
 	eNotify_TowardToAttacker,
+	eNotify_BeginAttack,
+	eNotify_Crit,
 	eNotify_NoTarget,
 	eNotify_ReadyToBeAttacked,
 	eNotify_CannotBeAttacked,
