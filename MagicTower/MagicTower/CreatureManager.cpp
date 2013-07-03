@@ -403,7 +403,7 @@ int CreatureManager::Notify(int src,int tar,int messageID,int param)
 		break;
 	case eNotify_ReadyToBeAttacked:
 		{
-			//¼ÆËãÊÇ·ñ±©»÷
+			//¼ÆËãÊÇ·ñ±©»÷   
 			bool bCrit = false;
 			if (g_RandomInt(0,9) < (int)(target->GetCrit()*10))
 				bCrit = true;
