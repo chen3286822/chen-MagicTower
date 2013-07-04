@@ -50,9 +50,9 @@ public:
 	{
 		for (int i=0;i<m_nWidth;i++)
 		{
-			delete[] m_ppbIsInHeap[i];
+			gSafeDeleteArray(m_ppbIsInHeap[i]);
 		}
-		delete[] m_ppbIsInHeap;
+		gSafeDeleteArray(m_ppbIsInHeap);
 	}
 
 	void push(const pNode& node,int** score,int m,int n)

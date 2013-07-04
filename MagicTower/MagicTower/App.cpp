@@ -6,6 +6,7 @@
 #include "TipWnd.h"
 #include "FontManager.h"
 #include "UI.h"
+#include "ActionProcess.h"
 
 bool update();
 bool render();
@@ -53,6 +54,7 @@ bool App::LoadResource()
 	TexManager::sCreate();
 	FontManager::sCreate();
 	CreatureManager::sCreate();
+	ActionProcess::sCreate();
 	TipWnd::sCreate();
 	UISystem::sCreate();
 
@@ -117,6 +119,7 @@ void App::FreeResource()
 	CreatureManager::sInstance().Release();
 	UISystem::sInstance().Release();
 
+	ActionProcess::sDestroy();
 	UISystem::sDestroy();
 	TipWnd::sDestroy();
 	CreatureManager::sDestroy();
@@ -243,6 +246,7 @@ bool App::AppUpdate()
 	CreatureManager::sInstance().Strategy();
 
 	MapManager::sInstance().Update();
+	ActionProcess::sInstance().Update();
 	CreatureManager::sInstance().Update(dt);
 	TipWnd::sInstance().Update(dt);
 	UISystem::sInstance().Update(dt);

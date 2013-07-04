@@ -3,6 +3,7 @@
 #include "App.h"
 #include "TipWnd.h"
 #include "UI.h"
+#include "ActionProcess.h"
 
 CreatureManager::CreatureManager()
 {
@@ -106,7 +107,7 @@ void CreatureManager::Update(float delta)
 	m_VEnemyDeadList.clear();
 	for (int i=0;i<m_VFriendDeadList.size();i++)
 	{
-		RemoveEnemy(m_VFriendDeadList[i]);
+		RemoveFriend(m_VFriendDeadList[i]);
 	}
 	m_VFriendDeadList.clear();
 
@@ -388,7 +389,7 @@ bool CreatureManager::ResetAllCreature()
 	}
 	return true;
 }
-
+/*
 int CreatureManager::Notify(int src,int tar,int messageID,int param)
 {
 	int result = -1;
@@ -430,7 +431,7 @@ int CreatureManager::Notify(int src,int tar,int messageID,int param)
 	}
 
 	return result;
-}
+}*/
 
 void CreatureManager::CalculateHurt(Character* cast,Character* target,bool bCrit)
 {
@@ -444,26 +445,118 @@ void CreatureManager::CalculateHurt(Character* cast,Character* target,bool bCrit
 		cast->GetPreHurt() = hurt;
 }
 
-void CreatureManager::CalculateResult(int src,int tar)
+// void CreatureManager::CalculateResult(int src,int tar)
+// {
+// 	Character* cast = GetCreature(src);
+// 	Character* target = GetCreature(tar);
+// 	//首先计算命中与否
+// 	bool bhit = false;
+// 	if(g_RandomInt(0,9) >= (int)(target->GetDodge()*10))
+// 		bhit = true;
+// 
+// 
+// 	target->GetCounter() = true;
+// 	if(bhit)
+// 	{
+// 		target->GetHP() -= cast->GetPreHurt();
+// 		cast->GetPreHurt() = 0;
+// 
+// 		target->Attacked();
+// 	}
+// 	else
+// 		target->Defend();
+// }
+
+void CreatureManager::PreCalculateAndPushAction(Character* cast,Character* target)
 {
-	Character* cast = GetCreature(src);
-	Character* target = GetCreature(tar);
-	//首先计算命中与否
+	if(!cast || !target)
+		return;
+	cast->GetPreHurt() = 0;
+	target->GetPreHurt() = 0;
+	//首先计算是否暴击
+	//计算是否暴击
+	bool bCrit = false;
+	if (g_RandomInt(0,9) < (int)(cast->GetCrit()*10))
+		bCrit = true;
+
+	//进行攻击伤害预存
+	CalculateHurt(cast,target,bCrit);
+
+	//计算是否命中
 	bool bhit = false;
 	if(g_RandomInt(0,9) >= (int)(target->GetDodge()*10))
 		bhit = true;
-
-
-	target->GetCounter() = true;
-	if(bhit)
-	{
-		target->GetHP() -= cast->GetPreHurt();
+	else 
 		cast->GetPreHurt() = 0;
 
-		target->Attacked();
+	//目标是否死亡
+	bool bDead = false;
+	if(target->GetHP() <= cast->GetPreHurt())
+		bDead = true;
+
+	bool bCounter = false;
+	bool bCrit2 = false;
+	bool bhit2 = false;
+	bool bDead2 = false;
+	if(!bDead)
+	{
+		//计算是否反击
+		if(target->GetCounter())
+		{
+			//是否处于反击范围
+			if(target->CanHitTarget(cast))
+			{
+				bCounter = true;
+			}
+		}
+
+		//反击是否暴击
+		if (g_RandomInt(0,9) < (int)(target->GetCrit()*10))
+			bCrit2 = true;
+
+		//进行攻击伤害预存
+		CalculateHurt(target,cast,bCrit2);
+
+		//计算是否命中
+		if(g_RandomInt(0,9) >= (int)(cast->GetDodge()*10))
+			bhit2 = true;
+		else
+			target->GetPreHurt() = 0;
+
+		//cast是否死亡
+		if(target->GetPreHurt() >= cast->GetHP())
+			bDead2 = true;
 	}
+
+
+	//推送动作
+	ActionProcess* process = ActionProcess::sInstancePtr();
+	process->PushAction(eNotify_TowardToAttacker,cast,target,0);
+	process->PushAction(eNotify_TowardToAttacker,target,cast,200);
+	if(bCrit)
+		process->PushAction(eNotify_Crit,cast,target,1000);
+	if(bhit)
+		process->PushAction(eNotify_Attack,cast,target,500);
 	else
-		target->Defend();
+		process->PushAction(eNotify_AttackDefend,cast,target,500);
+	if(bDead)
+		process->PushAction(eNotify_Dead,cast,target,300);
+	else
+	{
+		if(bCounter)
+		{
+			if(bCrit2)
+				process->PushAction(eNotify_Crit,target,cast,1000);
+			if(bhit2)
+				process->PushAction(eNotify_Attack,target,cast,500);
+			else
+				process->PushAction(eNotify_AttackDefend,target,cast,500);
+			if(bDead2)
+				process->PushAction(eNotify_Dead,target,cast,300);
+		}
+	}
+	//结束行动
+	process->PushAction(eNotify_FinishAttack,cast,target,0);
 }
 
 void CreatureManager::SelectCreature()
@@ -555,9 +648,11 @@ void CreatureManager::SelectCreature()
 									//判断是否可以攻击到选中单位
 									if(lastChar->CanHitTarget(selectChar))
 									{
-										lastChar->SetTarget(selectChar->GetNum());
-										lastChar->GeginHit();
+//										lastChar->SetTarget(selectChar->GetNum());
 										m_nSelectNum = -1;
+										//lastChar->GeginHit();
+										//进行预计算
+										PreCalculateAndPushAction(lastChar,selectChar);
 										return;
 									}
 								}

@@ -23,9 +23,10 @@ Character::Character(void)
 	m_nCamp = eCamp_Neutral;
 	m_eCharState = eCharacterState_Stand;
 	m_eActionStage = eActionStage_WaitStage;
-	m_nTar = 0;
-	m_dwRecordTime = 0;
-	m_dwActionTime = 0;
+//	m_nTar = -1;
+//	m_nSrc = -1;
+//	m_dwRecordTime = 0;
+	m_nActionTime = 0;
 	m_eAttackRange = (eAttackRange)(g_RandomInt(0,eAttackRange_Arrow));
 }
 
@@ -74,7 +75,7 @@ void Character::Init(int _Level,int _ID,int _Num,int _Action,Block _block)
 	m_nExpTotal = 100;
 	m_nPreHurt = 0;
 	m_bDead = false;
-	m_bCounter = false;
+	m_bCounter = true;
 
 	m_pAnimation->SetMode(HGEANIM_LOOP|HGEANIM_FWD);
 	m_pAnimation->Play();
@@ -93,16 +94,17 @@ void Character::Render()
 
 void Character::Update(float delta)
 {
-	if(m_eCharState == eCharacterState_Stand || (m_eCharState==eCharacterState_Fight && m_eAttackState==eAttackState_Waiting))
+	if(m_eCharState == eCharacterState_Stand/* || (m_eCharState==eCharacterState_Fight && m_eAttackState==eAttackState_Waiting)*/)
 		return;
 
-	if(m_dwActionTime > 0)
+	if(m_nActionTime > 0)
 	{
-		m_dwActionTime -= delta;
-		if(m_dwActionTime <= 0)
+		m_nActionTime -= (int)(delta*1000);
+		ActionProcess::sInstance().TimeUp(m_nActionTime);
+		if(m_nActionTime <= 0)
 		{
-			ActionProcess::sInstance().TimeUp();
-			m_dwActionTime = 0;
+			m_nActionTime = 0;
+			ActionProcess::sInstance().TimeUp(0);
 		}
 	}
 
@@ -214,7 +216,7 @@ void Character::Update(float delta)
 				m_fXPos += delta*120;
 		}
 	}
-	else if (m_eCharState == eCharacterState_Fight)
+/*	else if (m_eCharState == eCharacterState_Fight)
 	{
 		if(m_eAttackState == eAttackState_Attacking)
 		{
@@ -345,7 +347,7 @@ void Character::Update(float delta)
 			}
 		}
 	}
-
+*/
 	if(m_pAnimation)
 	{
 // 		char test[50];
@@ -362,6 +364,16 @@ void Character::Update(float delta)
 		
 		m_pAnimation->Update(App::sInstance().GetHGE()->Timer_GetDelta());
 	}
+}
+
+void Character::ResetFrame()
+{
+	m_pAnimation->SetTexture(m_mCharTex[eCharacterState_Walk]);
+	m_pAnimation->ResetFrames(0,(m_eCurDir-1)*FLOAT_PIC_SQUARE_HEIGHT,
+		FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT,4,8,false);
+	m_pAnimation->SetMode(HGEANIM_LOOP|HGEANIM_FWD);
+	m_pAnimation->Resume();
+	m_eCharState = eCharacterState_Stand;
 }
 
 void Character::SetFinish(bool _finish)
@@ -537,41 +549,44 @@ void Character::Move(eDirection dir)
 	}
 }
 
-int Character::TowardToAttacker(int src)
-{
-	if (m_eCharState == eCharacterState_Stand)
-	{
-		m_nSrc = src;
-		m_eCharState = eCharacterState_Defense;
-		m_eAttackState = eAttackState_Ready;
-		Block& block = CreatureManager::sInstance().GetCreature(src)->GetBlock();
-		if (block.xpos < m_iBlock.xpos)
-			m_eCurDir = eDirection_Left;
-		else if(block.xpos > m_iBlock.xpos)
-			m_eCurDir = eDirection_Right;
-		else if(block.ypos < m_iBlock.ypos)
-			m_eCurDir = eDirection_Up;
-		else
-			m_eCurDir = eDirection_Down;
-		m_pAnimation->ResetFrames(0,(m_eCurDir-1)*FLOAT_PIC_SQUARE_HEIGHT,
-			FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT,1,8,false);
-		m_pAnimation->SetMode(HGEANIM_LOOP|HGEANIM_FWD);
+// int Character::TowardToAttacker(int src)
+// {
+// 	if (m_eCharState == eCharacterState_Stand)
+// 	{
+// 		m_nSrc = src;
+// 		m_eCharState = eCharacterState_Defense;
+// 		m_eAttackState = eAttackState_Ready;
+// 		Block& block = CreatureManager::sInstance().GetCreature(src)->GetBlock();
+// 		if (block.xpos < m_iBlock.xpos)
+// 			m_eCurDir = eDirection_Left;
+// 		else if(block.xpos > m_iBlock.xpos)
+// 			m_eCurDir = eDirection_Right;
+// 		else if(block.ypos < m_iBlock.ypos)
+// 			m_eCurDir = eDirection_Up;
+// 		else
+// 			m_eCurDir = eDirection_Down;
+// 		m_pAnimation->ResetFrames(0,(m_eCurDir-1)*FLOAT_PIC_SQUARE_HEIGHT,
+// 			FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT,1,8,false);
+// 		m_pAnimation->SetMode(HGEANIM_LOOP|HGEANIM_FWD);
+// 
+// 		return eNotify_Success;
+// 	}
+// 
+// 	return eNotify_CannotBeAttacked;
+// }
 
-		return eNotify_Success;
-	}
-
-	return eNotify_CannotBeAttacked;
-}
-
-void Character::TowardToAttacker(eNotification notify,Character* target,DWORD time)
+void Character::TowardToAttacker(eNotification notify,Character* target,int time)
 {
 	if (m_eCharState == eCharacterState_Stand)
 	{
 		m_eNotify = notify;
-		m_dwRecordTime = time;
-		m_nSrc = target->GetCaster();
-		m_eCharState = eCharacterState_Defense;
-		m_eAttackState = eAttackState_Ready;
+		m_nActionTime = time;
+//		m_dwRecordTime = time;
+//		if(time != 0)
+//			m_nSrc = target->GetNum();
+
+		m_eCharState = eCharacterState_Fight;
+//		m_eAttackState = eAttackState_Ready;
 		Block& block = target->GetBlock();
 		if (block.xpos < m_iBlock.xpos)
 			m_eCurDir = eDirection_Left;
@@ -587,11 +602,23 @@ void Character::TowardToAttacker(eNotification notify,Character* target,DWORD ti
 	}
 }
 
-void Character::Attack()
-{
-	//攻击者和被攻击者的相关数值传递给管理器计算攻击结果
-	CreatureManager::sInstance().CalculateResult(m_nNum,m_nTar);
+// void Character::Attack()
+// {
+// 	//攻击者和被攻击者的相关数值传递给管理器计算攻击结果
+// 	CreatureManager::sInstance().CalculateResult(m_nNum,m_nTar);
+// 
+// 	//播放攻击动作
+// 	m_pAnimation->SetTexture(m_mCharTex[eCharacterState_Fight]);
+// 	m_pAnimation->ResetFrames(0,(m_eCurDir-1)*FLOAT_PIC_SQUARE_HEIGHT,
+// 		FLOAT_PIC_SQUARE_HEIGHT,FLOAT_PIC_SQUARE_HEIGHT,4,8,false);
+// 	m_pAnimation->SetMode(HGEANIM_FWD | HGEANIM_NOLOOP);
+// 
+// 	//设置攻击子状态
+// 	m_eAttackState = eAttackState_Attacking;
+// }
 
+void Character::Attack(eNotification notify,Character* target,int time)
+{
 	//播放攻击动作
 	m_pAnimation->SetTexture(m_mCharTex[eCharacterState_Fight]);
 	m_pAnimation->ResetFrames(0,(m_eCurDir-1)*FLOAT_PIC_SQUARE_HEIGHT,
@@ -599,10 +626,28 @@ void Character::Attack()
 	m_pAnimation->SetMode(HGEANIM_FWD | HGEANIM_NOLOOP);
 
 	//设置攻击子状态
-	m_eAttackState = eAttackState_Attacking;
+//	m_eAttackState = eAttackState_Attacking;
+	m_eCharState = eCharacterState_Fight;
+
+	m_nActionTime = time;
+	m_eNotify = notify;
 }
 
-void Character::Attacked()
+// void Character::Attacked()
+// {
+// 	//播放被攻击动作
+// 	m_pAnimation->SetTexture(m_mCharTex[eCharacterState_Defense]);
+// 	m_pAnimation->ResetFrames(0,3*FLOAT_PIC_SQUARE_WIDTH,
+// 		FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_WIDTH,1,8,false);
+// 	m_pAnimation->SetMode(HGEANIM_FWD | HGEANIM_LOOP);
+// 
+// 
+// 	//设置被攻击子状态
+// 	m_eCharState = eCharacterState_Defense;
+// 	m_eAttackState = eAttackState_Attackeding;
+// }
+
+void Character::Attacked(eNotification notify,Character* target,int time)
 {
 	//播放被攻击动作
 	m_pAnimation->SetTexture(m_mCharTex[eCharacterState_Defense]);
@@ -612,11 +657,35 @@ void Character::Attacked()
 
 
 	//设置被攻击子状态
-	m_eCharState = eCharacterState_Defense;
-	m_eAttackState = eAttackState_Attackeding;
+	m_eCharState = eCharacterState_Attacked;
+//	m_eAttackState = eAttackState_Attackeding;
+
+	m_nActionTime = time;
+	m_eNotify = notify;
 }
 
-void Character::Defend()
+// void Character::Defend()
+// {
+// 	//播放被攻击动作
+// 	int offset = 0;
+// 	if(m_eCurDir == eDirection_Down)
+// 		offset = 0;
+// 	else if (m_eCurDir == eDirection_Up)
+// 		offset = 1;
+// 	else if(m_eCurDir == eDirection_Left || m_eCurDir == eDirection_Right)
+// 		offset = 2;
+// 	m_pAnimation->SetTexture(m_mCharTex[eCharacterState_Defense]);
+// 	m_pAnimation->ResetFrames(0,offset*FLOAT_PIC_SQUARE_WIDTH,
+// 		FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_WIDTH,1,8,false);
+// 	m_pAnimation->SetMode(HGEANIM_FWD | HGEANIM_LOOP);
+// 
+// 
+// 	//设置被攻击子状态
+// 	m_eCharState = eCharacterState_Defense;
+// 	m_eAttackState = eAttackState_Defending;
+// }
+
+void Character::Defend(eNotification notify,Character* target,int time)
 {
 	//播放被攻击动作
 	int offset = 0;
@@ -634,15 +703,30 @@ void Character::Defend()
 
 	//设置被攻击子状态
 	m_eCharState = eCharacterState_Defense;
-	m_eAttackState = eAttackState_Defending;
+//	m_eAttackState = eAttackState_Defending;
+
+	m_nActionTime = time;
+	m_eNotify = notify;
 }
 
-void Character::Counter()
-{
+// void Character::Counter()
+// {
+// 
+// }
 
-}
+// void Character::Crit()
+// {
+// 	//播放攻击动作
+// 	m_pAnimation->SetTexture(m_mCharTex[eCharacterState_Fight]);
+// 	m_pAnimation->ResetFrames(0,(m_eCurDir-1)*FLOAT_PIC_SQUARE_HEIGHT,
+// 		FLOAT_PIC_SQUARE_HEIGHT,FLOAT_PIC_SQUARE_HEIGHT,1,8,false);
+// 	m_pAnimation->SetMode(HGEANIM_FWD | HGEANIM_LOOP);
+// 
+// 	//设置攻击子状态
+// 	m_eAttackState = eAttackState_Criting;
+// }
 
-void Character::Crit()
+void Character::Crit(eNotification notify,Character* target,int time)
 {
 	//播放攻击动作
 	m_pAnimation->SetTexture(m_mCharTex[eCharacterState_Fight]);
@@ -651,10 +735,27 @@ void Character::Crit()
 	m_pAnimation->SetMode(HGEANIM_FWD | HGEANIM_LOOP);
 
 	//设置攻击子状态
-	m_eAttackState = eAttackState_Criting;
+//	m_eAttackState = eAttackState_Criting;
+	m_eCharState = eCharacterState_Fight;
+
+	m_nActionTime = time;
+	m_eNotify = notify;
 }
 
-void Character::Dead()
+// void Character::Dead()
+// {
+// 	//播放攻击动作
+// 	m_pAnimation->SetTexture(m_mCharTex[eCharacterState_Dead]);
+// 	m_pAnimation->ResetFrames(0,(m_eCurDir-1)*FLOAT_PIC_SQUARE_WIDTH,
+// 		FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_WIDTH,4,8,false);
+// 	m_pAnimation->SetMode(HGEANIM_FWD | HGEANIM_NOLOOP);
+// 
+// 	//设置攻击子状态
+// 	m_eAttackState = eAttackState_Dead;
+// 	m_eCharState = eCharacterState_Dead;
+// }
+
+void Character::Dead(eNotification notify,Character* target,int time)
 {
 	//播放攻击动作
 	m_pAnimation->SetTexture(m_mCharTex[eCharacterState_Dead]);
@@ -663,8 +764,11 @@ void Character::Dead()
 	m_pAnimation->SetMode(HGEANIM_FWD | HGEANIM_NOLOOP);
 
 	//设置攻击子状态
-	m_eAttackState = eAttackState_Dead;
+//	m_eAttackState = eAttackState_Dead;
 	m_eCharState = eCharacterState_Dead;
+
+	m_nActionTime = time;
+	m_eNotify = notify;
 }
 
 bool Character::CanHitTarget(Character* target)
@@ -690,7 +794,7 @@ bool Character::CanHitTarget(Character* target)
 	}
 	return false;
 }
-
+/*
 void Character::GeginHit()
 {
 	if(m_eCharState == eCharacterState_Stand)
@@ -716,4 +820,4 @@ void Character::GeginHit()
 			m_eAttackState = eAttackState_Waiting;
 		}
 	}
-}
+}*/

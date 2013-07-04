@@ -169,11 +169,11 @@ void g_getFiles( std::string path, std::map<std::string,std::string>& files,char
 	{
 		if (isCharacter)
 		{
-			delete[] charDefendNames;
-			delete[] charDeadNames;
-			delete[] charFightNames;
+			gSafeDeleteArray(charDefendNames);
+			gSafeDeleteArray(charDeadNames);
+			gSafeDeleteArray(charFightNames);
 		}
-		delete[] mapNames;
+		gSafeDeleteArray(mapNames);
 	}
 }
 

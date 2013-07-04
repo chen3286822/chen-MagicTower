@@ -113,6 +113,7 @@ enum eCharacterState
 	eCharacterState_Fight = 1,
 	eCharacterState_Dead = 2,
 	eCharacterState_Defense = 3,
+	eCharacterState_Attacked = 4,
 };
 //攻击子状态
 enum eAttackState
@@ -130,8 +131,10 @@ enum eNotification
 {
 	eNotify_Success = 0,
 	eNotify_TowardToAttacker,
-	eNotify_BeginAttack,
 	eNotify_Crit,
+	eNotify_Attack,
+	eNotify_AttackDefend,
+	eNotify_Dead,
 	eNotify_NoTarget,
 	eNotify_ReadyToBeAttacked,
 	eNotify_CannotBeAttacked,
@@ -258,7 +261,8 @@ enum eBlockAttribute		//表示地图格子的属性位
 #define setTerrain(a,b)		(a = (((a) & 0xFFFFFFC3) | (b)))	//设定该格子的地形类别
 #define IsCanCross(a)		((IsOccupied(a) || (getTerrain(a) == eTerrain_HillTop) || (getTerrain(a) == eTerrain_CityWall))? 0:1)	//测试格子是否可以通过，包括单位以及地形的影响
 
-#define gSafeDelete(X)		{	if((X)){delete (X); (X) = NULL;} }
+#define gSafeDelete(X)			{	if((X)){delete (X); (X) = NULL;} }
+#define gSafeDeleteArray(X) {	if((X)){delete[] (X); (X) = NULL;}}
 
 struct tagBlock
 {

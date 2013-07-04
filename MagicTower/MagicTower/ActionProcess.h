@@ -51,6 +51,7 @@ public:
 		m_lAction.clear();
 		m_eActionState = eActionState_PickAction;
 		m_iCurAction.Clear();
+		m_nLeftTime = -1;
 	}
 	~ActionProcess(){}
 
@@ -61,9 +62,9 @@ public:
 		m_lAction.push_back(Action(notify,cast,target,time));
 	}
 	void PopAction(){m_lAction.pop_front();}
-	void TimeUp()
+	void TimeUp(DWORD leftTime)
 	{
-		m_bTimeUp = true;
+		m_nLeftTime = leftTime;
 	}
 	void Update()
 	{
@@ -83,17 +84,37 @@ public:
 							m_eActionState = eActionState_Process;
 					}
 					break;
-				case eNotify_BeginAttack:
+				case eNotify_Crit:
 					{
-						bool bCrit = false;
-						if (g_RandomInt(0,9) < (int)(action.m_pCast->GetCrit()*10))
-							bCrit = true;
-						CreatureManager::sInstance().CalculateHurt(action.m_pCast,action.m_pTarget,bCrit);
-						if(bCrit)
-						{
-							action.m_pCast->Crit(eNotify_Crit,action.m_pTarget,1000);
-							m_eActionState = eActionState_Process;
-						}
+						action.m_pCast->Crit(eNotify_Crit,action.m_pTarget,action.m_dwTime);
+						m_eActionState = eActionState_Process;
+					}
+					break;
+				case eNotify_Attack:
+					{
+						action.m_pCast->Attack(eNotify_Attack,action.m_pTarget,0);
+						action.m_pTarget->Attacked(eNotify_Attack,action.m_pCast,action.m_dwTime);
+
+						m_eActionState = eActionState_Process;
+					}
+					break;
+				case eNotify_AttackDefend:
+					{
+						action.m_pCast->Attack(eNotify_Attack,action.m_pTarget,0);
+						action.m_pTarget->Defend(eNotify_Attack,action.m_pCast,action.m_dwTime);
+
+						m_eActionState = eActionState_Process;
+					}
+					break;
+				case eNotify_Dead:
+					{
+						action.m_pTarget->Dead(eNotify_Dead,action.m_pCast,action.m_dwTime);
+						m_eActionState = eActionState_Process;
+					}
+					break;
+				case eNotify_FinishAttack:
+					{
+						m_eActionState = eActionState_End;
 					}
 					break;
 				default:
@@ -106,14 +127,70 @@ public:
 		}
 		else if (m_eActionState == eActionState_Process)
 		{
-			if(m_bTimeUp)
+			Action action = m_lAction.front();
+			switch (action.m_eNotify)
 			{
+			case eNotify_Crit:
+				{
+					int nTempColor = (int)(255*m_nLeftTime/1000);
+					DWORD dwCritColor = (nTempColor + (nTempColor << 8)) | 0xFFFF0000;
+					action.m_pCast->ChangeColor(dwCritColor);
+				}
+				break;
+			default:
+				break;
+			}
+			if(m_nLeftTime==0)
+			{
+				m_nLeftTime = -1;
 				m_eActionState = eActionState_End;
 			}
 		}
 		else if (m_eActionState == eActionState_End)
 		{
+			Action action = m_lAction.front();
+			switch (action.m_eNotify)
+			{
+			case eNotify_TowardToAttacker:
+				{
+					action.m_pCast->GetCharacterState() = eCharacterState_Stand;
+				}
+				break;
+			case eNotify_Crit:
+				{
+					action.m_pCast->ChangeColor(0xFFFFFFFF);
+				}
+				break;
+			case eNotify_Attack:
+				{
+					action.m_pCast->ResetFrame();
+					action.m_pTarget->ResetFrame();
+					action.m_pTarget->GetHP() -= action.m_pCast->GetPreHurt();
+					action.m_pTarget->GetCharacterState() = eCharacterState_Stand;
+				}
+				break;
+			case eNotify_AttackDefend:
+				{
+					action.m_pCast->ResetFrame();
+					action.m_pTarget->ResetFrame();
+					action.m_pTarget->GetCharacterState() = eCharacterState_Stand;
+				}
+				break;
+			case eNotify_Dead:
+				{
+					action.m_pTarget->GetDead() = true;
+				}
+				break;
+			case eNotify_FinishAttack:
+				{
+					action.m_pCast->SetFinish(true);
+				}
+				break;
+			default:
+				break;
+			}
 			m_iCurAction.Clear();
+			m_eActionState = eActionState_PickAction;
 			PopAction();
 		}
 
@@ -123,7 +200,7 @@ private:
 	std::list<Action> m_lAction;
 	Action m_iCurAction;
 	eActionState m_eActionState;
-	bool m_bTimeUp;
+	int m_nLeftTime; 
 };
 
 #endif

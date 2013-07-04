@@ -53,22 +53,28 @@ public:
 	void CancelMove();	//取消移动，回到原来位置
 
 	//战斗相关
-	void SetTarget(int _tar){m_nTar = _tar;}
-	int GetTarget(){return m_nTar;}
-	int& GetCaster() {return m_nSrc;}
+//	void SetTarget(int _tar){m_nTar = _tar;}
+//	int GetTarget(){return m_nTar;}
+//	int& GetCaster() {return m_nSrc;}
 	bool CanHitTarget(Character* target);	//是否可以攻击目标
-	void GeginHit();
-	int TowardToAttacker(int src);	//面对着攻击者
-	void Attack();	//开始攻击
-	void Crit();		//开始暴击
-	void Attacked();	//开始被攻击
-	void Defend(); //开始防御
-	void Counter();	//反击
-	void Dead();	//开始死亡动画
+//	void GeginHit();
+//	int TowardToAttacker(int src);	//面对着攻击者
+//	void Attack();	//开始攻击
+//	void Crit();		//开始暴击
+//	void Attacked();	//开始被攻击
+//	void Defend(); //开始防御
+//	void Counter();	//反击
+//	void Dead();	//开始死亡动画
 
 	//动作
-	void TowardToAttacker(eNotification notify,Character* target,DWORD time);
-	void Crit(eNotification notify,Character* target,DWORD time);
+	void TowardToAttacker(eNotification notify,Character* target,int time);
+	void Attack(eNotification notify,Character* target,int time);
+	void Crit(eNotification notify,Character* target,int time);
+	void Attacked(eNotification notify,Character* target,int time);
+	void Defend(eNotification notify,Character* target,int time);
+	void Dead(eNotification notify,Character* target,int time);
+	void ChangeColor(DWORD color){m_pAnimation->SetColor(color);}
+	void ResetFrame();
 
 	//属性相关
 	eAttackType& GetAttackType(){return m_eAttackType;}
@@ -107,11 +113,11 @@ private:
 	int m_nLeftDistance;	//剩余需要移动的格子数
 
 	eAttackRange m_eAttackRange;	//单位攻击范围类型
-	int m_nSrc; //攻击自己的单位
-	int m_nTar;	//攻击目标
+//	int m_nSrc; //攻击自己的单位
+//	int m_nTar;	//攻击目标
 	eAttackState m_eAttackState; //攻击子状态，用于处理攻击流程
-	DWORD m_dwRecordTime;	//用于动作计时
-	DWORD m_dwActionTime;		//动作需要时间
+//	DWORD m_dwRecordTime;	//用于动作计时
+	int m_nActionTime;		//动作需要时间
 	eNotification m_eNotify;			//动作通知类型
 
 	//单位属性

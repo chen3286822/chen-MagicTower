@@ -143,19 +143,19 @@ void AStar::Release()
 {
 	for (int i=0;i<m_nWidth;i++)
 	{
-		delete[] m_ppiMap[i];
-		delete[] m_ppnHeightGraph[i];
-		delete[] m_ppnGScore[i];
-		delete[] m_ppnFScore[i];
-		delete[] m_ppnHScore[i];
-		delete[] m_ppbIsInCloseList[i];
+		gSafeDeleteArray(m_ppiMap[i]);
+		gSafeDeleteArray(m_ppnHeightGraph[i]);
+		gSafeDeleteArray(m_ppnGScore[i]);
+		gSafeDeleteArray(m_ppnFScore[i]);
+		gSafeDeleteArray(m_ppnHScore[i]);
+		gSafeDeleteArray(m_ppbIsInCloseList[i]);
 	}
-	delete[] m_ppiMap;
-	delete[] m_ppnHeightGraph;
-	delete[] m_ppnGScore;
-	delete[] m_ppnFScore;
-	delete[] m_ppnHScore;
-	delete[] m_ppbIsInCloseList;
+	gSafeDeleteArray(m_ppiMap);
+	gSafeDeleteArray(m_ppnHeightGraph);
+	gSafeDeleteArray(m_ppnGScore);
+	gSafeDeleteArray(m_ppnFScore);
+	gSafeDeleteArray(m_ppnHScore);
+	gSafeDeleteArray(m_ppbIsInCloseList);
 }
 
 

@@ -70,6 +70,8 @@ public:
 	void CalculateHurt(Character* cast,Character* target,bool bCrit=false);
 	//计算攻击结果(命中与否)
 	void CalculateResult(int src,int tar);
+	//预先计算并且推送动作
+	void PreCalculateAndPushAction(Character* cast,Character* target);
 
 	//选中单位
 	void SelectCreature();
