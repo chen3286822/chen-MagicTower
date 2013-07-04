@@ -134,6 +134,8 @@ private:
 	bool	m_bDead;	//是否死亡
 	bool	m_bCounter;	//是否可以反击
 	int m_nPreHurt;	//下一次攻击准备打出的伤害，提前计算出以便后面扣除
+
+	eDirection GetTexDir(eDirection dir);
 };
 
 

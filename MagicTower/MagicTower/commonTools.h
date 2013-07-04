@@ -53,6 +53,12 @@
 #define FLOAT_PIC_SQUARE_HEIGHT			64
 #define FLOAT_PIC_WIDTH							192
 #define FLOAT_PIC_HEIGHT							256
+#define Tex_Walk_Width								48
+#define Tex_Walk_Length							528
+#define Tex_Attack_Width							64
+#define	 Tex_Attack_Length							768
+#define	 Tex_Defend_Width						48
+#define Tex_Defend_Length						240
 
 #define MAP_RECT		64
 #define MAP_OFF_X	10
@@ -114,6 +120,20 @@ enum eCharacterState
 	eCharacterState_Dead = 2,
 	eCharacterState_Defense = 3,
 	eCharacterState_Attacked = 4,
+};
+
+//动作图包
+enum eActionTex
+{
+	eActionTex_Walk = 0,
+	eActionTex_Attack = 1,
+	eActionTex_Defend = 2,
+
+	eActionTex_Stand = eActionTex_Walk,
+	eActionTex_Dead = eActionTex_Walk,
+	eActionTex_Attacked = eActionTex_Defend,
+	eActionTex_LevelUp = eActionTex_Defend,
+
 };
 //攻击子状态
 enum eAttackState
@@ -181,9 +201,12 @@ enum eDirection
 {
 	eDirection_None,
 	eDirection_Down,
+	eDirection_Up,
 	eDirection_Left,
 	eDirection_Right,
-	eDirection_Up,
+
+	eDirection_Num,
+	eDirection_End = eDirection_Num,
 };
 typedef std::list<eDirection> LDirection;
 

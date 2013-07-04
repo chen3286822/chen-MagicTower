@@ -556,7 +556,8 @@ void CreatureManager::PreCalculateAndPushAction(Character* cast,Character* targe
 		}
 	}
 	//½áÊøÐÐ¶¯
-	process->PushAction(eNotify_FinishAttack,cast,target,0);
+	if(!bDead2)
+		process->PushAction(eNotify_FinishAttack,cast,target,0);
 }
 
 void CreatureManager::SelectCreature()

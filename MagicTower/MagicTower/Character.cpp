@@ -45,7 +45,8 @@ void Character::Init(int _Level,int _ID,int _Num,int _Action,Block _block)
 	if(m_mCharTex.empty())
 		return;
 
-	m_pAnimation = new hgeAnimation(m_mCharTex[eCharacterState_Walk],4,8,0,FLOAT_PIC_SQUARE_HEIGHT*(_Action-1),FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT);
+	//右向图片是左向的对称图
+	m_pAnimation = new hgeAnimation(m_mCharTex[eActionTex_Walk],1,8,0,(GetTexDir((eDirection)(_Action%4+1))-1)*FLOAT_PIC_SQUARE_WIDTH+6*FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_WIDTH);
 	m_nMapLevel = _Level;
 	m_nID = _ID;
 	m_nNum = _Num;
@@ -54,7 +55,7 @@ void Character::Init(int _Level,int _ID,int _Num,int _Action,Block _block)
 	m_fStartX = m_fXPos = (MAP_RECT-FLOAT_PIC_SQUARE_WIDTH)/2+MAP_OFF_X +MAP_RECT*m_iBlock.xpos;
 	m_fStartY = m_fYPos = MAP_OFF_Y+MAP_RECT*m_iBlock.ypos;
 	m_nLeftDistance = 0;
-	m_eCurDir = (eDirection)(_Action%4);
+	m_eCurDir = (eDirection)(_Action%4+1);
 	m_eOrigDir = m_eCurDir;
 	m_eCharState = eCharacterState_Stand;
 	//为初始化的人物所在地图块设置属性
@@ -81,11 +82,20 @@ void Character::Init(int _Level,int _ID,int _Num,int _Action,Block _block)
 	m_pAnimation->Play();
 }
 
+eDirection Character::GetTexDir(eDirection dir)
+{
+	eDirection tempDir = dir;
+	if(tempDir == eDirection_Right)
+		tempDir = eDirection_Left;
+
+	return tempDir;
+}
+
 void Character::Render()
 {
 	if(m_pAnimation)
 	{
-		if(m_eCharState == eCharacterState_Defense && m_eAttackState == eAttackState_Defending && m_eCurDir == eDirection_Right)	//由于源图片缺少向右的动作，故需要y轴对称绘制
+		if(/*m_eCharState == eCharacterState_Defense && m_eAttackState == eAttackState_Defending && */m_eCurDir == eDirection_Right)	//由于源图片缺少向右的动作，故需要y轴对称绘制
 			m_pAnimation->RenderSymmetry(m_fXPos,m_fYPos,1);
 		else
 			m_pAnimation->Render(m_fXPos,m_fYPos);
@@ -180,8 +190,8 @@ void Character::Update(float delta)
 			{	
 				m_eCurDir = m_lPathDir.front();
 				m_lPathDir.pop_front();
-				m_pAnimation->ResetFrames(0,(m_eCurDir-1)*FLOAT_PIC_SQUARE_HEIGHT,
-					FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT,4,8,false);
+				m_pAnimation->ResetFrames(0,2*(GetTexDir(m_eCurDir)-1)*FLOAT_PIC_SQUARE_WIDTH,
+					FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_WIDTH,2,8,true);
 			}
 
 			if(m_nLeftDistance == 0)
@@ -368,9 +378,9 @@ void Character::Update(float delta)
 
 void Character::ResetFrame()
 {
-	m_pAnimation->SetTexture(m_mCharTex[eCharacterState_Walk]);
-	m_pAnimation->ResetFrames(0,(m_eCurDir-1)*FLOAT_PIC_SQUARE_HEIGHT,
-		FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT,4,8,false);
+	m_pAnimation->SetTexture(m_mCharTex[eActionTex_Stand]);
+	m_pAnimation->ResetFrames(0,(GetTexDir(m_eCurDir)-1)*FLOAT_PIC_SQUARE_WIDTH + 6*FLOAT_PIC_SQUARE_WIDTH,
+		FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_WIDTH,1,8,true);
 	m_pAnimation->SetMode(HGEANIM_LOOP|HGEANIM_FWD);
 	m_pAnimation->Resume();
 	m_eCharState = eCharacterState_Stand;
@@ -384,9 +394,7 @@ void Character::SetFinish(bool _finish)
 		m_iOrigBlock.xpos = m_iBlock.xpos;
 		m_iOrigBlock.ypos = m_iBlock.ypos;
 		m_eOrigDir = m_eCurDir;
-		m_eCharState = eCharacterState_Stand;
-		m_pAnimation->ResetFrames(0,(m_eCurDir-1)*FLOAT_PIC_SQUARE_HEIGHT,
-			FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT,4,8,false);
+		ResetFrame();
 	}
 }
 
@@ -400,8 +408,8 @@ void Character::CancelMove()
 	m_iBlock.xpos = m_iOrigBlock.xpos;
 	m_iBlock.ypos = m_iOrigBlock.ypos;
 	m_eCurDir = m_eOrigDir;
-	m_pAnimation->ResetFrames(0,(m_eCurDir-1)*FLOAT_PIC_SQUARE_HEIGHT,
-		FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT,4,8,false);
+	m_pAnimation->ResetFrames(0,(GetTexDir(m_eCurDir)-1)*FLOAT_PIC_SQUARE_WIDTH + 6*FLOAT_PIC_SQUARE_WIDTH,
+		FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_WIDTH,1,8,true);
 
 	//原格子占据状态
 	cannelBlock = currentMap->GetBlock(m_iBlock.xpos,m_iBlock.ypos);
@@ -529,7 +537,7 @@ void Character::Move(eDirection dir)
 	}
 
 	//无效方向
-	if(dir <= eDirection_None || dir > eDirection_Up)
+	if(dir <= eDirection_None || dir > eDirection_End)
 	{
 		//m_bFinishAct = true;
 		return;
@@ -541,8 +549,9 @@ void Character::Move(eDirection dir)
 	if(m_eCharState == eCharacterState_Stand)
 	{
 		m_eCurDir = m_lPathDir.front();
-		m_pAnimation->ResetFrames(0,(m_eCurDir-1)*FLOAT_PIC_SQUARE_HEIGHT,
-			FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT,4,8,false);
+		m_pAnimation->SetTexture(m_mCharTex[eCharacterState_Walk]);
+		m_pAnimation->ResetFrames(0,2*(GetTexDir(m_eCurDir)-1)*FLOAT_PIC_SQUARE_WIDTH,
+			FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_WIDTH,2,8,true);
 		m_pAnimation->SetMode(HGEANIM_LOOP|HGEANIM_FWD);
 		m_lPathDir.pop_front();
 		m_eCharState = eCharacterState_Walk;
@@ -596,8 +605,8 @@ void Character::TowardToAttacker(eNotification notify,Character* target,int time
 			m_eCurDir = eDirection_Up;
 		else
 			m_eCurDir = eDirection_Down;
-		m_pAnimation->ResetFrames(0,(m_eCurDir-1)*FLOAT_PIC_SQUARE_HEIGHT,
-			FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT,1,8,false);
+		m_pAnimation->ResetFrames(0,(GetTexDir(m_eCurDir)-1)*FLOAT_PIC_SQUARE_WIDTH + 6*FLOAT_PIC_SQUARE_WIDTH,
+			FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_WIDTH,1,8,true);
 		m_pAnimation->SetMode(HGEANIM_LOOP|HGEANIM_FWD);
 	}
 }
@@ -620,9 +629,9 @@ void Character::TowardToAttacker(eNotification notify,Character* target,int time
 void Character::Attack(eNotification notify,Character* target,int time)
 {
 	//播放攻击动作
-	m_pAnimation->SetTexture(m_mCharTex[eCharacterState_Fight]);
-	m_pAnimation->ResetFrames(0,(m_eCurDir-1)*FLOAT_PIC_SQUARE_HEIGHT,
-		FLOAT_PIC_SQUARE_HEIGHT,FLOAT_PIC_SQUARE_HEIGHT,4,8,false);
+	m_pAnimation->SetTexture(m_mCharTex[eActionTex_Attack]);
+	m_pAnimation->ResetFrames(0,4*(GetTexDir(m_eCurDir)-1)*FLOAT_PIC_SQUARE_HEIGHT,
+		FLOAT_PIC_SQUARE_HEIGHT,FLOAT_PIC_SQUARE_HEIGHT,4,8,true);
 	m_pAnimation->SetMode(HGEANIM_FWD | HGEANIM_NOLOOP);
 
 	//设置攻击子状态
@@ -650,9 +659,9 @@ void Character::Attack(eNotification notify,Character* target,int time)
 void Character::Attacked(eNotification notify,Character* target,int time)
 {
 	//播放被攻击动作
-	m_pAnimation->SetTexture(m_mCharTex[eCharacterState_Defense]);
+	m_pAnimation->SetTexture(m_mCharTex[eActionTex_Attacked]);
 	m_pAnimation->ResetFrames(0,3*FLOAT_PIC_SQUARE_WIDTH,
-		FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_WIDTH,1,8,false);
+		FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_WIDTH,1,8,true);
 	m_pAnimation->SetMode(HGEANIM_FWD | HGEANIM_LOOP);
 
 
@@ -689,15 +698,9 @@ void Character::Defend(eNotification notify,Character* target,int time)
 {
 	//播放被攻击动作
 	int offset = 0;
-	if(m_eCurDir == eDirection_Down)
-		offset = 0;
-	else if (m_eCurDir == eDirection_Up)
-		offset = 1;
-	else if(m_eCurDir == eDirection_Left || m_eCurDir == eDirection_Right)
-		offset = 2;
-	m_pAnimation->SetTexture(m_mCharTex[eCharacterState_Defense]);
-	m_pAnimation->ResetFrames(0,offset*FLOAT_PIC_SQUARE_WIDTH,
-		FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_WIDTH,1,8,false);
+	m_pAnimation->SetTexture(m_mCharTex[eActionTex_Defend]);
+	m_pAnimation->ResetFrames(0,(GetTexDir(m_eCurDir)-1)*FLOAT_PIC_SQUARE_WIDTH,
+		FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_WIDTH,1,8,true);
 	m_pAnimation->SetMode(HGEANIM_FWD | HGEANIM_LOOP);
 
 
@@ -729,9 +732,9 @@ void Character::Defend(eNotification notify,Character* target,int time)
 void Character::Crit(eNotification notify,Character* target,int time)
 {
 	//播放攻击动作
-	m_pAnimation->SetTexture(m_mCharTex[eCharacterState_Fight]);
-	m_pAnimation->ResetFrames(0,(m_eCurDir-1)*FLOAT_PIC_SQUARE_HEIGHT,
-		FLOAT_PIC_SQUARE_HEIGHT,FLOAT_PIC_SQUARE_HEIGHT,1,8,false);
+	m_pAnimation->SetTexture(m_mCharTex[eActionTex_Attack]);
+	m_pAnimation->ResetFrames(0,4*(GetTexDir(m_eCurDir)-1)*FLOAT_PIC_SQUARE_HEIGHT,
+		FLOAT_PIC_SQUARE_HEIGHT,FLOAT_PIC_SQUARE_HEIGHT,1,8,true);
 	m_pAnimation->SetMode(HGEANIM_FWD | HGEANIM_LOOP);
 
 	//设置攻击子状态
@@ -758,10 +761,10 @@ void Character::Crit(eNotification notify,Character* target,int time)
 void Character::Dead(eNotification notify,Character* target,int time)
 {
 	//播放攻击动作
-	m_pAnimation->SetTexture(m_mCharTex[eCharacterState_Dead]);
-	m_pAnimation->ResetFrames(0,(m_eCurDir-1)*FLOAT_PIC_SQUARE_WIDTH,
-		FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_WIDTH,4,8,false);
-	m_pAnimation->SetMode(HGEANIM_FWD | HGEANIM_NOLOOP);
+	m_pAnimation->SetTexture(m_mCharTex[eActionTex_Dead]);
+	m_pAnimation->ResetFrames(0,9*FLOAT_PIC_SQUARE_WIDTH,
+		FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_WIDTH,2,8,true);
+	m_pAnimation->SetMode(HGEANIM_FWD | HGEANIM_LOOP);
 
 	//设置攻击子状态
 //	m_eAttackState = eAttackState_Dead;

@@ -5,7 +5,6 @@ TexManager::TexManager(void)
 {
 	m_mWalkTex.clear();
 	m_mFightTex.clear();
-	m_mDeadTex.clear();
 	m_mDefendTex.clear();
 	m_mMap.clear();
 	m_mMapInfo.clear();
@@ -22,10 +21,6 @@ TexManager::~TexManager(void)
 	{
 		App::sInstance().GetHGE()->Texture_Free(mit->second);
 	}
-	for (std::map<int,HTEXTURE>::iterator mit=m_mDeadTex.begin();mit!=m_mDeadTex.end();mit++)
-	{
-		App::sInstance().GetHGE()->Texture_Free(mit->second);
-	}
 	for (std::map<int,HTEXTURE>::iterator mit=m_mDefendTex.begin();mit!=m_mDefendTex.end();mit++)
 	{
 		App::sInstance().GetHGE()->Texture_Free(mit->second);
@@ -39,7 +34,7 @@ TexManager::~TexManager(void)
 bool TexManager::LoadTex(std::string path)
 {
 	std::map<std::string,std::string> files;
-	g_getFiles(path,files,".png",20,true,true);
+	g_getFiles(path,files,".png",3,true,true);
 
 	size_t found = 0;
 	int ID = 0;
@@ -54,12 +49,11 @@ bool TexManager::LoadTex(std::string path)
 			strID[found] = '\0';
 			sscanf(strID,"%d-%d",&ID,&IDEx);
 			ID--;
-			m_mWalkTex[ID] = App::sInstance().GetHGE()->Texture_Load(mit->first.c_str());
-			if(IDEx == 1)
+			if(IDEx == 0)
+				m_mWalkTex[ID] = App::sInstance().GetHGE()->Texture_Load(mit->first.c_str());
+			else if(IDEx == 1)
 				m_mFightTex[ID] = App::sInstance().GetHGE()->Texture_Load(mit->first.c_str());
 			else if(IDEx == 2)
-				m_mDeadTex[ID] = App::sInstance().GetHGE()->Texture_Load(mit->first.c_str());
-			else if(IDEx == 3)
 				m_mDefendTex[ID] = App::sInstance().GetHGE()->Texture_Load(mit->first.c_str());
 
 			ID = 0;
@@ -135,13 +129,11 @@ std::map<int,HTEXTURE> TexManager::GetTex(int _ID)
 {
 	std::map<int,HTEXTURE> mapTex;
 	if(!m_mWalkTex.empty() && m_mWalkTex.find(_ID) != m_mWalkTex.end())
-		mapTex[eCharacterState_Walk] =  m_mWalkTex[_ID];
+		mapTex[eActionTex_Walk] =  m_mWalkTex[_ID];
 	if(!m_mFightTex.empty() && m_mFightTex.find(_ID) != m_mFightTex.end())
-		mapTex[eCharacterState_Fight] =  m_mFightTex[_ID];
-	if(!m_mDeadTex.empty() && m_mDeadTex.find(_ID) != m_mDeadTex.end())
-		mapTex[eCharacterState_Dead] =  m_mDeadTex[_ID];
+		mapTex[eActionTex_Attack] =  m_mFightTex[_ID];
 	if(!m_mDefendTex.empty() && m_mDefendTex.find(_ID) != m_mDefendTex.end())
-		mapTex[eCharacterState_Defense] =  m_mDefendTex[_ID];
+		mapTex[eActionTex_Defend] =  m_mDefendTex[_ID];
 
 	return mapTex;
 }

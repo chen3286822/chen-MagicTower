@@ -93,7 +93,6 @@ void g_getFiles( std::string path, std::map<std::string,std::string>& files,char
 {
 	std::string* mapNames = NULL;
 	std::string* charFightNames = NULL;
-	std::string* charDeadNames = NULL;
 	std::string* charDefendNames = NULL;
 	if (useDefaultName)
 	{
@@ -101,7 +100,6 @@ void g_getFiles( std::string path, std::map<std::string,std::string>& files,char
 		if (isCharacter)
 		{
 			charFightNames = new std::string[maxFileNum];
-			charDeadNames = new std::string[maxFileNum];
 			charDefendNames = new std::string[maxFileNum];
 		}
 	}
@@ -118,8 +116,6 @@ void g_getFiles( std::string path, std::map<std::string,std::string>& files,char
 				sprintf(filename,"%d-1%s",i,type);
 				charFightNames[i].assign(filename);
 				sprintf(filename,"%d-2%s",i,type);
-				charDeadNames[i].assign(filename);
-				sprintf(filename,"%d-3%s",i,type);
 				charDefendNames[i].assign(filename);
 			}
 		}
@@ -149,7 +145,7 @@ void g_getFiles( std::string path, std::map<std::string,std::string>& files,char
 					for(int i=0;i<maxFileNum;i++)
 					{
 						if(strcmp(fileinfo.name,mapNames[i].c_str()) == 0 || 
-							(isCharacter && (strcmp(fileinfo.name,charFightNames[i].c_str()) == 0 || strcmp(fileinfo.name,charDeadNames[i].c_str()) == 0|| strcmp(fileinfo.name,charDefendNames[i].c_str()) == 0)))
+							(isCharacter && (strcmp(fileinfo.name,charFightNames[i].c_str()) == 0 || strcmp(fileinfo.name,charDefendNames[i].c_str()) == 0)))
 						{
 							files[p.assign(path).append("\\").append(fileinfo.name)] = fileinfo.name;
 							break;
@@ -170,7 +166,6 @@ void g_getFiles( std::string path, std::map<std::string,std::string>& files,char
 		if (isCharacter)
 		{
 			gSafeDeleteArray(charDefendNames);
-			gSafeDeleteArray(charDeadNames);
 			gSafeDeleteArray(charFightNames);
 		}
 		gSafeDeleteArray(mapNames);
