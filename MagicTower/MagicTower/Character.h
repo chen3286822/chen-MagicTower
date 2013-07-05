@@ -77,12 +77,16 @@ public:
 	void ResetFrame();
 
 	//属性相关
+	std::string&	GetName(){return m_strName;}
+	std::string&	GetKind(){return m_strKind;}
 	eAttackType& GetAttackType(){return m_eAttackType;}
 	int&	GetAttack(){return m_nAttack;}
 	int&	GetDefend(){return m_nDefend;}
 	float&	GetCrit(){return m_fCrit;}
 	float&	GetDodge(){return m_fDodge;}
 	int&	GetHP(){return m_nHP;}
+	int&	GetHPMax(){return m_nHPMax;}
+	int&	GetMPMax(){return m_nMPMax;}
 	int&	GetMP(){return m_nMP;}
 	int&	GetLevel(){return m_nLevel;}
 	int&	GetExp(){return m_nExp;}
@@ -121,13 +125,17 @@ private:
 	eNotification m_eNotify;			//动作通知类型
 
 	//单位属性
+	std::string m_strName;	//名称
+	std::string m_strKind;		//兵种
 	eAttackType m_eAttackType;		//攻击类型
 	int m_nAttack;		//攻击力
 	int m_nDefend;	//防御力
 	float m_fCrit;			//暴击概率
 	float m_fDodge;	//闪避概率(防御概率)
 	int m_nHP;				//生命值
+	int m_nHPMax;		//最大生命值
 	int m_nMP;				//魔法值
+	int m_nMPMax;	//最大魔法值
 	int m_nLevel;		//等级
 	int m_nExp;			//当前经验值
 	int m_nExpTotal;	//当前升级所需总经验值

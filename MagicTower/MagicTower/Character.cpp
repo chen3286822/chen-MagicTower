@@ -64,13 +64,17 @@ void Character::Init(int _Level,int _ID,int _Num,int _Action,Block _block)
 
 	//初始化单位属性(读配置+计算)
 	//测试，直接赋值
+	m_strName = "";
+	m_strKind = "";
 	m_eAttackType = eAttackType_Normal;
 	m_nAttack = 5;
 	m_nDefend = 2;
 	m_fCrit = 0.8f;
 	m_fDodge = 0.2f;
 	m_nHP = 10;
+	m_nHPMax = 10;
 	m_nMP = 10;
+	m_nMPMax = 10;
 	m_nLevel = 1;
 	m_nExp = 0;
 	m_nExpTotal = 100;

@@ -10,11 +10,13 @@ enum eUIID
 	eUIID_WndCommand = 0,
 	eUIID_ButtonNormal,
 	eUIID_ButtonPress,
+	eUIID_WndCharInfo,
 };
 
 enum eWindowID
 {
 	eWindowID_Command = 0,
+	eWindowID_CharInfo,
 };
 
 class UIButton : public hgeGUIButton

@@ -168,8 +168,8 @@ void CreatureManager::ShowAttackRange(Character* creature)
 					offX = it->x + charBlock.xpos;
 					offY = it->y + charBlock.ypos;
 					if (offX >= 0 && offX < mapWidth && offY >= 0 && offY < mapLength)
-					{
-						App::sInstance().DrawBox(Block(offX,offY),0xBFFF0000);
+					{					
+						App::sInstance().DrawBox(MAP_OFF_X + offX*MAP_RECT,MAP_OFF_Y + offY*MAP_RECT,0xBFFF0000,8,MAP_RECT,MAP_RECT);
 					}
 				}
 			}
@@ -190,8 +190,30 @@ void CreatureManager::ShowCreatureInfo()
 			{
 				TipWnd::sInstance().Clear();
 				TipWnd::sInstance().SetShow(false);
+
+				UIWindow* charInfoWindow = UISystem::sInstance().GetWindow(eWindowID_CharInfo);
+				if(charInfoWindow->IsShow())
+					charInfoWindow->SetShow(false);
 				return;
 			}
+		}
+		UIWindow* commandWindow = UISystem::sInstance().GetWindow(eWindowID_Command);
+		if(commandWindow && commandWindow->IsShow())
+		{
+			return;
+		}
+		if (commandWindow->GetBindChar() && commandWindow->GetBindChar()->GetActionStage() == eActionStage_AttackStage)
+		{
+			if(commandWindow->GetBindChar()->CanHitTarget(cha))
+			{
+				UIWindow* charInfoWindow = UISystem::sInstance().GetWindow(eWindowID_CharInfo);
+				if(charInfoWindow)
+				{
+					charInfoWindow->SetShow(true);
+					charInfoWindow->SetBindChar(cha);
+				}			
+			}
+			return;
 		}
 		//得到单位，显示其信息
 		char temp[256] = {0};
@@ -207,6 +229,10 @@ void CreatureManager::ShowCreatureInfo()
 	}
 	else
 	{
+		UIWindow* charInfoWindow = UISystem::sInstance().GetWindow(eWindowID_CharInfo);
+		if(charInfoWindow->IsShow())
+			charInfoWindow->SetShow(false);
+
 		TipWnd::sInstance().Clear();
 		TipWnd::sInstance().SetShow(false);
 	}

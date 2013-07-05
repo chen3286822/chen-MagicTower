@@ -1,5 +1,6 @@
 #include "UI.h"
 #include "WndCommand.h"
+#include "WndCharInfo.h"
 #include "TexManager.h"
 
 UIWindow::UIWindow()
@@ -67,8 +68,11 @@ void UISystem::Init()
 {
 	WndCommand* pWndCommand = new WndCommand(TexManager::sInstance().GetUITex()[eUIID_WndCommand],0,0,89,122,0,0);
 	m_mWindows[eWindowID_Command] = pWndCommand;
+	WndCharInfo* pWndCharInfo = new WndCharInfo(TexManager::sInstance().GetUITex()[eUIID_WndCharInfo],0,0,259,151,0,0);
+	m_mWindows[eWindowID_CharInfo] = pWndCharInfo;
 
-	pWndCommand->Init();
+	for (std::map<eWindowID,UIWindow*>::iterator mit=m_mWindows.begin();mit!=m_mWindows.end();mit++)
+		mit->second->Init();
 }
 
 void UISystem::Release()

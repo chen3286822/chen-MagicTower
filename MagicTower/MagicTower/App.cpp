@@ -189,19 +189,12 @@ void App::DrawSmallRect(Block block,DWORD color)
 		MAP_OFF_X + xNum*MAP_RECT + MAP_RECT,MAP_OFF_Y + yNum*MAP_RECT + MAP_RECT,color);
 }
 
-void App::DrawBox(Block block,DWORD color)
+void App::DrawBox(int startX,int startY,DWORD color,int width,int boxWidth,int boxLength)
 {
-	int xNum = block.xpos,yNum = block.ypos;
-
-	DrawRect(MAP_OFF_X + xNum*MAP_RECT,MAP_OFF_Y + yNum*MAP_RECT,
-		MAP_OFF_X + xNum*MAP_RECT + MAP_RECT,MAP_OFF_Y + yNum*MAP_RECT + 8,color);
-	DrawRect(MAP_OFF_X + xNum*MAP_RECT,MAP_OFF_Y + yNum*MAP_RECT + 8,
-		MAP_OFF_X + xNum*MAP_RECT + 8,MAP_OFF_Y + yNum*MAP_RECT + MAP_RECT - 8,color);
-	DrawRect(MAP_OFF_X + xNum*MAP_RECT + MAP_RECT - 8,MAP_OFF_Y + yNum*MAP_RECT + 8,
-		MAP_OFF_X + xNum*MAP_RECT + MAP_RECT,MAP_OFF_Y + yNum*MAP_RECT + MAP_RECT - 8,color);
-	DrawRect(MAP_OFF_X + xNum*MAP_RECT,MAP_OFF_Y + yNum*MAP_RECT + MAP_RECT - 8,
-		MAP_OFF_X + xNum*MAP_RECT + MAP_RECT,MAP_OFF_Y + yNum*MAP_RECT + MAP_RECT,color);
-	
+	DrawRect(startX,startY,	startX + boxWidth,startY + width,color);
+	DrawRect(startX,startY + width,startX + width,startY + boxLength - width,color);
+	DrawRect(startX + boxWidth - width,startY + width,startX+ boxWidth,startY + boxLength - width,color);
+	DrawRect(startX,startY + boxLength - width,startX + boxWidth,startY + boxLength,color);
 }
 
 bool App::AppUpdate()
