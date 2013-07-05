@@ -129,6 +129,8 @@ enum eActionTex
 	eActionTex_Attack = 1,
 	eActionTex_Defend = 2,
 
+	eActionTex_Num,
+
 	eActionTex_Stand = eActionTex_Walk,
 	eActionTex_Dead = eActionTex_Walk,
 	eActionTex_Attacked = eActionTex_Defend,

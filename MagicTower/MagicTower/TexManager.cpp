@@ -3,9 +3,8 @@
 
 TexManager::TexManager(void)
 {
-	m_mWalkTex.clear();
-	m_mFightTex.clear();
-	m_mDefendTex.clear();
+	for(int i=0;i<eActionTex_Num;i++)
+		m_mCharTex[i].clear();
 	m_mMap.clear();
 	m_mMapInfo.clear();
 }
@@ -13,18 +12,14 @@ TexManager::TexManager(void)
 
 TexManager::~TexManager(void)
 {
-	for (std::map<int,HTEXTURE>::iterator mit=m_mWalkTex.begin();mit!=m_mWalkTex.end();mit++)
+	for(int i=0;i<eActionTex_Num;i++)
 	{
-		App::sInstance().GetHGE()->Texture_Free(mit->second);
+		for (std::map<int,HTEXTURE>::iterator mit=m_mCharTex[i].begin();mit!=m_mCharTex[i].end();mit++)
+		{
+			App::sInstance().GetHGE()->Texture_Free(mit->second);
+		}
 	}
-	for (std::map<int,HTEXTURE>::iterator mit=m_mFightTex.begin();mit!=m_mFightTex.end();mit++)
-	{
-		App::sInstance().GetHGE()->Texture_Free(mit->second);
-	}
-	for (std::map<int,HTEXTURE>::iterator mit=m_mDefendTex.begin();mit!=m_mDefendTex.end();mit++)
-	{
-		App::sInstance().GetHGE()->Texture_Free(mit->second);
-	}
+
 	for (std::map<int,HTEXTURE>::iterator mit=m_mMap.begin();mit!=m_mMap.end();mit++)
 	{
 		App::sInstance().GetHGE()->Texture_Free(mit->second);
@@ -33,37 +28,46 @@ TexManager::~TexManager(void)
 
 bool TexManager::LoadTex(std::string path)
 {
-	std::map<std::string,std::string> files;
-	g_getFiles(path,files,".png",3,true,true);
+	std::string realPath[eActionTex_Num];
+	realPath[eActionTex_Walk] = path + "\\walk";
+	realPath[eActionTex_Attack] = path + "\\attack";
+	realPath[eActionTex_Defend] = path + "\\defend";
+
+	std::map<std::string,std::string> files[eActionTex_Num];
+	for(int i=0;i<eActionTex_Num;i++)
+		g_getFiles(realPath[i],files[i],".png",50,true,true);
 
 	size_t found = 0;
 	int ID = 0;
 	int IDEx = 0;
-	for (std::map<std::string,std::string>::iterator mit=files.begin();mit!=files.end();mit++)
+	for (int i=0;i<eActionTex_Num;i++)
 	{
-		found = mit->second.find('.');
-		if(found != 0)
+		for (std::map<std::string,std::string>::iterator mit=files[i].begin();mit!=files[i].end();mit++)
 		{
-			char strID[10];
-			strncpy(strID,mit->second.c_str(),found);
-			strID[found] = '\0';
-			sscanf(strID,"%d-%d",&ID,&IDEx);
-			ID--;
-			if(IDEx == 0)
-				m_mWalkTex[ID] = App::sInstance().GetHGE()->Texture_Load(mit->first.c_str());
-			else if(IDEx == 1)
-				m_mFightTex[ID] = App::sInstance().GetHGE()->Texture_Load(mit->first.c_str());
-			else if(IDEx == 2)
-				m_mDefendTex[ID] = App::sInstance().GetHGE()->Texture_Load(mit->first.c_str());
-
-			ID = 0;
-			IDEx = 0;
+			found = mit->second.find('.');
+			if(found != 0)
+			{
+				char strID[10];
+				strncpy(strID,mit->second.c_str(),found);
+				strID[found] = '\0';
+				sscanf(strID,"%d-%d",&ID,&IDEx);
+				ID--;
+				if(IDEx == 1)
+					m_mCharTex[i][ID] = App::sInstance().GetHGE()->Texture_Load(mit->first.c_str());
+				ID = 0;
+				IDEx = 0;
+			}
 		}
 	}
-	if (m_mWalkTex.empty())
+
+	for(int i=0;i<eActionTex_Num;i++)
 	{
-		return false;
+		if (m_mCharTex[i].empty())
+		{
+			return false;
+		}
 	}
+
 
 	return true;
 }
@@ -128,12 +132,11 @@ bool TexManager::LoadUI(std::string path)
 std::map<int,HTEXTURE> TexManager::GetTex(int _ID)
 {
 	std::map<int,HTEXTURE> mapTex;
-	if(!m_mWalkTex.empty() && m_mWalkTex.find(_ID) != m_mWalkTex.end())
-		mapTex[eActionTex_Walk] =  m_mWalkTex[_ID];
-	if(!m_mFightTex.empty() && m_mFightTex.find(_ID) != m_mFightTex.end())
-		mapTex[eActionTex_Attack] =  m_mFightTex[_ID];
-	if(!m_mDefendTex.empty() && m_mDefendTex.find(_ID) != m_mDefendTex.end())
-		mapTex[eActionTex_Defend] =  m_mDefendTex[_ID];
+	for (int i=0;i<eActionTex_Num;i++)
+	{
+		if(!m_mCharTex[i].empty() && m_mCharTex[i].find(_ID) != m_mCharTex[i].end())
+			mapTex[i] =  m_mCharTex[i][_ID];
+	}
 
 	return mapTex;
 }
