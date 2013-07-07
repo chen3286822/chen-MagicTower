@@ -7,6 +7,7 @@
 #include "FontManager.h"
 #include "UI.h"
 #include "ActionProcess.h"
+#include "ConfigManager.h"
 
 bool update();
 bool render();
@@ -57,11 +58,12 @@ bool App::LoadResource()
 	ActionProcess::sCreate();
 	TipWnd::sCreate();
 	UISystem::sCreate();
+	ConfigManager::sCreate();
 
 	CreatureManager::sInstance().Init();
 	FontManager::sInstance().InitFont();
 
-
+	ConfigManager::sInstance().LoadCreatureConfig();
 
 	char pBuf[MAX_PATH];
 	char pathTex[MAX_PATH],pathMap[MAX_PATH],pathMaps[MAX_PATH],pathUI[MAX_PATH];
@@ -78,6 +80,7 @@ bool App::LoadResource()
 		MessageBox(NULL, "纹理或者关卡载入失败", "Error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
 		return false;
 	}
+
 
 	//载入UI
 	UISystem::sInstance().Init();
@@ -119,6 +122,7 @@ void App::FreeResource()
 	CreatureManager::sInstance().Release();
 	UISystem::sInstance().Release();
 
+	ConfigManager::sDestroy();
 	ActionProcess::sDestroy();
 	UISystem::sDestroy();
 	TipWnd::sDestroy();

@@ -337,6 +337,7 @@ typedef struct tagConfig Config;
 
 
 eKeyState g_getKeyState(HGE* hge,int Key);
+std::map<std::string,std::string> g_parseConfigFile(const std::string file);
 void g_getFiles( std::string path, std::map<std::string,std::string>& files,char* type,int maxFileNum,bool useDefaultName,bool isCharacter=false);
 int g_getKeyNum(int Key);	//根据按键编号取得该按键在数组中的位置
 void g_CTW(const char* text,wchar_t* out);	//char* to wchar_t*

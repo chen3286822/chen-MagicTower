@@ -122,6 +122,7 @@
     <ClInclude Include="BinaryHeap.h" />
     <ClInclude Include="Character.h" />
     <ClInclude Include="commonTools.h" />
+    <ClInclude Include="ConfigManager.h" />
     <ClInclude Include="CreatureManager.h" />
     <ClInclude Include="FontManager.h" />
     <ClInclude Include="GfxFont.h" />

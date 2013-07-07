@@ -1,5 +1,6 @@
 #include "TexManager.h"
 #include "App.h"
+#include "ConfigManager.h"
 
 TexManager::TexManager(void)
 {
@@ -131,12 +132,26 @@ bool TexManager::LoadUI(std::string path)
 
 std::map<int,HTEXTURE> TexManager::GetTex(int _ID)
 {
-	std::map<int,HTEXTURE> mapTex;
-	for (int i=0;i<eActionTex_Num;i++)
+	int texID = -1;
+	std::map<int,CreatureInfo>& creatureInfo = ConfigManager::sInstance().GetCreatureInfo();
+	for (std::map<int,CreatureInfo>::iterator it=creatureInfo.begin();it!=creatureInfo.end();it++)
 	{
-		if(!m_mCharTex[i].empty() && m_mCharTex[i].find(_ID) != m_mCharTex[i].end())
-			mapTex[i] =  m_mCharTex[i][_ID];
+		if(it->first == _ID)
+		{
+			texID = it->second.m_nTexID;
+			break;
+		}
 	}
+	std::map<int,HTEXTURE> mapTex;
+	if(texID!=-1)
+	{
+		for (int i=0;i<eActionTex_Num;i++)
+		{
+			if(!m_mCharTex[i].empty() && m_mCharTex[i].find(texID) != m_mCharTex[i].end())
+				mapTex[i] =  m_mCharTex[i][texID];
+		}
+	}
+
 
 	return mapTex;
 }

@@ -1,5 +1,6 @@
 #include "commonTools.h"
 #include "GfxFont.h"
+#include <fstream>
 
 const unsigned char GfxFont::g_byAlphaLevel[65] = 
 {
@@ -87,6 +88,57 @@ eKeyState g_getKeyState(HGE* hge,int Key)
 
 	lastPressed[num] = currentPressed[num];
 	return state;
+}
+
+std::map<std::string,std::string> g_parseConfigFile(const std::string file)
+{
+	std::ifstream ifs(file);
+	std::vector<std::string> vSrc;
+	while(!ifs.fail())
+	{
+		std::string line;
+		ifs >> line;
+		vSrc.push_back(line);
+	}
+
+	std::map<std::string,std::string> result;
+	std::string simbol;
+	//解析分类 [XXX]
+	for (std::vector<std::string>::iterator it=vSrc.begin();it!=vSrc.end();it++)
+	{
+		int comment = -1;
+		comment = it->find(';');
+		//过滤注释
+		if(comment != -1)
+			continue;
+
+		int first = -1,last=-1;
+		first = it->find('[');
+		last = it->find(']');
+		if (first!=-1 && last!=-1)
+		{
+			//找到分类符
+			simbol = it->substr(first+1,last-first-1);
+			simbol += " ";
+		}
+		else
+		{
+			int equ = -1;
+			equ = it->find('=');
+			if(equ!=-1)
+			{
+				//对正文进行处理
+				std::string name = it->substr(0,equ);
+				std::string explan = it->substr(equ+1,it->length()-equ);
+				if(!name.empty() && !explan.empty())
+				{
+					name.insert(0,simbol);
+					result[name] = explan;
+				}
+			}
+		}
+	}
+	return result;
 }
 
 void g_getFiles( std::string path, std::map<std::string,std::string>& files,char* type,int maxFileNum,bool useDefaultName,bool isCharacter)

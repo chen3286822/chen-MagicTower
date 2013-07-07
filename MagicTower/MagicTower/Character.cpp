@@ -5,6 +5,7 @@
 #include "CreatureManager.h"
 #include "UI.h"
 #include "ActionProcess.h"
+#include "ConfigManager.h"
 
 
 Character::Character(void)
@@ -65,7 +66,7 @@ void Character::Init(int _Level,int _ID,int _Num,int _Action,Block _block)
 	//初始化单位属性(读配置+计算)
 	//测试，直接赋值
 	m_strName = "";
-	m_strKind = "";
+	m_strKind = ConfigManager::sInstance().GetCreatureInfo().find(_ID)->second.m_strKind;
 	m_eAttackType = eAttackType_Normal;
 	m_nAttack = 5;
 	m_nDefend = 2;
