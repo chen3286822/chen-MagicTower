@@ -36,19 +36,19 @@ void WndCharInfo::Render()
 
 	m_pHead->Render(m_fPosX+20,m_fPosY+20);
 
-	GfxFont* font = FontManager::sInstance().GetFont(FontAttr(eFontType_SongTi,eFontSize_FontMiddle));
-	font->SetColor(0xFFFF0000);
-	font->Print(m_fPosX+80,m_fPosY+20,"%s",m_pBindChar->GetName().c_str());
-	font->Print(m_fPosX+80,m_fPosY+50,"%s",m_pBindChar->GetKind().c_str());
+	GfxFont* font = FontManager::sInstance().GetFont(FontAttr(eFontType_SongTi,eFontSize_FontBig));
+	font->SetColor(0xFF000000);
+	font->Print(m_fPosX+100,m_fPosY+25,"%s",m_pBindChar->GetName().c_str());
+	font->Print(m_fPosX+100,m_fPosY+45,"%s",m_pBindChar->GetKind().c_str());
 
 	//»æÖÆHP
-	font->Print(m_fPosX+120,m_fPosY+90,"%d/%d",m_pBindChar->GetHP(),m_pBindChar->GetHPMax());
-	App::sInstance().DrawBox(m_fPosX+100,m_fPosY+100,0xFF00FF00,1,100,10);
-	float length = 100*(m_pBindChar->GetHP()/m_pBindChar->GetHPMax());
-	App::sInstance().DrawRect(m_fPosX+101,m_fPosY+101,m_fPosX+99+length,m_fPosY+99+10,0xFFFF0000);
+	font->Print(m_fPosX+120,m_fPosY+80,"%d/%d",m_pBindChar->GetHP(),m_pBindChar->GetHPMax());
+	App::sInstance().DrawBox(m_fPosX+100,m_fPosY+95,0xFFFF0000,1,100,10);
+	float length = 100*((float)m_pBindChar->GetHP()/(float)m_pBindChar->GetHPMax());
+	App::sInstance().DrawRect(m_fPosX+101,m_fPosY+96,m_fPosX+99+length,m_fPosY+94+10,0xFFFF0000);
 	//»æÖÆMP
-	font->Print(m_fPosX+120,m_fPosY+120,"%d/%d",m_pBindChar->GetMP(),m_pBindChar->GetMPMax());
-	App::sInstance().DrawBox(m_fPosX+100,m_fPosY+130,0xFF00FF00,1,100,10);
-	length = 100*(m_pBindChar->GetMP()/m_pBindChar->GetMPMax());
-	App::sInstance().DrawRect(m_fPosX+101,m_fPosY+131,m_fPosX+99+length,m_fPosY+129+10,0xFF0000FF);
+	font->Print(m_fPosX+120,m_fPosY+110,"%d/%d",m_pBindChar->GetMP(),m_pBindChar->GetMPMax());
+	App::sInstance().DrawBox(m_fPosX+100,m_fPosY+125,0xFF0000FF,1,100,10);
+	length = 100*((float)m_pBindChar->GetMP()/(float)m_pBindChar->GetMPMax());
+	App::sInstance().DrawRect(m_fPosX+101,m_fPosY+126,m_fPosX+99+length,m_fPosY+124+10,0xFF0000FF);
 }

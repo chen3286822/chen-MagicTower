@@ -676,6 +676,16 @@ void CreatureManager::SelectCreature()
 									if(lastChar->CanHitTarget(selectChar))
 									{
 //										lastChar->SetTarget(selectChar->GetNum());
+										//隐藏单位信息窗口
+										UIWindow* charInfoWindow = UISystem::sInstance().GetWindow(eWindowID_CharInfo);
+										if(charInfoWindow && charInfoWindow->IsShow())
+										{
+											charInfoWindow->SetShow(false);
+											UIWindow* commandWnd = UISystem::sInstance().GetWindow(eWindowID_Command);
+											if(commandWnd)
+												commandWnd->SetBindChar(NULL);
+										}	
+
 										m_nSelectNum = -1;
 										//lastChar->GeginHit();
 										//进行预计算
