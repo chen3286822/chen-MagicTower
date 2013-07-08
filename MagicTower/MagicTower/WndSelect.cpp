@@ -9,12 +9,17 @@ UIWindow(TexManager::sInstance().GetUITex()[eUIID_WndCharInfo],0,0,259,151,0,0)
 	
 	m_pContainer->AddCtrl(m_pListBox);
 
+	m_pListBox->GetPageMaxRows() = 3;
 	m_pListBox->AddItem(TexManager::sInstance().GetUITex()[eUIID_SkillIconRock],"中文测试1");
 	m_pListBox->AddItem(TexManager::sInstance().GetUITex()[eUIID_SkillIconWind],"中文测试2");
 	m_pListBox->AddItem(TexManager::sInstance().GetUITex()[eUIID_SkillIconFire],"中文测试3");
-	m_pListBox->AddItem(TexManager::sInstance().GetUITex()[eUIID_SkillIconRock],"中文测试5");
-	m_pListBox->AddItem(TexManager::sInstance().GetUITex()[eUIID_SkillIconWind],"中文测试6");
+	m_pListBox->AddItem(TexManager::sInstance().GetUITex()[eUIID_SkillIconRock],"中文测试4");
+	m_pListBox->AddItem(TexManager::sInstance().GetUITex()[eUIID_SkillIconWind],"中文测试5");
+	m_pListBox->AddItem(TexManager::sInstance().GetUITex()[eUIID_SkillIconFire],"中文测试6");
 	m_pListBox->AddItem(TexManager::sInstance().GetUITex()[eUIID_SkillIconFire],"中文测试7");
+	m_pListBox->AddItem(TexManager::sInstance().GetUITex()[eUIID_SkillIconRock],"中文测试8");
+	m_pListBox->AddItem(TexManager::sInstance().GetUITex()[eUIID_SkillIconWind],"中文测试9");
+	m_pListBox->AddItem(TexManager::sInstance().GetUITex()[eUIID_SkillIconFire],"中文测试10");
 }
 
 WndSelect::~WndSelect()
@@ -42,6 +47,8 @@ void WndSelect::Update(float dt)
 		}
 		else if (id == eControlID_ListBox)
 		{
+			int selectItem = m_pListBox->GetSelectedItem();
+			OutputDebugString(m_pListBox->GetItemText(selectItem));
 			m_pContainer->Leave();
 		}
 	}

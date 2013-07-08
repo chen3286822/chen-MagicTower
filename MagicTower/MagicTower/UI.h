@@ -4,6 +4,7 @@
 #include "commonTools.h"
 #include "FontManager.h"
 #include "GfxFont.h"
+#include "TexManager.h"
 
 enum eUIID
 {
@@ -85,6 +86,11 @@ private:
 class UIListBox : public hgeGUIListbox
 {
 public:
+	enum eControlID
+	{
+		eControlID_NextButton = 1,
+		eControlID_PreviousButton,
+	};
 	UIListBox(int id, float x, float y, float w, float h, GfxFont* font, DWORD tColor, DWORD thColor, DWORD hColor) :
 	  hgeGUIListbox(id, x, y, w, h, NULL, tColor, thColor, hColor)
 	{
@@ -97,7 +103,64 @@ public:
 			m_fFontHeight = m_pFont->GetFontSize();
 		else
 			m_fFontHeight = 16;
-	}
+
+		m_pContainer = new hgeGUI;
+		m_pNext = new UIButton(eControlID_NextButton,x+150,y+120,83,21,TexManager::sInstance().GetUITex()[eUIID_ButtonNormal],TexManager::sInstance().GetUITex()[eUIID_ButtonPress],0,0);
+		m_pPrevious = new UIButton(eControlID_PreviousButton,x+50,y+120,83,21,TexManager::sInstance().GetUITex()[eUIID_ButtonNormal],TexManager::sInstance().GetUITex()[eUIID_ButtonPress],0,0);
+		m_pContainer->AddCtrl(m_pNext);
+		m_pContainer->AddCtrl(m_pPrevious);
+		m_pNext->SetFont(eFontType_MSYaHei,eFontSize_FontMiddle);
+		m_pNext->SetText("下一页",0xFF000000);
+		m_pPrevious->SetFont(eFontType_MSYaHei,eFontSize_FontMiddle);
+		m_pPrevious->SetText("上一页",0xFF000000);
+
+		m_nPageMaxRows = int((rect.y2-rect.y1)/m_fFontHeight);
+		m_nCurrentPage = 0;
+	  }
+
+	  virtual ~UIListBox()
+	  {
+		  m_pContainer->DelCtrl(eControlID_NextButton);
+		  m_pContainer->DelCtrl(eControlID_PreviousButton);
+		  gSafeDelete(m_pContainer);
+	  }
+	  
+	  int& GetPageMaxRows(){return m_nPageMaxRows;}
+
+	  virtual void ResetPosition(float x, float y)
+	  {
+		  hgeGUIObject::ResetPosition(x,y);
+		  m_pNext->ResetPosition(x+150,y+120);
+		  m_pPrevious->ResetPosition(x+50,y+120);
+	  }
+
+	  virtual void Update(float dt)
+	  {
+		  int id = m_pContainer->Update(dt);
+		  if (id == -1)
+		  {
+			  m_pContainer->Enter();
+		  }
+		  else if (id == eControlID_NextButton)
+		  {
+			  m_pContainer->Leave();
+			  if(nTopItem + m_nPageMaxRows < nItems)
+			  {
+				  nTopItem += m_nPageMaxRows;
+				  m_nCurrentPage++;
+			  }
+			  
+		  }
+		  else if (id == eControlID_PreviousButton)
+		  {
+			  m_pContainer->Leave();
+			  if (nTopItem - m_nPageMaxRows >= 0)
+			  {
+				  nTopItem -= m_nPageMaxRows;
+				  m_nCurrentPage--;
+			  }	  
+		  }
+	  }
 
 	  virtual int	AddItem(HTEXTURE tex,char *item)
 	  {
@@ -139,11 +202,13 @@ public:
 
 	 virtual int	GetNumRows()
 	 { 
-		 return int((rect.y2-rect.y1)/m_fFontHeight); 
+		 return m_nPageMaxRows; 
 	 }
 
 	 virtual void Render()
 	  {
+		  m_pContainer->Render();
+
 		  int i;
 		  hgeGUIListboxItem *pItem=pItems;
 
@@ -152,25 +217,34 @@ public:
 		  {
 			  if(i>=nItems) return;
 
-			  wchar_t itemText[256];
-			  g_CTW(pItem->text,itemText);
-			  if(nTopItem+i == nSelectedItem)
+			  if(pItem)
 			  {
-				  sprHighlight->Render(rect.x1,rect.y1+i*m_fFontHeight);
-				  m_pFont->SetColor(texthilColor);
-			  }
-			  else
-				  m_pFont->SetColor(textColor);
+				  wchar_t itemText[256];
+				  g_CTW(pItem->text,itemText);
+				  if(nTopItem+i == nSelectedItem)
+				  {
+					  sprHighlight->Render(rect.x1,rect.y1+i*m_fFontHeight);
+					  m_pFont->SetColor(texthilColor);
+				  }
+				  else
+					  m_pFont->SetColor(textColor);
 
-			  if(pItem->icon)
-				pItem->icon->Render(rect.x1+3,rect.y1+i*m_fFontHeight);
-			  m_pFont->Render(rect.x1+19, rect.y1+i*m_fFontHeight, itemText);
-			  pItem=pItem->next;
+				  if(pItem->icon)
+					  pItem->icon->Render(rect.x1+3,rect.y1+i*m_fFontHeight);
+				  m_pFont->Render(rect.x1+19, rect.y1+i*m_fFontHeight, itemText);
+				  pItem=pItem->next;
+			  }
 		  }
 	  }
 
 	 virtual bool MouseLButton(bool bDown)
 	 {
+		 //拦截点击到前页后页按钮的消息
+		 float fx=0,fy=0;
+		 hge->Input_GetMousePos(&fx,&fy);
+		 if(m_pNext->rect.TestPoint(fx,fy) || m_pPrevious->rect.TestPoint(fx,fy))
+			 return false;
+
 		 int nItem;
 
 		 if(bDown)
@@ -185,9 +259,19 @@ public:
 		 return false;
 	 }
 
+	 virtual bool	MouseWheel(int nNotches)
+	 {
+		 return false;
+	 }
+
 private:
 	GfxFont* m_pFont;
 	float m_fFontHeight;
+	int m_nPageMaxRows;	//每页最多项数
+	int m_nCurrentPage;		//当前页
+	hgeGUI* m_pContainer;	//gui容器
+	UIButton* m_pNext;		//下一页
+	UIButton* m_pPrevious;	//上一页
 };
 
 class Character;
