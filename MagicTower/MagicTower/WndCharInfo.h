@@ -7,7 +7,7 @@ class Character;
 class WndCharInfo : public UIWindow
 {
 public:
-	WndCharInfo(HTEXTURE,float,float,float,float,float,float);
+	WndCharInfo();
 	~WndCharInfo();
 
 	virtual void Render();

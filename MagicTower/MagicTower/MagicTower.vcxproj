@@ -114,6 +114,7 @@
     <ClCompile Include="UI.cpp" />
     <ClCompile Include="WndCharInfo.cpp" />
     <ClCompile Include="WndCommand.cpp" />
+    <ClCompile Include="WndSelect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ActionProcess.h" />
@@ -134,6 +135,7 @@
     <ClInclude Include="UI.h" />
     <ClInclude Include="WndCharInfo.h" />
     <ClInclude Include="WndCommand.h" />
+    <ClInclude Include="WndSelect.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram1.cd" />

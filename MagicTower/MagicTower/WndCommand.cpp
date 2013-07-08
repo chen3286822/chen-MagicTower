@@ -1,21 +1,29 @@
 #include "WndCommand.h"
 #include "TexManager.h"
+#include "FontManager.h"
 #include "Character.h"
+#include "WndSelect.h"
+#include "UI.h"
 
-WndCommand::WndCommand(HTEXTURE tex,float x,float y,float w,float h,float posX,float posY) :
-UIWindow(tex,x,y,w,h,posX,posY)
+WndCommand::WndCommand() :
+UIWindow(TexManager::sInstance().GetUITex()[eUIID_WndCommand],0,0,89,122,0,0)
 {
 	m_pContainer = new hgeGUI;
 	m_pAttackButton = new UIButton(eControlID_AttackButton,m_fPosX,m_fPosY,83,21,TexManager::sInstance().GetUITex()[eUIID_ButtonNormal],TexManager::sInstance().GetUITex()[eUIID_ButtonPress],0,0);
 	m_pFinishButton = new UIButton(eControlID_FinishButton,m_fPosX,m_fPosY+21,83,21,TexManager::sInstance().GetUITex()[eUIID_ButtonNormal],TexManager::sInstance().GetUITex()[eUIID_ButtonPress],0,0);
+	m_pSkillButton = new UIButton(eControlID_SkillButton,m_fPosX,m_fPosY+42,83,21,TexManager::sInstance().GetUITex()[eUIID_ButtonNormal],TexManager::sInstance().GetUITex()[eUIID_ButtonPress],0,0);
 	m_pContainer->AddCtrl(m_pAttackButton);
 	m_pContainer->AddCtrl(m_pFinishButton);
+	m_pContainer->AddCtrl(m_pSkillButton);
 
 	m_pAttackButton->SetFont(eFontType_MSYaHei,eFontSize_FontMiddle);
 	m_pAttackButton->SetText("攻击",0xFF000000);
 
 	m_pFinishButton->SetFont(eFontType_MSYaHei,eFontSize_FontMiddle);
 	m_pFinishButton->SetText("待命",0xFF000000);
+
+	m_pSkillButton->SetFont(eFontType_MSYaHei,eFontSize_FontMiddle);
+	m_pSkillButton->SetText("技能",0xFF000000);
 
 	m_pChar = NULL;
 }
@@ -24,6 +32,7 @@ WndCommand::~WndCommand()
 {
 	m_pContainer->DelCtrl(eControlID_AttackButton);
 	m_pContainer->DelCtrl(eControlID_FinishButton);
+	m_pContainer->DelCtrl(eControlID_SkillButton);
 }
 
 void	WndCommand::SetBindChar(Character* bindChar)
@@ -35,7 +44,8 @@ void	WndCommand::SetBindChar(Character* bindChar)
 		m_fPosY = bindChar->GetRealY();
 
 		m_pAttackButton->ResetPosition(m_fPosX,m_fPosY);
-		m_pFinishButton->ResetPosition(m_fPosX,m_fPosY+21);
+		m_pSkillButton->ResetPosition(m_fPosX,m_fPosY+21);
+		m_pFinishButton->ResetPosition(m_fPosX,m_fPosY+42);
 	}
 }
 
@@ -50,7 +60,8 @@ void WndCommand::SetRenderPositon(float _x,float _y)
 	m_fPosY = _y;
 
 	m_pAttackButton->ResetPosition(m_fPosX,m_fPosY);
-	m_pFinishButton->ResetPosition(m_fPosX,m_fPosY+21);
+	m_pSkillButton->ResetPosition(m_fPosX,m_fPosY+21);
+	m_pFinishButton->ResetPosition(m_fPosX,m_fPosY+42);
 }
 
 void WndCommand::Update(float dt)
@@ -71,6 +82,21 @@ void WndCommand::Update(float dt)
 			}
 			m_pContainer->Leave();
 		}
+		else if (id == eControlID_SkillButton)
+		{
+			if(m_pChar)
+			{
+				//打开技能面板
+				UIWindow* wndSelect = UISystem::sInstance().GetWindow(eWindowID_Select);
+				if(wndSelect)
+				{
+					wndSelect->SetShow(true);
+					wndSelect->SetRenderPositon(m_pChar->GetRealX()+50,m_pChar->GetRealY());
+				}
+				SetShow(false);
+			}
+			m_pContainer->Leave();
+		}
 		else if (id == eControlID_FinishButton)
 		{
 			if(m_pChar)
@@ -85,5 +111,5 @@ void WndCommand::Update(float dt)
 
 bool WndCommand::IsOnControl()
 {
-	return (m_bShow && (UIWindow::IsOnControl() || m_pAttackButton->IsMouseOn() || m_pFinishButton->IsMouseOn()));
+	return (m_bShow && (UIWindow::IsOnControl() || m_pAttackButton->IsMouseOn() || m_pFinishButton->IsMouseOn() || m_pSkillButton->IsMouseOn()));
 }

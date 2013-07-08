@@ -96,8 +96,8 @@ std::map<std::string,std::string> g_parseConfigFile(const std::string file)
 	std::vector<std::string> vSrc;
 	while(!ifs.fail())
 	{
-		std::string line;
-		ifs >> line;
+		char line[256];
+		ifs.getline(line,256);
 		vSrc.push_back(line);
 	}
 

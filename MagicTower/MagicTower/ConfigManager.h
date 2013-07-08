@@ -47,17 +47,19 @@ public:
 			sscanf(mit->first.c_str(),"%s %d",simbol,&ID);
 			if (strcmp(simbol,"CreatureInfo")==0 && ID!=-1)
 			{
-				std::string kind;
+				char kind[50];
 				int texID = -1;
-				int slash = -1;
-				slash = mit->second.find('/');
-				if(slash!=-1)
-				{
-					kind = mit->second.substr(0,slash);
-					texID = atoi(mit->second.substr(slash+1,mit->second.length()-slash).c_str());
-				}
-				if(texID != -1)
-					m_mCreatureInfo[ID] = CreatureInfo(ID,kind,texID);
+				sscanf(mit->second.c_str(),"%s /%d",kind,&texID);
+				m_mCreatureInfo[ID] = CreatureInfo(ID,kind,texID);
+// 				int slash = -1;
+// 				slash = mit->second.find('/');
+// 				if(slash!=-1)
+// 				{
+// 					kind = mit->second.substr(0,slash);
+// 					texID = atoi(mit->second.substr(slash+1,mit->second.length()-slash).c_str());
+// 				}
+// 				if(texID != -1)
+// 					m_mCreatureInfo[ID] = CreatureInfo(ID,kind,texID);
 			}
 		}
 	}

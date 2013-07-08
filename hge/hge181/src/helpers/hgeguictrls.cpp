@@ -216,9 +216,12 @@ hgeGUIListbox::hgeGUIListbox(int _id, float x, float y, float w, float h, hgeFon
 	bVisible=true;
 	bEnabled=true;
 	rect.Set(x, y, x+w, y+h);
-	font=fnt;
-	sprHighlight=new hgeSprite(0, 0, 0, w, fnt->GetHeight());
-	sprHighlight->SetColor(hColor);
+	if(fnt)
+	{
+		font=fnt;
+		sprHighlight=new hgeSprite(0, 0, 0, w, fnt->GetHeight());
+		sprHighlight->SetColor(hColor);
+	}
 	textColor=tColor;
 	texthilColor=thColor;
 	pItems=0;
@@ -289,6 +292,8 @@ void hgeGUIListbox::Clear()
 	while(pItem)
 	{
 		pNext=pItem->next;
+		if(pItem->icon)
+			delete pItem->icon;
 		delete pItem;
 		pItem=pNext;
 	}

@@ -1,7 +1,7 @@
 #include "UI.h"
 #include "WndCommand.h"
 #include "WndCharInfo.h"
-#include "TexManager.h"
+#include "WndSelect.h"
 
 UIWindow::UIWindow()
 {
@@ -66,10 +66,12 @@ bool UIWindow::IsOnControl()
 
 void UISystem::Init()
 {
-	WndCommand* pWndCommand = new WndCommand(TexManager::sInstance().GetUITex()[eUIID_WndCommand],0,0,89,122,0,0);
+	WndCommand* pWndCommand = new WndCommand();
 	m_mWindows[eWindowID_Command] = pWndCommand;
-	WndCharInfo* pWndCharInfo = new WndCharInfo(TexManager::sInstance().GetUITex()[eUIID_WndCharInfo],0,0,259,151,0,0);
+	WndCharInfo* pWndCharInfo = new WndCharInfo();
 	m_mWindows[eWindowID_CharInfo] = pWndCharInfo;
+	WndSelect* pWndSelect = new WndSelect();
+	m_mWindows[eWindowID_Select] = pWndSelect;
 
 	for (std::map<eWindowID,UIWindow*>::iterator mit=m_mWindows.begin();mit!=m_mWindows.end();mit++)
 		mit->second->Init();

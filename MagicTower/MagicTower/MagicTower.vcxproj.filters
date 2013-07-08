@@ -43,6 +43,9 @@
     <ClCompile Include="WndCharInfo.cpp">
       <Filter>Windows\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="WndSelect.cpp">
+      <Filter>Windows\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
@@ -98,6 +101,9 @@
     </ClInclude>
     <ClInclude Include="ConfigManager.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WndSelect.h">
+      <Filter>Windows\Head Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

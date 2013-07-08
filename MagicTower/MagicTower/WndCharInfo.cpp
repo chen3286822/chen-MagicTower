@@ -4,12 +4,12 @@
 #include "TexManager.h"
 #include "FontManager.h"
 
-WndCharInfo::WndCharInfo(HTEXTURE tex,float x,float y,float w,float h,float posX,float posY) :
-UIWindow(tex,x,y,w,h,posX,posY)
+WndCharInfo::WndCharInfo() :
+	UIWindow(TexManager::sInstance().GetUITex()[eUIID_WndCharInfo],0,0,259,151,0,0)
 {
 	m_pContainer = new hgeGUI;
 	m_pBindChar = NULL;
-	m_pHead = new hgeSprite(tex,0,0,FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_WIDTH);
+	m_pHead = new hgeSprite(0,0,0,FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_WIDTH);
 }
 
 WndCharInfo::~WndCharInfo()

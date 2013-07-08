@@ -65,7 +65,9 @@ void Character::Init(int _Level,int _ID,int _Num,int _Action,Block _block)
 
 	//初始化单位属性(读配置+计算)
 	//测试，直接赋值
-	m_strName = "";
+	char name[50];
+	sprintf(name,"%d号小兵",m_nNum);
+	m_strName = name;
 	m_strKind = ConfigManager::sInstance().GetCreatureInfo().find(_ID)->second.m_strKind;
 	m_eAttackType = eAttackType_Normal;
 	m_nAttack = 5;
@@ -100,6 +102,10 @@ void Character::Render()
 {
 	if(m_pAnimation)
 	{
+		DWORD color = 0xFFFFFFFF;
+		if(m_bFinishAct)
+			color = 0xFF59636C;
+		m_pAnimation->SetColor(color);
 		if(/*m_eCharState == eCharacterState_Defense && m_eAttackState == eAttackState_Defending && */m_eCurDir == eDirection_Right)	//由于源图片缺少向右的动作，故需要y轴对称绘制
 			m_pAnimation->RenderSymmetry(m_fXPos,m_fYPos,1);
 		else
@@ -383,9 +389,18 @@ void Character::Update(float delta)
 
 void Character::ResetFrame()
 {
-	m_pAnimation->SetTexture(m_mCharTex[eActionTex_Stand]);
-	m_pAnimation->ResetFrames(0,(GetTexDir(m_eCurDir)-1)*FLOAT_PIC_SQUARE_WIDTH + 6*FLOAT_PIC_SQUARE_WIDTH,
-		FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_WIDTH,1,8,true);
+	if(m_nHP < 0.3*(float)m_nHPMax)
+	{
+		m_pAnimation->SetTexture(m_mCharTex[eActionTex_Dead]);
+		m_pAnimation->ResetFrames(0,9*FLOAT_PIC_SQUARE_WIDTH,
+			FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_WIDTH,2,8,true);
+	}
+	else
+	{
+		m_pAnimation->SetTexture(m_mCharTex[eActionTex_Stand]);
+		m_pAnimation->ResetFrames(0,(GetTexDir(m_eCurDir)-1)*FLOAT_PIC_SQUARE_WIDTH + 6*FLOAT_PIC_SQUARE_WIDTH,
+			FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_WIDTH,1,8,true);
+	}
 	m_pAnimation->SetMode(HGEANIM_LOOP|HGEANIM_FWD);
 	m_pAnimation->Resume();
 	m_eCharState = eCharacterState_Stand;
@@ -413,7 +428,10 @@ void Character::CancelMove()
 	m_iBlock.xpos = m_iOrigBlock.xpos;
 	m_iBlock.ypos = m_iOrigBlock.ypos;
 	m_eCurDir = m_eOrigDir;
-	m_pAnimation->ResetFrames(0,(GetTexDir(m_eCurDir)-1)*FLOAT_PIC_SQUARE_WIDTH + 6*FLOAT_PIC_SQUARE_WIDTH,
+	if(m_nHP < 0.3*(float)m_nHPMax)
+		m_pAnimation->ResetFrames(0,9*FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_WIDTH,2,8,true);
+	else
+		m_pAnimation->ResetFrames(0,(GetTexDir(m_eCurDir)-1)*FLOAT_PIC_SQUARE_WIDTH + 6*FLOAT_PIC_SQUARE_WIDTH,
 		FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_WIDTH,1,8,true);
 
 	//原格子占据状态

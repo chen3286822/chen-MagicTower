@@ -109,6 +109,7 @@ private:
 */
 struct hgeGUIListboxItem
 {
+	hgeSprite* icon;//just for Chinese Version
 	char				text[64];
 	hgeGUIListboxItem	*next;
 };
@@ -119,8 +120,8 @@ public:
 	hgeGUIListbox(int id, float x, float y, float w, float h, hgeFont *fnt, DWORD tColor, DWORD thColor, DWORD hColor);
 	virtual			~hgeGUIListbox();
 
-	int				AddItem(char *item);
-	void			DeleteItem(int n);
+	virtual int				AddItem(char *item);
+	virtual void				DeleteItem(int n);
 	int				GetSelectedItem() { return nSelectedItem; }
 	void			SetSelectedItem(int n) { if(n>=0 && n<GetNumItems()) nSelectedItem=n; }
 	int				GetTopItem() { return nTopItem; }
@@ -128,7 +129,7 @@ public:
 
 	char			*GetItemText(int n);
 	int				GetNumItems() { return nItems; }
-	int				GetNumRows() { return int((rect.y2-rect.y1)/font->GetHeight()); }
+	virtual int				GetNumRows() { return int((rect.y2-rect.y1)/font->GetHeight()); }
 	void			Clear();
 
 	virtual void	Render();
@@ -137,7 +138,7 @@ public:
 	virtual bool	MouseWheel(int nNotches);
 	virtual bool	KeyClick(int key, int chr);
 
-private:
+protected:
 	hgeSprite		*sprHighlight;
 	hgeFont			*font;
 	DWORD			textColor, texthilColor;
