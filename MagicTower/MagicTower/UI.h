@@ -91,8 +91,8 @@ public:
 		eControlID_NextButton = 1,
 		eControlID_PreviousButton,
 	};
-	UIListBox(int id, float x, float y, float w, float h, GfxFont* font, DWORD tColor, DWORD thColor, DWORD hColor) :
-	  hgeGUIListbox(id, x, y, w, h, NULL, tColor, thColor, hColor)
+	UIListBox(int id, float x, float y, float w, float h, GfxFont* font, DWORD tColor, DWORD thColor, DWORD hColor,DWORD disColor) :
+	  hgeGUIListbox(id, x, y, w, h, NULL, tColor, thColor, hColor,disColor)
 	{
 		m_pFont = font;
 		sprHighlight=new hgeSprite(0, 0, 0, w, m_pFont->GetFontSize());
@@ -172,6 +172,7 @@ public:
 		  if(tex != 0)
 			 pNew->icon = new hgeSprite(tex,0,0,16,16);	//图标必须为16*16
 		  pNew->next=0;
+		  pNew->disabled = false;
 
 		  while(pItem) { pPrev=pItem;	pItem=pItem->next; }
 
@@ -227,7 +228,12 @@ public:
 					  m_pFont->SetColor(texthilColor);
 				  }
 				  else
-					  m_pFont->SetColor(textColor);
+				  {
+					  if(pItem->disabled)
+						  m_pFont->SetColor(disabledColor);
+					  else
+						m_pFont->SetColor(textColor);
+				  }
 
 				  if(pItem->icon)
 					  pItem->icon->Render(rect.x1+3,rect.y1+i*m_fFontHeight);
@@ -240,18 +246,23 @@ public:
 	 virtual bool MouseLButton(bool bDown)
 	 {
 		 //拦截点击到前页后页按钮的消息
-		 float fx=0,fy=0;
-		 hge->Input_GetMousePos(&fx,&fy);
-		 if(m_pNext->rect.TestPoint(fx,fy) || m_pPrevious->rect.TestPoint(fx,fy))
-			 return false;
+// 		 float fx=0,fy=0;
+// 		 hge->Input_GetMousePos(&fx,&fy);
+// 		 if(m_pNext->rect.TestPoint(fx,fy) || m_pPrevious->rect.TestPoint(fx,fy))
+// 			 return false;
 
 		 int nItem;
 
 		 if(bDown)
 		 {
+			 if(int(my)/int(m_fFontHeight) >= m_nPageMaxRows)
+				 return false;
 			 nItem=nTopItem+int(my)/int(m_fFontHeight);
 			 if(nItem<nItems)
 			 {
+				 if(GetItemDisabled(nItem))
+					 return false;
+
 				 nSelectedItem=nItem;
 				 return true;
 			 }
@@ -260,6 +271,11 @@ public:
 	 }
 
 	 virtual bool	MouseWheel(int nNotches)
+	 {
+		 return false;
+	 }
+
+	 virtual bool	KeyClick(int key, int chr)
 	 {
 		 return false;
 	 }

@@ -209,7 +209,7 @@ bool hgeGUISlider::MouseMove(float x, float y)
 ** hgeGUIListbox
 */
 
-hgeGUIListbox::hgeGUIListbox(int _id, float x, float y, float w, float h, hgeFont *fnt, DWORD tColor, DWORD thColor, DWORD hColor)
+hgeGUIListbox::hgeGUIListbox(int _id, float x, float y, float w, float h, hgeFont *fnt, DWORD tColor, DWORD thColor, DWORD hColor,DWORD disColor)
 {
 	id=_id;
 	bStatic=false;
@@ -224,6 +224,7 @@ hgeGUIListbox::hgeGUIListbox(int _id, float x, float y, float w, float h, hgeFon
 	}
 	textColor=tColor;
 	texthilColor=thColor;
+	disabledColor = disColor;
 	pItems=0;
 	nItems=0;
 
@@ -238,6 +239,29 @@ hgeGUIListbox::~hgeGUIListbox()
 	if(sprHighlight) delete sprHighlight;
 }
 
+bool	hgeGUIListbox::GetItemDisabled(int n)
+{
+	int i;
+	hgeGUIListboxItem *pItem=pItems;
+
+	if(n<0 || n>=GetNumItems()) return 0;
+
+	for(i=0;i<n;i++) pItem=pItem->next;
+
+	return pItem->disabled;
+}
+
+void	hgeGUIListbox::SetItemDisabled(int n,bool disable)
+{
+	int i;
+	hgeGUIListboxItem *pItem=pItems;
+
+	if(n<0 || n>=GetNumItems()) return;
+
+	for(i=0;i<n;i++) pItem=pItem->next;
+
+	pItem->disabled = disable;
+}
 
 int hgeGUIListbox::AddItem(char *item)
 {
@@ -247,6 +271,7 @@ int hgeGUIListbox::AddItem(char *item)
 	memcpy(pNew->text, item, min(sizeof(pNew->text), strlen(item)+1));
 	pNew->text[sizeof(pNew->text)-1]='\0';
 	pNew->next=0;
+	pNew->disabled = false;
 
 	while(pItem) { pPrev=pItem;	pItem=pItem->next; }
 
@@ -318,7 +343,12 @@ void hgeGUIListbox::Render()
 			font->SetColor(texthilColor);
 		}
 		else
-			font->SetColor(textColor);
+		{
+			if(pItem->disabled)
+				font->SetColor(disabledColor);
+			else
+				font->SetColor(textColor);
+		}
 
 		font->Render(rect.x1+3, rect.y1+i*font->GetHeight(), HGETEXT_LEFT, pItem->text);
 		pItem=pItem->next;
@@ -334,6 +364,8 @@ bool hgeGUIListbox::MouseLButton(bool bDown)
 		nItem=nTopItem+int(my)/int(font->GetHeight());
 		if(nItem<nItems)
 		{
+			if(GetItemDisabled(nItem))
+				return false;
 			nSelectedItem=nItem;
 			return true;
 		}

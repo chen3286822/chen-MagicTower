@@ -112,16 +112,19 @@ struct hgeGUIListboxItem
 	hgeSprite* icon;//just for Chinese Version
 	char				text[64];
 	hgeGUIListboxItem	*next;
+	bool				disabled;
 };
 
 class hgeGUIListbox : public hgeGUIObject
 {
 public:
-	hgeGUIListbox(int id, float x, float y, float w, float h, hgeFont *fnt, DWORD tColor, DWORD thColor, DWORD hColor);
+	hgeGUIListbox(int id, float x, float y, float w, float h, hgeFont *fnt, DWORD tColor, DWORD thColor, DWORD hColor,DWORD disColor);
 	virtual			~hgeGUIListbox();
 
 	virtual int				AddItem(char *item);
 	virtual void				DeleteItem(int n);
+	bool			GetItemDisabled(int n);
+	void			SetItemDisabled(int n,bool disable);
 	int				GetSelectedItem() { return nSelectedItem; }
 	void			SetSelectedItem(int n) { if(n>=0 && n<GetNumItems()) nSelectedItem=n; }
 	int				GetTopItem() { return nTopItem; }
@@ -141,7 +144,7 @@ public:
 protected:
 	hgeSprite		*sprHighlight;
 	hgeFont			*font;
-	DWORD			textColor, texthilColor;
+	DWORD			textColor, texthilColor,disabledColor;
 
 	int					nItems, nSelectedItem, nTopItem;
 	float				mx, my;

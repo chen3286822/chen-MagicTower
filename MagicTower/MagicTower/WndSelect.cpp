@@ -5,7 +5,7 @@ WndSelect::WndSelect():
 UIWindow(TexManager::sInstance().GetUITex()[eUIID_WndCharInfo],0,0,259,151,0,0)
 {
 	m_pContainer = new hgeGUI;
-	m_pListBox = new UIListBox(eControlID_ListBox,m_fPosX,m_fPosY,259,151,FontManager::sInstance().GetFont(FontAttr(eFontType_SongTi,eFontSize_FontBig)),0xFFFF0000,0xFF00FF00,0xFF0000FF);
+	m_pListBox = new UIListBox(eControlID_ListBox,m_fPosX,m_fPosY,259,151,FontManager::sInstance().GetFont(FontAttr(eFontType_SongTi,eFontSize_FontBig)),0xFFFF0000,0xFF00FF00,0xFF0000FF,0xFFAAAAAA);
 	
 	m_pContainer->AddCtrl(m_pListBox);
 
@@ -20,6 +20,8 @@ UIWindow(TexManager::sInstance().GetUITex()[eUIID_WndCharInfo],0,0,259,151,0,0)
 	m_pListBox->AddItem(TexManager::sInstance().GetUITex()[eUIID_SkillIconRock],"中文测试8");
 	m_pListBox->AddItem(TexManager::sInstance().GetUITex()[eUIID_SkillIconWind],"中文测试9");
 	m_pListBox->AddItem(TexManager::sInstance().GetUITex()[eUIID_SkillIconFire],"中文测试10");
+
+	m_pListBox->SetItemDisabled(3,true);
 }
 
 WndSelect::~WndSelect()
