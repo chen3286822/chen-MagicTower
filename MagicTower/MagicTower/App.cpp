@@ -105,7 +105,7 @@ void App::FreeResource()
 	CreatureManager::sInstance().Release();
 	UISystem::sInstance().Release();
 
-	SkillManager.sDestroy();
+	SkillManager::sDestroy();
 	ConfigManager::sDestroy();
 	ActionProcess::sDestroy();
 	UISystem::sDestroy();

@@ -58,6 +58,7 @@ public:
 	void ShowAttackRange(Character* creature);
 	//显示技能攻击范围
 	void ShowSkillRange(int skillID);
+	VPair GetRangePoint(){return m_vPair;}
 
 	//只有当所有单位都行动过后才能重置，相当于开始下一回合
 	bool ResetAllCreature();

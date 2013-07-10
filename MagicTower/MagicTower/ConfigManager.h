@@ -87,19 +87,29 @@ public:
 			{
 				int skillNum = 0;
 				skillNum = std::count(mit->second.begin(),mit->second.end(),'/') + 1;
-				int* skills = new int[skillNum];
-				std::string paramSkills = "%d";
-				for(int i=1;i<skillNum;i++)
-					paramSkills += "/%d";
+				int searchPos = 0;
+				for (int i=0;i<skillNum;i++)
+				{
+					int skillID = -1;
+					int pos = mit->second.find('/',searchPos);
+					if(pos == std::string::npos)
+						skillID = atoi(mit->second.c_str()+searchPos);
+					else
+					{
+						skillID = atoi((mit->second).substr(searchPos,pos).c_str());
+						searchPos = pos + 1;
+					}
+					m_mCreatureSkill[strKey].push_back(skillID);
+				}
 			}
 		}
 	}
 	std::map<int,CreatureInfo>& GetCreatureInfo(){return m_mCreatureInfo;}
 
-	vector<int> GetCreatureSkill(std::string kind)
+	std::vector<int> GetCreatureSkill(std::string kind)
 	{
-		vector<int> vSkill;
-		std::map<std::string, vector<int> >::iterator it = m_mCreatureSkill.find(kind);
+		std::vector<int> vSkill;
+		std::map<std::string, std::vector<int> >::iterator it = m_mCreatureSkill.find(kind);
 		if(it != m_mCreatureSkill.end())
 		{
 			vSkill = it->second;
@@ -134,7 +144,7 @@ public:
 private:
 	std::map<std::string,std::string> m_mCreatureConfig;
 	std::map<int,CreatureInfo> m_mCreatureInfo;
-	std::map<std::string, vector<int> > m_mCreatureSkill;
+	std::map<std::string, std::vector<int> > m_mCreatureSkill;
 
 	std::map<std::string,std::string> m_mSkillConfig;
 	std::map<int,SkillInfo> m_mSkillInfo;

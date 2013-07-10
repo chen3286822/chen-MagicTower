@@ -51,11 +51,12 @@ bool TexManager::LoadCharTex()
 	char pathTex[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH,pBuf);
 	sprintf(pathTex,"%s\\res\\tex",pBuf);
+	std::string path = pathTex;
 
 	std::string realPath[eActionTex_Num];
-	realPath[eActionTex_Walk] = pathTex + "\\walk";
-	realPath[eActionTex_Attack] = pathTex + "\\attack";
-	realPath[eActionTex_Defend] = pathTex + "\\defend";
+	realPath[eActionTex_Walk] = path + "\\walk";
+	realPath[eActionTex_Attack] = path + "\\attack";
+	realPath[eActionTex_Defend] = path + "\\defend";
 
 	std::map<std::string,std::string> files[eActionTex_Num];
 	for(int i=0;i<eActionTex_Num;i++)
@@ -175,7 +176,7 @@ bool TexManager::LoadSkill()
 	char pBuf[MAX_PATH];
 	char pathTex[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH,pBuf);
-	sprintf(pathTex,"%s\\res\\skill",pBuf);
+	sprintf(pathTex,"%s\\res\\tex\\skill",pBuf);
 
 	std::map<std::string,std::string> files;
 	g_getFiles(pathTex,files,".png",50,true);

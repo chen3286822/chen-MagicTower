@@ -803,14 +803,15 @@ bool Character::CanHitTarget(Character* target)
 		return false;
 
 	int tarX = 0,tarY = 0;
+	VPair vPairPoint = CreatureManager::sInstance().GetRangePoint();
 	for (MAttackRange::iterator mit=CreatureManager::sInstance().GetAttackRange().begin();mit!=CreatureManager::sInstance().GetAttackRange().end();mit++)
 	{
 		if(mit->first == m_eAttackRange)
 		{
-			for (vector<Pair>::iterator it=mit->second.begin();it!=mit->second.end();it++)
+			for (vector<int>::iterator it=mit->second.begin();it!=mit->second.end();it++)
 			{
-				tarX = it->x + m_iBlock.xpos;
-				tarY = it->y + m_iBlock.ypos;
+				tarX = vPairPoint[*it].x + m_iBlock.xpos;
+				tarY = vPairPoint[*it].y + m_iBlock.ypos;
 				if(target->GetBlock().xpos == tarX && target->GetBlock().ypos == tarY)
 				{
 					return true;
