@@ -54,7 +54,7 @@ public:
 	MapManager(void);
 	~MapManager(void);
 
-	bool LoadMaps(std::string path);
+	bool LoadMaps();
 	Map* GetMap(int level);
 	inline Map* GetCurrentMap(){return GetMap(m_nCurrentLevel);}
 	void Render();

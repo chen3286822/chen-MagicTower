@@ -145,12 +145,19 @@ MapManager::~MapManager(void)
 	}
 }
 
-bool MapManager::LoadMaps(std::string path)
+bool MapManager::LoadMaps()
 {
+	m_vMaps.clear();
 	if(m_pMarkUp==NULL)
 		m_pMarkUp = new CMarkup;
+
+	char pBuf[MAX_PATH];
+	char pathMap[MAX_PATH];
+	GetCurrentDirectory(MAX_PATH,pBuf);
+	sprintf(pathMap,"%s\\res\\Maps",pBuf);
+
 	std::map<std::string,std::string> files;
-	g_getFiles(path,files,".xml",LEVEL_NUM,true);
+	g_getFiles(pathMap,files,".xml",LEVEL_NUM,true);
 	
 	for (std::map<std::string,std::string>::iterator mit=files.begin();mit!=files.end();mit++)
 	{

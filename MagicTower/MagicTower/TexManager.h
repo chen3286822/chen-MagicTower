@@ -33,18 +33,25 @@ public:
 	TexManager(void);
 	~TexManager(void);
 
-	bool LoadTex(std::string path);
-	bool LoadMap(std::string path);
-	bool LoadUI(std::string path);
+	bool LoadTex();
+
+	bool LoadCharTex();
+	bool LoadMap();
+	bool LoadUI();
+	bool LoadSkill();
 
 	std::map<int,HTEXTURE> GetTex(int _ID);
 	std::map<int,HTEXTURE> GetUITex(){return m_mUITex;}
+	HTEXTURE GetSkillTex(int _ID);
 	blockInfo	GetBlock(int _type);
 
 private:
 	std::map<int,HTEXTURE> m_mCharTex[3];		//所有单位的动作图片
 	std::map<int,HTEXTURE> m_mMap;		//所有包含地图图块的图片
 	std::map<int,HTEXTURE> m_mUITex;		//所有UI相关图片
+	std::map<int,HTEXTURE> m_mSkillTex;	//所有技能相关图片
 	std::map<int,blockInfo> m_mMapInfo;	//所有地图图块在各图片中的位置大小信息
+
+	void FreeTex(std::map<int,HTEXTURE>&);
 };
 

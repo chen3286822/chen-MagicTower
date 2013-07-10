@@ -8,6 +8,8 @@ TexManager::TexManager(void)
 		m_mCharTex[i].clear();
 	m_mMap.clear();
 	m_mMapInfo.clear();
+	m_mUITex.clear();
+	m_mSkillTex.clear();
 }
 
 
@@ -15,24 +17,45 @@ TexManager::~TexManager(void)
 {
 	for(int i=0;i<eActionTex_Num;i++)
 	{
-		for (std::map<int,HTEXTURE>::iterator mit=m_mCharTex[i].begin();mit!=m_mCharTex[i].end();mit++)
-		{
-			App::sInstance().GetHGE()->Texture_Free(mit->second);
-		}
+		FreeTex(m_mCharTex[i]);
 	}
+	FreeTex(m_mMap);
+	FreeTex(m_mUITex);
+	FreeTex(m_mSkillTex);
+}
 
-	for (std::map<int,HTEXTURE>::iterator mit=m_mMap.begin();mit!=m_mMap.end();mit++)
+void TexManager::FreeTex(std::map<int,HTEXTURE>& mTex)
+{
+	for (std::map<int,HTEXTURE>::iterator mit=mTex.begin();mit!=mTex.end();mit++)
 	{
 		App::sInstance().GetHGE()->Texture_Free(mit->second);
 	}
 }
 
-bool TexManager::LoadTex(std::string path)
+bool TexManager::LoadTex()
 {
+	bool bCharTex = LoadCharTex();
+	bool bMapTex = LoadMap();
+	bool bUITex = LoadUI();
+	bool bSkillTex = LoadSkill();
+
+	return (bCharTex && bMapTex && bUITex && bSkillTex);
+}
+
+bool TexManager::LoadCharTex()
+{
+	for(int i=0;i<eActionTex_Num;i++)
+		m_mCharTex[i].clear();
+
+	char pBuf[MAX_PATH];
+	char pathTex[MAX_PATH];
+	GetCurrentDirectory(MAX_PATH,pBuf);
+	sprintf(pathTex,"%s\\res\\tex",pBuf);
+
 	std::string realPath[eActionTex_Num];
-	realPath[eActionTex_Walk] = path + "\\walk";
-	realPath[eActionTex_Attack] = path + "\\attack";
-	realPath[eActionTex_Defend] = path + "\\defend";
+	realPath[eActionTex_Walk] = pathTex + "\\walk";
+	realPath[eActionTex_Attack] = pathTex + "\\attack";
+	realPath[eActionTex_Defend] = pathTex + "\\defend";
 
 	std::map<std::string,std::string> files[eActionTex_Num];
 	for(int i=0;i<eActionTex_Num;i++)
@@ -73,10 +96,18 @@ bool TexManager::LoadTex(std::string path)
 	return true;
 }
 
-bool TexManager::LoadMap(std::string path)
+bool TexManager::LoadMap()
 {
+	m_mMap.clear();
+	m_mMapInfo.clear();
+
+	char pBuf[MAX_PATH];
+	char pathTex[MAX_PATH];
+	GetCurrentDirectory(MAX_PATH,pBuf);
+	sprintf(pathTex,"%s\\res\\map",pBuf);
+
 	std::map<std::string,std::string> files;
-	g_getFiles(path,files,".png",50,true);
+	g_getFiles(pathTex,files,".png",50,true);
 
 	size_t found = 0;
 	int ID = 0;
@@ -105,10 +136,17 @@ bool TexManager::LoadMap(std::string path)
 	return true;
 }
 
-bool TexManager::LoadUI(std::string path)
+bool TexManager::LoadUI()
 {
+	m_mUITex.clear();
+
+	char pBuf[MAX_PATH];
+	char pathTex[MAX_PATH];
+	GetCurrentDirectory(MAX_PATH,pBuf);
+	sprintf(pathTex,"%s\\res\\UI",pBuf);
+
 	std::map<std::string,std::string> files;
-	g_getFiles(path,files,".png",50,true);
+	g_getFiles(pathTex,files,".png",50,true);
 	size_t found = 0;
 	int ID = 0;
 	for (std::map<std::string,std::string>::iterator mit=files.begin();mit!=files.end();mit++)
@@ -128,6 +166,49 @@ bool TexManager::LoadUI(std::string path)
 		return false;
 	}
 	return true;
+}
+
+bool TexManager::LoadSkill()
+{
+	m_mSkillTex.clear();
+
+	char pBuf[MAX_PATH];
+	char pathTex[MAX_PATH];
+	GetCurrentDirectory(MAX_PATH,pBuf);
+	sprintf(pathTex,"%s\\res\\skill",pBuf);
+
+	std::map<std::string,std::string> files;
+	g_getFiles(pathTex,files,".png",50,true);
+	size_t found = 0;
+	int ID = 0;
+	for (std::map<std::string,std::string>::iterator mit=files.begin();mit!=files.end();mit++)
+	{
+		found = mit->second.find('.');
+		if(found != 0)
+		{
+			char strID[10];
+			strncpy(strID,mit->second.c_str(),found);
+			strID[found] = '\0';
+			ID = atoi(strID) - 1;
+			m_mSkillTex[ID] = App::sInstance().GetHGE()->Texture_Load(mit->first.c_str());
+		}
+	}
+	if (m_mSkillTex.empty())
+	{
+		return false;
+	}
+	return true;
+}
+
+HTEXTURE TexManager::GetSkillTex(int _ID)
+{
+	for (std::map<int,HTEXTURE>::iterator it=m_mSkillTex.begin();it!=m_mSkillTex.end();it++)
+	{
+		if(_ID == it->first)
+			return it->second;
+	}
+
+	return 0;
 }
 
 std::map<int,HTEXTURE> TexManager::GetTex(int _ID)

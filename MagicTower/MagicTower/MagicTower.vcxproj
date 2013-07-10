@@ -109,6 +109,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MapManager.cpp" />
     <ClCompile Include="Markup.cpp" />
+    <ClCompile Include="SkillManager.cpp" />
     <ClCompile Include="TexManager.cpp" />
     <ClCompile Include="TipWnd.cpp" />
     <ClCompile Include="UI.cpp" />
@@ -130,6 +131,7 @@
     <ClInclude Include="MapManager.h" />
     <ClInclude Include="Markup.h" />
     <ClInclude Include="Singleton.h" />
+    <ClInclude Include="SkillManager.h" />
     <ClInclude Include="TexManager.h" />
     <ClInclude Include="TipWnd.h" />
     <ClInclude Include="UI.h" />

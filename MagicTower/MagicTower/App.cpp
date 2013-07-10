@@ -8,6 +8,7 @@
 #include "UI.h"
 #include "ActionProcess.h"
 #include "ConfigManager.h"
+#include "SkillManager.h"
 
 bool update();
 bool render();
@@ -59,28 +60,18 @@ bool App::LoadResource()
 	TipWnd::sCreate();
 	UISystem::sCreate();
 	ConfigManager::sCreate();
+	SkillManager::sCreate();
 
 	CreatureManager::sInstance().Init();
 	FontManager::sInstance().InitFont();
 
-	ConfigManager::sInstance().LoadCreatureConfig();
+	ConfigManager::sInstance().LoadConfig();
 
-	char pBuf[MAX_PATH];
-	char pathTex[MAX_PATH],pathMap[MAX_PATH],pathMaps[MAX_PATH],pathUI[MAX_PATH];
-	GetCurrentDirectory(MAX_PATH,pBuf);
-	sprintf(pathTex,"%s\\res\\tex",pBuf);
-	sprintf(pathMap,"%s\\res\\map",pBuf);
-	sprintf(pathMaps,"%s\\res\\Maps",pBuf);
-	sprintf(pathUI,"%s\\res\\UI",pBuf);
-	if(!TexManager::sInstance().LoadTex(pathTex) ||
-		!TexManager::sInstance().LoadMap(pathMap) ||
-		!MapManager::sInstance().LoadMaps(pathMaps) ||
-		!TexManager::sInstance().LoadUI(pathUI))
+	if(!TexManager::sInstance().LoadTex() || !MapManager::sInstance().LoadMaps())
 	{
-		MessageBox(NULL, "纹理或者关卡载入失败", "Error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
+		MessageBox(NULL, "纹理或关卡载入失败", "Error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
 		return false;
 	}
-
 
 	//载入UI
 	UISystem::sInstance().Init();
@@ -99,16 +90,6 @@ bool App::LoadResource()
 	player2->GetName() = "路人乙";
 	CreatureManager::sInstance().AddEnemy(player2);
 
-
-
-//  	TipWnd::sInstance().AddText("卧室",0xFFFF0000,20.0f,10.0f,MSYaHei,FontBig,false);
-//  	TipWnd::sInstance().AddText("aBCDEFTG",0xFFFF0000,30.0f,30.0f,Calibri,FontBig,false);
-//  	TipWnd::sInstance().AddText("a我B是C中D国E人F啊T卧G艹",0xFFFF0000,45.0f,50.0f,SongTi,FontBig,false,100);
-//   	TipWnd::sInstance().AddText("AAA",0xFF00FF00,-1.0f,-1.0f,Calibri,FontBig,false);
-//   	TipWnd::sInstance().AddText("我是中国人",0xFF00FF00,-1.0f,-1.0f,SongTi,FontBig,false);
-//   	TipWnd::sInstance().AddText("我是中国人",0xFF000000,-1.0f,-1.0f,MSYaHei,FontBig);
-// 	TipWnd::sInstance().SetShow(true);
-
 	return true;
 }
 
@@ -124,6 +105,7 @@ void App::FreeResource()
 	CreatureManager::sInstance().Release();
 	UISystem::sInstance().Release();
 
+	SkillManager.sDestroy();
 	ConfigManager::sDestroy();
 	ActionProcess::sDestroy();
 	UISystem::sDestroy();
@@ -150,6 +132,7 @@ bool App::AppRender()
 	CreatureManager::sInstance().Render();
 	TipWnd::sInstance().Render();
 	UISystem::sInstance().Render();
+	SkillManager::sInstance().Render();
 
 	m_pHge->Gfx_EndScene();
 	return false;

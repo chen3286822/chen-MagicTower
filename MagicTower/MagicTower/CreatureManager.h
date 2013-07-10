@@ -19,7 +19,9 @@ struct Pair
 		y = _y;
 	}
 };
-typedef std::map<eAttackRange,std::vector<Pair> > MAttackRange;
+typedef std::vector<Pair> VPair;
+typedef std::map<eAttackRange,std::vector<int> > MAttackRange;
+typedef std::map<eSkillRange,std::vector<int> > MSkillRange;
 
 
 class CreatureManager : public Singleton<CreatureManager>
@@ -54,6 +56,8 @@ public:
 	void ShowMoveRange(Character* creature);
 	//显示该单位攻击范围
 	void ShowAttackRange(Character* creature);
+	//显示技能攻击范围
+	void ShowSkillRange(int skillID);
 
 	//只有当所有单位都行动过后才能重置，相当于开始下一回合
 	bool ResetAllCreature();
@@ -90,7 +94,9 @@ private:
 	int m_nActionCreatureNum;	//表示当前正在行动中的单位号，没有表示为-1
 	int m_nSelectNum;	//表示当前被选中的单位号
 
+	VPair m_vPair;
 	MAttackRange m_mAttackRange;
+	MSkillRange m_mSkillRange;
 	eCampTurn m_eCampTurn;	//当前所处回合
 };
 

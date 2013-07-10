@@ -1,4 +1,5 @@
 #include "CreatureManager.h"
+#include "ConfigManager.h"
 #include "MapManager.h"
 #include "App.h"
 #include "TipWnd.h"
@@ -23,37 +24,84 @@ CreatureManager::~CreatureManager()
 
 void CreatureManager::Init()
 {
-	m_mAttackRange[eAttackRange_Cross].push_back(Pair(0,-1));
-	m_mAttackRange[eAttackRange_Cross].push_back(Pair(0,1));
-	m_mAttackRange[eAttackRange_Cross].push_back(Pair(-1,0));
-	m_mAttackRange[eAttackRange_Cross].push_back(Pair(1,0));
+	m_vPair.clear();
+	m_mAttackRange.clear();
+	m_mSkillRange.clear();
 
-	m_mAttackRange[eAttackRange_Box].push_back(Pair(1,0));
-	m_mAttackRange[eAttackRange_Box].push_back(Pair(0,1));
-	m_mAttackRange[eAttackRange_Box].push_back(Pair(-1,0));
-	m_mAttackRange[eAttackRange_Box].push_back(Pair(0,-1));
-	m_mAttackRange[eAttackRange_Box].push_back(Pair(-1,-1));
-	m_mAttackRange[eAttackRange_Box].push_back(Pair(-1,1));
-	m_mAttackRange[eAttackRange_Box].push_back(Pair(1,-1));
-	m_mAttackRange[eAttackRange_Box].push_back(Pair(1,1));
+	m_vPair.push_back(Pair(0,0));	/*0*/			
+	m_vPair.push_back(Pair(1,0));	/*1*/				m_vPair.push_back(Pair(1,-1));		/*2*/
+	m_vPair.push_back(Pair(0,-1));	/*3*/				m_vPair.push_back(Pair(-1,-1));	/*4*/
+	m_vPair.push_back(Pair(-1,0));	/*5*/				m_vPair.push_back(Pair(-1,1));		/*6*/
+	m_vPair.push_back(Pair(0,1));	/*7*/				m_vPair.push_back(Pair(1,1));		/*8*/
+	m_vPair.push_back(Pair(2,0));	/*9*/				m_vPair.push_back(Pair(2,-1));		/*10*/
+	m_vPair.push_back(Pair(0,-2));	/*11*/			m_vPair.push_back(Pair(1,-2));		/*12*/
+	m_vPair.push_back(Pair(-2,0));	/*13*/			m_vPair.push_back(Pair(-1,-2));	/*14*/
+	m_vPair.push_back(Pair(0,2));	/*15*/			m_vPair.push_back(Pair(-2,-1));	/*16*/
+	m_vPair.push_back(Pair(-2,1));	/*17*/			m_vPair.push_back(Pair(3,0));		/*18*/
+	m_vPair.push_back(Pair(-1,2));	/*19*/			m_vPair.push_back(Pair(0,-3));		/*20*/
+	m_vPair.push_back(Pair(1,2));	/*21*/			m_vPair.push_back(Pair(-3,0));		/*22*/
+	m_vPair.push_back(Pair(2,1));	/*23*/			m_vPair.push_back(Pair(0,3));		/*24*/
+	m_vPair.push_back(Pair(4,0));	/*25*/			m_vPair.push_back(Pair(-4,0));		/*26*/
+	m_vPair.push_back(Pair(5,0));	/*27*/			m_vPair.push_back(Pair(-5,0));		/*28*/
+	m_vPair.push_back(Pair(0,-4));	/*29*/			m_vPair.push_back(Pair(0,4));		/*30*/
+	m_vPair.push_back(Pair(0,-5));	/*31*/			m_vPair.push_back(Pair(0,5));		/*32*/
+	
+	int neAttackRange_Cross[] = {1,3,5,7};
+	m_mAttackRange[eAttackRange_Cross].assign(neAttackRange_Cross,neAttackRange_Cross+4);
+// 	m_mAttackRange[eAttackRange_Cross].push_back(Pair(0,-1));
+// 	m_mAttackRange[eAttackRange_Cross].push_back(Pair(0,1));
+// 	m_mAttackRange[eAttackRange_Cross].push_back(Pair(-1,0));
+// 	m_mAttackRange[eAttackRange_Cross].push_back(Pair(1,0));
 
-	m_mAttackRange[eAttackRange_BigCross].push_back(Pair(0,-1));
-	m_mAttackRange[eAttackRange_BigCross].push_back(Pair(0,1));
-	m_mAttackRange[eAttackRange_BigCross].push_back(Pair(-1,0));
-	m_mAttackRange[eAttackRange_BigCross].push_back(Pair(1,0));
-	m_mAttackRange[eAttackRange_BigCross].push_back(Pair(0,-2));
-	m_mAttackRange[eAttackRange_BigCross].push_back(Pair(0,2));
-	m_mAttackRange[eAttackRange_BigCross].push_back(Pair(-2,0));
-	m_mAttackRange[eAttackRange_BigCross].push_back(Pair(2,0));
+	int neAttackRange_Box[] = {1,2,3,4,5,6,7,8};
+	m_mAttackRange[eAttackRange_Box].assign(neAttackRange_Box,neAttackRange_Box+8);
+// 	m_mAttackRange[eAttackRange_Box].push_back(Pair(1,0));
+// 	m_mAttackRange[eAttackRange_Box].push_back(Pair(0,1));
+// 	m_mAttackRange[eAttackRange_Box].push_back(Pair(-1,0));
+// 	m_mAttackRange[eAttackRange_Box].push_back(Pair(0,-1));
+// 	m_mAttackRange[eAttackRange_Box].push_back(Pair(-1,-1));
+// 	m_mAttackRange[eAttackRange_Box].push_back(Pair(-1,1));
+// 	m_mAttackRange[eAttackRange_Box].push_back(Pair(1,-1));
+// 	m_mAttackRange[eAttackRange_Box].push_back(Pair(1,1));
 
-	m_mAttackRange[eAttackRange_Arrow].push_back(Pair(0,-2));
-	m_mAttackRange[eAttackRange_Arrow].push_back(Pair(0,2));
-	m_mAttackRange[eAttackRange_Arrow].push_back(Pair(-2,0));
-	m_mAttackRange[eAttackRange_Arrow].push_back(Pair(2,0));
-	m_mAttackRange[eAttackRange_Arrow].push_back(Pair(-1,-1));
-	m_mAttackRange[eAttackRange_Arrow].push_back(Pair(-1,1));
-	m_mAttackRange[eAttackRange_Arrow].push_back(Pair(1,-1));
-	m_mAttackRange[eAttackRange_Arrow].push_back(Pair(1,1));
+	int neAttackRange_BigCross[] = {1,3,5,7,9,11,13,15};
+	m_mAttackRange[eAttackRange_BigCross].assign(neAttackRange_BigCross,neAttackRange_BigCross+8);
+// 	m_mAttackRange[eAttackRange_BigCross].push_back(Pair(0,-1));
+// 	m_mAttackRange[eAttackRange_BigCross].push_back(Pair(0,1));
+// 	m_mAttackRange[eAttackRange_BigCross].push_back(Pair(-1,0));
+// 	m_mAttackRange[eAttackRange_BigCross].push_back(Pair(1,0));
+// 	m_mAttackRange[eAttackRange_BigCross].push_back(Pair(0,-2));
+// 	m_mAttackRange[eAttackRange_BigCross].push_back(Pair(0,2));
+// 	m_mAttackRange[eAttackRange_BigCross].push_back(Pair(-2,0));
+// 	m_mAttackRange[eAttackRange_BigCross].push_back(Pair(2,0));
+
+	int neAttackRange_Arrow[] = {2,4,6,8,9,11,13,15};
+	m_mAttackRange[eAttackRange_Arrow].assign(neAttackRange_Arrow,neAttackRange_Arrow+8);
+// 	m_mAttackRange[eAttackRange_Arrow].push_back(Pair(0,-2));
+// 	m_mAttackRange[eAttackRange_Arrow].push_back(Pair(0,2));
+// 	m_mAttackRange[eAttackRange_Arrow].push_back(Pair(-2,0));
+// 	m_mAttackRange[eAttackRange_Arrow].push_back(Pair(2,0));
+// 	m_mAttackRange[eAttackRange_Arrow].push_back(Pair(-1,-1));
+// 	m_mAttackRange[eAttackRange_Arrow].push_back(Pair(-1,1));
+// 	m_mAttackRange[eAttackRange_Arrow].push_back(Pair(1,-1));
+// 	m_mAttackRange[eAttackRange_Arrow].push_back(Pair(1,1));
+
+	int neSkillRange_Point[] = {0};
+	m_mSkillRange[eSkillRange_Point].assign(neSkillRange_Point,neSkillRange_Point+1);
+	int neSkillRange_Cross[] = {0,1,3,5,7};
+	m_mSkillRange[eSkillRange_Cross].assign(neSkillRange_Cross,neSkillRange_Cross+5);
+	int neSkillRange_Box[] = {0,1,2,3,4,5,6,7,8};
+	m_mSkillRange[eSkillRange_Box].assign(neSkillRange_Box,neSkillRange_Box+9);
+	int neSkillRange_ObliqueBox[] = {0,1,2,3,4,5,6,7,8,9,11,13,15};
+	m_mSkillRange[eSkillRange_ObliqueBox].assign(neSkillRange_ObliqueBox,neSkillRange_ObliqueBox+13);
+	int neSkillRange_BigObliqueBox[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24};
+	m_mSkillRange[eSkillRange_BigObliqueBox].assign(neSkillRange_BigObliqueBox,neSkillRange_BigObliqueBox+25);
+
+	//直线型比较特殊，需要判断方向
+	int neSkillRange_ShortLine[] = {0,7,15,0,3,11,0,5,13,0,1,9};
+	m_mSkillRange[eSkillRange_ShortLine].assign(neSkillRange_ShortLine,neSkillRange_ShortLine+12);
+	int neSkillRange_Line[] = {0,7,15,24,30,32,0,3,11,20,29,31,0,5,13,22,26,28,0,1,9,18,25,27};
+	m_mSkillRange[eSkillRange_Line].assign(neSkillRange_Line,neSkillRange_Line+24);
 
 	m_eCampTurn = eCampTurn_Friend;
 }
@@ -163,10 +211,46 @@ void CreatureManager::ShowAttackRange(Character* creature)
 		{
 			if(mit->first == attackRange)
 			{
-				for (vector<Pair>::iterator it=mit->second.begin();it!=mit->second.end();it++)
+				for (vector<int>::iterator it=mit->second.begin();it!=mit->second.end();it++)
 				{
-					offX = it->x + charBlock.xpos;
-					offY = it->y + charBlock.ypos;
+					offX = m_vPair[*it].x + charBlock.xpos;
+					offY = m_vPair[*it].y + charBlock.ypos;
+					if (offX >= 0 && offX < mapWidth && offY >= 0 && offY < mapLength)
+					{					
+						App::sInstance().DrawBox(MAP_OFF_X + offX*MAP_RECT,MAP_OFF_Y + offY*MAP_RECT,0xBFFF0000,8,MAP_RECT,MAP_RECT);
+					}
+				}
+			}
+		}
+	}
+}
+
+void CreatureManager::ShowSkillRange(int skillID)
+{
+	SkillInfo skillInfo = ConfigManager::sInstance().GetSkillInfo().find(skillID)->second;
+	Map* currentMap = MapManager::sInstance().GetCurrentMap();
+	int mapWidth = 0,mapLength = 0;
+	currentMap->GetWidthLength(mapWidth,mapLength);
+	int offX = 0,offY = 0;
+	Block mouseBlock = App::sInstance().GetMouseBlock();
+
+	for (MSkillRange::iterator mit=m_mSkillRange.begin();mit!=m_mSkillRange.end();mit++)
+	{
+		if(mit->first == skillInfo.m_nAttackRange)
+		{
+			//直线型特殊处理，只显示一个格子
+			if(mit->first == eSkillRange_ShortLine || mit->first == eSkillRange_Line)
+			{
+				offX = mouseBlock.xpos;
+				offY = mouseBlock.ypos;
+				App::sInstance().DrawBox(MAP_OFF_X + offX*MAP_RECT,MAP_OFF_Y + offY*MAP_RECT,0xBFFF0000,8,MAP_RECT,MAP_RECT);
+			}
+			else
+			{
+				for (vector<int>::iterator it=mit->second.begin();it!=mit->second.end();it++)
+				{
+					offX = m_vPair[*it].x + mouseBlock.xpos;
+					offY = m_vPair[*it].y + mouseBlock.ypos;
 					if (offX >= 0 && offX < mapWidth && offY >= 0 && offY < mapLength)
 					{					
 						App::sInstance().DrawBox(MAP_OFF_X + offX*MAP_RECT,MAP_OFF_Y + offY*MAP_RECT,0xBFFF0000,8,MAP_RECT,MAP_RECT);

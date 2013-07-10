@@ -177,7 +177,26 @@ enum eAttackRange
 	eAttackRange_BigCross = 2, //大十字型
 	eAttackRange_Arrow = 3,		//弓箭型
 };
-
+/*
+	单点型：单位自身范围
+	十字型：单位上下左右可以攻击，范围为1
+	方块型：单位周围8格可以攻击
+	斜方块型：单位周围8格+外围上下左右4格
+	大斜方块型：斜方块再向外扩展一格
+	短直线型：目标单位以及其身后2格
+	长直线型：目标单位以及其身后5格
+*/
+//技能范围类型
+enum eSkillRange
+{
+	eSkillRange_Point = 1,						//单点型
+	eSkillRange_Cross = 2,						//十字型
+	eSkillRange_Box = 3,							//方块型
+	eSkillRange_ObliqueBox = 4,			//斜方块型
+	eSkillRange_BigObliqueBox = 5,	//大斜方块型
+	eSkillRange_ShortLine = 6,				//短直线型
+	eSkillRange_Line = 7,							//长直线型
+};
 
 //攻击类型
 enum eAttackType
