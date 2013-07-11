@@ -48,43 +48,15 @@ void CreatureManager::Init()
 	
 	int neAttackRange_Cross[] = {1,3,5,7};
 	m_mAttackRange[eAttackRange_Cross].assign(neAttackRange_Cross,neAttackRange_Cross+4);
-// 	m_mAttackRange[eAttackRange_Cross].push_back(Pair(0,-1));
-// 	m_mAttackRange[eAttackRange_Cross].push_back(Pair(0,1));
-// 	m_mAttackRange[eAttackRange_Cross].push_back(Pair(-1,0));
-// 	m_mAttackRange[eAttackRange_Cross].push_back(Pair(1,0));
 
 	int neAttackRange_Box[] = {1,2,3,4,5,6,7,8};
 	m_mAttackRange[eAttackRange_Box].assign(neAttackRange_Box,neAttackRange_Box+8);
-// 	m_mAttackRange[eAttackRange_Box].push_back(Pair(1,0));
-// 	m_mAttackRange[eAttackRange_Box].push_back(Pair(0,1));
-// 	m_mAttackRange[eAttackRange_Box].push_back(Pair(-1,0));
-// 	m_mAttackRange[eAttackRange_Box].push_back(Pair(0,-1));
-// 	m_mAttackRange[eAttackRange_Box].push_back(Pair(-1,-1));
-// 	m_mAttackRange[eAttackRange_Box].push_back(Pair(-1,1));
-// 	m_mAttackRange[eAttackRange_Box].push_back(Pair(1,-1));
-// 	m_mAttackRange[eAttackRange_Box].push_back(Pair(1,1));
 
 	int neAttackRange_BigCross[] = {1,3,5,7,9,11,13,15};
 	m_mAttackRange[eAttackRange_BigCross].assign(neAttackRange_BigCross,neAttackRange_BigCross+8);
-// 	m_mAttackRange[eAttackRange_BigCross].push_back(Pair(0,-1));
-// 	m_mAttackRange[eAttackRange_BigCross].push_back(Pair(0,1));
-// 	m_mAttackRange[eAttackRange_BigCross].push_back(Pair(-1,0));
-// 	m_mAttackRange[eAttackRange_BigCross].push_back(Pair(1,0));
-// 	m_mAttackRange[eAttackRange_BigCross].push_back(Pair(0,-2));
-// 	m_mAttackRange[eAttackRange_BigCross].push_back(Pair(0,2));
-// 	m_mAttackRange[eAttackRange_BigCross].push_back(Pair(-2,0));
-// 	m_mAttackRange[eAttackRange_BigCross].push_back(Pair(2,0));
 
 	int neAttackRange_Arrow[] = {2,4,6,8,9,11,13,15};
 	m_mAttackRange[eAttackRange_Arrow].assign(neAttackRange_Arrow,neAttackRange_Arrow+8);
-// 	m_mAttackRange[eAttackRange_Arrow].push_back(Pair(0,-2));
-// 	m_mAttackRange[eAttackRange_Arrow].push_back(Pair(0,2));
-// 	m_mAttackRange[eAttackRange_Arrow].push_back(Pair(-2,0));
-// 	m_mAttackRange[eAttackRange_Arrow].push_back(Pair(2,0));
-// 	m_mAttackRange[eAttackRange_Arrow].push_back(Pair(-1,-1));
-// 	m_mAttackRange[eAttackRange_Arrow].push_back(Pair(-1,1));
-// 	m_mAttackRange[eAttackRange_Arrow].push_back(Pair(1,-1));
-// 	m_mAttackRange[eAttackRange_Arrow].push_back(Pair(1,1));
 
 	int neSkillRange_Point[] = {0};
 	m_mSkillRange[eSkillRange_Point].assign(neSkillRange_Point,neSkillRange_Point+1);
@@ -104,6 +76,8 @@ void CreatureManager::Init()
 	m_mSkillRange[eSkillRange_Line].assign(neSkillRange_Line,neSkillRange_Line+24);
 
 	m_eCampTurn = eCampTurn_Friend;
+
+	m_nSkillToCast = -1;
 }
 
 void CreatureManager::Release()
@@ -577,7 +551,7 @@ void CreatureManager::CalculateHurt(Character* cast,Character* target,bool bCrit
 // 		target->Defend();
 // }
 
-void CreatureManager::PreCalculateAndPushAction(Character* cast,Character* target)
+void CreatureManager::PreAttackAndPushAction(Character* cast,Character* target)
 {
 	if(!cast || !target)
 		return;
@@ -668,6 +642,21 @@ void CreatureManager::PreCalculateAndPushAction(Character* cast,Character* targe
 	//结束行动
 	if(!bDead2)
 		process->PushAction(eNotify_FinishAttack,cast,target,0);
+}
+
+void CreatureManager::PreSkillAndPushAction(int skillId,Character* cast,Character* target)
+{
+	if(!cast || !target)
+		return;
+	cast->GetPreHurt() = 0;
+	target->GetPreHurt() = 0;
+
+
+	ActionProcess* process = ActionProcess::sInstancePtr();
+	process->PushAction(eNotify_TowardToAttacker,cast,target,0);
+
+	SkillManager::sInstance().CreateSkill(skillId,target);
+	process->PushAction(eNotify_FinishAttack,cast,target,0);
 }
 
 void CreatureManager::SelectCreature()
@@ -773,9 +762,16 @@ void CreatureManager::SelectCreature()
 										m_nSelectNum = -1;
 										//lastChar->GeginHit();
 										//进行预计算
-										PreCalculateAndPushAction(lastChar,selectChar);
+										PreAttackAndPushAction(lastChar,selectChar);
 										return;
 									}
+								}
+								else if (lastChar->GetActionStage() == eActionStage_SkillStage)
+								{
+									m_nSelectNum = -1;
+									PreSkillAndPushAction(m_nSkillToCast,lastChar,selectChar);
+									m_nSkillToCast = -1;
+									return;
 								}
 							}
 							else if (lastChar->GetCamp() == eCamp_Enemy)
@@ -877,8 +873,12 @@ void CreatureManager::ProcessSelectCreature()
 		Character* selectChar = GetCreature(m_nSelectNum);
 		if((selectChar->GetCamp() == eCamp_Enemy) || (selectChar->GetCamp()==eCamp_Friend && selectChar->GetCharacterState()==eCharacterState_Stand && selectChar->GetActionStage() ==eActionStage_MoveStage))
 			ShowMoveRange(selectChar);
-		if(selectChar->GetCamp() == eCamp_Enemy || (selectChar->GetCamp()==eCamp_Friend && (selectChar->GetActionStage()==eActionStage_AttackStage || selectChar->GetActionStage()==eActionStage_SkillStage)))
+		if(selectChar->GetCamp() == eCamp_Enemy || (selectChar->GetCamp()==eCamp_Friend && (selectChar->GetActionStage()==eActionStage_AttackStage)))
 			ShowAttackRange(selectChar);
 	}
 	
+	if(m_nSkillToCast != -1)
+	{
+		ShowSkillRange(m_nSkillToCast);
+	}
 }

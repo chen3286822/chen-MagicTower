@@ -48,6 +48,14 @@ void SkillManager::CreateSkill(int id, std::vector<Character*> vCha)
 
 void SkillManager::Render()
 {
+	for (LSkill::iterator it=m_lSkill.begin();it!=m_lSkill.end();it++)
+	{
+		(*it).m_pAnim->Render((*it).m_pChar->GetRealX()+(*it).m_fOffsetX,(*it).m_pChar->GetRealY()+(*it).m_fOffsetY);
+	}
+}
+
+void SkillManager::Update(float dt)
+{
 	for (LSkill::iterator it=m_lSkill.begin();it!=m_lSkill.end();)
 	{
 		if(!(*it).m_pAnim->IsPlaying())
@@ -57,7 +65,7 @@ void SkillManager::Render()
 		}
 		else
 		{
-			(*it).m_pAnim->Render((*it).m_pChar->GetRealX()+(*it).m_fOffsetX,(*it).m_pChar->GetRealY()+(*it).m_fOffsetY);
+			(*it).m_pAnim->Update(dt);
 			it++;
 		}
 	}

@@ -232,6 +232,7 @@ bool App::AppUpdate()
 	CreatureManager::sInstance().Update(dt);
 	TipWnd::sInstance().Update(dt);
 	UISystem::sInstance().Update(dt);
+	SkillManager::sInstance().Update(dt);
 	return false;
 }
 

@@ -75,8 +75,11 @@ public:
 	void CalculateHurt(Character* cast,Character* target,bool bCrit=false);
 	//计算攻击结果(命中与否)
 	void CalculateResult(int src,int tar);
-	//预先计算并且推送动作
-	void PreCalculateAndPushAction(Character* cast,Character* target);
+	//预先计算攻击并且推送动作
+	void PreAttackAndPushAction(Character* cast,Character* target);
+	//预先计算技能并且推送动作
+	void PreSkillAndPushAction(int skillId,Character* cast,Character* target);
+	int&	GetCastSkill(){return m_nSkillToCast;}
 
 	//选中单位
 	void SelectCreature();
@@ -99,6 +102,8 @@ private:
 	MAttackRange m_mAttackRange;
 	MSkillRange m_mSkillRange;
 	eCampTurn m_eCampTurn;	//当前所处回合
+
+	int m_nSkillToCast;	//准备释放的技能id
 };
 
 

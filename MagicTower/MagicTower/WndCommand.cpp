@@ -91,7 +91,7 @@ void WndCommand::Update(float dt)
 				if(wndSelect)
 				{
 					wndSelect->SetShow(true);
-					wndSelect->SetRenderPositon(m_pChar->GetRealX()+50,m_pChar->GetRealY());
+					wndSelect->SetBindChar(m_pChar);
 				}
 				SetShow(false);
 			}

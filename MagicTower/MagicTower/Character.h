@@ -1,5 +1,6 @@
 #pragma once
 #include "commonTools.h"
+#include "SkillManager.h"
 
 /*
 单位状态变化：
@@ -94,6 +95,9 @@ public:
 	int&	GetPreHurt(){return m_nPreHurt;}
 	bool& GetDead(){return m_bDead;}
 	bool& GetCounter(){return m_bCounter;}
+
+	//技能
+	std::vector<int>		GetSkillList();
 private:
 	hgeAnimation* m_pAnimation;
 	std::map<int,HTEXTURE> m_mCharTex; //存储单位的各个图片动作
@@ -143,6 +147,9 @@ private:
 	bool	m_bCounter;	//是否可以反击
 	int m_nPreHurt;	//下一次攻击准备打出的伤害，提前计算出以便后面扣除
 
+	//技能列表
+	std::vector<int> m_vDefaultSkillList;	//单位默认技能列表，是兵种预设技能
+	std::vector<int> m_vNewSkillList;		//单位新增技能列表，如学习技能书获得
 	eDirection GetTexDir(eDirection dir);
 };
 

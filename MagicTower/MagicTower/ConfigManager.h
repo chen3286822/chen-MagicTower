@@ -2,6 +2,7 @@
 #define CONFIG_MANAGER_H
 
 #include "commonTools.h"
+#include <sstream>
 
 struct CreatureInfo
 {
@@ -29,20 +30,26 @@ struct SkillInfo
 	int m_nAttackRange;
 	int m_nOffX;
 	int m_nOffY;
+	int m_nIcon;
+	std::string m_strName;
 	SkillInfo()
 	{
 		m_nID = -1;
 		m_nFrames = 0;
 		m_nAttackRange = 0;
 		m_nOffX = m_nOffY = 0;
+		m_nIcon = -1;
+		m_strName = "";
 	}
-	SkillInfo(int id,int frames,int attackRange,int offx,int offy)
+	SkillInfo(int id,int frames,int attackRange,int offx,int offy,int icon,std::string name)
 	{
 		m_nID = id;
 		m_nFrames = frames;
 		m_nAttackRange = attackRange;
 		m_nOffX = offx;
 		m_nOffY = offy;
+		m_nIcon = icon;
+		m_strName = name;
 	}
 };
 
@@ -85,22 +92,31 @@ public:
 			}
 			else if(strcmp(simbol,"CreatureSkill")==0)
 			{
+				std::stringstream ssteam(mit->second);
 				int skillNum = 0;
 				skillNum = std::count(mit->second.begin(),mit->second.end(),'/') + 1;
-				int searchPos = 0;
+				int* skillID = new int[skillNum];
+				char cTemp;
 				for (int i=0;i<skillNum;i++)
 				{
-					int skillID = -1;
-					int pos = mit->second.find('/',searchPos);
-					if(pos == std::string::npos)
-						skillID = atoi(mit->second.c_str()+searchPos);
-					else
-					{
-						skillID = atoi((mit->second).substr(searchPos,pos).c_str());
-						searchPos = pos + 1;
-					}
-					m_mCreatureSkill[strKey].push_back(skillID);
+					ssteam >> skillID[i] >> cTemp;
+					m_mCreatureSkill[strKey].push_back(skillID[i]);
 				}
+
+// 				int searchPos = 0;
+// 				for (int i=0;i<skillNum;i++)
+// 				{
+// 					int skillID = -1;
+// 					int pos = mit->second.find('/',searchPos);
+// 					if(pos == std::string::npos)
+// 						skillID = atoi(mit->second.c_str()+searchPos);
+// 					else
+// 					{
+// 						skillID = atoi((mit->second).substr(searchPos,pos).c_str());
+// 						searchPos = pos + 1;
+// 					}
+// 					m_mCreatureSkill[strKey].push_back(skillID);
+// 				}
 			}
 		}
 	}
@@ -130,13 +146,15 @@ public:
 			char simbol[256];
 			int ID = -1;
 			sscanf(mit->first.c_str(),"%s %d",simbol,&ID);
-			if (strcmp(simbol,"SkillInf")==0 && ID!=-1)
+			if (strcmp(simbol,"SkillInfo")==0 && ID!=-1)
 			{
 				int frames = -1;
 				int attackRange = -1;
 				int offx = -1,offy = -1;
-				sscanf(mit->second.c_str(),"%d/%d/%d/%d",&frames,&attackRange,&offx,&offy);
-				m_mSkillInfo[ID] = SkillInfo(ID,frames,attackRange,offx,offy);
+				int icon = -1;
+				std::string name;
+				sscanf(mit->second.c_str(),"%d/%d/%d/%d/%d/%s",&frames,&attackRange,&offx,&offy,&icon,name.c_str());
+				m_mSkillInfo[ID] = SkillInfo(ID,frames,attackRange,offx,offy,icon,name.c_str());
 			}
 		}
 	}

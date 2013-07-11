@@ -4,6 +4,7 @@
 #include "commonTools.h"
 #include "UI.h"
 
+class Character;
 class WndSelect : public UIWindow
 {
 public:
@@ -18,8 +19,11 @@ public:
 // 	virtual void Render(){}
  	virtual void Update(float dt);
 	virtual void SetRenderPositon(float _x,float _y);
+	virtual void	SetBindChar(Character* bindChar);
+	virtual Character*	GetBindChar(){return m_pBindChar;}
 private:
 	UIListBox* m_pListBox;
+	Character* m_pBindChar;
 };
 
 #endif

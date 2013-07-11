@@ -32,6 +32,7 @@ public:
 	void CreateSkill(int id, std::vector<Character*> vCha);
 
 	void Render();
+	void Update(float dt);
 private:
 	LSkill m_lSkill;
 };
