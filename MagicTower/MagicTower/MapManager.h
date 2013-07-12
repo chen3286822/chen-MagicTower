@@ -33,6 +33,8 @@ public:
 	void SetBlockOccupied(int xpos,int ypos);
 	bool GetBlockOccupied(int xpos,int ypos);
 
+	bool GetCreatureStandOn(int xpos,int ypos);	//是否有单位在上面，相当于去除了格子本身不可占用的条件
+
 	//为了支持stl的sort算法
 	static bool Less_than( Map* &m1, Map* &m2) {return m1->m_nlevel < m2->m_nlevel;}
 

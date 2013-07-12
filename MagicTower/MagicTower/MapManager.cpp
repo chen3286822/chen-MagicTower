@@ -85,6 +85,16 @@ bool Map::GetBlockOccupied(int xpos,int ypos)
 	return false;
 }
 
+bool Map::GetCreatureStandOn(int xpos,int ypos)
+{
+	Block* block = GetBlock(xpos,ypos);
+	if(block!=NULL)
+	{
+		return (IsOccupied(block->attri) && IsCanStandOn(block->attri));
+	}
+	return false;
+}
+
 void Map::SetSpecificRange(std::vector<Block*> _range)
 {
 	if (!_range.empty())

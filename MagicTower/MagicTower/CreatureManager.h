@@ -56,6 +56,8 @@ public:
 	void ShowMoveRange(Character* creature);
 	//显示该单位攻击范围
 	void ShowAttackRange(Character* creature);
+	//显示技能释放范围
+	void ShowSkillCastRange(Character* creature);
 	//显示技能攻击范围
 	void ShowSkillRange(int skillID);
 	VPair GetRangePoint(){return m_vPair;}
@@ -78,8 +80,8 @@ public:
 	//预先计算攻击并且推送动作
 	void PreAttackAndPushAction(Character* cast,Character* target);
 	//预先计算技能并且推送动作
-	void PreSkillAndPushAction(int skillId,Character* cast,Character* target);
-	int&	GetCastSkill(){return m_nSkillToCast;}
+	void PreSkillAndPushAction(Character* cast,Character* target);
+	
 
 	//选中单位
 	void SelectCreature();
@@ -102,8 +104,6 @@ private:
 	MAttackRange m_mAttackRange;
 	MSkillRange m_mSkillRange;
 	eCampTurn m_eCampTurn;	//当前所处回合
-
-	int m_nSkillToCast;	//准备释放的技能id
 };
 
 

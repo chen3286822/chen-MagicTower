@@ -13,18 +13,6 @@ UIWindow(TexManager::sInstance().GetUITex()[eUIID_WndCharInfo],0,0,259,151,0,0)
 	m_pContainer->AddCtrl(m_pListBox);
 
 	m_pListBox->GetPageMaxRows() = 5;
-// 	m_pListBox->AddItem(TexManager::sInstance().GetUITex()[eUIID_SkillIconRock],"中文测试1");
-// 	m_pListBox->AddItem(TexManager::sInstance().GetUITex()[eUIID_SkillIconWind],"中文测试2");
-// 	m_pListBox->AddItem(TexManager::sInstance().GetUITex()[eUIID_SkillIconFire],"中文测试3");
-// 	m_pListBox->AddItem(TexManager::sInstance().GetUITex()[eUIID_SkillIconRock],"中文测试4");
-// 	m_pListBox->AddItem(TexManager::sInstance().GetUITex()[eUIID_SkillIconWind],"中文测试5");
-// 	m_pListBox->AddItem(TexManager::sInstance().GetUITex()[eUIID_SkillIconFire],"中文测试6");
-// 	m_pListBox->AddItem(TexManager::sInstance().GetUITex()[eUIID_SkillIconFire],"中文测试7");
-// 	m_pListBox->AddItem(TexManager::sInstance().GetUITex()[eUIID_SkillIconRock],"中文测试8");
-// 	m_pListBox->AddItem(TexManager::sInstance().GetUITex()[eUIID_SkillIconWind],"中文测试9");
-// 	m_pListBox->AddItem(TexManager::sInstance().GetUITex()[eUIID_SkillIconFire],"中文测试10");
-
-//	m_pListBox->SetItemDisabled(3,true);
 }
 
 WndSelect::~WndSelect()
@@ -53,12 +41,21 @@ void WndSelect::Update(float dt)
 		else if (id == eControlID_ListBox)
 		{
 			int selectItem = m_pListBox->GetSelectedItem();
-			CreatureManager::sInstance().GetCastSkill() = selectItem;
+			m_pBindChar->GetCastSkill() = selectItem;
 			m_pBindChar->SetActionStage(eActionStage_SkillStage);
 			SetShow(false);
 			m_pContainer->Leave();
 		}
 	}
+}
+
+void WndSelect::Render()
+{
+	UIWindow::Render();
+
+	GfxFont* font = FontManager::sInstance().GetFont(FontAttr(eFontType_SongTi,eFontSize_FontBig));
+	font->SetColor(0xFF000000);
+	font->Print(m_fPosX+120,m_fPosY+85,"%s : %d","当前MP",m_pBindChar->GetMP());
 }
 
 void WndSelect::SetBindChar(Character* bindChar)
@@ -77,7 +74,16 @@ void WndSelect::SetBindChar(Character* bindChar)
 		for (std::vector<int>::iterator it=skillList.begin();it!=skillList.end();it++)
 		{
 			SkillInfo info = mInfo.find(*it)->second;
-			m_pListBox->AddItem(TexManager::sInstance().GetUITex()[info.m_nIcon],const_cast<char*>(info.m_strName.c_str()));
+			std::string skillName = info.m_strName;
+			int length = strlen(info.m_strName.c_str());
+			skillName.insert(skillName.end(),30-length,' ');
+			char mp[10];
+			sprintf(mp,"%d",info.m_nCost);
+			skillName.append(mp);
+			int num = m_pListBox->AddItem(TexManager::sInstance().GetUITex()[info.m_nIcon],const_cast<char*>(skillName.c_str()));
+
+			if(m_pBindChar->GetMP() < info.m_nCost)
+				m_pListBox->SetItemDisabled(num,true);
 		}
 	}
 }

@@ -49,7 +49,7 @@ public:
 	int GetID(){return m_nID;}
 	int GetNum(){return m_nNum;}
 
-	std::vector<Block*> CreateMoveRange(Map* map);
+	std::vector<Block*> CreateRange(Map* map,int range,bool bAllBlockInclude=false);	//bAllBlockInclude :是否包含所有格子，不管是否被占据
 
 	void CancelMove();	//取消移动，回到原来位置
 
@@ -58,6 +58,7 @@ public:
 //	int GetTarget(){return m_nTar;}
 //	int& GetCaster() {return m_nSrc;}
 	bool CanHitTarget(Character* target);	//是否可以攻击目标
+	bool CanSkillHitTarget(Character* target);	//技能是否可以击中目标
 //	void GeginHit();
 //	int TowardToAttacker(int src);	//面对着攻击者
 //	void Attack();	//开始攻击
@@ -98,6 +99,7 @@ public:
 
 	//技能
 	std::vector<int>		GetSkillList();
+	int&	GetCastSkill(){return m_nCastSkill;}
 private:
 	hgeAnimation* m_pAnimation;
 	std::map<int,HTEXTURE> m_mCharTex; //存储单位的各个图片动作
@@ -151,6 +153,7 @@ private:
 	std::vector<int> m_vDefaultSkillList;	//单位默认技能列表，是兵种预设技能
 	std::vector<int> m_vNewSkillList;		//单位新增技能列表，如学习技能书获得
 	eDirection GetTexDir(eDirection dir);
+	int m_nCastSkill;		//准备释放的技能id
 };
 
 

@@ -85,6 +85,7 @@ void Character::Init(int _Level,int _ID,int _Num,int _Action,Block _block)
 	m_bCounter = true;
 
 	m_vDefaultSkillList = ConfigManager::sInstance().GetCreatureSkill(m_strKind);
+	m_nCastSkill = -1;
 
 	m_pAnimation->SetMode(HGEANIM_LOOP|HGEANIM_FWD);
 	m_pAnimation->Play();
@@ -449,11 +450,11 @@ void Character::CancelMove()
 void	Character::SetMoveAbility(int _ability,Map* map)
 {
 		m_nMoveAbility = _ability;
-		if (map)
-			CreateMoveRange(map);
+// 		if (map)
+// 			CreateMoveRange(map);
 }
 
-std::vector<Block*> Character::CreateMoveRange(Map* map)
+std::vector<Block*> Character::CreateRange(Map* map,int _range,bool bAllBlockInclude)
 {
 	std::vector<Block*> range;
 	if (map)
@@ -461,20 +462,20 @@ std::vector<Block*> Character::CreateMoveRange(Map* map)
 		int mapWidth = 0,mapLength = 0;
 		map->GetWidthLength(mapWidth,mapLength);
 		int offX = 0,offY = 0;
-		for (int i=m_iBlock.xpos-m_nMoveAbility;i<=m_iBlock.xpos+m_nMoveAbility;i++)
+		for (int i=m_iBlock.xpos-_range;i<=m_iBlock.xpos+_range;i++)
 		{
 			if(i >= 0 && i< mapWidth)
 			{
-				for (int j=m_iBlock.ypos-m_nMoveAbility;j<=m_iBlock.ypos+m_nMoveAbility;j++)
+				for (int j=m_iBlock.ypos-_range;j<=m_iBlock.ypos+_range;j++)
 				{
 					if (j >= 0 && j < mapLength)
 					{
 						offX = abs(i - m_iBlock.xpos);
 						offY = abs(j - m_iBlock.ypos);
-						if((offX + offY > m_nMoveAbility) || (i==m_iBlock.xpos && j==m_iBlock.ypos))
+						if((offX + offY > _range) || (i==m_iBlock.xpos && j==m_iBlock.ypos))
 							continue;
 
-						if (!map->GetBlockOccupied(i,j))
+						if (!map->GetBlockOccupied(i,j) || bAllBlockInclude)
 						{
 							range.push_back(map->GetBlock(i,j));
 						}
@@ -500,7 +501,7 @@ eErrorCode Character::Move(int tarX,int tarY)
 		return eErrorCode_NotStandState; 
 	}
 
-	MapManager::sInstance().GetCurrentMap()->SetSpecificRange(CreateMoveRange(MapManager::sInstance().GetCurrentMap()));
+	MapManager::sInstance().GetCurrentMap()->SetSpecificRange(CreateRange(MapManager::sInstance().GetCurrentMap(),m_nMoveAbility));
 	vector<Block*> path = MapManager::sInstance().GetCurrentMap()->FindPath(m_iBlock.xpos,m_iBlock.ypos,tarX,tarY);
 	if(!path.empty())
 	{
@@ -823,6 +824,17 @@ bool Character::CanHitTarget(Character* target)
 	return false;
 }
 
+bool Character::CanSkillHitTarget(Character* target)
+{
+	if(!target)
+		return false;
+
+	Block tarBlock = target->GetBlock();
+	SkillInfo skill = ConfigManager::sInstance().GetSkillInfo().find(m_nCastSkill)->second;
+	if(abs(tarBlock.xpos-m_iBlock.xpos) + abs(tarBlock.ypos-m_iBlock.ypos) <= skill.m_nCastRange)
+		return true;
+	return false;
+}
 
 std::vector<int>	Character::GetSkillList()
 {

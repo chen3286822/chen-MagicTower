@@ -76,8 +76,6 @@ void CreatureManager::Init()
 	m_mSkillRange[eSkillRange_Line].assign(neSkillRange_Line,neSkillRange_Line+24);
 
 	m_eCampTurn = eCampTurn_Friend;
-
-	m_nSkillToCast = -1;
 }
 
 void CreatureManager::Release()
@@ -161,7 +159,21 @@ void CreatureManager::ShowMoveRange(Character* creature)
 			color = 0x4F3737DF;
 		else if(creature->GetCamp() == eCamp_Enemy)
 			color = 0x4FEB2323;
-		std::vector<Block*> range = creature->CreateMoveRange(MapManager::sInstance().GetCurrentMap());
+		std::vector<Block*> range = creature->CreateRange(MapManager::sInstance().GetCurrentMap(),creature->GetMoveAbility());
+		for (std::vector<Block*>::iterator it=range.begin();it!=range.end();it++)
+		{
+			//画方格表示可以移动
+			App::sInstance().DrawSmallRect(Block((*it)->xpos,(*it)->ypos),color);
+		}
+	}
+}
+
+void CreatureManager::ShowSkillCastRange(Character* creature)
+{
+	if (creature)
+	{
+		DWORD color = 0x4FEB2323;
+		std::vector<Block*> range = creature->CreateRange(MapManager::sInstance().GetCurrentMap(),ConfigManager::sInstance().GetSkillInfo().find(creature->GetCamp())->second.m_nCastRange,true);
 		for (std::vector<Block*>::iterator it=range.begin();it!=range.end();it++)
 		{
 			//画方格表示可以移动
@@ -644,7 +656,7 @@ void CreatureManager::PreAttackAndPushAction(Character* cast,Character* target)
 		process->PushAction(eNotify_FinishAttack,cast,target,0);
 }
 
-void CreatureManager::PreSkillAndPushAction(int skillId,Character* cast,Character* target)
+void CreatureManager::PreSkillAndPushAction(Character* cast,Character* target)
 {
 	if(!cast || !target)
 		return;
@@ -655,7 +667,7 @@ void CreatureManager::PreSkillAndPushAction(int skillId,Character* cast,Characte
 	ActionProcess* process = ActionProcess::sInstancePtr();
 	process->PushAction(eNotify_TowardToAttacker,cast,target,0);
 
-	SkillManager::sInstance().CreateSkill(skillId,target);
+	SkillManager::sInstance().CreateSkill(cast->GetCastSkill(),target);
 	process->PushAction(eNotify_FinishAttack,cast,target,0);
 }
 
@@ -768,10 +780,13 @@ void CreatureManager::SelectCreature()
 								}
 								else if (lastChar->GetActionStage() == eActionStage_SkillStage)
 								{
-									m_nSelectNum = -1;
-									PreSkillAndPushAction(m_nSkillToCast,lastChar,selectChar);
-									m_nSkillToCast = -1;
-									return;
+									if(lastChar->CanSkillHitTarget(selectChar))
+									{
+										m_nSelectNum = -1;
+										PreSkillAndPushAction(lastChar,selectChar);
+										lastChar->GetCastSkill() = -1;
+										return;
+									}
 								}
 							}
 							else if (lastChar->GetCamp() == eCamp_Enemy)
@@ -844,6 +859,7 @@ void CreatureManager::UnSelectCreature()
 				//攻击阶段、技能阶段、使用物品阶段可以返回至操作阶段
 				else if(stage == eActionStage_AttackStage || stage == eActionStage_GoodStage || stage == eActionStage_SkillStage)
 				{
+					lastChar->GetCastSkill() = -1;
 					lastChar->SetActionStage(eActionStage_HandleStage);
 					//打开操作界面
 					UIWindow* commandWindow = UISystem::sInstance().GetWindow(eWindowID_Command);
@@ -875,10 +891,14 @@ void CreatureManager::ProcessSelectCreature()
 			ShowMoveRange(selectChar);
 		if(selectChar->GetCamp() == eCamp_Enemy || (selectChar->GetCamp()==eCamp_Friend && (selectChar->GetActionStage()==eActionStage_AttackStage)))
 			ShowAttackRange(selectChar);
+		if(selectChar->GetCamp() == eCamp_Enemy || (selectChar->GetCamp()==eCamp_Friend && (selectChar->GetActionStage()==eActionStage_SkillStage)))
+			ShowSkillCastRange(selectChar);
+
+		if(selectChar->GetCastSkill() != -1)
+		{
+			ShowSkillRange(selectChar->GetCastSkill());
+		}
 	}
 	
-	if(m_nSkillToCast != -1)
-	{
-		ShowSkillRange(m_nSkillToCast);
-	}
+
 }
