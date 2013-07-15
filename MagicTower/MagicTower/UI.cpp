@@ -117,3 +117,15 @@ UIWindow* UISystem::GetWindow(eWindowID windowID)
 	}
 	return NULL;
 }
+
+bool UISystem::IsInAnyControl()
+{
+	for (std::map<eWindowID,UIWindow*>::iterator mit=m_mWindows.begin();mit!=m_mWindows.end();mit++)
+	{
+		if(mit->second->IsOnControl())
+		{
+			return true;
+		}
+	}
+	return false;
+}

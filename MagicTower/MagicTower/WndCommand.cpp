@@ -94,6 +94,7 @@ void WndCommand::Update(float dt)
 					wndSelect->SetBindChar(m_pChar);
 				}
 				SetShow(false);
+				m_pChar->SetActionStage(eActionStage_SkillStage);
 			}
 			m_pContainer->Leave();
 		}

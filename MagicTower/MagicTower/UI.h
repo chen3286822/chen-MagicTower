@@ -332,6 +332,7 @@ public:
 	void Release();
 	void Render();
 	void Update(float dt);
+	bool IsInAnyControl();
 
 	UIWindow* GetWindow(eWindowID windowID);
 private:

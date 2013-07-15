@@ -145,8 +145,14 @@ void CreatureManager::Update(float delta)
 		}
 	}
 
-	SelectCreature();
-	UnSelectCreature();
+	if( !(UISystem::sInstance().IsInAnyControl()))
+	{
+		if (g_getLButtonState(App::sInstance().GetHGE()) == eLButtonState_Up)
+			SelectCreature();
+		if(g_getRButtonState(App::sInstance().GetHGE()) == eRButtonState_Up)
+			UnSelectCreature();
+	}
+
 	ShowCreatureInfo();
 }
 
@@ -699,145 +705,139 @@ void CreatureManager::SelectCreature()
 			if(selectChar!=NULL)
 			{
 				//需要拦截点击操作界面的消息
-				if (g_getLButtonState(App::sInstance().GetHGE()) == eLButtonState_Up && !(UISystem::sInstance().GetWindow(eWindowID_Command)->IsOnControl()))
+				int nLastSelect = m_nSelectNum;
+				if (selectChar->GetCamp() == eCamp_Friend )
 				{
-					int nLastSelect = m_nSelectNum;
-					if (selectChar->GetCamp() == eCamp_Friend )
+					//上次没有选择单位
+					if(nLastSelect == -1)
 					{
-						//上次没有选择单位
-						if(nLastSelect == -1)
+						//选中的未行动友方进入移动阶段
+						if(!selectChar->GetFinish())
 						{
-							//选中的未行动友方进入移动阶段
-							if(!selectChar->GetFinish())
-							{
-								m_nSelectNum = selectChar->GetNum();
-								selectChar->SetActionStage(eActionStage_MoveStage);
-							}
-						}
-						//连续两次点击同一友方单位
-						else if(nLastSelect == selectChar->GetNum())
-						{
-							if(!selectChar->GetFinish())
-							{
-								//跳过移动阶段，进入操作阶段
-								selectChar->SetActionStage(eActionStage_HandleStage);
-								//打开操作界面
-								UIWindow* commandWindow = UISystem::sInstance().GetWindow(eWindowID_Command);
-								if(commandWindow)
-								{
-									commandWindow->SetShow(true);
-									commandWindow->SetBindChar(selectChar);
-								}
-							}
-						}
-						//其他情况
-						else
-						{
-							Character* lastChar = GetCreature(nLastSelect);
-							if(lastChar != NULL)
-							{
-								//上次点的是别的友方
-								if(lastChar->GetCamp() == eCamp_Friend)
-								{
-									if(lastChar->GetFinish() && !selectChar->GetFinish())
-									{
-										m_nSelectNum = selectChar->GetNum();
-										selectChar->SetActionStage(eActionStage_MoveStage);
-									}
-// 									//上次的友方返回至待命阶段
-// 									lastChar->SetActionStage(eActionStage_WaitStage);
-// 									selectChar->SetActionStage(eActionStage_MoveStage);
-								}
-								else if(lastChar->GetCamp() == eCamp_Enemy)
-								{
-									if(!selectChar->GetFinish())
-									{
-										m_nSelectNum = selectChar->GetNum();
-										selectChar->SetActionStage(eActionStage_MoveStage);
-									}
-								}
-							}
-							else 
-								//这里是错误分支，不可以运行到这里
-								return;
+							m_nSelectNum = selectChar->GetNum();
+							selectChar->SetActionStage(eActionStage_MoveStage);
 						}
 					}
-					else if (selectChar->GetCamp() == eCamp_Enemy)
+					//连续两次点击同一友方单位
+					else if(nLastSelect == selectChar->GetNum())
 					{
-						Character* lastChar = GetCreature(nLastSelect);
-						if(lastChar!=NULL) 
+						if(!selectChar->GetFinish())
 						{
-							if(lastChar->GetCamp()==eCamp_Friend)
+							//跳过移动阶段，进入操作阶段
+							selectChar->SetActionStage(eActionStage_HandleStage);
+							//打开操作界面
+							UIWindow* commandWindow = UISystem::sInstance().GetWindow(eWindowID_Command);
+							if(commandWindow)
 							{
-								if(lastChar->GetActionStage() == eActionStage_AttackStage)
-								{
-									//判断是否可以攻击到选中单位
-									if(lastChar->CanHitTarget(selectChar))
-									{
-//										lastChar->SetTarget(selectChar->GetNum());
-										//隐藏单位信息窗口
-										UIWindow* charInfoWindow = UISystem::sInstance().GetWindow(eWindowID_CharInfo);
-										if(charInfoWindow && charInfoWindow->IsShow())
-										{
-											charInfoWindow->SetShow(false);
-											UIWindow* commandWnd = UISystem::sInstance().GetWindow(eWindowID_Command);
-											if(commandWnd)
-												commandWnd->SetBindChar(NULL);
-										}	
-
-										m_nSelectNum = -1;
-										//lastChar->GeginHit();
-										//进行预计算
-										PreAttackAndPushAction(lastChar,selectChar);
-										return;
-									}
-								}
-								else if (lastChar->GetActionStage() == eActionStage_SkillStage)
-								{
-									if(lastChar->CanSkillHitTarget(selectChar))
-									{
-										m_nSelectNum = -1;
-										PreSkillAndPushAction(lastChar,selectChar);
-										return;
-									}
-								}
-							}
-							else if (lastChar->GetCamp() == eCamp_Enemy)
-							{
-								m_nSelectNum = selectChar->GetNum();
+								commandWindow->SetShow(true);
+								commandWindow->SetBindChar(selectChar);
 							}
 						}
-						else
+					}
+					//其他情况
+					else
+					{
+						Character* lastChar = GetCreature(nLastSelect);
+						if(lastChar != NULL)
+						{
+							//上次点的是别的友方
+							if(lastChar->GetCamp() == eCamp_Friend)
+							{
+								if(lastChar->GetFinish() && !selectChar->GetFinish())
+								{
+									m_nSelectNum = selectChar->GetNum();
+									selectChar->SetActionStage(eActionStage_MoveStage);
+								}
+								// 									//上次的友方返回至待命阶段
+								// 									lastChar->SetActionStage(eActionStage_WaitStage);
+								// 									selectChar->SetActionStage(eActionStage_MoveStage);
+							}
+							else if(lastChar->GetCamp() == eCamp_Enemy)
+							{
+								if(!selectChar->GetFinish())
+								{
+									m_nSelectNum = selectChar->GetNum();
+									selectChar->SetActionStage(eActionStage_MoveStage);
+								}
+							}
+						}
+						else 
+							//这里是错误分支，不可以运行到这里
+							return;
+					}
+				}
+				else if (selectChar->GetCamp() == eCamp_Enemy)
+				{
+					Character* lastChar = GetCreature(nLastSelect);
+					if(lastChar!=NULL) 
+					{
+						if(lastChar->GetCamp()==eCamp_Friend)
+						{
+							if(lastChar->GetActionStage() == eActionStage_AttackStage)
+							{
+								//判断是否可以攻击到选中单位
+								if(lastChar->CanHitTarget(selectChar))
+								{
+									//										lastChar->SetTarget(selectChar->GetNum());
+									//隐藏单位信息窗口
+									UIWindow* charInfoWindow = UISystem::sInstance().GetWindow(eWindowID_CharInfo);
+									if(charInfoWindow && charInfoWindow->IsShow())
+									{
+										charInfoWindow->SetShow(false);
+										UIWindow* commandWnd = UISystem::sInstance().GetWindow(eWindowID_Command);
+										if(commandWnd)
+											commandWnd->SetBindChar(NULL);
+									}	
+
+									m_nSelectNum = -1;
+									//lastChar->GeginHit();
+									//进行预计算
+									PreAttackAndPushAction(lastChar,selectChar);
+									return;
+								}
+							}
+							else if (lastChar->GetActionStage() == eActionStage_SkillStage)
+							{
+								if(lastChar->CanSkillHitTarget(selectChar))
+								{
+									m_nSelectNum = -1;
+									PreSkillAndPushAction(lastChar,selectChar);
+									return;
+								}
+							}
+						}
+						else if (lastChar->GetCamp() == eCamp_Enemy)
 						{
 							m_nSelectNum = selectChar->GetNum();
 						}
+					}
+					else
+					{
+						m_nSelectNum = selectChar->GetNum();
 					}
 				}
 			}
 			//点中地面
 			else
 			{
-				if (g_getLButtonState(App::sInstance().GetHGE()) == eLButtonState_Up && !(UISystem::sInstance().GetWindow(eWindowID_Command)->IsOnControl()))
+				if (m_nSelectNum>=0)
 				{
-					if (m_nSelectNum>=0)
+					selectChar = GetCreature(m_nSelectNum);
+					if (selectChar!= NULL)
 					{
-						selectChar = GetCreature(m_nSelectNum);
-						if (selectChar!= NULL)
+						if(selectChar->GetCamp() == eCamp_Friend && selectChar->GetActionStage() == eActionStage_MoveStage)
 						{
-							if(selectChar->GetCamp() == eCamp_Friend && selectChar->GetActionStage() == eActionStage_MoveStage)
-							{
-								//判断是否可以移动过去
-								int length = abs(mouseBlock.xpos - selectChar->GetBlock().xpos) + abs(mouseBlock.ypos - selectChar->GetBlock().ypos);
-								//超过移动范围
-								if(length > selectChar->GetMoveAbility())
-									return;
+							//判断是否可以移动过去
+							int length = abs(mouseBlock.xpos - selectChar->GetBlock().xpos) + abs(mouseBlock.ypos - selectChar->GetBlock().ypos);
+							//超过移动范围
+							if(length > selectChar->GetMoveAbility())
+								return;
 
-								//移动过去，记录原始位置
-								selectChar->GetOrigBlock().xpos = selectChar->GetBlock().xpos;
-								selectChar->GetOrigBlock().ypos = selectChar->GetBlock().ypos;
-								selectChar->GetOrigDirection() = selectChar->GetCurDirection();
-								selectChar->Move(mouseBlock.xpos,mouseBlock.ypos);
-							}
+							//移动过去，记录原始位置
+							selectChar->GetOrigBlock().xpos = selectChar->GetBlock().xpos;
+							selectChar->GetOrigBlock().ypos = selectChar->GetBlock().ypos;
+							selectChar->GetOrigDirection() = selectChar->GetCurDirection();
+							selectChar->Move(mouseBlock.xpos,mouseBlock.ypos);
 						}
 					}
 				}
@@ -851,47 +851,50 @@ void CreatureManager::UnSelectCreature()
 	if (m_nSelectNum >= 0)
 	{
 		int nLastSelect = m_nSelectNum;
-		if (g_getRButtonState(App::sInstance().GetHGE()) == eRButtonState_Up)
+		Character* lastChar = GetCreature(nLastSelect);
+		if(lastChar!=NULL && lastChar->GetCamp()==eCamp_Friend && !(lastChar->GetFinish()))
 		{
-			Character* lastChar = GetCreature(nLastSelect);
-			if(lastChar!=NULL && lastChar->GetCamp()==eCamp_Friend && !(lastChar->GetFinish()))
+			//返回至原位置
+			eActionStage stage = lastChar->GetActionStage();
+			if(stage == eActionStage_HandleStage)
 			{
-				//返回至原位置
-				eActionStage stage = lastChar->GetActionStage();
-				if(stage == eActionStage_HandleStage)
+				lastChar->SetActionStage(eActionStage_MoveStage);
+				lastChar->CancelMove();
+				//关闭操作界面
+				UIWindow* commandWindow = UISystem::sInstance().GetWindow(eWindowID_Command);
+				if(commandWindow)
 				{
-					lastChar->SetActionStage(eActionStage_MoveStage);
-					lastChar->CancelMove();
-					//关闭操作界面
-					UIWindow* commandWindow = UISystem::sInstance().GetWindow(eWindowID_Command);
-					if(commandWindow)
-					{
-						commandWindow->SetShow(false);
-					}
-				}
-				//攻击阶段、技能阶段、使用物品阶段可以返回至操作阶段
-				else if(stage == eActionStage_AttackStage || stage == eActionStage_GoodStage || stage == eActionStage_SkillStage)
-				{
-					lastChar->GetCastSkill() = -1;
-					lastChar->SetActionStage(eActionStage_HandleStage);
-					//打开操作界面
-					UIWindow* commandWindow = UISystem::sInstance().GetWindow(eWindowID_Command);
-					if(commandWindow)
-					{
-						commandWindow->SetShow(true);
-						commandWindow->SetBindChar(lastChar);
-					}
-				}
-				//右键取消选中的友方，需要重置行动阶段，处于移动中的单位不可以当时取消
-				else if(stage == eActionStage_MoveStage && lastChar->GetCharacterState()==eCharacterState_Stand)	
-				{
-					lastChar->SetActionStage(eActionStage_WaitStage);
-					m_nSelectNum = -1;
+					commandWindow->SetShow(false);
 				}
 			}
-			else
+			//攻击阶段、技能阶段、使用物品阶段可以返回至操作阶段
+			else if(stage == eActionStage_AttackStage || stage == eActionStage_GoodStage || stage == eActionStage_SkillStage)
+			{
+				lastChar->GetCastSkill() = -1;
+				lastChar->SetActionStage(eActionStage_HandleStage);
+				//打开操作界面
+				UIWindow* commandWindow = UISystem::sInstance().GetWindow(eWindowID_Command);
+				if(commandWindow)
+				{
+					commandWindow->SetShow(true);
+					commandWindow->SetBindChar(lastChar);
+				}
+				//关闭技能界面
+				UIWindow* selectWndow = UISystem::sInstance().GetWindow(eWindowID_Select);
+				if(selectWndow)
+				{
+					selectWndow->SetShow(false);
+				}
+			}
+			//右键取消选中的友方，需要重置行动阶段，处于移动中的单位不可以当时取消
+			else if(stage == eActionStage_MoveStage && lastChar->GetCharacterState()==eCharacterState_Stand)	
+			{
+				lastChar->SetActionStage(eActionStage_WaitStage);
 				m_nSelectNum = -1;
+			}
 		}
+		else
+			m_nSelectNum = -1;
 	}
 }
 
