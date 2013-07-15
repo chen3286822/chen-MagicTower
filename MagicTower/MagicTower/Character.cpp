@@ -104,10 +104,6 @@ void Character::Render()
 {
 	if(m_pAnimation)
 	{
-		DWORD color = 0xFFFFFFFF;
-		if(m_bFinishAct)
-			color = 0xFF59636C;
-		m_pAnimation->SetColor(color);
 		if(/*m_eCharState == eCharacterState_Defense && m_eAttackState == eAttackState_Defending && */m_eCurDir == eDirection_Right)	//由于源图片缺少向右的动作，故需要y轴对称绘制
 			m_pAnimation->RenderSymmetry(m_fXPos,m_fYPos,1);
 		else
@@ -413,6 +409,7 @@ void Character::SetFinish(bool _finish)
 	m_bFinishAct = _finish;
 	if (m_bFinishAct)
 	{
+		m_pAnimation->SetColor(0xFF59636C);
 		m_iOrigBlock.xpos = m_iBlock.xpos;
 		m_iOrigBlock.ypos = m_iBlock.ypos;
 		m_eOrigDir = m_eCurDir;

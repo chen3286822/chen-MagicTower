@@ -4,6 +4,7 @@
 #include "commonTools.h"
 #include "Character.h"
 #include "CreatureManager.h"
+#include "ConfigManager.h"
 
 typedef eNotification (Character::*LPActionFunc)(Character*,DWORD);
 
@@ -60,6 +61,11 @@ public:
 		if(!cast || !target)
 			return;
 		m_lAction.push_back(Action(notify,cast,target,time));
+
+		//test
+		char temp[10];
+		sprintf(temp,"%d ",notify);
+		OutputDebugString(temp);
 	}
 	void PopAction(){m_lAction.pop_front();}
 	void TimeUp(DWORD leftTime)
@@ -115,6 +121,16 @@ public:
 				case eNotify_FinishAttack:
 					{
 						m_eActionState = eActionState_End;
+					}
+					break;
+				case eNotify_CastSkill:
+					{
+						action.m_pCast->Attack(eNotify_Attack,action.m_pTarget,0);
+						action.m_pTarget->Attacked(eNotify_Attack,action.m_pCast,0);
+
+						SkillManager::sInstance().CreateSkill(action.m_pCast->GetCastSkill(),action.m_pTarget);
+
+						m_eActionState = eActionState_Process;
 					}
 					break;
 				default:
@@ -184,6 +200,17 @@ public:
 			case eNotify_FinishAttack:
 				{
 					action.m_pCast->SetFinish(true);
+				}
+				break;
+			case eNotify_CastSkill:
+				{
+					action.m_pCast->ResetFrame();
+					action.m_pTarget->ResetFrame();
+					SkillInfo skill = ConfigManager::sInstance().GetSkillInfo().find(action.m_pCast->GetCastSkill())->second;
+					action.m_pCast->GetMP() -= skill.m_nCost;
+					action.m_pCast->GetCastSkill() = -1;
+					action.m_pTarget->GetHP() -= action.m_pCast->GetPreHurt();
+					action.m_pTarget->GetCharacterState() = eCharacterState_Stand;
 				}
 				break;
 			default:

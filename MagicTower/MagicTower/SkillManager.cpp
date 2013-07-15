@@ -2,6 +2,7 @@
 #include "Character.h"
 #include "TexManager.h"
 #include "ConfigManager.h"
+#include "ActionProcess.h"
 
 SkillManager::SkillManager()
 {
@@ -62,6 +63,7 @@ void SkillManager::Update(float dt)
 		{
 			gSafeDelete((*it).m_pAnim);
 			it = m_lSkill.erase(it);
+			ActionProcess::sInstance().TimeUp(0);
 		}
 		else
 		{

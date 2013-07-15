@@ -33,6 +33,7 @@ struct SkillInfo
 	int m_nIcon;
 	int m_nCastRange;
 	int m_nCost;
+	int m_nAttack;
 	std::string m_strName;
 	SkillInfo()
 	{
@@ -43,9 +44,10 @@ struct SkillInfo
 		m_nIcon = -1;
 		m_nCastRange = 0;
 		m_nCost = 0;
+		m_nAttack = 0;
 		m_strName = "";
 	}
-	SkillInfo(int id,int frames,int attackRange,int offx,int offy,int icon,int castRange,int cost,std::string name)
+	SkillInfo(int id,int frames,int attackRange,int offx,int offy,int icon,int castRange,int cost,int attack,std::string name)
 	{
 		m_nID = id;
 		m_nFrames = frames;
@@ -55,6 +57,7 @@ struct SkillInfo
 		m_nIcon = icon;
 		m_nCastRange = castRange;
 		m_nCost = cost;
+		m_nAttack = attack;
 		m_strName = name;
 	}
 };
@@ -160,9 +163,10 @@ public:
 				int icon = -1;
 				int castRange = -1;
 				int cost = 0;
+				int attack = 0;
 				std::string name;
-				sscanf(mit->second.c_str(),"%d/%d/%d/%d/%d/%d/%d/%s",&frames,&attackRange,&offx,&offy,&icon,&castRange,&cost,name.c_str());
-				m_mSkillInfo[ID] = SkillInfo(ID,frames,attackRange,offx,offy,icon,castRange,cost,name.c_str());
+				sscanf(mit->second.c_str(),"%d/%d/%d/%d/%d/%d/%d/%d/%s",&frames,&attackRange,&offx,&offy,&icon,&castRange,&cost,&attack,name.c_str());
+				m_mSkillInfo[ID] = SkillInfo(ID,frames,attackRange,offx,offy,icon,castRange,cost,attack,name.c_str());
 			}
 		}
 	}

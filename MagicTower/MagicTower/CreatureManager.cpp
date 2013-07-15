@@ -477,11 +477,13 @@ bool CreatureManager::ResetAllCreature()
 	{
 			(*it)->SetFinish(false);
 			(*it)->SetActionStage(eActionStage_WaitStage);
+			(*it)->ChangeColor(0xFFFFFFFF);
 	}
 	for (VCharacter::iterator it=m_VFriendList.begin();it!=m_VFriendList.end();it++)
 	{
 		(*it)->SetFinish(false);
 		(*it)->SetActionStage(eActionStage_WaitStage);
+		(*it)->ChangeColor(0xFFFFFFFF);
 	}
 	return true;
 }
@@ -606,22 +608,25 @@ void CreatureManager::PreAttackAndPushAction(Character* cast,Character* target)
 			}
 		}
 
-		//·´»÷ÊÇ·ñ±©»÷
-		if (g_RandomInt(0,9) < (int)(target->GetCrit()*10))
-			bCrit2 = true;
+		if(bCounter)
+		{
+			//·´»÷ÊÇ·ñ±©»÷
+			if (g_RandomInt(0,9) < (int)(target->GetCrit()*10))
+				bCrit2 = true;
 
-		//½øÐÐ¹¥»÷ÉËº¦Ô¤´æ
-		CalculateHurt(target,cast,bCrit2);
+			//½øÐÐ¹¥»÷ÉËº¦Ô¤´æ
+			CalculateHurt(target,cast,bCrit2);
 
-		//¼ÆËãÊÇ·ñÃüÖÐ
-		if(g_RandomInt(0,9) >= (int)(cast->GetDodge()*10))
-			bhit2 = true;
-		else
-			target->GetPreHurt() = 0;
+			//¼ÆËãÊÇ·ñÃüÖÐ
+			if(g_RandomInt(0,9) >= (int)(cast->GetDodge()*10))
+				bhit2 = true;
+			else
+				target->GetPreHurt() = 0;
 
-		//castÊÇ·ñËÀÍö
-		if(target->GetPreHurt() >= cast->GetHP())
-			bDead2 = true;
+			//castÊÇ·ñËÀÍö
+			if(target->GetPreHurt() >= cast->GetHP())
+				bDead2 = true;
+		}
 	}
 
 
@@ -663,11 +668,20 @@ void CreatureManager::PreSkillAndPushAction(Character* cast,Character* target)
 	cast->GetPreHurt() = 0;
 	target->GetPreHurt() = 0;
 
+	SkillInfo skill = ConfigManager::sInstance().GetSkillInfo().find(cast->GetCastSkill())->second;
+	cast->GetPreHurt() = skill.m_nAttack;
+
+	bool bDead = false;
+	if(target->GetHP() <= cast->GetPreHurt())
+		bDead = true;
 
 	ActionProcess* process = ActionProcess::sInstancePtr();
 	process->PushAction(eNotify_TowardToAttacker,cast,target,0);
 
-	SkillManager::sInstance().CreateSkill(cast->GetCastSkill(),target);
+	process->PushAction(eNotify_CastSkill,cast,target,0);
+
+	if(bDead)
+		process->PushAction(eNotify_Dead,cast,target,300);
 	process->PushAction(eNotify_FinishAttack,cast,target,0);
 }
 
@@ -784,7 +798,6 @@ void CreatureManager::SelectCreature()
 									{
 										m_nSelectNum = -1;
 										PreSkillAndPushAction(lastChar,selectChar);
-										lastChar->GetCastSkill() = -1;
 										return;
 									}
 								}
@@ -891,7 +904,7 @@ void CreatureManager::ProcessSelectCreature()
 			ShowMoveRange(selectChar);
 		if(selectChar->GetCamp() == eCamp_Enemy || (selectChar->GetCamp()==eCamp_Friend && (selectChar->GetActionStage()==eActionStage_AttackStage)))
 			ShowAttackRange(selectChar);
-		if(selectChar->GetCamp() == eCamp_Enemy || (selectChar->GetCamp()==eCamp_Friend && (selectChar->GetActionStage()==eActionStage_SkillStage)))
+		if(selectChar->GetCamp()==eCamp_Friend && (selectChar->GetActionStage()==eActionStage_SkillStage))
 			ShowSkillCastRange(selectChar);
 
 		if(selectChar->GetCastSkill() != -1)

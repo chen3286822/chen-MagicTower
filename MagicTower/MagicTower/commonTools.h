@@ -156,6 +156,7 @@ enum eNotification
 	eNotify_Crit,
 	eNotify_Attack,
 	eNotify_AttackDefend,
+	eNotify_CastSkill,
 	eNotify_Dead,
 	eNotify_NoTarget,
 	eNotify_ReadyToBeAttacked,
