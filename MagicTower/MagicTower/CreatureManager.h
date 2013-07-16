@@ -81,6 +81,7 @@ public:
 	void PreAttackAndPushAction(Character* cast,Character* target);
 	//预先计算技能并且推送动作
 	void PreSkillAndPushAction(Character* cast,Character* target);
+	VCharacter&	GetSkillTargets(){return m_vSkillTargets;}
 	
 
 	//选中单位
@@ -104,6 +105,7 @@ private:
 	MAttackRange m_mAttackRange;
 	MSkillRange m_mSkillRange;
 	eCampTurn m_eCampTurn;	//当前所处回合
+	VCharacter m_vSkillTargets;//技能释放目标
 };
 
 

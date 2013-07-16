@@ -540,13 +540,13 @@ int CreatureManager::Notify(int src,int tar,int messageID,int param)
 void CreatureManager::CalculateHurt(Character* cast,Character* target,bool bCrit)
 {
 	if(!cast || !target)
-		cast->GetPreHurt() = 0;
+		target->GetPreHurt() = 0;
 
 	int hurt = cast->GetAttack() - target->GetDefend();
 	if(bCrit)
 		hurt += cast->GetAttack();
 	if(hurt > 0)
-		cast->GetPreHurt() = hurt;
+		target->GetPreHurt() = hurt;
 }
 
 // void CreatureManager::CalculateResult(int src,int tar)
@@ -591,11 +591,11 @@ void CreatureManager::PreAttackAndPushAction(Character* cast,Character* target)
 	if(g_RandomInt(0,9) >= (int)(target->GetDodge()*10))
 		bhit = true;
 	else 
-		cast->GetPreHurt() = 0;
+		target->GetPreHurt() = 0;
 
 	//目标是否死亡
 	bool bDead = false;
-	if(target->GetHP() <= cast->GetPreHurt())
+	if(target->GetHP() <= target->GetPreHurt())
 		bDead = true;
 
 	bool bCounter = false;
@@ -627,10 +627,10 @@ void CreatureManager::PreAttackAndPushAction(Character* cast,Character* target)
 			if(g_RandomInt(0,9) >= (int)(cast->GetDodge()*10))
 				bhit2 = true;
 			else
-				target->GetPreHurt() = 0;
+				cast->GetPreHurt() = 0;
 
 			//cast是否死亡
-			if(target->GetPreHurt() >= cast->GetHP())
+			if(cast->GetPreHurt() >= cast->GetHP())
 				bDead2 = true;
 		}
 	}
@@ -671,23 +671,72 @@ void CreatureManager::PreSkillAndPushAction(Character* cast,Character* target)
 {
 	if(!cast || !target)
 		return;
-	cast->GetPreHurt() = 0;
-	target->GetPreHurt() = 0;
 
+	//找到技能范围内的所有敌人
+	m_vSkillTargets.clear();
 	SkillInfo skill = ConfigManager::sInstance().GetSkillInfo().find(cast->GetCastSkill())->second;
-	cast->GetPreHurt() = skill.m_nAttack;
+	VCharacter vTar;
+	int tarX = 0,tarY = 0;
+	for (MSkillRange::iterator mit=m_mSkillRange.begin();mit!=m_mSkillRange.end();mit++)
+	{
+		if(mit->first == skill.m_nCastRange)
+		{
+			if(skill.m_nCastRange != eSkillRange_ShortLine || skill.m_nCastRange!= eSkillRange_Line)
+			{
+				for (vector<int>::iterator it=mit->second.begin();it!=mit->second.end();it++)
+				{
+					tarX = m_vPair[*it].x + target->GetBlock().xpos;
+					tarY = m_vPair[*it].y + target->GetBlock().ypos;
+					Character* otherChar = GetEnemy(tarX,tarY);
+					if(otherChar!=NULL)
+						vTar.push_back(otherChar);
+				}
+			}
+			else
+			{
+				//确定双方位置
+				eDirection dir = eDirection_None;
+				Block& block = target->GetBlock();
+				if (block.xpos < cast->GetBlock().xpos)
+					dir = eDirection_Left;
+				else if(block.xpos > cast->GetBlock().xpos)
+					dir = eDirection_Right;
+				else if(block.ypos < cast->GetBlock().ypos)
+					dir = eDirection_Up;
+				else
+					dir = eDirection_Down;
 
-	bool bDead = false;
-	if(target->GetHP() <= cast->GetPreHurt())
-		bDead = true;
+				int num = ((skill.m_nCastRange==eSkillRange_ShortLine)?12:24);
+				for(int i=num/4*(dir-1);i<num/4*(dir-1)+4;i++)
+				{
+					tarX = m_vPair[mit->second[i]].x + target->GetBlock().xpos;
+					tarY = m_vPair[mit->second[i]].y + target->GetBlock().ypos;
+					Character* otherChar = GetEnemy(tarX,tarY);
+					if(otherChar!=NULL)
+						vTar.push_back(otherChar);
+				}
+			}
+		}
+	}
+	m_vSkillTargets = vTar;
 
 	ActionProcess* process = ActionProcess::sInstancePtr();
 	process->PushAction(eNotify_TowardToAttacker,cast,target,0);
-
+	process->PushAction(eNotify_CastAction,cast,target,500);
 	process->PushAction(eNotify_CastSkill,cast,target,0);
 
-	if(bDead)
-		process->PushAction(eNotify_Dead,cast,target,300);
+	cast->GetPreHurt() = 0;
+	for(VCharacter::iterator it=vTar.begin();it!=vTar.end();it++)
+	{
+			(*it)->GetPreHurt() = skill.m_nAttack;
+			bool bDead = false;
+			if((*it)->GetHP() <= (*it)->GetPreHurt())
+				bDead = true;
+
+			process->PushAction(eNotify_Attacked,cast,(*it),500);
+			if(bDead)
+				process->PushAction(eNotify_Dead,cast,(*it),300);
+	}
 	process->PushAction(eNotify_FinishAttack,cast,target,0);
 }
 
@@ -721,7 +770,7 @@ void CreatureManager::SelectCreature()
 					//连续两次点击同一友方单位
 					else if(nLastSelect == selectChar->GetNum())
 					{
-						if(!selectChar->GetFinish())
+						if(!selectChar->GetFinish() && selectChar->GetActionStage()== eActionStage_MoveStage)
 						{
 							//跳过移动阶段，进入操作阶段
 							selectChar->SetActionStage(eActionStage_HandleStage);

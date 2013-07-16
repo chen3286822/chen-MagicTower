@@ -123,12 +123,24 @@ public:
 						m_eActionState = eActionState_End;
 					}
 					break;
+				case eNotify_CastAction:
+					{
+						action.m_pCast->Attack(eNotify_Attack,action.m_pTarget,action.m_dwTime);
+						//action.m_pTarget->Attacked(eNotify_Attack,action.m_pCast,0);
+
+						m_eActionState = eActionState_Process;
+					}
+					break;
 				case eNotify_CastSkill:
 					{
-						action.m_pCast->Attack(eNotify_Attack,action.m_pTarget,0);
-						action.m_pTarget->Attacked(eNotify_Attack,action.m_pCast,0);
+						SkillManager::sInstance().CreateSkill(action.m_pCast->GetCastSkill(),CreatureManager::sInstance().GetSkillTargets());
 
-						SkillManager::sInstance().CreateSkill(action.m_pCast->GetCastSkill(),action.m_pTarget);
+						m_eActionState = eActionState_Process;
+					}
+					break;
+				case eNotify_Attacked:
+					{
+						action.m_pTarget->Attacked(eNotify_Attack,action.m_pCast,action.m_dwTime);
 
 						m_eActionState = eActionState_Process;
 					}
@@ -181,7 +193,8 @@ public:
 				{
 					action.m_pCast->ResetFrame();
 					action.m_pTarget->ResetFrame();
-					action.m_pTarget->GetHP() -= action.m_pCast->GetPreHurt();
+					action.m_pTarget->GetHP() -= action.m_pTarget->GetPreHurt();
+					action.m_pTarget->GetPreHurt() = 0;
 					action.m_pTarget->GetCharacterState() = eCharacterState_Stand;
 				}
 				break;
@@ -202,14 +215,23 @@ public:
 					action.m_pCast->SetFinish(true);
 				}
 				break;
+			case eNotify_CastAction:
+				{
+					action.m_pCast->ResetFrame();	
+				}
+				break;
 			case eNotify_CastSkill:
 				{
-					action.m_pCast->ResetFrame();
-					action.m_pTarget->ResetFrame();
 					SkillInfo skill = ConfigManager::sInstance().GetSkillInfo().find(action.m_pCast->GetCastSkill())->second;
 					action.m_pCast->GetMP() -= skill.m_nCost;
 					action.m_pCast->GetCastSkill() = -1;
-					action.m_pTarget->GetHP() -= action.m_pCast->GetPreHurt();
+				}
+				break;
+			case eNotify_Attacked:
+				{
+					action.m_pTarget->ResetFrame();
+					action.m_pTarget->GetHP() -= action.m_pTarget->GetPreHurt();
+					action.m_pTarget->GetPreHurt() = 0;
 					action.m_pTarget->GetCharacterState() = eCharacterState_Stand;
 				}
 				break;

@@ -156,7 +156,9 @@ enum eNotification
 	eNotify_Crit,
 	eNotify_Attack,
 	eNotify_AttackDefend,
-	eNotify_CastSkill,
+	eNotify_CastAction,	//施法动作
+	eNotify_CastSkill,		//释放技能
+	eNotify_Attacked,		//被技能攻击
 	eNotify_Dead,
 	eNotify_NoTarget,
 	eNotify_ReadyToBeAttacked,
