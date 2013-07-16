@@ -75,6 +75,7 @@ public:
 	void Attacked(eNotification notify,Character* target,int time);
 	void Defend(eNotification notify,Character* target,int time);
 	void Dead(eNotification notify,Character* target,int time);
+	void Healed(eNotification notify,Character* target,int time);	//被治愈，上buff，升级
 	void ChangeColor(DWORD color){m_pAnimation->SetColor(color);}
 	void ResetFrame();
 
@@ -96,6 +97,7 @@ public:
 	int&	GetPreHurt(){return m_nPreHurt;}
 	bool& GetDead(){return m_bDead;}
 	bool& GetCounter(){return m_bCounter;}
+	void SetAttributeValue(int type,int value);
 
 	//技能
 	std::vector<int>		GetSkillList();

@@ -145,6 +145,13 @@ public:
 						m_eActionState = eActionState_Process;
 					}
 					break;
+				case eNotify_Healed:
+					{
+						action.m_pTarget->Healed(eNotify_Attack,action.m_pCast,action.m_dwTime);
+
+						m_eActionState = eActionState_Process;
+					}
+					break;
 				default:
 					break;
 				}
@@ -213,6 +220,7 @@ public:
 			case eNotify_FinishAttack:
 				{
 					action.m_pCast->SetFinish(true);
+					action.m_pCast->GetCastSkill() = -1;
 				}
 				break;
 			case eNotify_CastAction:
@@ -224,13 +232,28 @@ public:
 				{
 					SkillInfo skill = ConfigManager::sInstance().GetSkillInfo().find(action.m_pCast->GetCastSkill())->second;
 					action.m_pCast->GetMP() -= skill.m_nCost;
-					action.m_pCast->GetCastSkill() = -1;
 				}
 				break;
 			case eNotify_Attacked:
 				{
 					action.m_pTarget->ResetFrame();
 					action.m_pTarget->GetHP() -= action.m_pTarget->GetPreHurt();
+					action.m_pTarget->GetPreHurt() = 0;
+					action.m_pTarget->GetCharacterState() = eCharacterState_Stand;
+				}
+				break;
+			case eNotify_Healed:
+				{
+					SkillInfo skill = ConfigManager::sInstance().GetSkillInfo().find(action.m_pCast->GetCastSkill())->second;
+					action.m_pTarget->ResetFrame();
+					if(skill.m_nSkillType == eSkillType_Heal)
+						action.m_pTarget->GetHP() += action.m_pTarget->GetPreHurt();
+					else if (skill.m_nSkillType == eSkillType_Buff)
+					{
+						int buffType = action.m_pTarget->GetPreHurt()/1000;
+						int buffValue = action.m_pTarget->GetPreHurt()%1000;
+						action.m_pTarget->SetAttributeValue(buffType,buffValue);
+					}
 					action.m_pTarget->GetPreHurt() = 0;
 					action.m_pTarget->GetCharacterState() = eCharacterState_Stand;
 				}

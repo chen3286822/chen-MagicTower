@@ -796,6 +796,20 @@ void Character::Dead(eNotification notify,Character* target,int time)
 	m_eNotify = notify;
 }
 
+void Character::Healed(eNotification notify,Character* target,int time)
+{
+	//播放攻击动作
+	m_pAnimation->SetTexture(m_mCharTex[eActionTex_LevelUp]);
+	m_pAnimation->ResetFrames(0,4*FLOAT_PIC_SQUARE_WIDTH,
+		FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_WIDTH,1,8,true);
+	m_pAnimation->SetMode(HGEANIM_FWD | HGEANIM_LOOP);
+
+	m_eCharState = eCharacterState_Healed;
+
+	m_nActionTime = time;
+	m_eNotify = notify;
+}
+
 bool Character::CanHitTarget(Character* target)
 {
 	if(!target)
@@ -839,4 +853,45 @@ std::vector<int>	Character::GetSkillList()
 	vSkillList.insert(vSkillList.begin(),m_vDefaultSkillList.begin(),m_vDefaultSkillList.end());
 	vSkillList.insert(vSkillList.end(),m_vNewSkillList.begin(),m_vNewSkillList.end());
 	return vSkillList;
+}
+
+
+/*根据属性类型，调整属性值
+type : 解释
+1 : 增加HP上限以及当前HP值
+2：增加MP上限以及当前MP值
+3：增加攻击力
+4：增加防御力
+5：增加暴击概率
+6：增加闪避概率
+*/
+void Character::SetAttributeValue(int type,int value)
+{
+	switch(type)
+	{
+	case 1:
+		{
+			m_nHPMax += value;
+			m_nHP += value;
+		}
+		break;
+	case 2:
+		{
+			m_nMPMax += value;
+			m_nMP += value;
+		}
+		break;
+	case 3:
+		m_nAttack += value;
+		break;
+	case 4:
+		m_nDefend += value;
+		break;
+	case 5:
+		m_fCrit += ((float)value)/1000;
+		break;
+	case 6:
+		m_fDodge += ((float)value)/1000;
+		break;
+	}
 }

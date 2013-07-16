@@ -120,6 +120,7 @@ enum eCharacterState
 	eCharacterState_Dead = 2,
 	eCharacterState_Defense = 3,
 	eCharacterState_Attacked = 4,
+	eCharacterState_Healed = 5,
 };
 
 //动作图包
@@ -159,6 +160,7 @@ enum eNotification
 	eNotify_CastAction,	//施法动作
 	eNotify_CastSkill,		//释放技能
 	eNotify_Attacked,		//被技能攻击
+	eNotify_Healed,			//被治愈或者上buff
 	eNotify_Dead,
 	eNotify_NoTarget,
 	eNotify_ReadyToBeAttacked,
@@ -199,6 +201,13 @@ enum eSkillRange
 	eSkillRange_BigObliqueBox = 5,	//大斜方块型
 	eSkillRange_ShortLine = 6,				//短直线型
 	eSkillRange_Line = 7,							//长直线型
+};
+
+enum eSkillType
+{
+	eSkillType_Hurt = 1,		//伤害型技能
+	eSkillType_Heal = 2,		//治愈型技能
+	eSkillType_Buff = 3,			//buff型技能
 };
 
 //攻击类型

@@ -225,6 +225,9 @@ void CreatureManager::ShowSkillRange(int skillID)
 	currentMap->GetWidthLength(mapWidth,mapLength);
 	int offX = 0,offY = 0;
 	Block mouseBlock = App::sInstance().GetMouseBlock();
+	DWORD color = 0xBFFF0000;
+	if(skillInfo.m_nSkillType == eSkillType_Heal || skillInfo.m_nSkillType == eSkillType_Buff)
+		color = 0xBF00FF00;
 
 	for (MSkillRange::iterator mit=m_mSkillRange.begin();mit!=m_mSkillRange.end();mit++)
 	{
@@ -235,7 +238,7 @@ void CreatureManager::ShowSkillRange(int skillID)
 			{
 				offX = mouseBlock.xpos;
 				offY = mouseBlock.ypos;
-				App::sInstance().DrawBox(MAP_OFF_X + offX*MAP_RECT,MAP_OFF_Y + offY*MAP_RECT,0xBFFF0000,8,MAP_RECT,MAP_RECT);
+				App::sInstance().DrawBox(MAP_OFF_X + offX*MAP_RECT,MAP_OFF_Y + offY*MAP_RECT,color,8,MAP_RECT,MAP_RECT);
 			}
 			else
 			{
@@ -245,7 +248,7 @@ void CreatureManager::ShowSkillRange(int skillID)
 					offY = m_vPair[*it].y + mouseBlock.ypos;
 					if (offX >= 0 && offX < mapWidth && offY >= 0 && offY < mapLength)
 					{					
-						App::sInstance().DrawBox(MAP_OFF_X + offX*MAP_RECT,MAP_OFF_Y + offY*MAP_RECT,0xBFFF0000,8,MAP_RECT,MAP_RECT);
+						App::sInstance().DrawBox(MAP_OFF_X + offX*MAP_RECT,MAP_OFF_Y + offY*MAP_RECT,color,8,MAP_RECT,MAP_RECT);
 					}
 				}
 			}
@@ -687,7 +690,11 @@ void CreatureManager::PreSkillAndPushAction(Character* cast,Character* target)
 				{
 					tarX = m_vPair[*it].x + target->GetBlock().xpos;
 					tarY = m_vPair[*it].y + target->GetBlock().ypos;
-					Character* otherChar = GetEnemy(tarX,tarY);
+					Character* otherChar = NULL;
+					if(skill.m_nSkillType == eSkillType_Hurt)
+						otherChar = GetEnemy(tarX,tarY);
+					else if(skill.m_nSkillType == eSkillType_Heal || skill.m_nSkillType == eSkillType_Buff)
+						otherChar = GetFriend(tarX,tarY);
 					if(otherChar!=NULL)
 						vTar.push_back(otherChar);
 				}
@@ -711,7 +718,11 @@ void CreatureManager::PreSkillAndPushAction(Character* cast,Character* target)
 				{
 					tarX = m_vPair[mit->second[i]].x + target->GetBlock().xpos;
 					tarY = m_vPair[mit->second[i]].y + target->GetBlock().ypos;
-					Character* otherChar = GetEnemy(tarX,tarY);
+					Character* otherChar = NULL;
+					if(skill.m_nSkillType == eSkillType_Hurt)
+						otherChar = GetEnemy(tarX,tarY);
+					else if(skill.m_nSkillType == eSkillType_Heal || skill.m_nSkillType == eSkillType_Buff)
+						otherChar = GetFriend(tarX,tarY);
 					if(otherChar!=NULL)
 						vTar.push_back(otherChar);
 				}
@@ -726,8 +737,10 @@ void CreatureManager::PreSkillAndPushAction(Character* cast,Character* target)
 	process->PushAction(eNotify_CastSkill,cast,target,0);
 
 	cast->GetPreHurt() = 0;
-	for(VCharacter::iterator it=vTar.begin();it!=vTar.end();it++)
+	if(skill.m_nSkillType == eSkillType_Hurt)
 	{
+		for(VCharacter::iterator it=vTar.begin();it!=vTar.end();it++)
+		{
 			(*it)->GetPreHurt() = skill.m_nAttack;
 			bool bDead = false;
 			if((*it)->GetHP() <= (*it)->GetPreHurt())
@@ -736,7 +749,17 @@ void CreatureManager::PreSkillAndPushAction(Character* cast,Character* target)
 			process->PushAction(eNotify_Attacked,cast,(*it),500);
 			if(bDead)
 				process->PushAction(eNotify_Dead,cast,(*it),300);
+		}
 	}
+	else if(skill.m_nSkillType == eSkillType_Heal || skill.m_nSkillType == eSkillType_Buff)
+	{
+		for(VCharacter::iterator it=vTar.begin();it!=vTar.end();it++)
+		{
+			(*it)->GetPreHurt() = skill.m_nAttack;
+			process->PushAction(eNotify_Healed,cast,(*it),500);
+		}
+	}
+
 	process->PushAction(eNotify_FinishAttack,cast,target,0);
 }
 
