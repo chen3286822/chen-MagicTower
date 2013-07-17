@@ -179,7 +179,7 @@ void CreatureManager::ShowSkillCastRange(Character* creature)
 	if (creature)
 	{
 		DWORD color = 0x4FEB2323;
-		std::vector<Block*> range = creature->CreateRange(MapManager::sInstance().GetCurrentMap(),ConfigManager::sInstance().GetSkillInfo().find(creature->GetCamp())->second.m_nCastRange,true);
+		std::vector<Block*> range = creature->CreateRange(MapManager::sInstance().GetCurrentMap(),ConfigManager::sInstance().GetSkillInfo().find(creature->GetCastSkill())->second.m_nCastRange,true);
 		for (std::vector<Block*>::iterator it=range.begin();it!=range.end();it++)
 		{
 			//画方格表示可以移动
