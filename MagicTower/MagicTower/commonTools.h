@@ -285,8 +285,11 @@ enum eFontSize
 	eFontSize_FontSmall = 10,
 	eFontSize_FontMiddle = 12,
 	eFontSize_FontBig = 14,
+	eFontSize_FontTitle = 16,
+	eFontSize_FontSuper = 18,
+	eFontSize_FontHuge = 50,
 
-	eFontSize_FontSizeNum = 3,
+	eFontSize_FontSizeNum = 6,
 };
 
 enum eTerrain

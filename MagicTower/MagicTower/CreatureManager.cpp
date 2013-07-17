@@ -303,6 +303,8 @@ void CreatureManager::ShowCreatureInfo()
 		TipWnd::sInstance().AddText(temp,0xFFFFFFFF,-1,-1,eFontType_MSYaHei,eFontSize_FontMiddle);
 		sprintf(temp," 生命值：%d",cha->GetHP());
 		TipWnd::sInstance().AddText(temp,0xFFFFFFFF,-1,-1,eFontType_MSYaHei,eFontSize_FontMiddle);
+		sprintf(temp," 攻击力：%d",cha->GetAttack());
+		TipWnd::sInstance().AddText(temp,0xFFFFFFFF,-1,-1,eFontType_MSYaHei,eFontSize_FontMiddle);
 		TipWnd::sInstance().SetShow(true);
 		TipWnd::sInstance().SetPos(block.xpos,block.ypos);
 	}
@@ -470,6 +472,7 @@ bool CreatureManager::ResetAllCreature()
 	{
 		m_eCampTurn = eCampTurn_Enemy;
 		m_nSelectNum = -1;
+		MapManager::sInstance().GetCurrentMap()->GoIntoTurn(m_eCampTurn);
 	}
 
 	for (VCharacter::iterator it=m_VEnemyList.begin();it!=m_VEnemyList.end();it++)
@@ -479,20 +482,29 @@ bool CreatureManager::ResetAllCreature()
 	}
 	//敌方行动完，进入下一回合
 	if (m_eCampTurn == eCampTurn_Enemy)
+	{
 		m_eCampTurn = eCampTurn_Friend;
-	
+		MapManager::sInstance().GetCurrentMap()->AddTurn();
+		MapManager::sInstance().GetCurrentMap()->GoIntoTurn(m_eCampTurn);
+	}
 
 	for (VCharacter::iterator it=m_VEnemyList.begin();it!=m_VEnemyList.end();it++)
 	{
 			(*it)->SetFinish(false);
 			(*it)->SetActionStage(eActionStage_WaitStage);
 			(*it)->ChangeColor(0xFFFFFFFF);
+
+			//更新buff
+			(*it)->RemoveBuff();
 	}
 	for (VCharacter::iterator it=m_VFriendList.begin();it!=m_VFriendList.end();it++)
 	{
 		(*it)->SetFinish(false);
 		(*it)->SetActionStage(eActionStage_WaitStage);
 		(*it)->ChangeColor(0xFFFFFFFF);
+
+		//更新buff
+		(*it)->RemoveBuff();
 	}
 	return true;
 }
@@ -793,16 +805,29 @@ void CreatureManager::SelectCreature()
 					//连续两次点击同一友方单位
 					else if(nLastSelect == selectChar->GetNum())
 					{
-						if(!selectChar->GetFinish() && selectChar->GetActionStage()== eActionStage_MoveStage)
+						if(!selectChar->GetFinish())
 						{
-							//跳过移动阶段，进入操作阶段
-							selectChar->SetActionStage(eActionStage_HandleStage);
-							//打开操作界面
-							UIWindow* commandWindow = UISystem::sInstance().GetWindow(eWindowID_Command);
-							if(commandWindow)
+							if(selectChar->GetActionStage()== eActionStage_MoveStage)
 							{
-								commandWindow->SetShow(true);
-								commandWindow->SetBindChar(selectChar);
+								//跳过移动阶段，进入操作阶段
+								selectChar->SetActionStage(eActionStage_HandleStage);
+								//打开操作界面
+								UIWindow* commandWindow = UISystem::sInstance().GetWindow(eWindowID_Command);
+								if(commandWindow)
+								{
+									commandWindow->SetShow(true);
+									commandWindow->SetBindChar(selectChar);
+								}
+							}
+							else if (selectChar->GetActionStage()== eActionStage_SkillStage)
+							{
+								//对自己释放技能
+								if(selectChar->CanSkillHitTarget(selectChar))
+								{
+									m_nSelectNum = -1;
+									PreSkillAndPushAction(selectChar,selectChar);
+									return;
+								}
 							}
 						}
 					}
@@ -815,7 +840,17 @@ void CreatureManager::SelectCreature()
 							//上次点的是别的友方
 							if(lastChar->GetCamp() == eCamp_Friend)
 							{
-								if(lastChar->GetFinish() && !selectChar->GetFinish())
+								if(lastChar->GetActionStage() == eActionStage_SkillStage)
+								{
+									//对友方释放技能
+									if(lastChar->CanSkillHitTarget(selectChar))
+									{
+										m_nSelectNum = -1;
+										PreSkillAndPushAction(lastChar,selectChar);
+										return;
+									}
+								}
+								else if(lastChar->GetFinish() && !selectChar->GetFinish())
 								{
 									m_nSelectNum = selectChar->GetNum();
 									selectChar->SetActionStage(eActionStage_MoveStage);

@@ -35,6 +35,7 @@ struct SkillInfo
 	int m_nCost;							//消耗MP
 	int m_nSkillType;					//技能类型
 	int m_nAttack;						//攻击力
+	int m_nLastTurn;					//持续回合数
 	std::string m_strName;		//技能名称
 	SkillInfo()
 	{
@@ -47,9 +48,10 @@ struct SkillInfo
 		m_nCost = 0;
 		m_nSkillType = 0;
 		m_nAttack = 0;
+		m_nLastTurn = 0;
 		m_strName = "";
 	}
-	SkillInfo(int id,int frames,int attackRange,int offx,int offy,int icon,int castRange,int cost,int skillType,int attack,std::string name)
+	SkillInfo(int id,int frames,int attackRange,int offx,int offy,int icon,int castRange,int cost,int skillType,int attack,int lastTurn,std::string name)
 	{
 		m_nID = id;
 		m_nFrames = frames;
@@ -61,6 +63,7 @@ struct SkillInfo
 		m_nCost = cost;
 		m_nSkillType = skillType;
 		m_nAttack = attack;
+		m_nLastTurn = lastTurn;
 		m_strName = name;
 	}
 };
@@ -168,9 +171,10 @@ public:
 				int cost = 0;
 				int skillType = 0;
 				int attack = 0;
+				int lastTurn = 0;
 				std::string name;
-				sscanf(mit->second.c_str(),"%d/%d/%d/%d/%d/%d/%d/%d/%d/%s",&frames,&attackRange,&offx,&offy,&icon,&castRange,&cost,&skillType,&attack,name.c_str());
-				m_mSkillInfo[ID] = SkillInfo(ID,frames,attackRange,offx,offy,icon,castRange,cost,skillType,attack,name.c_str());
+				sscanf(mit->second.c_str(),"%d/%d/%d/%d/%d/%d/%d/%d/%d/%d/%s",&frames,&attackRange,&offx,&offy,&icon,&castRange,&cost,&skillType,&attack,&lastTurn,name.c_str());
+				m_mSkillInfo[ID] = SkillInfo(ID,frames,attackRange,offx,offy,icon,castRange,cost,skillType,attack,lastTurn,name.c_str());
 			}
 		}
 	}

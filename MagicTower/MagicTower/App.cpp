@@ -134,6 +134,7 @@ bool App::AppRender()
 	UISystem::sInstance().Render();
 	SkillManager::sInstance().Render();
 
+	MapManager::sInstance().GetCurrentMap()->RenderTitle();
 	m_pHge->Gfx_EndScene();
 	return false;
 }
@@ -224,15 +225,18 @@ bool App::AppUpdate()
 // 		player->GeginHit();
 
 	float dt = m_pHge->Timer_GetDelta();
+	MapManager::sInstance().Update(dt);
 
-	CreatureManager::sInstance().Strategy();
+	if(!MapManager::sInstance().GetCurrentMap()->IsShowTitle())
+	{
+		CreatureManager::sInstance().Strategy();
+		ActionProcess::sInstance().Update();
+		CreatureManager::sInstance().Update(dt);
+		TipWnd::sInstance().Update(dt);
+		UISystem::sInstance().Update(dt);
+		SkillManager::sInstance().Update(dt);
+	}
 
-	MapManager::sInstance().Update();
-	ActionProcess::sInstance().Update();
-	CreatureManager::sInstance().Update(dt);
-	TipWnd::sInstance().Update(dt);
-	UISystem::sInstance().Update(dt);
-	SkillManager::sInstance().Update(dt);
 	return false;
 }
 

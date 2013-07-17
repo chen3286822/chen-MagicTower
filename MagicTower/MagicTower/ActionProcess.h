@@ -252,6 +252,7 @@ public:
 					{
 						int buffType = action.m_pTarget->GetPreHurt()/1000;
 						int buffValue = action.m_pTarget->GetPreHurt()%1000;
+						action.m_pTarget->GetBuffData().push_back(BuffData(buffType,buffValue,skill.m_nLastTurn));
 						action.m_pTarget->SetAttributeValue(buffType,buffValue);
 					}
 					action.m_pTarget->GetPreHurt() = 0;

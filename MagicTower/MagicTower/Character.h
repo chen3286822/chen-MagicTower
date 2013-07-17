@@ -11,6 +11,24 @@ Stand --Attack--> Fight ----> Stand
 当单位处于Walk时，其行动方向一定不是None
 
 */
+struct BuffData
+{
+	int m_nType;					//buff种类
+	int m_nValue;				//buff值大小
+	int m_nLastTurns;		//持续时间
+	BuffData()
+	{
+		m_nType = -1;
+		m_nValue = -1;
+		m_nLastTurns = 0;
+	}
+	BuffData(int type,int value,int lastTurns)
+	{
+		m_nType = type;
+		m_nValue = value;
+		m_nLastTurns = lastTurns;
+	}
+};
 
 class Map;
 //表示所有单位
@@ -98,6 +116,8 @@ public:
 	bool& GetDead(){return m_bDead;}
 	bool& GetCounter(){return m_bCounter;}
 	void SetAttributeValue(int type,int value);
+	std::vector<BuffData>& GetBuffData(){return m_vBuffData;}
+	void RemoveBuff();
 
 	//技能
 	std::vector<int>		GetSkillList();
@@ -149,6 +169,7 @@ private:
 	int m_nExpTotal;	//当前升级所需总经验值
 	bool	m_bDead;	//是否死亡
 	bool	m_bCounter;	//是否可以反击
+	std::vector<BuffData> m_vBuffData;	//保存单位获得的buff数据，以便buff结束时恢复
 	int m_nPreHurt;	//下一次攻击准备打出的伤害，提前计算出以便后面扣除
 
 	//技能列表

@@ -10,7 +10,7 @@ public:
 
 	void Init();
 	void Render();
-	void Update();
+	void Update(float dt);
 
 	inline void AddObject(MapObject* mo){m_vObjList.push_back(mo);}
 	inline void AddBlock(Block _block){m_vBlocks.push_back(_block);}
@@ -18,6 +18,13 @@ public:
 	inline int	GetLevel(){return m_nlevel;}
 	inline void SetWidthLength(int _width,int _length){m_nWidth = _width; m_nLength = _length;}
 	inline void GetWidthLength(int& _width,int& _length){_width = m_nWidth; _length = m_nLength;}
+	inline int&	GetTurns(){return m_nTurns;}
+	inline int&	GetCurrentTurn(){return m_nCurTurn;}
+
+	void RenderTitle();
+	void AddTurn();
+	void GoIntoTurn(eCampTurn turn);
+	bool IsShowTitle();
 
 	//根据位于地图的位置取得当前位置的物件和地图块
 	MapObject* GetObject(int x,int y);
@@ -44,6 +51,13 @@ private:
 	int m_nlevel;
 	int m_nWidth;
 	int m_nLength;
+	int m_nTurns;		//限制回合数
+	int m_nCurTurn;	//当前回合数
+	bool m_bShowTurns;	//是否显示当前回合数
+	int m_nShowTurnTime;	//显示回合数的持续时间
+	bool m_bShowCampTurn;	//是否显示阵营回合
+	int m_nShowCampTurnTime;	//显示阵营的持续时间
+	eCampTurn m_eCurCampTurn;	//当前阵营
 
 	hgeSprite* m_pMapSpr;
 	AStar m_iPathFinder;
@@ -60,7 +74,7 @@ public:
 	Map* GetMap(int level);
 	inline Map* GetCurrentMap(){return GetMap(m_nCurrentLevel);}
 	void Render();
-	void Update();
+	void Update(float dt);
 
 private:
 	std::vector<Map*> m_vMaps;

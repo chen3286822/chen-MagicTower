@@ -83,6 +83,7 @@ void Character::Init(int _Level,int _ID,int _Num,int _Action,Block _block)
 	m_nPreHurt = 0;
 	m_bDead = false;
 	m_bCounter = true;
+	m_vBuffData.clear();
 
 	m_vDefaultSkillList = ConfigManager::sInstance().GetCreatureSkill(m_strKind);
 	m_nCastSkill = -1;
@@ -842,6 +843,10 @@ bool Character::CanSkillHitTarget(Character* target)
 
 	Block tarBlock = target->GetBlock();
 	SkillInfo skill = ConfigManager::sInstance().GetSkillInfo().find(m_nCastSkill)->second;
+	if(skill.m_nSkillType == eSkillType_Hurt && target->GetCamp() != eCamp_Enemy)
+		return false;
+	if((skill.m_nSkillType == eSkillType_Heal || skill.m_nSkillType == eSkillType_Buff) && target->GetCamp() != eCamp_Friend)
+		return false;
 	if(abs(tarBlock.xpos-m_iBlock.xpos) + abs(tarBlock.ypos-m_iBlock.ypos) <= skill.m_nCastRange)
 		return true;
 	return false;
@@ -893,5 +898,46 @@ void Character::SetAttributeValue(int type,int value)
 	case 6:
 		m_fDodge += ((float)value)/1000;
 		break;
+	}
+}
+
+void Character::RemoveBuff()
+{
+	for (std::vector<BuffData>::iterator it=m_vBuffData.begin();it!=m_vBuffData.end();)
+	{
+		//持续时间减1
+		it->m_nLastTurns--;
+		//移除时间为0的buff
+		if (it->m_nLastTurns <= 0)
+		{
+			switch(it->m_nType)
+			{
+			case 1:
+				m_nHPMax -= it->m_nValue;
+				break;
+			case 2:
+				m_nMPMax -= it->m_nValue;
+				break;
+			case 3:
+				m_nAttack -= it->m_nValue;
+				break;
+			case 4:
+				m_nDefend -= it->m_nValue;
+				break;
+			case 5:
+				m_fCrit -= ((float)it->m_nValue)/1000;
+				break;
+			case 6:
+				m_fDodge -= ((float)it->m_nValue)/1000;
+				break;
+			default:
+				break;
+			}
+			it = m_vBuffData.erase(it);
+		}
+		else
+		{
+			it++;
+		}
 	}
 }

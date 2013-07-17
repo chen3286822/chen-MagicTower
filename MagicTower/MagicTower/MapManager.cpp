@@ -2,6 +2,9 @@
 #include "TexManager.h"
 #include "Character.h"
 #include "CreatureManager.h"
+#include "FontManager.h"
+#include "GfxFont.h"
+#include "App.h"
 
 Map::Map()
 {
@@ -10,6 +13,13 @@ Map::Map()
 	m_nlevel = 0;
 	m_nWidth = 0;
 	m_nLength = 0;
+	m_nTurns = 0;
+	m_nCurTurn = 0;
+	m_bShowTurns = false;
+	m_bShowCampTurn = false;
+	m_nShowTurnTime = 0;
+	m_nShowCampTurnTime = 0;
+	m_eCurCampTurn = eCampTurn_Friend;
 	m_pMapSpr = new hgeSprite(0,0,0,0,0);
 }
 
@@ -26,6 +36,34 @@ Map::~Map()
 void Map::Init()
 {
 	m_iPathFinder.Init(m_nWidth,m_nLength);
+
+	AddTurn();
+	GoIntoTurn(eCampTurn_Friend);
+}
+
+void Map::AddTurn()
+{
+	m_nCurTurn++;
+	m_bShowTurns = true;
+	m_nShowTurnTime = 1500;
+
+	//隐藏鼠标，禁止操作
+	App::sInstance().GetHGE()->System_SetState(HGE_HIDEMOUSE,true);
+}
+
+void Map::GoIntoTurn(eCampTurn turn)
+{
+	m_eCurCampTurn = turn;
+	m_bShowCampTurn = true;
+	m_nShowCampTurnTime = 1500;
+
+	//隐藏鼠标，禁止操作
+	App::sInstance().GetHGE()->System_SetState(HGE_HIDEMOUSE,true);
+}
+
+bool Map::IsShowTitle()
+{
+	return m_bShowCampTurn || m_bShowTurns;
 }
 
 void Map::Render()
@@ -44,9 +82,54 @@ void Map::Render()
 	}
 }
 
-void Map::Update()
+void Map::RenderTitle()
 {
+	if (m_bShowTurns)
+	{
+		DWORD color = ((int)(255*m_nShowTurnTime/1500) << 24) | 0x00FFFFFF;
+		GfxFont* font = FontManager::sInstance().GetFont(FontAttr(eFontType_SongTi,eFontSize_FontHuge));
+		font->SetColor(color);
+		font->Print(APP_WIDTH/2,APP_HEIGHT/2,"第%d回合",m_nCurTurn);
+		if(m_nShowTurnTime <= 0)
+		{
+			m_bShowTurns = false;
+			App::sInstance().GetHGE()->System_SetState(HGE_HIDEMOUSE,false);
+		}
+	}
+	if (!m_bShowTurns && m_bShowCampTurn)
+	{
+		DWORD color = ((int)(255*m_nShowCampTurnTime/1500) << 24) | 0x00FFFFFF;
+		GfxFont* font = FontManager::sInstance().GetFont(FontAttr(eFontType_SongTi,eFontSize_FontHuge));
+		font->SetColor(color);
+		string str = (m_eCurCampTurn == eCampTurn_Friend)?"我方回合":"敌方回合";
+		font->Print(APP_WIDTH/2,APP_HEIGHT/2,str.c_str());
+		if(m_nShowCampTurnTime <= 0)
+		{
+			m_bShowCampTurn = false;
+			App::sInstance().GetHGE()->System_SetState(HGE_HIDEMOUSE,false);
+		}
+	}
+}
 
+void Map::Update(float dt)
+{
+	if(m_nCurTurn > m_nTurns)
+	{
+		//回合用完，结束游戏
+
+	}
+	if(m_bShowTurns && m_nShowTurnTime > 0)
+	{
+		m_nShowTurnTime -= (int)(dt*1000);
+		if(m_nShowTurnTime <= 0)
+			m_nShowTurnTime = 0;
+	}
+	if(m_bShowCampTurn && !m_bShowTurns && m_nShowCampTurnTime > 0)
+	{
+		m_nShowCampTurnTime -= (int)(dt*1000); 
+		if(m_nShowCampTurnTime <= 0)
+			m_nShowCampTurnTime = 0;
+	}
 }
 
 MapObject* Map::GetObject(int x,int y)
@@ -191,6 +274,7 @@ bool MapManager::LoadMaps()
 			{
 				level->SetLevel(_level);
 				level->SetWidthLength(_width,_length);
+				level->GetTurns() = 20;	//默认20回合一关
 			}
 			else
 				return false;
@@ -292,7 +376,7 @@ void MapManager::Render()
 	}
 }
 
-void MapManager::Update()
+void MapManager::Update(float dt)
 {
 	static int oldLevel = -1;
 	static Map* currentMap = NULL;
@@ -304,6 +388,6 @@ void MapManager::Update()
 	else
 	{
 		if(currentMap!=NULL)
-			currentMap->Update();
+			currentMap->Update(dt);
 	}
 }

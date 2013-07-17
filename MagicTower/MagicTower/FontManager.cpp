@@ -50,6 +50,8 @@ void FontManager::InitFont()
 		for (int i=0;i<eFontSize_FontSizeNum;i++)
 		{
 			attr.m_nSize = eFontSize_FontSmall + 2*i;
+			if(i == 5)	//huge×ÖÌå´óÐ¡
+				attr.m_nSize = 50;
 			GfxFont* font = new GfxFont(sm_mSystemFontTable[(eFontType)j].c_str(),attr.m_nSize);
 			m_mFonts[attr] = font;
 		}
