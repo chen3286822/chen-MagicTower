@@ -88,6 +88,8 @@ void Character::Init(int _Level,int _ID,int _Num,int _Action,Block _block)
 	m_vDefaultSkillList = ConfigManager::sInstance().GetCreatureSkill(m_strKind);
 	m_nCastSkill = -1;
 
+	m_nUseItem = -1;
+
 	m_pAnimation->SetMode(HGEANIM_LOOP|HGEANIM_FWD);
 	m_pAnimation->Play();
 }
@@ -470,9 +472,10 @@ std::vector<Block*> Character::CreateRange(Map* map,int _range,bool bAllBlockInc
 					{
 						offX = abs(i - m_iBlock.xpos);
 						offY = abs(j - m_iBlock.ypos);
-						if((offX + offY > _range) || (i==m_iBlock.xpos && j==m_iBlock.ypos))
+						if(offX + offY > _range)
 							continue;
-
+						if(!bAllBlockInclude && (i==m_iBlock.xpos && j==m_iBlock.ypos))
+							continue;
 						if (!map->GetBlockOccupied(i,j) || bAllBlockInclude)
 						{
 							range.push_back(map->GetBlock(i,j));

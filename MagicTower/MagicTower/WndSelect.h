@@ -24,6 +24,8 @@ public:
 	virtual Character*	GetBindChar(){return m_pBindChar;}
 private:
 	UIListBox* m_pListBox;
+	std::map<int,int> m_mListItemToSkillId;
+	std::map<int,int> m_mListItemToItemId;
 	Character* m_pBindChar;
 };
 

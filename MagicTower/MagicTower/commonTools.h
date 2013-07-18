@@ -107,7 +107,7 @@ enum eCampTurn
 	 eActionStage_MoveStage,		//移动阶段
 	 eActionStage_HandleStage,	//操作阶段(使用物品，释放技能)
 	 eActionStage_AttackStage,	//攻击阶段
-	 eActionStage_GoodStage,		//使用物品阶段
+	 eActionStage_ItemStage,		//使用物品阶段
 	 eActionStage_SkillStage,			//使用技能阶段
  };	
 
@@ -380,5 +380,6 @@ eLButtonState g_getLButtonState(HGE* hge);
 eRButtonState g_getRButtonState(HGE* hge);
 int g_getTerrainCost(int terrain);	//根据地形取得消耗
 int g_RandomInt(int start,int end);	//从start 到end中选取随机数，范围[start,end]
+void g_debugString(char* file,char* func,int line,char* msg="");	//错误输出
 
 #endif

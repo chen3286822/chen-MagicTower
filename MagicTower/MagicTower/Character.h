@@ -122,6 +122,9 @@ public:
 	//技能
 	std::vector<int>		GetSkillList();
 	int&	GetCastSkill(){return m_nCastSkill;}
+
+	//物品
+	int&	GetUseItem(){return m_nUseItem;}
 private:
 	hgeAnimation* m_pAnimation;
 	std::map<int,HTEXTURE> m_mCharTex; //存储单位的各个图片动作
@@ -177,6 +180,9 @@ private:
 	std::vector<int> m_vNewSkillList;		//单位新增技能列表，如学习技能书获得
 	eDirection GetTexDir(eDirection dir);
 	int m_nCastSkill;		//准备释放的技能id
+
+	//物品
+	int m_nUseItem;		//准备使用的物品id
 };
 
 

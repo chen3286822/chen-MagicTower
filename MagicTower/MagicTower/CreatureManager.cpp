@@ -870,6 +870,7 @@ void CreatureManager::SelectCreature()
 						}
 						else 
 							//这里是错误分支，不可以运行到这里
+							g_debugString(__FILE__,__FUNCTION__,__LINE__);
 							return;
 					}
 				}
@@ -975,7 +976,7 @@ void CreatureManager::UnSelectCreature()
 				}
 			}
 			//攻击阶段、技能阶段、使用物品阶段可以返回至操作阶段
-			else if(stage == eActionStage_AttackStage || stage == eActionStage_GoodStage || stage == eActionStage_SkillStage)
+			else if(stage == eActionStage_AttackStage || stage == eActionStage_ItemStage || stage == eActionStage_SkillStage)
 			{
 				lastChar->GetCastSkill() = -1;
 				lastChar->SetActionStage(eActionStage_HandleStage);
@@ -1014,7 +1015,7 @@ void CreatureManager::ProcessSelectCreature()
 			ShowMoveRange(selectChar);
 		if(selectChar->GetCamp() == eCamp_Enemy || (selectChar->GetCamp()==eCamp_Friend && (selectChar->GetActionStage()==eActionStage_AttackStage)))
 			ShowAttackRange(selectChar);
-		if(selectChar->GetCamp()==eCamp_Friend && (selectChar->GetActionStage()==eActionStage_SkillStage))
+		if(selectChar->GetCamp()==eCamp_Friend && selectChar->GetActionStage()==eActionStage_SkillStage && selectChar->GetCastSkill()!=-1)
 			ShowSkillCastRange(selectChar);
 
 		if(selectChar->GetCastSkill() != -1)

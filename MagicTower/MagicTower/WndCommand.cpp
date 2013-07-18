@@ -10,11 +10,14 @@ UIWindow(TexManager::sInstance().GetUITex()[eUIID_WndCommand],0,0,89,122,0,0)
 {
 	m_pContainer = new hgeGUI;
 	m_pAttackButton = new UIButton(eControlID_AttackButton,m_fPosX,m_fPosY,83,21,TexManager::sInstance().GetUITex()[eUIID_ButtonNormal],TexManager::sInstance().GetUITex()[eUIID_ButtonPress],0,0);
-	m_pFinishButton = new UIButton(eControlID_FinishButton,m_fPosX,m_fPosY+21,83,21,TexManager::sInstance().GetUITex()[eUIID_ButtonNormal],TexManager::sInstance().GetUITex()[eUIID_ButtonPress],0,0);
-	m_pSkillButton = new UIButton(eControlID_SkillButton,m_fPosX,m_fPosY+42,83,21,TexManager::sInstance().GetUITex()[eUIID_ButtonNormal],TexManager::sInstance().GetUITex()[eUIID_ButtonPress],0,0);
+	m_pFinishButton = new UIButton(eControlID_FinishButton,m_fPosX,m_fPosY+63,83,21,TexManager::sInstance().GetUITex()[eUIID_ButtonNormal],TexManager::sInstance().GetUITex()[eUIID_ButtonPress],0,0);
+	m_pSkillButton = new UIButton(eControlID_SkillButton,m_fPosX,m_fPosY+21,83,21,TexManager::sInstance().GetUITex()[eUIID_ButtonNormal],TexManager::sInstance().GetUITex()[eUIID_ButtonPress],0,0);
+	m_pItemButton = new UIButton(eControlID_ItemButton,m_fPosX,m_fPosY+42,83,21,TexManager::sInstance().GetUITex()[eUIID_ButtonNormal],TexManager::sInstance().GetUITex()[eUIID_ButtonPress],0,0);
+
 	m_pContainer->AddCtrl(m_pAttackButton);
 	m_pContainer->AddCtrl(m_pFinishButton);
 	m_pContainer->AddCtrl(m_pSkillButton);
+	m_pContainer->AddCtrl(m_pItemButton);
 
 	m_pAttackButton->SetFont(eFontType_MSYaHei,eFontSize_FontMiddle);
 	m_pAttackButton->SetText("攻击",0xFF000000);
@@ -25,6 +28,9 @@ UIWindow(TexManager::sInstance().GetUITex()[eUIID_WndCommand],0,0,89,122,0,0)
 	m_pSkillButton->SetFont(eFontType_MSYaHei,eFontSize_FontMiddle);
 	m_pSkillButton->SetText("技能",0xFF000000);
 
+	m_pItemButton->SetFont(eFontType_MSYaHei,eFontSize_FontMiddle);
+	m_pItemButton->SetText("物品",0xFF000000);
+
 	m_pChar = NULL;
 }
 
@@ -33,6 +39,7 @@ WndCommand::~WndCommand()
 	m_pContainer->DelCtrl(eControlID_AttackButton);
 	m_pContainer->DelCtrl(eControlID_FinishButton);
 	m_pContainer->DelCtrl(eControlID_SkillButton);
+	m_pContainer->DelCtrl(eControlID_ItemButton);
 }
 
 void	WndCommand::SetBindChar(Character* bindChar)
@@ -45,7 +52,8 @@ void	WndCommand::SetBindChar(Character* bindChar)
 
 		m_pAttackButton->ResetPosition(m_fPosX,m_fPosY);
 		m_pSkillButton->ResetPosition(m_fPosX,m_fPosY+21);
-		m_pFinishButton->ResetPosition(m_fPosX,m_fPosY+42);
+		m_pItemButton->ResetPosition(m_fPosX,m_fPosY+42);
+		m_pFinishButton->ResetPosition(m_fPosX,m_fPosY+63);	
 	}
 }
 
@@ -61,7 +69,8 @@ void WndCommand::SetRenderPositon(float _x,float _y)
 
 	m_pAttackButton->ResetPosition(m_fPosX,m_fPosY);
 	m_pSkillButton->ResetPosition(m_fPosX,m_fPosY+21);
-	m_pFinishButton->ResetPosition(m_fPosX,m_fPosY+42);
+	m_pItemButton->ResetPosition(m_fPosX,m_fPosY+42);
+	m_pFinishButton->ResetPosition(m_fPosX,m_fPosY+63);
 }
 
 void WndCommand::Update(float dt)
@@ -82,7 +91,7 @@ void WndCommand::Update(float dt)
 			}
 			m_pContainer->Leave();
 		}
-		else if (id == eControlID_SkillButton)
+		else if (id == eControlID_SkillButton || id == eControlID_ItemButton)
 		{
 			if(m_pChar)
 			{
@@ -94,7 +103,10 @@ void WndCommand::Update(float dt)
 					wndSelect->SetBindChar(m_pChar);
 				}
 				SetShow(false);
-				m_pChar->SetActionStage(eActionStage_SkillStage);
+				if(id == eControlID_SkillButton)
+					m_pChar->SetActionStage(eActionStage_SkillStage);
+				else
+					m_pChar->SetActionStage(eActionStage_ItemStage);
 			}
 			m_pContainer->Leave();
 		}
@@ -112,5 +124,5 @@ void WndCommand::Update(float dt)
 
 bool WndCommand::IsOnControl()
 {
-	return (m_bShow && (UIWindow::IsOnControl() || m_pAttackButton->IsMouseOn() || m_pFinishButton->IsMouseOn() || m_pSkillButton->IsMouseOn()));
+	return (m_bShow && (UIWindow::IsOnControl() || m_pAttackButton->IsMouseOn() || m_pFinishButton->IsMouseOn() || m_pSkillButton->IsMouseOn() || m_pItemButton->IsMouseOn()));
 }

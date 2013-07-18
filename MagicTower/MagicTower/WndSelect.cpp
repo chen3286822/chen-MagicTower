@@ -13,6 +13,8 @@ UIWindow(TexManager::sInstance().GetUITex()[eUIID_WndCharInfo],0,0,259,151,0,0)
 	m_pContainer->AddCtrl(m_pListBox);
 
 	m_pListBox->GetPageMaxRows() = 5;
+	m_mListItemToSkillId.clear();
+	m_mListItemToItemId.clear();
 }
 
 WndSelect::~WndSelect()
@@ -41,9 +43,30 @@ void WndSelect::Update(float dt)
 		else if (id == eControlID_ListBox)
 		{
 			int selectItem = m_pListBox->GetSelectedItem();
-			m_pBindChar->GetCastSkill() = selectItem;
-			m_pBindChar->SetActionStage(eActionStage_SkillStage);
-			SetShow(false);
+			if(m_pBindChar->GetActionStage() == eActionStage_SkillStage)
+			{
+				std::map<int,int>::iterator it = m_mListItemToSkillId.find(selectItem);
+				if(it!=m_mListItemToSkillId.end())
+				{
+					m_pBindChar->GetCastSkill() = it->second;
+					SetShow(false);					
+				}
+				//错误分支
+				else
+					g_debugString(__FILE__,__FUNCTION__,__LINE__,"不存在选择的技能");
+			}
+			else if (m_pBindChar->GetActionStage() == eActionStage_ItemStage)
+			{
+				std::map<int,int>::iterator it = m_mListItemToItemId.find(selectItem);
+				if(it!=m_mListItemToItemId.end())
+				{
+					m_pBindChar->GetUseItem() = it->second;
+					SetShow(false);					
+				}
+				//错误分支
+				else
+					g_debugString(__FILE__,__FUNCTION__,__LINE__,"不存在选择的物品");
+			}
 			m_pContainer->Leave();
 		}
 	}
@@ -55,7 +78,8 @@ void WndSelect::Render()
 
 	GfxFont* font = FontManager::sInstance().GetFont(FontAttr(eFontType_SongTi,eFontSize_FontBig));
 	font->SetColor(0xFF000000);
-	font->Print(m_fPosX+120,m_fPosY+85,"%s : %d","当前MP",m_pBindChar->GetMP());
+	if(m_pBindChar->GetActionStage() == eActionStage_SkillStage)
+		font->Print(m_fPosX+120,m_fPosY+85,"%s : %d","当前MP",m_pBindChar->GetMP());
 }
 
 void WndSelect::SetBindChar(Character* bindChar)
@@ -68,22 +92,32 @@ void WndSelect::SetBindChar(Character* bindChar)
 
 		m_pListBox->ResetPosition(m_fPosX,m_fPosY);
 		m_pListBox->Clear();
+		m_mListItemToSkillId.clear();
+		m_mListItemToItemId.clear();
 
-		std::map<int,SkillInfo> mInfo = ConfigManager::sInstance().GetSkillInfo(); 
-		std::vector<int> skillList = bindChar->GetSkillList();
-		for (std::vector<int>::iterator it=skillList.begin();it!=skillList.end();it++)
+		if(m_pBindChar->GetActionStage() == eActionStage_SkillStage)
 		{
-			SkillInfo info = mInfo.find(*it)->second;
-			std::string skillName = info.m_strName;
-			int length = strlen(info.m_strName.c_str());
-			skillName.insert(skillName.end(),30-length,' ');
-			char mp[10];
-			sprintf(mp,"%d",info.m_nCost);
-			skillName.append(mp);
-			int num = m_pListBox->AddItem(TexManager::sInstance().GetUITex()[info.m_nIcon],const_cast<char*>(skillName.c_str()));
+			std::map<int,SkillInfo> mInfo = ConfigManager::sInstance().GetSkillInfo(); 
+			std::vector<int> skillList = bindChar->GetSkillList();
+			for (std::vector<int>::iterator it=skillList.begin();it!=skillList.end();it++)
+			{
+				SkillInfo info = mInfo.find(*it)->second;
+				std::string skillName = info.m_strName;
+				int length = strlen(info.m_strName.c_str());
+				skillName.insert(skillName.end(),30-length,' ');
+				char mp[10];
+				sprintf(mp,"%d",info.m_nCost);
+				skillName.append(mp);
+				int num = m_pListBox->AddItem(TexManager::sInstance().GetUITex()[info.m_nIcon],const_cast<char*>(skillName.c_str()));
+				m_mListItemToSkillId[num] = info.m_nID;
 
-			if(m_pBindChar->GetMP() < info.m_nCost)
-				m_pListBox->SetItemDisabled(num,true);
+				if(m_pBindChar->GetMP() < info.m_nCost)
+					m_pListBox->SetItemDisabled(num,true);
+			}
+		}
+		else if (m_pBindChar->GetActionStage() == eActionStage_ItemStage)
+		{
+
 		}
 	}
 }

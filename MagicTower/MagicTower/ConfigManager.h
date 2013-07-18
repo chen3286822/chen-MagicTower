@@ -68,6 +68,25 @@ struct SkillInfo
 	}
 };
 
+struct Item
+{
+	std::string m_strName;					//物品名称
+	int m_nType;										//物品类型
+	std::map<int,int> m_mEffect;		//物品效果
+	Item()
+	{
+		m_strName = "";
+		m_nType = -1;
+		m_mEffect.clear();
+	}
+	Item(std::string name,int type,std::map<int,int> effect)
+	{
+		m_strName = name;
+		m_nType = type;
+		m_mEffect = effect;
+	}
+};
+
 class ConfigManager : public Singleton<ConfigManager>
 {
 public:
@@ -75,6 +94,10 @@ public:
 	{
 		m_mCreatureConfig.clear();
 		m_mCreatureInfo.clear();
+		m_mItemConfig.clear();
+		m_mItemInfo.clear();
+		m_mSkillConfig.clear();
+		m_mSkillInfo.clear();
 	}
 	~ConfigManager(){}
 
@@ -82,10 +105,14 @@ public:
 	{
 		LoadCreatureConfig();
 		LoadSkillConfig();
+		LoadItemConfig();
 	}
 
 	void LoadCreatureConfig()
 	{
+		m_mCreatureInfo.clear();
+		m_mCreatureSkill.clear();
+
 		char pBuf[MAX_PATH];
 		char pathConfig[MAX_PATH];
 		GetCurrentDirectory(MAX_PATH,pBuf);
@@ -150,6 +177,10 @@ public:
 
 	void LoadSkillConfig()
 	{
+		m_mSkillInfo.clear();
+		m_mSkillConfig.clear();
+
+
 		char pBuf[MAX_PATH];
 		char pathConfig[MAX_PATH];
 		GetCurrentDirectory(MAX_PATH,pBuf);
@@ -179,10 +210,49 @@ public:
 		}
 	}
 	std::map<int,SkillInfo>& GetSkillInfo(){return m_mSkillInfo;}
+
+	void LoadItemConfig()
+	{
+		m_mItemInfo.clear();
+		m_mItemConfig.clear();
+
+		char pBuf[MAX_PATH];
+		char pathConfig[MAX_PATH];
+		GetCurrentDirectory(MAX_PATH,pBuf);
+		sprintf(pathConfig,"%s\\res\\config\\Item.txt",pBuf);
+		m_mItemConfig = g_parseConfigFile(pathConfig);
+
+		for (std::map<std::string,std::string>::iterator mit=m_mItemConfig.begin();mit!=m_mItemConfig.end();mit++)
+		{
+			char simbol[256];
+			int ID = -1;
+			sscanf(mit->first.c_str(),"%s %d",simbol,&ID);
+			if (strcmp(simbol,"ItemInfo")==0 && ID!=-1)
+			{
+				std::string name = "";
+				int type = -1;
+				int num = 0;
+				std::stringstream ssteam(mit->second);
+				char cTemp;
+				ssteam >> name >> cTemp >> type >> cTemp >> num >> cTemp;
+				int effectType = -1;
+				int effectValue = -1;
+				std::map<int,int> effect;
+				for (int i=0;i<num;i++)
+				{
+					ssteam >> effectType >> cTemp >> effectValue >> cTemp;
+					effect[effectType] = effectValue;
+				}
+				m_mItemInfo[ID] = Item(name,type,effect);
+			}
+		}
+	}
 private:
 	std::map<std::string,std::string> m_mCreatureConfig;
 	std::map<int,CreatureInfo> m_mCreatureInfo;
 	std::map<std::string, std::vector<int> > m_mCreatureSkill;
+	std::map<std::string,std::string> m_mItemConfig;
+	std::map<int,Item> m_mItemInfo;
 
 	std::map<std::string,std::string> m_mSkillConfig;
 	std::map<int,SkillInfo> m_mSkillInfo;

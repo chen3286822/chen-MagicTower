@@ -288,3 +288,12 @@ int g_RandomInt(int start,int end)
 	hge->Release();
 	return result;
 }
+
+void g_debugString(char* file,char* func,int line,char* msg)
+{
+	char temp[1024];
+	sprintf(temp,"文件%s第%d行，函数%s 出现错误，请查看!\n错误信息: %s\n",file,line,func,msg);
+
+	OutputDebugString(temp);
+	MessageBox(NULL,temp,"错误",MB_OK);
+}
