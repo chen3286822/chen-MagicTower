@@ -121,6 +121,7 @@ enum eCharacterState
 	eCharacterState_Defense = 3,
 	eCharacterState_Attacked = 4,
 	eCharacterState_Healed = 5,
+	eCharacterState_UseItem = 6,
 };
 
 //动作图包
@@ -161,6 +162,8 @@ enum eNotification
 	eNotify_CastSkill,		//释放技能
 	eNotify_Attacked,		//被技能攻击
 	eNotify_Healed,			//被治愈或者上buff
+	eNotify_UseItem,		//使用物品
+	eNotify_ItemEffect,	//物品生效
 	eNotify_Dead,
 	eNotify_NoTarget,
 	eNotify_ReadyToBeAttacked,

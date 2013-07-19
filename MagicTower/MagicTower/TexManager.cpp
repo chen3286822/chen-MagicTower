@@ -10,6 +10,7 @@ TexManager::TexManager(void)
 	m_mMapInfo.clear();
 	m_mUITex.clear();
 	m_mSkillTex.clear();
+	m_mItemTex.clear();
 }
 
 
@@ -22,6 +23,7 @@ TexManager::~TexManager(void)
 	FreeTex(m_mMap);
 	FreeTex(m_mUITex);
 	FreeTex(m_mSkillTex);
+	FreeTex(m_mItemTex);
 }
 
 void TexManager::FreeTex(std::map<int,HTEXTURE>& mTex)
@@ -38,8 +40,9 @@ bool TexManager::LoadTex()
 	bool bMapTex = LoadMap();
 	bool bUITex = LoadUI();
 	bool bSkillTex = LoadSkill();
+	bool bItemTex = LoadItem();
 
-	return (bCharTex && bMapTex && bUITex && bSkillTex);
+	return (bCharTex && bMapTex && bUITex && bSkillTex && bItemTex);
 }
 
 bool TexManager::LoadCharTex()
@@ -201,9 +204,52 @@ bool TexManager::LoadSkill()
 	return true;
 }
 
+bool TexManager::LoadItem()
+{
+	m_mItemTex.clear();
+
+	char pBuf[MAX_PATH];
+	char pathTex[MAX_PATH];
+	GetCurrentDirectory(MAX_PATH,pBuf);
+	sprintf(pathTex,"%s\\res\\tex\\item",pBuf);
+
+	std::map<std::string,std::string> files;
+	g_getFiles(pathTex,files,".png",50,true);
+	size_t found = 0;
+	int ID = 0;
+	for (std::map<std::string,std::string>::iterator mit=files.begin();mit!=files.end();mit++)
+	{
+		found = mit->second.find('.');
+		if(found != 0)
+		{
+			char strID[10];
+			strncpy(strID,mit->second.c_str(),found);
+			strID[found] = '\0';
+			ID = atoi(strID) - 1;
+			m_mItemTex[ID] = App::sInstance().GetHGE()->Texture_Load(mit->first.c_str());
+		}
+	}
+	if (m_mItemTex.empty())
+	{
+		return false;
+	}
+	return true;
+}
+
 HTEXTURE TexManager::GetSkillTex(int _ID)
 {
 	for (std::map<int,HTEXTURE>::iterator it=m_mSkillTex.begin();it!=m_mSkillTex.end();it++)
+	{
+		if(_ID == it->first)
+			return it->second;
+	}
+
+	return 0;
+}
+
+HTEXTURE TexManager::GetItemTex(int _ID)
+{
+	for (std::map<int,HTEXTURE>::iterator it=m_mItemTex.begin();it!=m_mItemTex.end();it++)
 	{
 		if(_ID == it->first)
 			return it->second;

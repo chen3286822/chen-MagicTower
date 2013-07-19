@@ -117,7 +117,23 @@ void WndSelect::SetBindChar(Character* bindChar)
 		}
 		else if (m_pBindChar->GetActionStage() == eActionStage_ItemStage)
 		{
-
+			std::map<int,Item> mItem = ConfigManager::sInstance().GetItemInfo();
+			LItems itemsList = CreatureManager::sInstance().GetItems();
+			for (LItems::iterator it=itemsList.begin();it!=itemsList.end();it++)
+			{
+				if(it->m_iItem.m_nType == 1)
+				{
+					Item item = mItem.find(it->m_iItem.m_nID)->second;
+					std::string name = item.m_strName;
+					int length = strlen(item.m_strName.c_str());
+					name.insert(name.end(),30-length,' ');
+					char num[10];
+					sprintf(num,"%d",it->m_nNum);
+					name.append(num);
+					int nums = m_pListBox->AddItem(0,const_cast<char*>(name.c_str()));
+					m_mListItemToItemId[nums] = item.m_nID;
+				}
+			}
 		}
 	}
 }

@@ -95,6 +95,12 @@ void WndCommand::Update(float dt)
 		{
 			if(m_pChar)
 			{
+				if(id == eControlID_SkillButton)
+					m_pChar->SetActionStage(eActionStage_SkillStage);
+				else
+					m_pChar->SetActionStage(eActionStage_ItemStage);
+				SetShow(false);
+
 				//打开技能面板
 				UIWindow* wndSelect = UISystem::sInstance().GetWindow(eWindowID_Select);
 				if(wndSelect)
@@ -102,11 +108,6 @@ void WndCommand::Update(float dt)
 					wndSelect->SetShow(true);
 					wndSelect->SetBindChar(m_pChar);
 				}
-				SetShow(false);
-				if(id == eControlID_SkillButton)
-					m_pChar->SetActionStage(eActionStage_SkillStage);
-				else
-					m_pChar->SetActionStage(eActionStage_ItemStage);
 			}
 			m_pContainer->Leave();
 		}

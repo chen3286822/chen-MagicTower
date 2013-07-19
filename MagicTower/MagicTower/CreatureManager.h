@@ -3,6 +3,7 @@
 
 #include "commonTools.h"
 #include "Character.h"
+#include "ConfigManager.h"
 
 struct Pair
 {
@@ -22,6 +23,13 @@ struct Pair
 typedef std::vector<Pair> VPair;
 typedef std::map<eAttackRange,std::vector<int> > MAttackRange;
 typedef std::map<eSkillRange,std::vector<int> > MSkillRange;
+
+struct Items
+{
+	Item m_iItem;
+	int m_nNum;			//物品数量
+};
+typedef std::list<Items> LItems;
 
 
 class CreatureManager : public Singleton<CreatureManager>
@@ -60,6 +68,8 @@ public:
 	void ShowSkillCastRange(Character* creature);
 	//显示技能攻击范围
 	void ShowSkillRange(int skillID);
+	//显示物品释放范围
+	void ShowItemCastRange(Character* creature);
 	VPair GetRangePoint(){return m_vPair;}
 
 	//只有当所有单位都行动过后才能重置，相当于开始下一回合
@@ -92,6 +102,15 @@ public:
 	void ProcessSelectCreature();
 	//获得攻击类型范围
 	MAttackRange& GetAttackRange(){return m_mAttackRange;}
+
+	//物品管理，全局只维护一个物品包
+	LItems& GetItems(){return m_lItems;}
+	//添加一个物品
+	void AddItem(int id,int num=1);
+	//移除一个物品
+	void RemoveItem(int id);
+	//预先计算物品并且推送动作
+	void PreItemAndPushAction(Character* cast,Character* target);
 private:
 	VCharacter  m_VFriendList;
 	VCharacter	m_VEnemyList;
@@ -106,6 +125,8 @@ private:
 	MSkillRange m_mSkillRange;
 	eCampTurn m_eCampTurn;	//当前所处回合
 	VCharacter m_vSkillTargets;//技能释放目标
+
+	LItems m_lItems;		//玩家存储的物品
 };
 
 

@@ -70,20 +70,31 @@ struct SkillInfo
 
 struct Item
 {
+	int m_nID;
 	std::string m_strName;					//物品名称
 	int m_nType;										//物品类型
 	std::map<int,int> m_mEffect;		//物品效果
 	Item()
 	{
+		m_nID = -1;
 		m_strName = "";
 		m_nType = -1;
 		m_mEffect.clear();
 	}
-	Item(std::string name,int type,std::map<int,int> effect)
+	Item(int id,std::string name,int type,std::map<int,int> effect)
 	{
+		m_nID = id;
 		m_strName = name;
 		m_nType = type;
 		m_mEffect = effect;
+	}
+	Item& operator=(const Item& item)
+	{
+		m_nID = item.m_nID;
+		m_strName = item.m_strName;
+		m_nType = item.m_nType;
+		m_mEffect = item.m_mEffect;
+		return *this;
 	}
 };
 
@@ -243,10 +254,11 @@ public:
 					ssteam >> effectType >> cTemp >> effectValue >> cTemp;
 					effect[effectType] = effectValue;
 				}
-				m_mItemInfo[ID] = Item(name,type,effect);
+				m_mItemInfo[ID] = Item(ID,name,type,effect);
 			}
 		}
 	}
+	std::map<int,Item>& GetItemInfo(){return m_mItemInfo;}
 private:
 	std::map<std::string,std::string> m_mCreatureConfig;
 	std::map<int,CreatureInfo> m_mCreatureInfo;

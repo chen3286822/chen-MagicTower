@@ -169,6 +169,7 @@ public:
 		  pNew = new hgeGUIListboxItem;
 		  memcpy(pNew->text, item, min(sizeof(pNew->text), strlen(item)+1));
 		  pNew->text[sizeof(pNew->text)-1]='\0';
+		  pNew->icon = NULL;
 		  if(tex != 0)
 			 pNew->icon = new hgeSprite(tex,0,0,16,16);	//Í¼±ê±ØÐëÎª16*16
 		  pNew->next=0;

@@ -39,10 +39,12 @@ public:
 	bool LoadMap();
 	bool LoadUI();
 	bool LoadSkill();
+	bool LoadItem();
 
 	std::map<int,HTEXTURE> GetTex(int _ID);
 	std::map<int,HTEXTURE> GetUITex(){return m_mUITex;}
 	HTEXTURE GetSkillTex(int _ID);
+	HTEXTURE GetItemTex(int _ID);
 	blockInfo	GetBlock(int _type);
 
 private:
@@ -50,6 +52,7 @@ private:
 	std::map<int,HTEXTURE> m_mMap;		//所有包含地图图块的图片
 	std::map<int,HTEXTURE> m_mUITex;		//所有UI相关图片
 	std::map<int,HTEXTURE> m_mSkillTex;	//所有技能相关图片
+	std::map<int,HTEXTURE> m_mItemTex;	//所有物品相关图片
 	std::map<int,blockInfo> m_mMapInfo;	//所有地图图块在各图片中的位置大小信息
 
 	void FreeTex(std::map<int,HTEXTURE>&);

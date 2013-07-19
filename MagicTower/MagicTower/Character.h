@@ -94,6 +94,7 @@ public:
 	void Defend(eNotification notify,Character* target,int time);
 	void Dead(eNotification notify,Character* target,int time);
 	void Healed(eNotification notify,Character* target,int time);	//被治愈，上buff，升级
+	void UseItem(eNotification notify,Character* target,int time);	//使用物品时的表现
 	void ChangeColor(DWORD color){m_pAnimation->SetColor(color);}
 	void ResetFrame();
 
@@ -125,6 +126,7 @@ public:
 
 	//物品
 	int&	GetUseItem(){return m_nUseItem;}
+	bool	CanUseItem(Character* target);
 private:
 	hgeAnimation* m_pAnimation;
 	std::map<int,HTEXTURE> m_mCharTex; //存储单位的各个图片动作
@@ -183,6 +185,12 @@ private:
 
 	//物品
 	int m_nUseItem;		//准备使用的物品id
+	hgeSprite* m_pItemSpr;	//使用物品的图片
+	float m_fItemRiseHeight;	//物品绘制上升的高度
+	int m_nDrawItem;	//是否绘制物品 0表示不绘制 1,2表示绘制上升和绘制下降
+	float m_fDrawItemX;	//绘制物品的坐标
+	float m_fDrawItemY;
+	Character* m_pItemTarget;	//物品使用目标
 };
 
 

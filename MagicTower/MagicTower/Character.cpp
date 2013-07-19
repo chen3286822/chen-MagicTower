@@ -33,6 +33,7 @@ Character::Character(void)
 Character::~Character(void)
 {
 	gSafeDelete(m_pAnimation);
+	gSafeDelete(m_pItemSpr);
 }
 
 void Character::Init(int _Level,int _ID,int _Num,int _Action,Block _block)
@@ -89,6 +90,12 @@ void Character::Init(int _Level,int _ID,int _Num,int _Action,Block _block)
 	m_nCastSkill = -1;
 
 	m_nUseItem = -1;
+	m_pItemSpr = new hgeSprite(0,0,0,32,32);
+	m_fItemRiseHeight = 0.0f;
+	m_nDrawItem = 0;
+	m_fDrawItemX = 0.0f;
+	m_fDrawItemY = 0.0;
+	m_pItemTarget = NULL;
 
 	m_pAnimation->SetMode(HGEANIM_LOOP|HGEANIM_FWD);
 	m_pAnimation->Play();
@@ -112,12 +119,40 @@ void Character::Render()
 		else
 			m_pAnimation->Render(m_fXPos,m_fYPos);
 	}
+
+	if (m_nDrawItem && m_pItemSpr)
+	{
+		m_pItemSpr->Render(m_fDrawItemX,m_fDrawItemY + m_fItemRiseHeight);
+	}
 }
 
 void Character::Update(float delta)
 {
 	if(m_eCharState == eCharacterState_Stand/* || (m_eCharState==eCharacterState_Fight && m_eAttackState==eAttackState_Waiting)*/)
 		return;
+
+	if (m_nDrawItem!=0)
+	{
+		//物品上升阶段
+		if(m_nDrawItem == 1)
+		{
+			m_fItemRiseHeight += delta*1000;
+			if(m_fItemRiseHeight >= 32.0f)
+			{
+				m_fDrawItemX = m_pItemTarget->GetRealX();
+				m_fDrawItemY = m_pItemTarget->GetRealY();
+				m_nDrawItem = 2;
+			}
+		}
+		else if (m_nDrawItem == 2)
+		{
+			m_fItemRiseHeight -= delta*1000;
+			if (m_fItemRiseHeight <= 0.0f)
+			{
+				m_nDrawItem = 0;
+			}
+		}
+	}
 
 	if(m_nActionTime > 0)
 	{
@@ -814,6 +849,22 @@ void Character::Healed(eNotification notify,Character* target,int time)
 	m_eNotify = notify;
 }
 
+void Character::UseItem(eNotification notify,Character* target,int time)
+{
+	//物品图片从释放者身上飘起，落在使用者身上
+	if(m_nUseItem == -1)
+		return;
+	Item item = ConfigManager::sInstance().GetItemInfo().find(m_nUseItem)->second;
+	m_pItemSpr->SetTexture(TexManager::sInstance().GetItemTex(item.m_nID));
+	m_nDrawItem = 1;
+	m_fDrawItemX = m_fXPos;
+	m_fDrawItemY = m_fYPos;
+	m_pItemTarget = target;
+
+	m_nActionTime = time;
+	m_eNotify = notify;
+}
+
 bool Character::CanHitTarget(Character* target)
 {
 	if(!target)
@@ -943,4 +994,9 @@ void Character::RemoveBuff()
 			it++;
 		}
 	}
+}
+
+bool	Character::CanUseItem(Character* target)
+{
+	return true;
 }

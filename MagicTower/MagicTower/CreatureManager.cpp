@@ -1,5 +1,4 @@
 #include "CreatureManager.h"
-#include "ConfigManager.h"
 #include "MapManager.h"
 #include "App.h"
 #include "TipWnd.h"
@@ -182,7 +181,19 @@ void CreatureManager::ShowSkillCastRange(Character* creature)
 		std::vector<Block*> range = creature->CreateRange(MapManager::sInstance().GetCurrentMap(),ConfigManager::sInstance().GetSkillInfo().find(creature->GetCastSkill())->second.m_nCastRange,true);
 		for (std::vector<Block*>::iterator it=range.begin();it!=range.end();it++)
 		{
-			//画方格表示可以移动
+			App::sInstance().DrawSmallRect(Block((*it)->xpos,(*it)->ypos),color);
+		}
+	}
+}
+
+void CreatureManager::ShowItemCastRange(Character* creature)
+{
+	if (creature)
+	{
+		DWORD color = 0x4FEB2323;
+		std::vector<Block*> range = creature->CreateRange(MapManager::sInstance().GetCurrentMap(),1,true);
+		for (std::vector<Block*>::iterator it=range.begin();it!=range.end();it++)
+		{
 			App::sInstance().DrawSmallRect(Block((*it)->xpos,(*it)->ypos),color);
 		}
 	}
@@ -775,6 +786,18 @@ void CreatureManager::PreSkillAndPushAction(Character* cast,Character* target)
 	process->PushAction(eNotify_FinishAttack,cast,target,0);
 }
 
+void CreatureManager::PreItemAndPushAction(Character* cast,Character* target)
+{
+	if(!cast || !target)
+		return;
+
+	ActionProcess* process = ActionProcess::sInstancePtr();
+	process->PushAction(eNotify_TowardToAttacker,cast,target,0);
+	process->PushAction(eNotify_UseItem,cast,target,0);
+	process->PushAction(eNotify_ItemEffect,cast,target,500);
+	process->PushAction(eNotify_FinishAttack,cast,target,0);
+}
+
 void CreatureManager::SelectCreature()
 {
 	//友方回合才可以进行选择操作，包括查看敌方行动范围
@@ -788,7 +811,6 @@ void CreatureManager::SelectCreature()
 			//选中单位
 			if(selectChar!=NULL)
 			{
-				//需要拦截点击操作界面的消息
 				int nLastSelect = m_nSelectNum;
 				if (selectChar->GetCamp() == eCamp_Friend )
 				{
@@ -819,13 +841,23 @@ void CreatureManager::SelectCreature()
 									commandWindow->SetBindChar(selectChar);
 								}
 							}
-							else if (selectChar->GetActionStage()== eActionStage_SkillStage)
+							else if (selectChar->GetActionStage()== eActionStage_SkillStage && selectChar->GetCastSkill()!=-1)
 							{
 								//对自己释放技能
 								if(selectChar->CanSkillHitTarget(selectChar))
 								{
 									m_nSelectNum = -1;
 									PreSkillAndPushAction(selectChar,selectChar);
+									return;
+								}
+							}
+							else if (selectChar->GetActionStage() == eActionStage_ItemStage && selectChar->GetUseItem()!=-1)
+							{
+								//对自己使用物品
+								if (selectChar->CanUseItem(selectChar))
+								{
+									m_nSelectNum = -1;
+									PreItemAndPushAction(selectChar,selectChar);
 									return;
 								}
 							}
@@ -840,13 +872,22 @@ void CreatureManager::SelectCreature()
 							//上次点的是别的友方
 							if(lastChar->GetCamp() == eCamp_Friend)
 							{
-								if(lastChar->GetActionStage() == eActionStage_SkillStage)
+								if(lastChar->GetActionStage() == eActionStage_SkillStage && lastChar->GetCastSkill()!=-1)
 								{
 									//对友方释放技能
 									if(lastChar->CanSkillHitTarget(selectChar))
 									{
 										m_nSelectNum = -1;
 										PreSkillAndPushAction(lastChar,selectChar);
+										return;
+									}
+								}
+								else if (lastChar->GetActionStage() == eActionStage_ItemStage && lastChar->GetUseItem()!= -1)
+								{
+									if (lastChar->CanUseItem(selectChar))
+									{
+										m_nSelectNum = -1;
+										PreItemAndPushAction(lastChar,selectChar);
 										return;
 									}
 								}
@@ -904,12 +945,21 @@ void CreatureManager::SelectCreature()
 									return;
 								}
 							}
-							else if (lastChar->GetActionStage() == eActionStage_SkillStage)
+							else if (lastChar->GetActionStage() == eActionStage_SkillStage && lastChar->GetCastSkill()!=-1)
 							{
 								if(lastChar->CanSkillHitTarget(selectChar))
 								{
 									m_nSelectNum = -1;
 									PreSkillAndPushAction(lastChar,selectChar);
+									return;
+								}
+							}
+							else if (lastChar->GetActionStage() == eActionStage_ItemStage && lastChar->GetUseItem()!=-1)
+							{
+								if (lastChar->CanUseItem(selectChar))
+								{
+									m_nSelectNum = -1;
+									PreItemAndPushAction(lastChar,selectChar);
 									return;
 								}
 							}
@@ -1017,12 +1067,50 @@ void CreatureManager::ProcessSelectCreature()
 			ShowAttackRange(selectChar);
 		if(selectChar->GetCamp()==eCamp_Friend && selectChar->GetActionStage()==eActionStage_SkillStage && selectChar->GetCastSkill()!=-1)
 			ShowSkillCastRange(selectChar);
+		if(selectChar->GetCamp() == eCamp_Friend && selectChar->GetActionStage() == eActionStage_ItemStage && selectChar->GetUseItem() != -1)
+			ShowItemCastRange(selectChar);
 
 		if(selectChar->GetCastSkill() != -1)
 		{
 			ShowSkillRange(selectChar->GetCastSkill());
 		}
 	}
-	
+}
 
+void CreatureManager::AddItem(int id,int num)
+{
+	if(num <= 0)
+		return;
+	//查找是否存在该类物品
+	LItems::iterator it = m_lItems.begin();
+	for (;it!=m_lItems.end();it++)
+	{
+		if(it->m_iItem.m_nID == id)
+		{
+			it->m_nNum += num;
+			return;
+		}
+	}
+	//新的物品种类
+	Items newItem;
+	newItem.m_iItem = ConfigManager::sInstance().GetItemInfo().find(id)->second;
+	newItem.m_nNum = num;
+	m_lItems.push_back(newItem);
+}
+
+void CreatureManager::RemoveItem(int id)
+{
+	//查找是否存在该类物品
+	LItems::iterator it = m_lItems.begin();
+	for (;it!=m_lItems.end();it++)
+	{
+		if(it->m_iItem.m_nID == id)
+		{
+			if(it->m_nNum > 0)
+				it->m_nNum--;
+			break;
+		}
+	}
+	if (it->m_nNum == 0)
+		m_lItems.erase(it);
 }
