@@ -122,7 +122,7 @@ void Character::Render()
 
 	if (m_nDrawItem && m_pItemSpr)
 	{
-		m_pItemSpr->Render(m_fDrawItemX,m_fDrawItemY + m_fItemRiseHeight);
+		m_pItemSpr->Render(m_fDrawItemX + 10,m_fDrawItemY + m_fItemRiseHeight - 20);
 	}
 }
 
@@ -136,20 +136,22 @@ void Character::Update(float delta)
 		//物品上升阶段
 		if(m_nDrawItem == 1)
 		{
-			m_fItemRiseHeight += delta*1000;
-			if(m_fItemRiseHeight >= 32.0f)
+			m_fItemRiseHeight -= delta*80;
+			if(m_fItemRiseHeight <=  -40.0f)
 			{
 				m_fDrawItemX = m_pItemTarget->GetRealX();
 				m_fDrawItemY = m_pItemTarget->GetRealY();
 				m_nDrawItem = 2;
 			}
 		}
+		//物品下降阶段
 		else if (m_nDrawItem == 2)
 		{
-			m_fItemRiseHeight -= delta*1000;
-			if (m_fItemRiseHeight <= 0.0f)
+			m_fItemRiseHeight += delta*80;
+			if (m_fItemRiseHeight >= 0.0f)
 			{
 				m_nDrawItem = 0;
+				ActionProcess::sInstance().TimeUp(0);
 			}
 		}
 	}
@@ -861,6 +863,8 @@ void Character::UseItem(eNotification notify,Character* target,int time)
 	m_fDrawItemY = m_fYPos;
 	m_pItemTarget = target;
 
+	m_eCharState = eCharacterState_UseItem;
+
 	m_nActionTime = time;
 	m_eNotify = notify;
 }
@@ -999,4 +1003,64 @@ void Character::RemoveBuff()
 bool	Character::CanUseItem(Character* target)
 {
 	return true;
+}
+
+void	Character::ItemEffect(Item item)
+{
+	if (item.m_nType == 1)	//可使用物品
+	{
+		for (std::map<int,int>::iterator it=item.m_mEffect.begin();it!=item.m_mEffect.end();it++)
+		{
+			switch(it->first)
+			{
+			case 1:	//HP恢复
+				{
+					m_nHP += it->second;
+					if(m_nHP >= m_nHPMax)
+						m_nHP = m_nHPMax;
+				}
+				break;
+			case 2:	//MP恢复
+				{
+					m_nMP += it->second;
+					if(m_nMP >= m_nMPMax)
+						m_nMP = m_nMPMax;
+				}
+				break;
+			case 3:	//攻击永久加成
+				{
+					m_nAttack += it->second;
+				}
+				break;
+			case 4:	//防御永久加成
+				m_nDefend += it->second;
+				break;
+			case 5:	//暴击永久加成
+				m_fCrit += it->second;
+				break;
+			case 6:	//闪避永久加成
+				m_fDodge += it->second;
+				break;
+			case 7:	//攻击范围永久加成
+				{
+					switch(m_eAttackRange)
+					{
+					case eAttackRange_Cross:
+						m_eAttackRange = eAttackRange_CrossEx;
+					case eAttackRange_Box:
+						m_eAttackRange = eAttackRange_BoxEx;
+					case eAttackRange_BigCross:
+						m_eAttackRange = eAttackRange_BigCrossEx;
+					case eAttackRange_Arrow:
+						m_eAttackRange = eAttackRange_ArrowEx;
+					}
+					//其他范围无法加成
+				}
+				break;
+			case 8:	//移动力永久加成
+				m_nMoveAbility += it->second;
+				break;
+			}
+		}
+	}
 }

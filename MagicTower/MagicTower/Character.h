@@ -30,6 +30,7 @@ struct BuffData
 	}
 };
 
+struct Item;
 class Map;
 //表示所有单位
 class Character
@@ -127,6 +128,7 @@ public:
 	//物品
 	int&	GetUseItem(){return m_nUseItem;}
 	bool	CanUseItem(Character* target);
+	void	ItemEffect(Item item);
 private:
 	hgeAnimation* m_pAnimation;
 	std::map<int,HTEXTURE> m_mCharTex; //存储单位的各个图片动作

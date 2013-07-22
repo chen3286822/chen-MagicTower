@@ -214,7 +214,7 @@ bool TexManager::LoadItem()
 	sprintf(pathTex,"%s\\res\\tex\\item",pBuf);
 
 	std::map<std::string,std::string> files;
-	g_getFiles(pathTex,files,".png",50,true);
+	g_getFiles(pathTex,files,".png",104,true);
 	size_t found = 0;
 	int ID = 0;
 	for (std::map<std::string,std::string>::iterator mit=files.begin();mit!=files.end();mit++)

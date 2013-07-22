@@ -57,6 +57,18 @@ void CreatureManager::Init()
 	int neAttackRange_Arrow[] = {2,4,6,8,9,11,13,15};
 	m_mAttackRange[eAttackRange_Arrow].assign(neAttackRange_Arrow,neAttackRange_Arrow+8);
 
+	int neAttackRange_CrossEx[] = {1,3,5,7,2,4,6,8,9,11,14,15};
+	m_mAttackRange[eAttackRange_CrossEx].assign(neAttackRange_CrossEx,neAttackRange_CrossEx+12);
+
+	int neAttackRange_BoxEx[] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,19,21,23};
+	m_mAttackRange[eAttackRange_BoxEx].assign(neAttackRange_BoxEx,neAttackRange_BoxEx+20);
+
+	int neAttackRange_BigCrossEx[] = {1,3,5,7,9,11,13,15,18,20,22,24};
+	m_mAttackRange[eAttackRange_BigCrossEx].assign(neAttackRange_BigCrossEx,neAttackRange_BigCrossEx+12);
+
+	int neAttackRange_ArrowEx[] = {2,4,6,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24};
+	m_mAttackRange[eAttackRange_ArrowEx].assign(neAttackRange_ArrowEx,neAttackRange_ArrowEx+20);
+
 	int neSkillRange_Point[] = {0};
 	m_mSkillRange[eSkillRange_Point].assign(neSkillRange_Point,neSkillRange_Point+1);
 	int neSkillRange_Cross[] = {0,1,3,5,7};
@@ -483,7 +495,7 @@ bool CreatureManager::ResetAllCreature()
 	{
 		m_eCampTurn = eCampTurn_Enemy;
 		m_nSelectNum = -1;
-		MapManager::sInstance().GetCurrentMap()->GoIntoTurn(m_eCampTurn);
+		//MapManager::sInstance().GetCurrentMap()->GoIntoTurn(m_eCampTurn);
 	}
 
 	for (VCharacter::iterator it=m_VEnemyList.begin();it!=m_VEnemyList.end();it++)
@@ -495,8 +507,8 @@ bool CreatureManager::ResetAllCreature()
 	if (m_eCampTurn == eCampTurn_Enemy)
 	{
 		m_eCampTurn = eCampTurn_Friend;
-		MapManager::sInstance().GetCurrentMap()->AddTurn();
-		MapManager::sInstance().GetCurrentMap()->GoIntoTurn(m_eCampTurn);
+		//MapManager::sInstance().GetCurrentMap()->AddTurn();
+		//MapManager::sInstance().GetCurrentMap()->GoIntoTurn(m_eCampTurn);
 	}
 
 	for (VCharacter::iterator it=m_VEnemyList.begin();it!=m_VEnemyList.end();it++)
@@ -954,15 +966,15 @@ void CreatureManager::SelectCreature()
 									return;
 								}
 							}
-							else if (lastChar->GetActionStage() == eActionStage_ItemStage && lastChar->GetUseItem()!=-1)
-							{
-								if (lastChar->CanUseItem(selectChar))
-								{
-									m_nSelectNum = -1;
-									PreItemAndPushAction(lastChar,selectChar);
-									return;
-								}
-							}
+// 							else if (lastChar->GetActionStage() == eActionStage_ItemStage && lastChar->GetUseItem()!=-1)
+// 							{
+// 								if (lastChar->CanUseItem(selectChar))
+// 								{
+// 									m_nSelectNum = -1;
+// 									PreItemAndPushAction(lastChar,selectChar);
+// 									return;
+// 								}
+// 							}
 						}
 						else if (lastChar->GetCamp() == eCamp_Enemy)
 						{

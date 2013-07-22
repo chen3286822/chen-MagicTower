@@ -152,6 +152,20 @@ public:
 						m_eActionState = eActionState_Process;
 					}
 					break;
+				case eNotify_UseItem:
+					{
+						action.m_pCast->UseItem(eNotify_UseItem,action.m_pTarget,action.m_dwTime);
+
+						m_eActionState = eActionState_Process;
+					}
+					break;
+				case eNotify_ItemEffect:
+					{
+						action.m_pTarget->Healed(eNotify_ItemEffect,action.m_pCast,action.m_dwTime);
+
+						m_eActionState = eActionState_Process;
+					}
+					break;
 				default:
 					break;
 				}
@@ -202,14 +216,12 @@ public:
 					action.m_pTarget->ResetFrame();
 					action.m_pTarget->GetHP() -= action.m_pTarget->GetPreHurt();
 					action.m_pTarget->GetPreHurt() = 0;
-					action.m_pTarget->GetCharacterState() = eCharacterState_Stand;
 				}
 				break;
 			case eNotify_AttackDefend:
 				{
 					action.m_pCast->ResetFrame();
 					action.m_pTarget->ResetFrame();
-					action.m_pTarget->GetCharacterState() = eCharacterState_Stand;
 				}
 				break;
 			case eNotify_Dead:
@@ -240,7 +252,6 @@ public:
 					action.m_pTarget->ResetFrame();
 					action.m_pTarget->GetHP() -= action.m_pTarget->GetPreHurt();
 					action.m_pTarget->GetPreHurt() = 0;
-					action.m_pTarget->GetCharacterState() = eCharacterState_Stand;
 				}
 				break;
 			case eNotify_Healed:
@@ -257,7 +268,21 @@ public:
 						action.m_pTarget->SetAttributeValue(buffType,buffValue);
 					}
 					action.m_pTarget->GetPreHurt() = 0;
-					action.m_pTarget->GetCharacterState() = eCharacterState_Stand;
+				}
+				break;
+			case eNotify_UseItem:
+				{
+					action.m_pCast->ResetFrame();
+					CreatureManager::sInstance().RemoveItem(action.m_pCast->GetUseItem());
+				}
+				break;
+			case eNotify_ItemEffect:
+				{
+					action.m_pTarget->ResetFrame();
+					//物品生效
+					Item item = ConfigManager::sInstance().GetItemInfo().find(action.m_pCast->GetUseItem())->second;
+					action.m_pTarget->ItemEffect(item);
+					action.m_pCast->GetUseItem() = -1;
 				}
 				break;
 			default:

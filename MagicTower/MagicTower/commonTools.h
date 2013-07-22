@@ -176,6 +176,8 @@ enum eNotification
 	方块型：单位周围8格可以攻击
 	大十字型：单位上下左右可以攻击，范围为2
 	弓箭型：单位可以攻击距离自己上下左右1格范围，可以攻击斜向1格范围
+
+	扩展型皆为普通型范围+1
 */
 //攻击范围类型
 enum eAttackRange
@@ -184,6 +186,11 @@ enum eAttackRange
 	eAttackRange_Box = 1,			//方块型
 	eAttackRange_BigCross = 2, //大十字型
 	eAttackRange_Arrow = 3,		//弓箭型
+
+	eAttackRange_CrossEx = 4, //十字型扩展
+	eAttackRange_BoxEx = 5,			//方块型扩展
+	eAttackRange_BigCrossEx = 6, //大十字型扩展
+	eAttackRange_ArrowEx = 7,		//弓箭型扩展
 };
 /*
 	单点型：单位自身范围

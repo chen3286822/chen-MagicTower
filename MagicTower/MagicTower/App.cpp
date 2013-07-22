@@ -90,7 +90,8 @@ bool App::LoadResource()
 	player2->GetName() = "Â·ÈËÒÒ";
 	CreatureManager::sInstance().AddEnemy(player2);
 
-	CreatureManager::sInstance().AddItem(98,3);
+	CreatureManager::sInstance().AddItem(98,30);
+	CreatureManager::sInstance().AddItem(49,1);
 
 	return true;
 }
