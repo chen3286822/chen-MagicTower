@@ -42,7 +42,7 @@ public:
 	bool LoadItem();
 
 	std::map<int,HTEXTURE> GetTex(int _ID);
-	std::map<int,HTEXTURE> GetUITex(){return m_mUITex;}
+	HTEXTURE GetUITex(int UIID);
 	HTEXTURE GetSkillTex(int _ID);
 	HTEXTURE GetItemTex(int _ID);
 	blockInfo	GetBlock(int _type);
@@ -56,5 +56,6 @@ private:
 	std::map<int,blockInfo> m_mMapInfo;	//所有地图图块在各图片中的位置大小信息
 
 	void FreeTex(std::map<int,HTEXTURE>&);
+	HTEXTURE LoadTexFromFile(std::string resPath,int texID);
 };
 

@@ -37,8 +37,8 @@ void Map::Init()
 {
 	m_iPathFinder.Init(m_nWidth,m_nLength);
 
-	AddTurn();
-	GoIntoTurn(eCampTurn_Friend);
+//	AddTurn();
+//	GoIntoTurn(eCampTurn_Friend);
 }
 
 void Map::AddTurn()

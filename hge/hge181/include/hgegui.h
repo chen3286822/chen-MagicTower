@@ -29,7 +29,7 @@ class hgeGUI;
 class hgeGUIObject
 {
 public:
-	hgeGUIObject()	{ hge=hgeCreate(HGE_VERSION); color=0xFFFFFFFF; }
+	hgeGUIObject()	{ hge=hgeCreate(HGE_VERSION); color=0xFFFFFFFF; OffsetX=0;OffsetY=0;}
 	virtual			~hgeGUIObject() { hge->Release(); }
 
 	virtual void	Render() = 0;
@@ -70,6 +70,8 @@ public:
 	}
 	
 	int				id;
+	int				OffsetX;
+	int				OffsetY;
 	bool			bStatic;
 	bool			bVisible;
 	bool			bEnabled;

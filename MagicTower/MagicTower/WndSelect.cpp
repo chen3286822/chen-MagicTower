@@ -5,11 +5,11 @@
 #include "CreatureManager.h"
 
 WndSelect::WndSelect():
-UIWindow(TexManager::sInstance().GetUITex()[eUIID_WndCharInfo],0,0,259,151,0,0)
+UIWindow(TexManager::sInstance().GetUITex(eUIID_WndCharInfo),0,0,259,151,0,0)
 {
 	m_pContainer = new hgeGUI;
 	m_pListBox = new UIListBox(eControlID_ListBox,m_fPosX,m_fPosY,259,151,FontManager::sInstance().GetFont(FontAttr(eFontType_SongTi,eFontSize_FontBig)),0xFFFF0000,0xFF00FF00,0xFF0000FF,0xFFAAAAAA);
-	
+	m_pListBox->AddPageButton(30,115,150,115,105,27,TexManager::sInstance().GetUITex(eUIID_SmallButtonUp),TexManager::sInstance().GetUITex(eUIID_SmallButtonDown),TexManager::sInstance().GetUITex(eUIID_SmallButtonOn),TexManager::sInstance().GetUITex(eUIID_SmallButtonDisable),0,0);
 	m_pContainer->AddCtrl(m_pListBox);
 
 	m_pListBox->GetPageMaxRows() = 5;
@@ -108,7 +108,7 @@ void WndSelect::SetBindChar(Character* bindChar)
 				char mp[10];
 				sprintf(mp,"%d",info.m_nCost);
 				skillName.append(mp);
-				int num = m_pListBox->AddItem(TexManager::sInstance().GetUITex()[info.m_nIcon],const_cast<char*>(skillName.c_str()));
+				int num = m_pListBox->AddItem(TexManager::sInstance().GetUITex(info.m_nIcon),const_cast<char*>(skillName.c_str()));
 				m_mListItemToSkillId[num] = info.m_nID;
 
 				if(m_pBindChar->GetMP() < info.m_nCost)

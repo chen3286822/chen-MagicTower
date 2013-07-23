@@ -16,6 +16,14 @@ enum eUIID
 	eUIID_SkillIconWind,
 	eUIID_SkillIconFire,
 	eUIID_SkillIconWater,
+	eUIID_NewButtonUp = 8,
+	eUIID_NewButtonDown = 10,
+	eUIID_NewButtonOn = 9,
+	eUIID_NewButtonDisable = 11,
+	eUIID_SmallButtonUp = 12,
+	eUIID_SmallButtonDown = 14,
+	eUIID_SmallButtonOn = 13,
+	eUIID_SmallButtonDisable = 15,
 };
 
 enum eWindowID
@@ -34,6 +42,8 @@ public:
 		  m_pFont = NULL;
 		  m_wstrText = (wchar_t*)"";
 		  m_nID = id;
+		  m_nTextSize.cx = 0;
+		  m_nTextSize.cy = 0;
 	  }
 	  UIButton(int id, float x, float y, float w, float h, HTEXTURE tex, HTEXTURE tex2, float tx, float ty) :
 	  hgeGUIButton(id,x,y,w,h,tex,tex2,tx,ty)
@@ -41,6 +51,17 @@ public:
 		  m_pFont = NULL;
 		  m_wstrText = (wchar_t*)"";
 		  m_nID = id;
+		  m_nTextSize.cx = 0;
+		  m_nTextSize.cy = 0;
+	  }
+	  UIButton(int id, float x, float y, float w, float h, HTEXTURE tex, HTEXTURE tex2, HTEXTURE texOn, HTEXTURE texDisable, float tx, float ty) :
+	  hgeGUIButton(id,x,y,w,h,tex,tex2,texOn,texDisable,tx,ty)
+	  {
+		  m_pFont = NULL;
+		  m_wstrText = (wchar_t*)"";
+		  m_nID = id;
+		  m_nTextSize.cx = 0;
+		  m_nTextSize.cy = 0;
 	  }
 	  virtual			~UIButton(){}
 
@@ -57,6 +78,7 @@ public:
 		  g_CTW(str,out);
 		  m_wstrText = out;
 		  m_dwColor = color;
+		  m_nTextSize = m_pFont->GetTextSize(m_wstrText.c_str());
 	  }
 
 	  virtual void	Render()
@@ -66,9 +88,9 @@ public:
 		  {
 			  m_pFont->SetColor(m_dwColor);
 			  if (GetState())
-				  m_pFont->Render(GetX()+1,GetY()+1,m_wstrText.c_str());
+				  m_pFont->Render(GetX()+((rect.x2-rect.x1)/2-m_nTextSize.cx/2)+1,GetY()+((rect.y2-rect.y1)/2-m_nTextSize.cy)+1,m_wstrText.c_str());
 			  else
-				  m_pFont->Render(GetX(),GetY(),m_wstrText.c_str());
+				  m_pFont->Render(GetX()+((rect.x2-rect.x1)/2-m_nTextSize.cx/2),GetY()+((rect.y2-rect.y1)/2-m_nTextSize.cy),m_wstrText.c_str());
 		  }
 
 	  }
@@ -80,6 +102,7 @@ private:
 	std::wstring m_wstrText;
 	DWORD m_dwColor;
 	int m_nID;
+	SIZE m_nTextSize;
 };
 
 //支持中文的listbox
@@ -105,14 +128,8 @@ public:
 			m_fFontHeight = 16;
 
 		m_pContainer = new hgeGUI;
-		m_pNext = new UIButton(eControlID_NextButton,x+150,y+120,83,21,TexManager::sInstance().GetUITex()[eUIID_ButtonNormal],TexManager::sInstance().GetUITex()[eUIID_ButtonPress],0,0);
-		m_pPrevious = new UIButton(eControlID_PreviousButton,x+50,y+120,83,21,TexManager::sInstance().GetUITex()[eUIID_ButtonNormal],TexManager::sInstance().GetUITex()[eUIID_ButtonPress],0,0);
-		m_pContainer->AddCtrl(m_pNext);
-		m_pContainer->AddCtrl(m_pPrevious);
-		m_pNext->SetFont(eFontType_MSYaHei,eFontSize_FontMiddle);
-		m_pNext->SetText("下一页",0xFF000000);
-		m_pPrevious->SetFont(eFontType_MSYaHei,eFontSize_FontMiddle);
-		m_pPrevious->SetText("上一页",0xFF000000);
+		m_pNext = NULL;
+		m_pPrevious = NULL;
 
 		m_nPageMaxRows = int((rect.y2-rect.y1)/m_fFontHeight);
 		m_nCurrentPage = 0;
@@ -120,9 +137,30 @@ public:
 
 	  virtual ~UIListBox()
 	  {
-		  m_pContainer->DelCtrl(eControlID_NextButton);
-		  m_pContainer->DelCtrl(eControlID_PreviousButton);
+		  if(m_pNext)
+			 m_pContainer->DelCtrl(eControlID_NextButton);
+		  if(m_pPrevious)
+			m_pContainer->DelCtrl(eControlID_PreviousButton);
 		  gSafeDelete(m_pContainer);
+	  }
+
+	  void AddPageButton(int x1,int y1,int x2,int y2,int w,int h,HTEXTURE texUp,HTEXTURE texDown,HTEXTURE texOn,HTEXTURE texDisable,float fx,float fy)
+	  {
+		  if (!m_pNext || !m_pPrevious)
+		  {
+			  m_pNext = new UIButton(eControlID_NextButton,rect.x1+x2,rect.y1+y2,w,h,texUp,texDown,texOn,texDisable,fx,fy);
+			  m_pPrevious = new UIButton(eControlID_PreviousButton,rect.x1+x1,rect.y1+y1,w,h,texUp,texDown,texOn,texDisable,fx,fy);
+			  m_pNext->OffsetX = x1;
+			  m_pNext->OffsetY = y1;
+			  m_pPrevious->OffsetX = x2;
+			  m_pPrevious->OffsetY = y2;
+			  m_pContainer->AddCtrl(m_pNext);
+			  m_pContainer->AddCtrl(m_pPrevious);
+			  m_pNext->SetFont(eFontType_MSYaHei,eFontSize_FontMiddle);
+			  m_pNext->SetText("下一页",0xFF000000);
+			  m_pPrevious->SetFont(eFontType_MSYaHei,eFontSize_FontMiddle);
+			  m_pPrevious->SetText("上一页",0xFF000000);
+		  }
 	  }
 	  
 	  int& GetPageMaxRows(){return m_nPageMaxRows;}
@@ -130,8 +168,10 @@ public:
 	  virtual void ResetPosition(float x, float y)
 	  {
 		  hgeGUIObject::ResetPosition(x,y);
-		  m_pNext->ResetPosition(x+150,y+120);
-		  m_pPrevious->ResetPosition(x+50,y+120);
+		  if(m_pNext)
+			m_pNext->ResetPosition(x+m_pNext->OffsetX,y+m_pNext->OffsetY);
+		  if(m_pNext)
+			m_pPrevious->ResetPosition(x+m_pPrevious->OffsetX,y+m_pPrevious->OffsetY);
 	  }
 
 	  virtual void Update(float dt)

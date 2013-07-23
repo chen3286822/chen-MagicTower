@@ -5,7 +5,7 @@
 #include "FontManager.h"
 
 WndCharInfo::WndCharInfo() :
-	UIWindow(TexManager::sInstance().GetUITex()[eUIID_WndCharInfo],0,0,259,151,0,0)
+	UIWindow(TexManager::sInstance().GetUITex(eUIID_WndCharInfo),0,0,259,151,0,0)
 {
 	m_pContainer = new hgeGUI;
 	m_pBindChar = NULL;

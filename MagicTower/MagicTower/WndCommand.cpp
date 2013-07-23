@@ -6,13 +6,13 @@
 #include "UI.h"
 
 WndCommand::WndCommand() :
-UIWindow(TexManager::sInstance().GetUITex()[eUIID_WndCommand],0,0,89,122,0,0)
+UIWindow(TexManager::sInstance().GetUITex(eUIID_WndCommand),0,0,89,122,0,0)
 {
 	m_pContainer = new hgeGUI;
-	m_pAttackButton = new UIButton(eControlID_AttackButton,m_fPosX,m_fPosY,83,21,TexManager::sInstance().GetUITex()[eUIID_ButtonNormal],TexManager::sInstance().GetUITex()[eUIID_ButtonPress],0,0);
-	m_pFinishButton = new UIButton(eControlID_FinishButton,m_fPosX,m_fPosY+63,83,21,TexManager::sInstance().GetUITex()[eUIID_ButtonNormal],TexManager::sInstance().GetUITex()[eUIID_ButtonPress],0,0);
-	m_pSkillButton = new UIButton(eControlID_SkillButton,m_fPosX,m_fPosY+21,83,21,TexManager::sInstance().GetUITex()[eUIID_ButtonNormal],TexManager::sInstance().GetUITex()[eUIID_ButtonPress],0,0);
-	m_pItemButton = new UIButton(eControlID_ItemButton,m_fPosX,m_fPosY+42,83,21,TexManager::sInstance().GetUITex()[eUIID_ButtonNormal],TexManager::sInstance().GetUITex()[eUIID_ButtonPress],0,0);
+	m_pAttackButton = new UIButton(eControlID_AttackButton,m_fPosX,m_fPosY,83,21,TexManager::sInstance().GetUITex(eUIID_ButtonNormal),TexManager::sInstance().GetUITex(eUIID_ButtonPress),0,0);
+	m_pFinishButton = new UIButton(eControlID_FinishButton,m_fPosX,m_fPosY+63,83,21,TexManager::sInstance().GetUITex(eUIID_ButtonNormal),TexManager::sInstance().GetUITex(eUIID_ButtonPress),0,0);
+	m_pSkillButton = new UIButton(eControlID_SkillButton,m_fPosX,m_fPosY+21,83,21,TexManager::sInstance().GetUITex(eUIID_ButtonNormal),TexManager::sInstance().GetUITex(eUIID_ButtonPress),0,0);
+	m_pItemButton = new UIButton(eControlID_ItemButton,m_fPosX,m_fPosY+42,83,21,TexManager::sInstance().GetUITex(eUIID_ButtonNormal),TexManager::sInstance().GetUITex(eUIID_ButtonPress),0,0);
 
 	m_pContainer->AddCtrl(m_pAttackButton);
 	m_pContainer->AddCtrl(m_pFinishButton);

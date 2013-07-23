@@ -36,11 +36,15 @@ void TexManager::FreeTex(std::map<int,HTEXTURE>& mTex)
 
 bool TexManager::LoadTex()
 {
-	bool bCharTex = LoadCharTex();
+//	bool bCharTex = LoadCharTex();
+	bool bCharTex = true;
 	bool bMapTex = LoadMap();
-	bool bUITex = LoadUI();
-	bool bSkillTex = LoadSkill();
-	bool bItemTex = LoadItem();
+//	bool bUITex = LoadUI();
+	bool bUITex = true;
+//	bool bSkillTex = LoadSkill();
+	bool bSkillTex = true;
+//	bool bItemTex = LoadItem();
+	bool bItemTex = true;
 
 	return (bCharTex && bMapTex && bUITex && bSkillTex && bItemTex);
 }
@@ -67,7 +71,6 @@ bool TexManager::LoadCharTex()
 
 	size_t found = 0;
 	int ID = 0;
-	int IDEx = 0;
 	for (int i=0;i<eActionTex_Num;i++)
 	{
 		for (std::map<std::string,std::string>::iterator mit=files[i].begin();mit!=files[i].end();mit++)
@@ -78,12 +81,8 @@ bool TexManager::LoadCharTex()
 				char strID[10];
 				strncpy(strID,mit->second.c_str(),found);
 				strID[found] = '\0';
-				sscanf(strID,"%d-%d",&ID,&IDEx);
-				ID--;
-				if(IDEx == 1)
-					m_mCharTex[i][ID] = App::sInstance().GetHGE()->Texture_Load(mit->first.c_str());
-				ID = 0;
-				IDEx = 0;
+				ID = atoi(strID);
+				m_mCharTex[i][ID] = App::sInstance().GetHGE()->Texture_Load(mit->first.c_str());
 			}
 		}
 	}
@@ -236,6 +235,16 @@ bool TexManager::LoadItem()
 	return true;
 }
 
+HTEXTURE TexManager::LoadTexFromFile(std::string resPath,int texID)
+{
+	char pBuf[MAX_PATH];
+	char pathTex[MAX_PATH];
+	GetCurrentDirectory(MAX_PATH,pBuf);
+	sprintf(pathTex,"%s\\%s\\%d.png",pBuf,resPath.c_str(),texID);
+
+	return App::sInstance().GetHGE()->Texture_Load(pathTex);
+}
+
 HTEXTURE TexManager::GetSkillTex(int _ID)
 {
 	for (std::map<int,HTEXTURE>::iterator it=m_mSkillTex.begin();it!=m_mSkillTex.end();it++)
@@ -243,7 +252,18 @@ HTEXTURE TexManager::GetSkillTex(int _ID)
 		if(_ID == it->first)
 			return it->second;
 	}
-
+	//没有找到，从文件载入
+	HTEXTURE skillTex = LoadTexFromFile("res\\tex\\skill",_ID+1);
+	if(skillTex)
+	{
+		m_mSkillTex[_ID] = skillTex;
+		return skillTex;
+	}
+	else
+	{
+		g_debugString(__FILE__,__FUNCTION__,__LINE__,"载入技能图片失败");
+		exit(0);
+	}
 	return 0;
 }
 
@@ -254,7 +274,40 @@ HTEXTURE TexManager::GetItemTex(int _ID)
 		if(_ID == it->first)
 			return it->second;
 	}
+	//没有找到，从文件载入
+	HTEXTURE itemTex = LoadTexFromFile("res\\tex\\item",_ID+1);
+	if(itemTex)
+	{
+		m_mItemTex[_ID] = itemTex;
+		return itemTex;
+	}
+	else
+	{
+		g_debugString(__FILE__,__FUNCTION__,__LINE__,"载入物品图片失败");
+		exit(0);
+	}
+	return 0;
+}
 
+HTEXTURE TexManager::GetUITex(int UIID)
+{
+	for (std::map<int,HTEXTURE>::iterator it=m_mUITex.begin();it!=m_mUITex.end();it++)
+	{
+		if(UIID == it->first)
+			return it->second;
+	}
+	//没有找到，从文件载入
+	HTEXTURE UITex = LoadTexFromFile("res\\UI",UIID);
+	if(UITex)
+	{
+		m_mUITex[UIID] = UITex;
+		return UITex;
+	}
+	else
+	{
+		g_debugString(__FILE__,__FUNCTION__,__LINE__,"载入UI图片失败");
+		exit(0);
+	}
 	return 0;
 }
 
@@ -280,7 +333,22 @@ std::map<int,HTEXTURE> TexManager::GetTex(int _ID)
 		}
 		if (mapTex.empty())		//没有读取到，从文件中尝试载入
 		{
-
+			HTEXTURE attackTex = LoadTexFromFile("res\\tex\\attack",texID);
+			HTEXTURE walkTex = LoadTexFromFile("res\\tex\\walk",texID);
+			HTEXTURE defendTex = LoadTexFromFile("res\\tex\\defend",texID);
+			if(attackTex && walkTex && defendTex)
+			{
+				m_mCharTex[eActionTex_Walk][texID] = walkTex;
+				m_mCharTex[eActionTex_Attack][texID] = attackTex;
+				m_mCharTex[eActionTex_Defend][texID] = defendTex;
+				for (int i=0;i<eActionTex_Num;i++)
+					mapTex[i] = m_mCharTex[i][texID];
+			}
+			else	//载入失败
+			{
+				g_debugString(__FILE__,__FUNCTION__,__LINE__,"载入角色图片失败");
+				exit(0);
+			}
 		}
 	}
 

@@ -70,9 +70,12 @@ hgeGUIButton::hgeGUIButton(int _id, float x, float y, float w, float h, HTEXTURE
 
 	bPressed=false;
 	bTrigger=false;
+	bMouseOn = false;
 
 	sprUp = new hgeSprite(tex, tx, ty, w, h);
 	sprDown = new hgeSprite(tex, tx+w, ty, w, h);
+	sprOn = NULL;
+	sprDisable = NULL;
 }
 
 hgeGUIButton::hgeGUIButton(int _id, float x, float y, float w, float h, HTEXTURE tex, HTEXTURE tex2, float tx, float ty)
@@ -85,21 +88,61 @@ hgeGUIButton::hgeGUIButton(int _id, float x, float y, float w, float h, HTEXTURE
 
 	bPressed=false;
 	bTrigger=false;
+	bMouseOn = false;
 
 	sprUp = new hgeSprite(tex, tx, ty, w, h);
 	sprDown = new hgeSprite(tex2, tx, ty, w, h);
+	sprOn = NULL;
+	sprDisable = NULL;
+}
+
+hgeGUIButton::hgeGUIButton(int _id, float x, float y, float w, float h, HTEXTURE tex, HTEXTURE tex2, HTEXTURE texOn, HTEXTURE texDisable, float tx, float ty)
+{
+	id=_id;
+	bStatic=false;
+	bVisible=true;
+	bEnabled=true;
+	rect.Set(x, y, x+w, y+h);
+
+	bPressed=false;
+	bTrigger=false;
+	bMouseOn = false;
+
+	sprUp = new hgeSprite(tex, tx, ty, w, h);
+	sprDown = new hgeSprite(tex2, tx, ty, w, h);
+	sprOn = new hgeSprite(texOn, tx, ty, w, h);
+	sprDisable = new hgeSprite(texDisable, tx, ty, w, h);
 }
 
 hgeGUIButton::~hgeGUIButton()
 {
 	if(sprUp) delete sprUp;
 	if(sprDown) delete sprDown;
+	if(sprOn) delete sprOn;
+	if(sprDisable) delete sprDisable;
 }
 
 void hgeGUIButton::Render()
 {
-	if(bPressed) sprDown->Render(rect.x1, rect.y1);
-	else sprUp->Render(rect.x1, rect.y1);
+	if(bEnabled)
+	{
+		if(bPressed)
+		{
+			sprDown->Render(rect.x1, rect.y1);
+		}
+		else if(bMouseOn && sprOn)
+		{
+			sprOn->Render(rect.x1,rect.y1);
+		}
+		else
+		{
+			sprUp->Render(rect.x1, rect.y1);
+		}
+	}
+	else if(sprDisable)
+	{
+		sprDisable->Render(rect.x1,rect.y1);
+	}
 }
 
 bool hgeGUIButton::MouseLButton(bool bDown)
@@ -114,6 +157,18 @@ bool hgeGUIButton::MouseLButton(bool bDown)
 		if(bTrigger) bPressed=!bOldState;
 		else bPressed=false;
 		return true; 
+	}
+}
+
+void	hgeGUIButton::MouseOver(bool bOver)
+{
+	if(bOver)
+	{
+		bMouseOn = true;
+	}
+	else
+	{
+		bMouseOn = false;
 	}
 }
 

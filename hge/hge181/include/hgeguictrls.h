@@ -56,6 +56,7 @@ class hgeGUIButton : public hgeGUIObject
 public:
 	hgeGUIButton(int id, float x, float y, float w, float h, HTEXTURE tex, float tx, float ty);
 	hgeGUIButton(int id, float x, float y, float w, float h, HTEXTURE tex, HTEXTURE tex2, float tx, float ty);
+	hgeGUIButton(int id, float x, float y, float w, float h, HTEXTURE tex, HTEXTURE tex2, HTEXTURE texOn, HTEXTURE texDisable, float tx, float ty);
 	virtual			~hgeGUIButton();
 
 	void			SetMode(bool _bTrigger) { bTrigger=_bTrigger; }
@@ -64,12 +65,14 @@ public:
 
 	virtual void	Render();
 	virtual bool	MouseLButton(bool bDown);
+	virtual void	MouseOver(bool bOver);
 
 private:
 	bool			bTrigger;
 	bool			bPressed;
+	bool			bMouseOn;
 	bool			bOldState;
-	hgeSprite		*sprUp, *sprDown;
+	hgeSprite		*sprUp, *sprDown, *sprOn, *sprDisable;
 };
 
 
