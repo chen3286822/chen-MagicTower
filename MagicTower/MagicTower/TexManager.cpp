@@ -278,6 +278,10 @@ std::map<int,HTEXTURE> TexManager::GetTex(int _ID)
 			if(!m_mCharTex[i].empty() && m_mCharTex[i].find(texID) != m_mCharTex[i].end())
 				mapTex[i] =  m_mCharTex[i][texID];
 		}
+		if (mapTex.empty())		//没有读取到，从文件中尝试载入
+		{
+
+		}
 	}
 
 
