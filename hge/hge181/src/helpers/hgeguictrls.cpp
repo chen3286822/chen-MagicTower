@@ -380,6 +380,7 @@ void hgeGUIListbox::Clear()
 	
 	pItems=0;
 	nItems=0;
+	nSelectedItem = -1;
 }
 
 void hgeGUIListbox::Render()

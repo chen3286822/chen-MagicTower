@@ -88,9 +88,9 @@ public:
 		  {
 			  m_pFont->SetColor(m_dwColor);
 			  if (GetState())
-				  m_pFont->Render(GetX()+((rect.x2-rect.x1)/2-m_nTextSize.cx/2)+1,GetY()+((rect.y2-rect.y1)/2-m_nTextSize.cy)+1,m_wstrText.c_str());
+				  m_pFont->Render(GetX()+(int)((rect.x2-rect.x1)/2-m_nTextSize.cx/2)+1,GetY()+(int)((rect.y2-rect.y1)/2-m_nTextSize.cy/2)+1,m_wstrText.c_str());
 			  else
-				  m_pFont->Render(GetX()+((rect.x2-rect.x1)/2-m_nTextSize.cx/2),GetY()+((rect.y2-rect.y1)/2-m_nTextSize.cy),m_wstrText.c_str());
+				  m_pFont->Render(GetX()+(int)((rect.x2-rect.x1)/2-m_nTextSize.cx/2),GetY()+(int)((rect.y2-rect.y1)/2-m_nTextSize.cy/2),m_wstrText.c_str());
 		  }
 
 	  }
@@ -114,7 +114,7 @@ public:
 		eControlID_NextButton = 1,
 		eControlID_PreviousButton,
 	};
-	UIListBox(int id, float x, float y, float w, float h, GfxFont* font, DWORD tColor, DWORD thColor, DWORD hColor,DWORD disColor) :
+	UIListBox(int id, float x, float y, float w, float h, GfxFont* font, DWORD tColor, DWORD thColor, DWORD hColor,DWORD disColor,DWORD mouseOnColor) :
 	  hgeGUIListbox(id, x, y, w, h, NULL, tColor, thColor, hColor,disColor)
 	{
 		m_pFont = font;
@@ -133,6 +133,12 @@ public:
 
 		m_nPageMaxRows = int((rect.y2-rect.y1)/m_fFontHeight);
 		m_nCurrentPage = 0;
+
+		m_pMouseOnSpr = new hgeSprite(0, 0, 0, w, m_pFont->GetFontSize());
+		m_pMouseOnSpr->SetColor(mouseOnColor);
+		m_nMouseOnItem = -1;
+
+		nSelectedItem = -1;
 	  }
 
 	  virtual ~UIListBox()
@@ -142,6 +148,7 @@ public:
 		  if(m_pPrevious)
 			m_pContainer->DelCtrl(eControlID_PreviousButton);
 		  gSafeDelete(m_pContainer);
+		  gSafeDelete(m_pMouseOnSpr);
 	  }
 
 	  void AddPageButton(int x1,int y1,int x2,int y2,int w,int h,HTEXTURE texUp,HTEXTURE texDown,HTEXTURE texOn,HTEXTURE texDisable,float fx,float fy)
@@ -163,6 +170,27 @@ public:
 		  }
 	  }
 	  
+	  virtual bool	MouseMove(float x, float y)
+	  { 
+		  mx=x; 
+		  my=y;
+		  if(int(my)/int(m_fFontHeight) >= m_nPageMaxRows)
+			  return false;
+		  int item =nTopItem+int(my)/int(m_fFontHeight);
+		  if(item<nItems)
+		  {
+			  if(GetItemDisabled(item))
+			  {
+				  return false;
+			  }
+
+			  m_nMouseOnItem=item;
+			  return false;
+		  }
+		  m_nMouseOnItem = -1;
+		  return false;
+	  }
+
 	  int& GetPageMaxRows(){return m_nPageMaxRows;}
 
 	  virtual void ResetPosition(float x, float y)
@@ -274,6 +302,11 @@ public:
 						  m_pFont->SetColor(disabledColor);
 					  else
 						m_pFont->SetColor(textColor);
+
+					  if(m_nMouseOnItem == nTopItem+i)
+					  {
+						  m_pMouseOnSpr->Render(rect.x1,rect.y1+i*m_fFontHeight);
+					  }
 				  }
 
 				  if(pItem->icon)
@@ -329,6 +362,8 @@ private:
 	hgeGUI* m_pContainer;	//gui容器
 	UIButton* m_pNext;		//下一页
 	UIButton* m_pPrevious;	//上一页
+	hgeSprite* m_pMouseOnSpr;
+	int m_nMouseOnItem;
 };
 
 class Character;
