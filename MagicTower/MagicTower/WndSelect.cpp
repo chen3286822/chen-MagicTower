@@ -5,11 +5,13 @@
 #include "CreatureManager.h"
 
 WndSelect::WndSelect():
-UIWindow(TexManager::sInstance().GetUITex(eUIID_WndCharInfo),0,0,259,151,0,0)
+UIWindow(TexManager::sInstance().GetUITex(eUIID_WndCharInfo),0,0,257,183,0,0)
 {
 	m_pContainer = new hgeGUI;
-	m_pListBox = new UIListBox(eControlID_ListBox,m_fPosX,m_fPosY,259,151,FontManager::sInstance().GetFont(FontAttr(eFontType_SongTi,eFontSize_FontBig)),0xFFFF0000,0xFF00FF00,0xFF0000FF,0xFFAAAAAA,0xFFFFFF00);
-	m_pListBox->AddPageButton(30,115,150,115,105,27,TexManager::sInstance().GetUITex(eUIID_SmallButtonUp),TexManager::sInstance().GetUITex(eUIID_SmallButtonDown),TexManager::sInstance().GetUITex(eUIID_SmallButtonOn),TexManager::sInstance().GetUITex(eUIID_SmallButtonDisable),0,0);
+	m_pListBox = new UIListBox(eControlID_ListBox,m_fPosX+3,m_fPosY+8,257-3,183-8,FontManager::sInstance().GetFont(FontAttr(eFontType_SongTi,eFontSize_FontBig)),0xFFFF0000,0xFF00FF00,0xFFAAAAAA,TexManager::sInstance().GetUITex(eUIID_SelectRect));
+	m_pListBox->AddPageButton(30,130,150,130,105,27,TexManager::sInstance().GetUITex(eUIID_SmallButtonUp),TexManager::sInstance().GetUITex(eUIID_SmallButtonDown),TexManager::sInstance().GetUITex(eUIID_SmallButtonOn),TexManager::sInstance().GetUITex(eUIID_SmallButtonDisable),0,0);
+	m_pListBox->OffsetX = 3;
+	m_pListBox->OffsetY = 8;
 	m_pContainer->AddCtrl(m_pListBox);
 
 	m_pListBox->GetPageMaxRows() = 5;
@@ -28,7 +30,7 @@ void WndSelect::SetRenderPositon(float _x,float _y)
 	m_fPosX = _x; 
 	m_fPosY = _y;
 
-	m_pListBox->ResetPosition(m_fPosX,m_fPosY);
+	m_pListBox->ResetPosition(m_fPosX + m_pListBox->OffsetX,m_fPosY + m_pListBox->OffsetY);
 }
 
 void WndSelect::Update(float dt)
@@ -90,7 +92,7 @@ void WndSelect::SetBindChar(Character* bindChar)
 		m_fPosX = bindChar->GetRealX() + 50; 
 		m_fPosY = bindChar->GetRealY();
 
-		m_pListBox->ResetPosition(m_fPosX,m_fPosY);
+		m_pListBox->ResetPosition(m_fPosX + m_pListBox->OffsetX,m_fPosY + m_pListBox->OffsetY);
 		m_pListBox->Clear();
 		m_mListItemToSkillId.clear();
 		m_mListItemToItemId.clear();

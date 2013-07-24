@@ -144,7 +144,7 @@ bool App::AppRender()
 
 void App::DrawMouseRect()
 {
-	if(m_iBlock.xpos!=-1 && m_iBlock.ypos!=-1)
+	if(m_iBlock.xpos!=-1 && m_iBlock.ypos!=-1 && !(UISystem::sInstance().IsInAnyControl()))
 		DrawSmallRect(m_iBlock,0x4F48A4D5);
 }
 

@@ -6,13 +6,22 @@
 #include "UI.h"
 
 WndCommand::WndCommand() :
-UIWindow(TexManager::sInstance().GetUITex(eUIID_WndCommand),0,0,89,122,0,0)
+UIWindow(TexManager::sInstance().GetUITex(eUIID_WndCommand),0,0,166,170,0,0)
 {
 	m_pContainer = new hgeGUI;
-	m_pAttackButton = new UIButton(eControlID_AttackButton,m_fPosX,m_fPosY,83,21,TexManager::sInstance().GetUITex(eUIID_ButtonNormal),TexManager::sInstance().GetUITex(eUIID_ButtonPress),0,0);
-	m_pFinishButton = new UIButton(eControlID_FinishButton,m_fPosX,m_fPosY+63,83,21,TexManager::sInstance().GetUITex(eUIID_ButtonNormal),TexManager::sInstance().GetUITex(eUIID_ButtonPress),0,0);
-	m_pSkillButton = new UIButton(eControlID_SkillButton,m_fPosX,m_fPosY+21,83,21,TexManager::sInstance().GetUITex(eUIID_ButtonNormal),TexManager::sInstance().GetUITex(eUIID_ButtonPress),0,0);
-	m_pItemButton = new UIButton(eControlID_ItemButton,m_fPosX,m_fPosY+42,83,21,TexManager::sInstance().GetUITex(eUIID_ButtonNormal),TexManager::sInstance().GetUITex(eUIID_ButtonPress),0,0);
+	m_pAttackButton = new UIButton(eControlID_AttackButton,m_fPosX+4,m_fPosY+15,157,32,TexManager::sInstance().GetUITex(eUIID_NewButtonUp),TexManager::sInstance().GetUITex(eUIID_NewButtonDown),TexManager::sInstance().GetUITex(eUIID_NewButtonOn),TexManager::sInstance().GetUITex(eUIID_NewButtonDisable),0,0);
+	m_pSkillButton = new UIButton(eControlID_SkillButton,m_fPosX+4,m_fPosY+54,157,32,TexManager::sInstance().GetUITex(eUIID_NewButtonUp),TexManager::sInstance().GetUITex(eUIID_NewButtonDown),TexManager::sInstance().GetUITex(eUIID_NewButtonOn),TexManager::sInstance().GetUITex(eUIID_NewButtonDisable),0,0);
+	m_pItemButton = new UIButton(eControlID_ItemButton,m_fPosX+4,m_fPosY+91,157,32,TexManager::sInstance().GetUITex(eUIID_NewButtonUp),TexManager::sInstance().GetUITex(eUIID_NewButtonDown),TexManager::sInstance().GetUITex(eUIID_NewButtonOn),TexManager::sInstance().GetUITex(eUIID_NewButtonDisable),0,0);
+	m_pFinishButton = new UIButton(eControlID_FinishButton,m_fPosX+4,m_fPosY+129,157,32,TexManager::sInstance().GetUITex(eUIID_NewButtonUp),TexManager::sInstance().GetUITex(eUIID_NewButtonDown),TexManager::sInstance().GetUITex(eUIID_NewButtonOn),TexManager::sInstance().GetUITex(eUIID_NewButtonDisable),0,0);
+
+	m_pAttackButton->OffsetX = 4;
+	m_pAttackButton->OffsetY = 15;
+	m_pSkillButton->OffsetX = 4;
+	m_pSkillButton->OffsetY = 54;
+	m_pItemButton->OffsetX = 4;
+	m_pItemButton->OffsetY = 91;
+	m_pFinishButton->OffsetX = 4;
+	m_pFinishButton->OffsetY = 129;
 
 	m_pContainer->AddCtrl(m_pAttackButton);
 	m_pContainer->AddCtrl(m_pFinishButton);
@@ -20,16 +29,16 @@ UIWindow(TexManager::sInstance().GetUITex(eUIID_WndCommand),0,0,89,122,0,0)
 	m_pContainer->AddCtrl(m_pItemButton);
 
 	m_pAttackButton->SetFont(eFontType_MSYaHei,eFontSize_FontMiddle);
-	m_pAttackButton->SetText("攻击",0xFF000000);
+	m_pAttackButton->SetText("攻击",0xFF9D988E);
 
 	m_pFinishButton->SetFont(eFontType_MSYaHei,eFontSize_FontMiddle);
-	m_pFinishButton->SetText("待命",0xFF000000);
+	m_pFinishButton->SetText("待命",0xFF9D988E);
 
 	m_pSkillButton->SetFont(eFontType_MSYaHei,eFontSize_FontMiddle);
-	m_pSkillButton->SetText("技能",0xFF000000);
+	m_pSkillButton->SetText("技能",0xFF9D988E);
 
 	m_pItemButton->SetFont(eFontType_MSYaHei,eFontSize_FontMiddle);
-	m_pItemButton->SetText("物品",0xFF000000);
+	m_pItemButton->SetText("物品",0xFF9D988E);
 
 	m_pChar = NULL;
 }
@@ -50,10 +59,10 @@ void	WndCommand::SetBindChar(Character* bindChar)
 		m_fPosX = bindChar->GetRealX() + 50; 
 		m_fPosY = bindChar->GetRealY();
 
-		m_pAttackButton->ResetPosition(m_fPosX,m_fPosY);
-		m_pSkillButton->ResetPosition(m_fPosX,m_fPosY+21);
-		m_pItemButton->ResetPosition(m_fPosX,m_fPosY+42);
-		m_pFinishButton->ResetPosition(m_fPosX,m_fPosY+63);	
+		m_pAttackButton->ResetPosition(m_fPosX+m_pAttackButton->OffsetX,m_fPosY+m_pAttackButton->OffsetY);
+		m_pSkillButton->ResetPosition(m_fPosX+m_pSkillButton->OffsetX,m_fPosY+m_pSkillButton->OffsetY);
+		m_pItemButton->ResetPosition(m_fPosX+m_pItemButton->OffsetX,m_fPosY+m_pItemButton->OffsetY);
+		m_pFinishButton->ResetPosition(m_fPosX+m_pFinishButton->OffsetX,m_fPosY+m_pFinishButton->OffsetY);	
 	}
 }
 
@@ -67,10 +76,10 @@ void WndCommand::SetRenderPositon(float _x,float _y)
 	m_fPosX = _x; 
 	m_fPosY = _y;
 
-	m_pAttackButton->ResetPosition(m_fPosX,m_fPosY);
-	m_pSkillButton->ResetPosition(m_fPosX,m_fPosY+21);
-	m_pItemButton->ResetPosition(m_fPosX,m_fPosY+42);
-	m_pFinishButton->ResetPosition(m_fPosX,m_fPosY+63);
+	m_pAttackButton->ResetPosition(m_fPosX+m_pAttackButton->OffsetX,m_fPosY+m_pAttackButton->OffsetY);
+	m_pSkillButton->ResetPosition(m_fPosX+m_pSkillButton->OffsetX,m_fPosY+m_pSkillButton->OffsetY);
+	m_pItemButton->ResetPosition(m_fPosX+m_pItemButton->OffsetX,m_fPosY+m_pItemButton->OffsetX);
+	m_pFinishButton->ResetPosition(m_fPosX+m_pFinishButton->OffsetX,m_fPosY+m_pFinishButton->OffsetX);	
 }
 
 void WndCommand::Update(float dt)

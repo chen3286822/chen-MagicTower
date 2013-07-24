@@ -24,6 +24,11 @@ enum eUIID
 	eUIID_SmallButtonDown = 14,
 	eUIID_SmallButtonOn = 13,
 	eUIID_SmallButtonDisable = 15,
+	eUIID_SelectRect = 16,
+	eUIID_VerticalButtonUp = 17,
+	eUIID_VerticalButtonOn = 18,
+	eUIID_VerticalButtonDown = 19,
+	eUIID_VerticalButtonDisable = 20,
 };
 
 enum eWindowID
@@ -139,6 +144,32 @@ public:
 		m_nMouseOnItem = -1;
 
 		nSelectedItem = -1;
+	  }
+
+	  UIListBox(int id, float x, float y, float w, float h, GfxFont* font, DWORD tColor, DWORD thColor,DWORD disColor,HTEXTURE mouseTex) :
+	  hgeGUIListbox(id, x, y, w, h, NULL, tColor, thColor, 0x00FFFFFF,disColor)
+	  {
+		  m_pFont = font;
+		  sprHighlight=NULL;
+
+		  int texHeight = hge->Texture_GetHeight(mouseTex);
+		  //由于图标是16大小，所以每项最低高度为16
+		  if(texHeight > 16)
+			  m_fFontHeight = texHeight;
+		  else
+			  m_fFontHeight = 16;
+
+		  m_pContainer = new hgeGUI;
+		  m_pNext = NULL;
+		  m_pPrevious = NULL;
+
+		  m_nPageMaxRows = int((rect.y2-rect.y1)/m_fFontHeight);
+		  m_nCurrentPage = 0;
+
+		  m_pMouseOnSpr = new hgeSprite(mouseTex, 0, 0, w, texHeight);
+		  m_nMouseOnItem = -1;
+
+		  nSelectedItem = -1;
 	  }
 
 	  virtual ~UIListBox()
@@ -293,7 +324,10 @@ public:
 				  g_CTW(pItem->text,itemText);
 				  if(nTopItem+i == nSelectedItem)
 				  {
-					  sprHighlight->Render(rect.x1,rect.y1+i*m_fFontHeight);
+					  if(sprHighlight)
+						sprHighlight->Render(rect.x1,rect.y1+i*m_fFontHeight);
+					  else
+						   m_pMouseOnSpr->Render(rect.x1,rect.y1+i*m_fFontHeight);
 					  m_pFont->SetColor(texthilColor);
 				  }
 				  else

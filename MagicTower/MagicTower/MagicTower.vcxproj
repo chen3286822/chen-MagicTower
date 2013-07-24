@@ -115,6 +115,7 @@
     <ClCompile Include="UI.cpp" />
     <ClCompile Include="WndCharInfo.cpp" />
     <ClCompile Include="WndCommand.cpp" />
+    <ClCompile Include="WndMainTitle.cpp" />
     <ClCompile Include="WndSelect.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -137,6 +138,7 @@
     <ClInclude Include="UI.h" />
     <ClInclude Include="WndCharInfo.h" />
     <ClInclude Include="WndCommand.h" />
+    <ClInclude Include="WndMainTitle.h" />
     <ClInclude Include="WndSelect.h" />
   </ItemGroup>
   <ItemGroup>

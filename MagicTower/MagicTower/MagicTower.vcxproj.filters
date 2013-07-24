@@ -49,6 +49,9 @@
     <ClCompile Include="SkillManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="WndMainTitle.cpp">
+      <Filter>Windows\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
@@ -110,6 +113,9 @@
     </ClInclude>
     <ClInclude Include="SkillManager.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WndMainTitle.h">
+      <Filter>Windows\Head Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

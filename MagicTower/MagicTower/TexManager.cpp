@@ -11,6 +11,7 @@ TexManager::TexManager(void)
 	m_mUITex.clear();
 	m_mSkillTex.clear();
 	m_mItemTex.clear();
+	m_mSceneTex.clear();
 }
 
 
@@ -24,6 +25,7 @@ TexManager::~TexManager(void)
 	FreeTex(m_mUITex);
 	FreeTex(m_mSkillTex);
 	FreeTex(m_mItemTex);
+	FreeTex(m_mSceneTex);
 }
 
 void TexManager::FreeTex(std::map<int,HTEXTURE>& mTex)
@@ -45,8 +47,10 @@ bool TexManager::LoadTex()
 	bool bSkillTex = true;
 //	bool bItemTex = LoadItem();
 	bool bItemTex = true;
+//	bool bSceneTex = LoadScene();
+	bool bSceneTex = true;
 
-	return (bCharTex && bMapTex && bUITex && bSkillTex && bItemTex);
+	return (bCharTex && bMapTex && bUITex && bSkillTex && bItemTex && bSceneTex);
 }
 
 bool TexManager::LoadCharTex()
@@ -235,6 +239,37 @@ bool TexManager::LoadItem()
 	return true;
 }
 
+bool TexManager::LoadScene()
+{
+	m_mSceneTex.clear();
+
+	char pBuf[MAX_PATH];
+	char pathTex[MAX_PATH];
+	GetCurrentDirectory(MAX_PATH,pBuf);
+	sprintf(pathTex,"%s\\res\\tex\\scene",pBuf);
+
+	std::map<std::string,std::string> files;
+	g_getFiles(pathTex,files,".png",50,true);
+	size_t found = 0;
+	int ID = 0;
+	for (std::map<std::string,std::string>::iterator mit=files.begin();mit!=files.end();mit++)
+	{
+		found = mit->second.find('.');
+		if(found != 0)
+		{
+			char strID[10];
+			strncpy(strID,mit->second.c_str(),found);
+			strID[found] = '\0';
+			m_mSceneTex[ID] = App::sInstance().GetHGE()->Texture_Load(mit->first.c_str());
+		}
+	}
+	if (m_mSceneTex.empty())
+	{
+		return false;
+	}
+	return true;
+}
+
 HTEXTURE TexManager::LoadTexFromFile(std::string resPath,int texID)
 {
 	char pBuf[MAX_PATH];
@@ -306,6 +341,28 @@ HTEXTURE TexManager::GetUITex(int UIID)
 	else
 	{
 		g_debugString(__FILE__,__FUNCTION__,__LINE__,"载入UI图片失败");
+		exit(0);
+	}
+	return 0;
+}
+
+HTEXTURE TexManager::GetSceneTex(int _ID)
+{
+	for (std::map<int,HTEXTURE>::iterator it=m_mSceneTex.begin();it!=m_mSceneTex.end();it++)
+	{
+		if(_ID == it->first)
+			return it->second;
+	}
+	//没有找到，从文件载入
+	HTEXTURE sceneTex = LoadTexFromFile("res\\tex\\scene",_ID);
+	if(sceneTex)
+	{
+		m_mSceneTex[_ID] = sceneTex;
+		return sceneTex;
+	}
+	else
+	{
+		g_debugString(__FILE__,__FUNCTION__,__LINE__,"载入场景图片失败");
 		exit(0);
 	}
 	return 0;
