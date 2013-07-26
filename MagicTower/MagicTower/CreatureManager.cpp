@@ -293,9 +293,10 @@ void CreatureManager::ShowCreatureInfo()
 				TipWnd::sInstance().Clear();
 				TipWnd::sInstance().SetShow(false);
 
-				UIWindow* charInfoWindow = UISystem::sInstance().GetWindow(eWindowID_CharInfo);
-				if(charInfoWindow->IsShow())
-					charInfoWindow->SetShow(false);
+// 				UIWindow* charInfoWindow = UISystem::sInstance().GetWindow(eWindowID_CharInfo);
+// 				if(charInfoWindow && charInfoWindow->IsShow())
+// 					charInfoWindow->SetShow(false);
+				UISystem::sInstance().CloseWindow(eWindowID_CharInfo);
 				return;
 			}
 		}
@@ -304,16 +305,19 @@ void CreatureManager::ShowCreatureInfo()
 		{
 			return;
 		}
-		if (commandWindow->GetBindChar() && commandWindow->GetBindChar()->GetActionStage() == eActionStage_AttackStage)
+		if (commandWindow && commandWindow->GetBindChar() && commandWindow->GetBindChar()->GetActionStage() == eActionStage_AttackStage)
 		{
 			if(commandWindow->GetBindChar()->CanHitTarget(cha))
 			{
-				UIWindow* charInfoWindow = UISystem::sInstance().GetWindow(eWindowID_CharInfo);
+// 				UIWindow* charInfoWindow = UISystem::sInstance().GetWindow(eWindowID_CharInfo);
+// 				if(charInfoWindow)
+// 				{
+// 					charInfoWindow->SetShow(true);
+// 					charInfoWindow->SetBindChar(cha);
+// 				}			
+				UIWindow* charInfoWindow = UISystem::sInstance().PopUpWindow(eWindowID_CharInfo);
 				if(charInfoWindow)
-				{
-					charInfoWindow->SetShow(true);
 					charInfoWindow->SetBindChar(cha);
-				}			
 			}
 			return;
 		}
@@ -333,9 +337,10 @@ void CreatureManager::ShowCreatureInfo()
 	}
 	else
 	{
-		UIWindow* charInfoWindow = UISystem::sInstance().GetWindow(eWindowID_CharInfo);
-		if(charInfoWindow->IsShow())
-			charInfoWindow->SetShow(false);
+// 		UIWindow* charInfoWindow = UISystem::sInstance().GetWindow(eWindowID_CharInfo);
+// 		if(charInfoWindow && charInfoWindow->IsShow())
+// 			charInfoWindow->SetShow(false);
+		UISystem::sInstance().CloseWindow(eWindowID_CharInfo);
 
 		TipWnd::sInstance().Clear();
 		TipWnd::sInstance().SetShow(false);
@@ -846,12 +851,15 @@ void CreatureManager::SelectCreature()
 								//跳过移动阶段，进入操作阶段
 								selectChar->SetActionStage(eActionStage_HandleStage);
 								//打开操作界面
-								UIWindow* commandWindow = UISystem::sInstance().GetWindow(eWindowID_Command);
-								if(commandWindow)
-								{
-									commandWindow->SetShow(true);
-									commandWindow->SetBindChar(selectChar);
-								}
+// 								UIWindow* commandWindow = UISystem::sInstance().GetWindow(eWindowID_Command);
+// 								if(commandWindow)
+// 								{
+// 									commandWindow->SetShow(true);
+// 									commandWindow->SetBindChar(selectChar);
+// 								}
+								 UIWindow* commandWindow = UISystem::sInstance().PopUpWindow(eWindowID_Command);
+								 if(commandWindow)
+									 commandWindow->SetBindChar(selectChar);
 							}
 							else if (selectChar->GetActionStage()== eActionStage_SkillStage && selectChar->GetCastSkill()!=-1)
 							{
@@ -941,14 +949,15 @@ void CreatureManager::SelectCreature()
 								{
 									//										lastChar->SetTarget(selectChar->GetNum());
 									//隐藏单位信息窗口
-									UIWindow* charInfoWindow = UISystem::sInstance().GetWindow(eWindowID_CharInfo);
-									if(charInfoWindow && charInfoWindow->IsShow())
-									{
-										charInfoWindow->SetShow(false);
-										UIWindow* commandWnd = UISystem::sInstance().GetWindow(eWindowID_Command);
-										if(commandWnd)
-											commandWnd->SetBindChar(NULL);
-									}	
+// 									UIWindow* charInfoWindow = UISystem::sInstance().GetWindow(eWindowID_CharInfo);
+// 									if(charInfoWindow && charInfoWindow->IsShow())
+// 									{
+// 										charInfoWindow->SetShow(false);
+// 										UIWindow* commandWnd = UISystem::sInstance().GetWindow(eWindowID_Command);
+// 										if(commandWnd)
+// 											commandWnd->SetBindChar(NULL);
+// 									}	
+									UISystem::sInstance().CloseWindow(eWindowID_CharInfo);
 
 									m_nSelectNum = -1;
 									//lastChar->GeginHit();
@@ -1031,11 +1040,12 @@ void CreatureManager::UnSelectCreature()
 				lastChar->SetActionStage(eActionStage_MoveStage);
 				lastChar->CancelMove();
 				//关闭操作界面
-				UIWindow* commandWindow = UISystem::sInstance().GetWindow(eWindowID_Command);
-				if(commandWindow)
-				{
-					commandWindow->SetShow(false);
-				}
+// 				UIWindow* commandWindow = UISystem::sInstance().GetWindow(eWindowID_Command);
+// 				if(commandWindow)
+// 				{
+// 					commandWindow->SetShow(false);
+// 				}
+				UISystem::sInstance().CloseWindow(eWindowID_Command);
 			}
 			//攻击阶段、技能阶段、使用物品阶段可以返回至操作阶段
 			else if(stage == eActionStage_AttackStage || stage == eActionStage_ItemStage || stage == eActionStage_SkillStage)
@@ -1043,18 +1053,22 @@ void CreatureManager::UnSelectCreature()
 				lastChar->GetCastSkill() = -1;
 				lastChar->SetActionStage(eActionStage_HandleStage);
 				//打开操作界面
-				UIWindow* commandWindow = UISystem::sInstance().GetWindow(eWindowID_Command);
+// 				UIWindow* commandWindow = UISystem::sInstance().GetWindow(eWindowID_Command);
+// 				if(commandWindow)
+// 				{
+// 					commandWindow->SetShow(true);
+// 					commandWindow->SetBindChar(lastChar);
+// 				}
+				UIWindow* commandWindow = UISystem::sInstance().PopUpWindow(eWindowID_Command);
 				if(commandWindow)
-				{
-					commandWindow->SetShow(true);
 					commandWindow->SetBindChar(lastChar);
-				}
 				//关闭技能界面
-				UIWindow* selectWndow = UISystem::sInstance().GetWindow(eWindowID_Select);
-				if(selectWndow)
-				{
-					selectWndow->SetShow(false);
-				}
+// 				UIWindow* selectWndow = UISystem::sInstance().GetWindow(eWindowID_Select);
+// 				if(selectWndow)
+// 				{
+// 					selectWndow->SetShow(false);
+// 				}
+				UISystem::sInstance().CloseWindow(eWindowID_Select);
 			}
 			//右键取消选中的友方，需要重置行动阶段，处于移动中的单位不可以当时取消
 			else if(stage == eActionStage_MoveStage && lastChar->GetCharacterState()==eCharacterState_Stand)	

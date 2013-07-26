@@ -96,7 +96,9 @@ void WndCommand::Update(float dt)
 			if(m_pChar)
 			{
 				m_pChar->SetActionStage(eActionStage_AttackStage);
-				SetShow(false);
+				//SetShow(false);
+				UISystem::sInstance().CloseWindow(eWindowID_Command);
+				return;
 			}
 			m_pContainer->Leave();
 		}
@@ -108,15 +110,21 @@ void WndCommand::Update(float dt)
 					m_pChar->SetActionStage(eActionStage_SkillStage);
 				else
 					m_pChar->SetActionStage(eActionStage_ItemStage);
-				SetShow(false);
+				//SetShow(false);
 
-				//打开技能面板
-				UIWindow* wndSelect = UISystem::sInstance().GetWindow(eWindowID_Select);
+				UIWindow* wndSelect = UISystem::sInstance().PopUpWindow(eWindowID_Select);
 				if(wndSelect)
-				{
-					wndSelect->SetShow(true);
 					wndSelect->SetBindChar(m_pChar);
-				}
+				UISystem::sInstance().CloseWindow(eWindowID_Command);
+				return;
+				//打开技能面板
+// 				UIWindow* wndSelect = UISystem::sInstance().GetWindow(eWindowID_Select);
+// 				if(wndSelect)
+// 				{
+// 					wndSelect->SetShow(true);
+// 					wndSelect->SetBindChar(m_pChar);
+// 				}
+
 			}
 			m_pContainer->Leave();
 		}
@@ -125,7 +133,9 @@ void WndCommand::Update(float dt)
 			if(m_pChar)
 			{
 				m_pChar->SetFinish(true);
-				SetShow(false);
+				//SetShow(false);
+				UISystem::sInstance().CloseWindow(eWindowID_Command);
+				return;
 			}
 			m_pContainer->Leave();
 		}

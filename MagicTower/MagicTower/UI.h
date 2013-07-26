@@ -6,6 +6,14 @@
 #include "GfxFont.h"
 #include "TexManager.h"
 
+#define ADDWINDOW(windowID,windowName) m_mWindowCreateFunc[windowID]=&windowName::CreateWnd;
+#define CREATEWINDOW(windowName) \
+	public:\
+	static UIWindow* CreateWnd() \
+	{ \
+		return new windowName(); \
+	} \
+
 enum eUIID
 {
 	eUIID_WndCommand = 0,
@@ -36,6 +44,7 @@ enum eWindowID
 	eWindowID_Command = 0,
 	eWindowID_CharInfo,
 	eWindowID_Select,
+	eWindowID_MainTitle,
 };
 
 class UIButton : public hgeGUIButton
@@ -432,10 +441,11 @@ protected:
 	bool m_bShow;
 };
 
+typedef UIWindow* (*LPCreateWindow)();
 class UISystem : public Singleton<UISystem>
 {
 public:
-	UISystem(){m_mWindows.clear();}
+	UISystem(){m_mWindows.clear(); m_mWindowCreateFunc.clear();}
 	~UISystem(){}
 
 	void Init();
@@ -443,9 +453,12 @@ public:
 	void Render();
 	void Update(float dt);
 	bool IsInAnyControl();
+	UIWindow* PopUpWindow(eWindowID windowID);
+	void CloseWindow(eWindowID windowID);
 
 	UIWindow* GetWindow(eWindowID windowID);
 private:
 	std::map<eWindowID,UIWindow*> m_mWindows;
+	std::map<eWindowID,LPCreateWindow> m_mWindowCreateFunc;
 };
 #endif

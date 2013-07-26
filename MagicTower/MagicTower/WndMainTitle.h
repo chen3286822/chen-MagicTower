@@ -5,6 +5,7 @@
 
 class WndMainTitle : public UIWindow
 {
+	CREATEWINDOW(WndMainTitle)
 public:
 	enum eControlID
 	{

@@ -253,12 +253,15 @@ void Character::Update(float delta)
 				//友方单位打开操作界面
 				if (m_nCamp == eCamp_Friend)
 				{
-					UIWindow* commandWindow = UISystem::sInstance().GetWindow(eWindowID_Command);
+// 					UIWindow* commandWindow = UISystem::sInstance().GetWindow(eWindowID_Command);
+// 					if(commandWindow)
+// 					{
+// 						commandWindow->SetShow(true);
+// 						commandWindow->SetBindChar(this);
+// 					}
+					UIWindow* commandWindow = UISystem::sInstance().PopUpWindow(eWindowID_Command);
 					if(commandWindow)
-					{
-						commandWindow->SetShow(true);
 						commandWindow->SetBindChar(this);
-					}
 				}
 			}
 		}

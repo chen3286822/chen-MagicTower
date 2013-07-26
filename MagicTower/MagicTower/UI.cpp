@@ -2,6 +2,7 @@
 #include "WndCommand.h"
 #include "WndCharInfo.h"
 #include "WndSelect.h"
+#include "WndMainTitle.h"
 
 UIWindow::UIWindow()
 {
@@ -66,23 +67,37 @@ bool UIWindow::IsOnControl()
 
 void UISystem::Init()
 {
-	WndCommand* pWndCommand = new WndCommand();
-	m_mWindows[eWindowID_Command] = pWndCommand;
-	WndCharInfo* pWndCharInfo = new WndCharInfo();
-	m_mWindows[eWindowID_CharInfo] = pWndCharInfo;
-	WndSelect* pWndSelect = new WndSelect();
-	m_mWindows[eWindowID_Select] = pWndSelect;
+//	WndCommand* pWndCommand = new WndCommand();
+//	WndCommand* pWndCommand = NULL;
+//	m_mWindows[eWindowID_Command] = pWndCommand;
+//	WndCharInfo* pWndCharInfo = new WndCharInfo();
+//	WndCharInfo* pWndCharInfo = NULL;
+//	m_mWindows[eWindowID_CharInfo] = pWndCharInfo;
+//	WndSelect* pWndSelect = new WndSelect();
+//	WndSelect* pWndSelect = NULL;
+//	m_mWindows[eWindowID_Select] = pWndSelect;
+//	WndMainTitle* pWndMainTitle = new WndMainTitle();
+//	WndMainTitle* pWndMainTitle = NULL;
+//	m_mWindows[eWindowID_MainTitle] = pWndMainTitle;
 
-	for (std::map<eWindowID,UIWindow*>::iterator mit=m_mWindows.begin();mit!=m_mWindows.end();mit++)
-		mit->second->Init();
+	ADDWINDOW(eWindowID_Command,WndCommand)
+	ADDWINDOW(eWindowID_CharInfo,WndCharInfo)
+	ADDWINDOW(eWindowID_Select,WndSelect)
+	ADDWINDOW(eWindowID_MainTitle,WndMainTitle)
+
+// 	for (std::map<eWindowID,UIWindow*>::iterator mit=m_mWindows.begin();mit!=m_mWindows.end();mit++)
+// 		mit->second->Init();
 }
 
 void UISystem::Release()
 {
 	for (std::map<eWindowID,UIWindow*>::iterator mit=m_mWindows.begin();mit!=m_mWindows.end();mit++)
 	{
-		mit->second->Release();
-		gSafeDelete(mit->second);
+		if(mit->second != NULL)
+		{
+			mit->second->Release();
+			gSafeDelete(mit->second);
+		}
 	}
 }
 
@@ -90,20 +105,36 @@ void UISystem::Render()
 {
 	for (std::map<eWindowID,UIWindow*>::iterator mit=m_mWindows.begin();mit!=m_mWindows.end();mit++)
 	{
-		if (mit->second->IsShow())
+		if(mit->second)
 		{
-			mit->second->Render();
+			if (mit->second->IsShow())
+			{
+				mit->second->Render();
+			}
 		}
 	}
 }
 
 void UISystem::Update(float dt)
 {
-	for (std::map<eWindowID,UIWindow*>::iterator mit=m_mWindows.begin();mit!=m_mWindows.end();mit++)
+	for (std::map<eWindowID,UIWindow*>::iterator mit=m_mWindows.begin();mit!=m_mWindows.end();)
 	{
-		if (mit->second->IsShow())
+		if(mit->second)
 		{
-			mit->second->Update(dt);
+			if (mit->second->IsShow())
+			{
+				mit->second->Update(dt);
+			}
+			if (mit->second == NULL)
+			{
+				m_mWindows.erase(mit);
+			}
+			else
+				mit++;
+		}
+		else
+		{
+			m_mWindows.erase(mit);
 		}
 	}
 }
@@ -122,10 +153,56 @@ bool UISystem::IsInAnyControl()
 {
 	for (std::map<eWindowID,UIWindow*>::iterator mit=m_mWindows.begin();mit!=m_mWindows.end();mit++)
 	{
-		if(mit->second->IsOnControl())
+		if(mit->second)
 		{
-			return true;
+			if(mit->second->IsOnControl())
+			{
+				return true;
+			}
 		}
 	}
 	return false;
+}
+
+UIWindow* UISystem::PopUpWindow(eWindowID windowID)
+{
+	std::map<eWindowID,UIWindow*>::iterator it = m_mWindows.find(windowID);
+	if (it != m_mWindows.end())
+	{
+		//已经生成该窗口
+		if(it->second != NULL)
+		{
+			it->second->SetShow(true);
+			return it->second;
+		}
+	}
+	else
+	{
+		UIWindow* window = NULL;
+		std::map<eWindowID,LPCreateWindow>::iterator mit = m_mWindowCreateFunc.find(windowID);
+		if(mit!=m_mWindowCreateFunc.end())
+		{
+			window = mit->second();
+			window->Init();
+			window->SetShow(true);
+			m_mWindows[windowID] = window;
+		}
+		return window;
+	}
+	return NULL;
+}
+
+void UISystem::CloseWindow(eWindowID windowID)
+{
+	std::map<eWindowID,UIWindow*>::iterator it = m_mWindows.find(windowID);
+	if (it != m_mWindows.end())
+	{
+		if(it->second != NULL)
+		{
+			it->second->Release();
+			//等到下一帧移除，因为此时移除，在update时，就会导致it报错
+			//m_mWindows.erase(it);
+			gSafeDelete(it->second);
+		}
+	}
 }

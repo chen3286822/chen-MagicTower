@@ -22,5 +22,5 @@ void	WndMainTitle::SetRenderPositon(float _x,float _y)
 
 bool	WndMainTitle::IsOnControl()
 {
-
+	return (m_bShow && UIWindow::IsOnControl());
 }

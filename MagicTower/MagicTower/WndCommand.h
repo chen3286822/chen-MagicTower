@@ -8,6 +8,7 @@ class Character;
 //Ö¸Áî´°¿Ú
 class WndCommand : public UIWindow
 {
+	CREATEWINDOW(WndCommand)
 public:
 	enum eControlID
 	{

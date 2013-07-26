@@ -7,6 +7,7 @@
 class Character;
 class WndSelect : public UIWindow
 {
+	CREATEWINDOW(WndSelect)
 public:
 	enum eControlID
 	{

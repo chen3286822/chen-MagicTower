@@ -51,7 +51,9 @@ void WndSelect::Update(float dt)
 				if(it!=m_mListItemToSkillId.end())
 				{
 					m_pBindChar->GetCastSkill() = it->second;
-					SetShow(false);					
+					//SetShow(false);				
+					UISystem::sInstance().CloseWindow(eWindowID_Select);
+					return;
 				}
 				//错误分支
 				else
@@ -63,7 +65,9 @@ void WndSelect::Update(float dt)
 				if(it!=m_mListItemToItemId.end())
 				{
 					m_pBindChar->GetUseItem() = it->second;
-					SetShow(false);					
+					//SetShow(false);				
+					UISystem::sInstance().CloseWindow(eWindowID_Select);
+					return;
 				}
 				//错误分支
 				else

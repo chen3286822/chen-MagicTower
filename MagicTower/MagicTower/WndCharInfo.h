@@ -6,6 +6,7 @@
 class Character;
 class WndCharInfo : public UIWindow
 {
+	CREATEWINDOW(WndCharInfo)
 public:
 	WndCharInfo();
 	~WndCharInfo();
