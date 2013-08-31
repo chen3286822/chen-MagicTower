@@ -65,6 +65,12 @@ bool UIWindow::IsOnControl()
 	return false;
 }
 
+UISystem::UISystem()
+{
+	m_pHeadWindow = NULL;
+	m_mWindowCreateFunc.clear();
+}
+
 void UISystem::Init()
 {
 //	WndCommand* pWndCommand = new WndCommand();
@@ -91,92 +97,100 @@ void UISystem::Init()
 
 void UISystem::Release()
 {
-	for (std::map<eWindowID,UIWindow*>::iterator mit=m_mWindows.begin();mit!=m_mWindows.end();mit++)
+	WindowNode* pWindow = m_pHeadWindow;
+	while(pWindow)
 	{
-		if(mit->second != NULL)
+		if(pWindow->m_pWindow)
 		{
-			mit->second->Release();
-			gSafeDelete(mit->second);
+			pWindow->m_pWindow->Release();
+			gSafeDelete(pWindow->m_pWindow);
 		}
+		WindowNode* tempNode = pWindow;
+		gSafeDelete(pWindow);
+		pWindow = tempNode->m_pNext;
 	}
+	m_mWindowCreateFunc.clear();
 }
 
 void UISystem::Render()
 {
-	for (std::map<eWindowID,UIWindow*>::iterator mit=m_mWindows.begin();mit!=m_mWindows.end();mit++)
+	WindowNode* pWindow = m_pHeadWindow;
+	while(pWindow)
 	{
-		if(mit->second)
+		if (pWindow->m_pWindow)
 		{
-			if (mit->second->IsShow())
+			if (pWindow->m_pWindow->IsShow())
 			{
-				mit->second->Render();
+				pWindow->m_pWindow->Render();
 			}
 		}
+		pWindow = pWindow->m_pNext;
 	}
 }
 
 void UISystem::Update(float dt)
 {
-	for (std::map<eWindowID,UIWindow*>::iterator mit=m_mWindows.begin();mit!=m_mWindows.end();)
+	WindowNode* pWindow = m_pHeadWindow;
+	while(pWindow)
 	{
-		if(mit->second)
+		if (pWindow->m_pWindow)
 		{
-			if (mit->second->IsShow())
+			if (pWindow->m_pWindow->IsShow())
 			{
-				mit->second->Update(dt);
+				pWindow->m_pWindow->Update(dt);
 			}
-			if (mit->second == NULL)
-			{
-				m_mWindows.erase(mit);
-			}
-			else
-				mit++;
 		}
-		else
-		{
-			m_mWindows.erase(mit);
-		}
+		pWindow = pWindow->m_pNext;
 	}
 }
 
 UIWindow* UISystem::GetWindow(eWindowID windowID)
 {
-	for (std::map<eWindowID,UIWindow*>::iterator mit=m_mWindows.begin();mit!=m_mWindows.end();mit++)
+	WindowNode* pWindow = m_pHeadWindow;
+	while(pWindow)
 	{
-		if(mit->first == windowID)
-			return mit->second;
+		if (pWindow->m_eWindowID == windowID)
+			return pWindow->m_pWindow;
+		pWindow = pWindow->m_pNext;
 	}
 	return NULL;
 }
 
 bool UISystem::IsInAnyControl()
 {
-	for (std::map<eWindowID,UIWindow*>::iterator mit=m_mWindows.begin();mit!=m_mWindows.end();mit++)
+	WindowNode* pWindow = m_pHeadWindow;
+	while(pWindow)
 	{
-		if(mit->second)
+		if(pWindow->m_pWindow)
 		{
-			if(mit->second->IsOnControl())
+			if(pWindow->m_pWindow->IsOnControl())
 			{
 				return true;
 			}
 		}
+		pWindow = pWindow->m_pNext;
 	}
 	return false;
 }
 
 UIWindow* UISystem::PopUpWindow(eWindowID windowID)
 {
-	std::map<eWindowID,UIWindow*>::iterator it = m_mWindows.find(windowID);
-	if (it != m_mWindows.end())
+	WindowNode* pWindow = m_pHeadWindow;
+	while(pWindow)
 	{
-		//已经生成该窗口
-		if(it->second != NULL)
+		if(pWindow->m_eWindowID == windowID)
 		{
-			it->second->SetShow(true);
-			return it->second;
+			if(pWindow->m_pWindow)
+			{
+				pWindow->m_pWindow->SetShow(true);
+			}
+			return pWindow->m_pWindow;
 		}
+		else
+			pWindow = pWindow->m_pNext;
 	}
-	else
+	//窗口未生成
+	if (!pWindow)
 	{
 		UIWindow* window = NULL;
 		std::map<eWindowID,LPCreateWindow>::iterator mit = m_mWindowCreateFunc.find(windowID);
@@ -185,7 +199,25 @@ UIWindow* UISystem::PopUpWindow(eWindowID windowID)
 			window = mit->second();
 			window->Init();
 			window->SetShow(true);
-			m_mWindows[windowID] = window;
+			WindowNode* newWindow = new WindowNode;
+			newWindow->m_eWindowID = windowID;
+			newWindow->m_pNext = NULL;
+			newWindow->m_pWindow = window;
+			WindowNode* tempNode = m_pHeadWindow;
+			if(!m_pHeadWindow)
+				m_pHeadWindow = newWindow;
+			else
+			{
+				while(tempNode)
+				{
+					if(tempNode->m_pNext == NULL)
+					{
+						tempNode->m_pNext = newWindow;
+						break;
+					}
+					tempNode = tempNode->m_pNext;
+				}
+			}
 		}
 		return window;
 	}
@@ -194,15 +226,47 @@ UIWindow* UISystem::PopUpWindow(eWindowID windowID)
 
 void UISystem::CloseWindow(eWindowID windowID)
 {
-	std::map<eWindowID,UIWindow*>::iterator it = m_mWindows.find(windowID);
-	if (it != m_mWindows.end())
+	WindowNode* pWindow = m_pHeadWindow;
+	WindowNode* pLastWindow = pWindow;
+	while(pWindow)
 	{
-		if(it->second != NULL)
+		if(pWindow->m_eWindowID == windowID)
 		{
-			it->second->Release();
-			//等到下一帧移除，因为此时移除，在update时，就会导致it报错
-			//m_mWindows.erase(it);
-			gSafeDelete(it->second);
+			if(pWindow->m_pWindow)
+			{
+				//删除窗口
+				pWindow->m_pWindow->Release();
+				gSafeDelete(pWindow->m_pWindow);
+			}
+			//将该窗口节点从列表中移除
+			if(pWindow == m_pHeadWindow)
+			{
+				WindowNode* pTempNode = m_pHeadWindow->m_pNext;
+				gSafeDelete(pWindow);
+				m_pHeadWindow = pTempNode;
+			}
+			else
+			{
+				pLastWindow->m_pNext = pWindow->m_pNext;
+				gSafeDelete(pWindow);
+			}
+			break;
+		}
+		else
+		{
+			pLastWindow = pWindow;
+			pWindow = pWindow->m_pNext;
 		}
 	}
+// 	std::map<eWindowID,UIWindow*>::iterator it = m_mWindows.find(windowID);
+// 	if (it != m_mWindows.end())
+// 	{
+// 		if(it->second != NULL)
+// 		{
+// 			it->second->Release();
+// 			//等到下一帧移除，因为此时移除，在update时，就会导致it报错
+// 			//m_mWindows.erase(it);
+// 			gSafeDelete(it->second);
+// 		}
+// 	}
 }

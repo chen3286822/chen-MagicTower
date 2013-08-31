@@ -441,11 +441,18 @@ protected:
 	bool m_bShow;
 };
 
+struct WindowNode
+{
+	eWindowID m_eWindowID;
+	UIWindow*	m_pWindow;
+	WindowNode* m_pNext;
+};
+
 typedef UIWindow* (*LPCreateWindow)();
 class UISystem : public Singleton<UISystem>
 {
 public:
-	UISystem(){m_mWindows.clear(); m_mWindowCreateFunc.clear();}
+	UISystem();
 	~UISystem(){}
 
 	void Init();
@@ -458,7 +465,7 @@ public:
 
 	UIWindow* GetWindow(eWindowID windowID);
 private:
-	std::map<eWindowID,UIWindow*> m_mWindows;
+	WindowNode* m_pHeadWindow;
 	std::map<eWindowID,LPCreateWindow> m_mWindowCreateFunc;
 };
 #endif
