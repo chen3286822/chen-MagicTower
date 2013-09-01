@@ -33,7 +33,14 @@
 #include "Markup.h"
 #include <io.h>
 
+extern "C"
+{
+#include "lua.h"
+#include "lauxlib.h"
+#include "lualib.h"
+}
 
+extern lua_State* g_pLua;
 
 #define LEVEL_NUM 20
 

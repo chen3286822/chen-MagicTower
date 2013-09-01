@@ -51,8 +51,8 @@
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IncludePath);..\..\hge\hge181\include;..\..</IncludePath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(LibraryPath);..\..\hge\hge181\lib\vc;</LibraryPath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IncludePath);..\..\hge\hge181\include;..\..\lua\include;..\..</IncludePath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(LibraryPath);..\..\hge\hge181\lib\vc;..\..\lua\lib</LibraryPath>
     <EmbedManifest Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</EmbedManifest>
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IncludePath);..\..\hge\hge181\include;..\..;</IncludePath>
     <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(LibraryPath);..\..\hge\hge181\lib\vc;</LibraryPath>
@@ -70,7 +70,7 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>hge.lib;hgehelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>hge.lib;hgehelp.lib;lua5.1.lib;lua51.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -119,6 +119,11 @@
     <ClCompile Include="WndSelect.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\lua\include\lauxlib.h" />
+    <ClInclude Include="..\..\lua\include\lua.h" />
+    <ClInclude Include="..\..\lua\include\lua.hpp" />
+    <ClInclude Include="..\..\lua\include\luaconf.h" />
+    <ClInclude Include="..\..\lua\include\lualib.h" />
     <ClInclude Include="ActionProcess.h" />
     <ClInclude Include="App.h" />
     <ClInclude Include="AStar.h" />

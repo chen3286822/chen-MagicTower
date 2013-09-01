@@ -117,6 +117,21 @@
     <ClInclude Include="WndMainTitle.h">
       <Filter>Windows\Head Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\lua\include\lauxlib.h">
+      <Filter>Lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lua\include\lua.h">
+      <Filter>Lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lua\include\lua.hpp">
+      <Filter>Lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lua\include\luaconf.h">
+      <Filter>Lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lua\include\lualib.h">
+      <Filter>Lua</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
@@ -133,6 +148,9 @@
     </Filter>
     <Filter Include="Windows\Source Files">
       <UniqueIdentifier>{bbc5694b-aaf7-4244-9017-960d1ca9eb1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lua">
+      <UniqueIdentifier>{25d6a847-9f1f-48ba-a8b4-6e1674fd2eb9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

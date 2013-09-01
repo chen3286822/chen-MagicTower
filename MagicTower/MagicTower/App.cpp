@@ -52,6 +52,18 @@ bool App::SystemInit()
 
 bool App::LoadResource()
 {
+	//lua初始化
+	g_pLua = lua_open();
+	luaL_openlibs(g_pLua);
+	//lua简单测试
+	const char* buf = "var=100";
+	luaL_dostring(g_pLua,buf);
+	lua_getglobal(g_pLua,"var");
+	int var = lua_tonumber(g_pLua,-1);
+	char str[50];
+	sprintf(str,"var is %d",var);
+	OutputDebugString(str);
+
 	MapManager::sCreate();
 	TexManager::sCreate();
 	FontManager::sCreate();
@@ -117,6 +129,9 @@ void App::FreeResource()
 	FontManager::sDestroy();
 	TexManager::sDestroy();
 	MapManager::sDestroy();
+
+	//lua 释放
+	lua_close(g_pLua);
 }
 
 void App::CleanUp()
