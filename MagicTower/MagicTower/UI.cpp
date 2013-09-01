@@ -142,6 +142,8 @@ void UISystem::Update(float dt)
 		}
 		pWindow = pWindow->m_pNext;
 	}
+
+	ProcessMsg();
 }
 
 UIWindow* UISystem::GetWindow(eWindowID windowID)
@@ -199,6 +201,7 @@ UIWindow* UISystem::PopUpWindow(eWindowID windowID)
 			window = mit->second();
 			window->Init();
 			window->SetShow(true);
+			window->GetID() = windowID;
 			WindowNode* newWindow = new WindowNode;
 			newWindow->m_eWindowID = windowID;
 			newWindow->m_pNext = NULL;
@@ -225,6 +228,17 @@ UIWindow* UISystem::PopUpWindow(eWindowID windowID)
 }
 
 void UISystem::CloseWindow(eWindowID windowID)
+{
+	//先隐藏窗口，然后加入消息队列中等待删除窗口
+	UIWindow* window = GetWindow(windowID);
+	if (window)
+	{
+		window->SetShow(false);
+		MsgWnd(eMessage_CloseWindow,window->GetID());
+	}
+}
+
+void UISystem::RemoveWindow(eWindowID windowID)
 {
 	WindowNode* pWindow = m_pHeadWindow;
 	WindowNode* pLastWindow = pWindow;
@@ -258,15 +272,33 @@ void UISystem::CloseWindow(eWindowID windowID)
 			pWindow = pWindow->m_pNext;
 		}
 	}
-// 	std::map<eWindowID,UIWindow*>::iterator it = m_mWindows.find(windowID);
-// 	if (it != m_mWindows.end())
-// 	{
-// 		if(it->second != NULL)
-// 		{
-// 			it->second->Release();
-// 			//等到下一帧移除，因为此时移除，在update时，就会导致it报错
-// 			//m_mWindows.erase(it);
-// 			gSafeDelete(it->second);
-// 		}
-// 	}
+}
+
+void UISystem::MsgWnd(eMessage eMsgID,eWindowID eWndID,DWORD dwData)
+{
+	MsgNode newNode;
+	newNode.m_eMsgID = eMsgID;
+	newNode.m_eWndID = eWndID;
+	newNode.m_dwData = dwData;
+
+	m_lMsgList.push_back(newNode);
+}
+
+void UISystem::ProcessMsg()
+{
+	while(!m_lMsgList.empty())
+	{
+		MsgNode tempNode = m_lMsgList.front();
+		switch(tempNode.m_eMsgID)
+		{
+		case eMessage_CloseWindow:
+			{
+				RemoveWindow(tempNode.m_eWndID);
+			}
+			break;
+		default:
+			break;
+		}
+		m_lMsgList.pop_front();
+	}
 }

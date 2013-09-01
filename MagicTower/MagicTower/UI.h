@@ -47,6 +47,11 @@ enum eWindowID
 	eWindowID_MainTitle,
 };
 
+enum eMessage
+{
+	eMessage_CloseWindow,
+};
+
 class UIButton : public hgeGUIButton
 {
 public:
@@ -430,8 +435,10 @@ public:
 	bool								IsShow(){return m_bShow;}
 	void								SetShow(bool _show);
 	virtual bool					IsOnControl();
-	virtual void	SetBindChar(Character* bindChar){}
-	virtual Character*	GetBindChar(){return NULL;}
+	virtual void					SetBindChar(Character* bindChar){}
+	virtual Character*		GetBindChar(){return NULL;}
+
+	eWindowID&				GetID(){return m_eID;}
 protected:
 	hgeGUI* m_pContainer;
 	hgeSprite* m_pBackGround;
@@ -439,6 +446,7 @@ protected:
 	float m_fPosY;
 
 	bool m_bShow;
+	eWindowID m_eID;
 };
 
 struct WindowNode
@@ -446,6 +454,13 @@ struct WindowNode
 	eWindowID m_eWindowID;
 	UIWindow*	m_pWindow;
 	WindowNode* m_pNext;
+};
+
+struct MsgNode
+{
+	eMessage m_eMsgID;
+	eWindowID m_eWndID;
+	DWORD m_dwData;
 };
 
 typedef UIWindow* (*LPCreateWindow)();
@@ -463,9 +478,16 @@ public:
 	UIWindow* PopUpWindow(eWindowID windowID);
 	void CloseWindow(eWindowID windowID);
 
+	void MsgWnd(eMessage eMsgID,eWindowID eWndID,DWORD dwData=0);
+
 	UIWindow* GetWindow(eWindowID windowID);
 private:
 	WindowNode* m_pHeadWindow;
 	std::map<eWindowID,LPCreateWindow> m_mWindowCreateFunc;
+	//延迟消息队列，此队列中的消息将会延迟处理
+	std::list<MsgNode> m_lMsgList;
+
+	void ProcessMsg();
+	void RemoveWindow(eWindowID windowID);
 };
 #endif
