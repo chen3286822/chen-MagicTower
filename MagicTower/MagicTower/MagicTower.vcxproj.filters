@@ -132,13 +132,13 @@
     <ClInclude Include="..\..\lua\include\lualib.h">
       <Filter>Lua</Filter>
     </ClInclude>
+    <ClInclude Include="LuaGlobalFunc.h">
+      <Filter>LuaGlobal</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
       <UniqueIdentifier>{ad4384d9-eab7-475c-8790-f94c9826dd9b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{56468091-4937-47db-ba10-ee2f953676ed}</UniqueIdentifier>
     </Filter>
     <Filter Include="Windows">
       <UniqueIdentifier>{872ccf2a-96a9-4532-a7d7-474cc44afed4}</UniqueIdentifier>
@@ -151,6 +151,12 @@
     </Filter>
     <Filter Include="Lua">
       <UniqueIdentifier>{25d6a847-9f1f-48ba-a8b4-6e1674fd2eb9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{56468091-4937-47db-ba10-ee2f953676ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LuaGlobal">
+      <UniqueIdentifier>{75b7541c-71d8-4729-b50b-12f58f43b93c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

@@ -9,6 +9,7 @@
 #include "ActionProcess.h"
 #include "ConfigManager.h"
 #include "SkillManager.h"
+#include "LuaGlobalFunc.h"
 
 bool update();
 bool render();
@@ -50,19 +51,26 @@ bool App::SystemInit()
 	}
 }
 
+void App::LuaInit()
+{
+	g_pLua = lua_open();
+	luaL_openlibs(g_pLua);
+}
+
 bool App::LoadResource()
 {
 	//lua≥ı ºªØ
-	g_pLua = lua_open();
-	luaL_openlibs(g_pLua);
+	LuaInit();
+	Lua_RegisterFunc();
+
 	//luaºÚµ•≤‚ ‘
-	const char* buf = "var=100";
-	luaL_dostring(g_pLua,buf);
-	lua_getglobal(g_pLua,"var");
-	int var = lua_tonumber(g_pLua,-1);
-	char str[50];
-	sprintf(str,"var is %d",var);
-	OutputDebugString(str);
+// 	const char* buf = "var=100";
+// 	luaL_dostring(g_pLua,buf);
+// 	lua_getglobal(g_pLua,"var");
+// 	int var = lua_tonumber(g_pLua,-1);
+// 	char str[50];
+// 	sprintf(str,"var is %d",var);
+// 	OutputDebugString(str);
 
 	MapManager::sCreate();
 	TexManager::sCreate();

@@ -134,6 +134,7 @@
     <ClInclude Include="CreatureManager.h" />
     <ClInclude Include="FontManager.h" />
     <ClInclude Include="GfxFont.h" />
+    <ClInclude Include="LuaGlobalFunc.h" />
     <ClInclude Include="MapManager.h" />
     <ClInclude Include="Markup.h" />
     <ClInclude Include="Singleton.h" />

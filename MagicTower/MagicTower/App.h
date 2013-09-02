@@ -32,5 +32,6 @@ private:
 
 	//画出鼠标位置的方格
 	void DrawMouseRect();
+	void LuaInit();
 };
 

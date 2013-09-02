@@ -105,9 +105,9 @@ void UISystem::Release()
 			pWindow->m_pWindow->Release();
 			gSafeDelete(pWindow->m_pWindow);
 		}
-		WindowNode* tempNode = pWindow;
+		WindowNode* tempNode = pWindow->m_pNext;
 		gSafeDelete(pWindow);
-		pWindow = tempNode->m_pNext;
+		pWindow = tempNode;
 	}
 	m_mWindowCreateFunc.clear();
 }
