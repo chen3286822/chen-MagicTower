@@ -56,7 +56,6 @@ hge/hge181/lib/bc/
 hge/hge181/lib/gcc/
 freetype/
 *.manifest
-*.exe
 *.lastbuildstate
 *.unsuccessfulbuild
 *.res
