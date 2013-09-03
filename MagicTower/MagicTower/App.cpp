@@ -64,13 +64,17 @@ bool App::LoadResource()
 	Lua_RegisterFunc();
 
 	//lua¼òµ¥²âÊÔ
-// 	const char* buf = "var=100";
-// 	luaL_dostring(g_pLua,buf);
-// 	lua_getglobal(g_pLua,"var");
-// 	int var = lua_tonumber(g_pLua,-1);
-// 	char str[50];
-// 	sprintf(str,"var is %d",var);
-// 	OutputDebugString(str);
+// 	char pBuf[MAX_PATH];
+// 	char pathConfig[MAX_PATH];
+// 	GetCurrentDirectory(MAX_PATH,pBuf);
+// 	sprintf(pathConfig,"%s\\res\\script\\1_0.lua",pBuf);
+//  	luaL_dofile(g_pLua,pathConfig);
+//  	lua_getglobal(g_pLua,"var");
+// 	const char* errMsg = lua_tostring(g_pLua,-1);
+//  	int var = lua_tonumber(g_pLua,-1);
+//  	char str[50];
+//  	sprintf(str,"var is %d",var);
+//  	OutputDebugString(str);
 
 	MapManager::sCreate();
 	TexManager::sCreate();
@@ -217,6 +221,14 @@ bool App::AppUpdate()
 {
 	if (m_pHge->Input_GetKeyState(HGEK_ESCAPE))
 		return true;
+
+	if (g_getKeyState(m_pHge,HGEK_F1)==eKeyState_Down)
+	{
+		int top = lua_gettop(g_pLua);
+		const char* errMsg = lua_tostring(g_pLua,-1);
+		MessageBox(NULL,errMsg,"Error!",MB_OK);
+	}
+
 
 	float xpos,ypos;
 	m_pHge->Input_GetMousePos(&xpos,&ypos);

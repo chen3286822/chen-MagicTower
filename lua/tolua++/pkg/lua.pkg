@@ -1,0 +1,4 @@
+$#include "MagicTower/MagicTower/commonTools.h"
+$#include "MagicTower/MagicTower/Scene.h"
+
+$pfile "scene.pkg"

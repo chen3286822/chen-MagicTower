@@ -52,6 +52,30 @@
     <ClCompile Include="WndMainTitle.cpp">
       <Filter>Windows\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="LuaGlobalFunc.cpp">
+      <Filter>LuaGlobal</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\lua\tolua++\tolua_event.c">
+      <Filter>tolua++</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\lua\tolua++\tolua_is.c">
+      <Filter>tolua++</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\lua\tolua++\tolua_map.c">
+      <Filter>tolua++</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\lua\tolua++\tolua_push.c">
+      <Filter>tolua++</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\lua\tolua++\tolua_to.c">
+      <Filter>tolua++</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\lua\tolua++\Lua_API.cpp">
+      <Filter>LuaGlobal</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
@@ -135,6 +159,15 @@
     <ClInclude Include="LuaGlobalFunc.h">
       <Filter>LuaGlobal</Filter>
     </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lua\tolua++\tolua_event.h">
+      <Filter>tolua++</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lua\tolua++\tolua++.h">
+      <Filter>tolua++</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
@@ -157,6 +190,9 @@
     </Filter>
     <Filter Include="LuaGlobal">
       <UniqueIdentifier>{75b7541c-71d8-4729-b50b-12f58f43b93c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="tolua++">
+      <UniqueIdentifier>{81620c06-273d-40e6-8626-034ee329f1a9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

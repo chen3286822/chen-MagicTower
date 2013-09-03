@@ -51,7 +51,7 @@
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IncludePath);..\..\hge\hge181\include;..\..\lua\include;..\..</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IncludePath);..\..\hge\hge181\include;..\..\lua\include;..\lua\tolua++;..\..</IncludePath>
     <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(LibraryPath);..\..\hge\hge181\lib\vc;..\..\lua\lib</LibraryPath>
     <EmbedManifest Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</EmbedManifest>
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IncludePath);..\..\hge\hge181\include;..\..;</IncludePath>
@@ -100,15 +100,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\lua\tolua++\Lua_API.cpp" />
+    <ClCompile Include="..\..\lua\tolua++\tolua_event.c" />
+    <ClCompile Include="..\..\lua\tolua++\tolua_is.c" />
+    <ClCompile Include="..\..\lua\tolua++\tolua_map.c" />
+    <ClCompile Include="..\..\lua\tolua++\tolua_push.c" />
+    <ClCompile Include="..\..\lua\tolua++\tolua_to.c" />
     <ClCompile Include="App.cpp" />
     <ClCompile Include="AStar.cpp" />
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="commonTools.cpp" />
     <ClCompile Include="CreatureManager.cpp" />
     <ClCompile Include="FontManager.cpp" />
+    <ClCompile Include="LuaGlobalFunc.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MapManager.cpp" />
     <ClCompile Include="Markup.cpp" />
+    <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SkillManager.cpp" />
     <ClCompile Include="TexManager.cpp" />
     <ClCompile Include="TipWnd.cpp" />
@@ -124,6 +132,8 @@
     <ClInclude Include="..\..\lua\include\lua.hpp" />
     <ClInclude Include="..\..\lua\include\luaconf.h" />
     <ClInclude Include="..\..\lua\include\lualib.h" />
+    <ClInclude Include="..\..\lua\tolua++\tolua++.h" />
+    <ClInclude Include="..\..\lua\tolua++\tolua_event.h" />
     <ClInclude Include="ActionProcess.h" />
     <ClInclude Include="App.h" />
     <ClInclude Include="AStar.h" />
@@ -137,6 +147,7 @@
     <ClInclude Include="LuaGlobalFunc.h" />
     <ClInclude Include="MapManager.h" />
     <ClInclude Include="Markup.h" />
+    <ClInclude Include="Scene.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="SkillManager.h" />
     <ClInclude Include="TexManager.h" />
