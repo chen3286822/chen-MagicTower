@@ -1,2 +1,2 @@
 local scene = GetScene()
-scene:SetBackground(1)
+scene:SetBackground(0)

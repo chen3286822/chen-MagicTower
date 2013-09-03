@@ -54,6 +54,8 @@ hge/hge181/tools/
 hge/hge181/tutorials/
 hge/hge181/lib/bc/
 hge/hge181/lib/gcc/
+MagicTower.exe
+MagicTowerEdit.exe
 freetype/
 *.manifest
 *.lastbuildstate
