@@ -1,4 +1,6 @@
 $#include "MagicTower/MagicTower/commonTools.h"
 $#include "MagicTower/MagicTower/Scene.h"
+$#include "MagicTower/MagicTower/LuaGlobalFunc.h"
 
 $pfile "scene.pkg"
+$pfile "globalFunc.pkg"

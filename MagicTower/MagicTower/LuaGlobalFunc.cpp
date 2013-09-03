@@ -1,4 +1,5 @@
 #include "LuaGlobalFunc.h"
+#include "Scene.h"
 
 static int Max(lua_State* L)
 {
@@ -56,4 +57,9 @@ void Lua_RegisterFunc()
 {
 	lua_register(g_pLua,"Max",Max);
 	lua_register(g_pLua,"Move",Move);
+}
+
+Scene* GetScene()
+{
+	return (Scene::sInstancePtr());
 }

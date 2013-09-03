@@ -9,7 +9,10 @@
 #include "ActionProcess.h"
 #include "ConfigManager.h"
 #include "SkillManager.h"
+#include "Scene.h"
 #include "LuaGlobalFunc.h"
+#include "Lua_API.h"
+
 
 bool update();
 bool render();
@@ -55,6 +58,8 @@ void App::LuaInit()
 {
 	g_pLua = lua_open();
 	luaL_openlibs(g_pLua);
+
+	luaopen_lua(g_pLua);
 }
 
 bool App::LoadResource()
@@ -62,6 +67,8 @@ bool App::LoadResource()
 	//lua³õÊ¼»¯
 	LuaInit();
 	Lua_RegisterFunc();
+
+
 
 	//lua¼òµ¥²âÊÔ
 // 	char pBuf[MAX_PATH];
@@ -85,6 +92,7 @@ bool App::LoadResource()
 	UISystem::sCreate();
 	ConfigManager::sCreate();
 	SkillManager::sCreate();
+	Scene::sCreate();
 
 	CreatureManager::sInstance().Init();
 	FontManager::sInstance().InitFont();
@@ -117,6 +125,14 @@ bool App::LoadResource()
 	CreatureManager::sInstance().AddItem(98,30);
 	CreatureManager::sInstance().AddItem(49,1);
 
+
+	//lua test
+	char pBuf[MAX_PATH];
+	char pathConfig[MAX_PATH];
+	GetCurrentDirectory(MAX_PATH,pBuf);
+	sprintf(pathConfig,"%s\\res\\script\\1_0.lua",pBuf);
+	luaL_dofile(g_pLua,pathConfig);
+
 	return true;
 }
 
@@ -132,6 +148,7 @@ void App::FreeResource()
 	CreatureManager::sInstance().Release();
 	UISystem::sInstance().Release();
 
+	Scene::sDestroy();
 	SkillManager::sDestroy();
 	ConfigManager::sDestroy();
 	ActionProcess::sDestroy();
@@ -165,6 +182,8 @@ bool App::AppRender()
 	SkillManager::sInstance().Render();
 
 	MapManager::sInstance().GetCurrentMap()->RenderTitle();
+
+	Scene::sInstance().Render();
 	m_pHge->Gfx_EndScene();
 	return false;
 }

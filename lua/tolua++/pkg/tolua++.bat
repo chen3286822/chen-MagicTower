@@ -1,1 +1,1 @@
-tolua++.exe -o Lua_API.cpp lua.pkg
+tolua++.exe -o Lua_API.h lua.pkg

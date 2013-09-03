@@ -68,6 +68,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <AdditionalIncludeDirectories>..\..\lua\tolua++;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>hge.lib;hgehelp.lib;lua5.1.lib;lua51.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -100,7 +101,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\lua\tolua++\Lua_API.cpp" />
     <ClCompile Include="..\..\lua\tolua++\tolua_event.c" />
     <ClCompile Include="..\..\lua\tolua++\tolua_is.c" />
     <ClCompile Include="..\..\lua\tolua++\tolua_map.c" />
@@ -132,6 +132,7 @@
     <ClInclude Include="..\..\lua\include\lua.hpp" />
     <ClInclude Include="..\..\lua\include\luaconf.h" />
     <ClInclude Include="..\..\lua\include\lualib.h" />
+    <ClInclude Include="..\..\lua\tolua++\Lua_API.h" />
     <ClInclude Include="..\..\lua\tolua++\tolua++.h" />
     <ClInclude Include="..\..\lua\tolua++\tolua_event.h" />
     <ClInclude Include="ActionProcess.h" />

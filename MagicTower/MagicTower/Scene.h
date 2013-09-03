@@ -6,7 +6,7 @@
 */
 #include "commonTools.h"
 
-class Scene
+class Scene : public Singleton<Scene>
 {
 public:
 	Scene();

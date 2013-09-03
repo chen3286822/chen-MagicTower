@@ -73,9 +73,6 @@
     <ClCompile Include="..\..\lua\tolua++\tolua_to.c">
       <Filter>tolua++</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\lua\tolua++\Lua_API.cpp">
-      <Filter>LuaGlobal</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
@@ -167,6 +164,9 @@
     </ClInclude>
     <ClInclude Include="..\..\lua\tolua++\tolua++.h">
       <Filter>tolua++</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lua\tolua++\Lua_API.h">
+      <Filter>LuaGlobal</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

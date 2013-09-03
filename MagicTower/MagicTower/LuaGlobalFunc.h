@@ -6,6 +6,7 @@
 */
 #include "commonTools.h"
 #include "CreatureManager.h"
+class Scene;
 
 /*
 	取得几个数之间最大的值
@@ -20,4 +21,10 @@ static int Max(lua_State* L);
 static int Move(lua_State* L);
 
 void Lua_RegisterFunc();
+///////////////////////////////////////////////////////////////////////
+/*
+	取得全局Scene的指针
+*/
+Scene* GetScene();
+
 #endif
