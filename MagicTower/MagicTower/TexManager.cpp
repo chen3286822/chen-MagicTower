@@ -12,7 +12,8 @@ TexManager::TexManager(void)
 	m_mSkillTex.clear();
 	m_mItemTex.clear();
 	m_mSceneTex.clear();
-	m_mActorTex.clear();
+	m_mActorTex[0].clear();
+	m_mActorTex[1].clear();
 }
 
 
@@ -27,7 +28,8 @@ TexManager::~TexManager(void)
 	FreeTex(m_mSkillTex);
 	FreeTex(m_mItemTex);
 	FreeTex(m_mSceneTex);
-	FreeTex(m_mActorTex);
+	FreeTex(m_mActorTex[0]);
+	FreeTex(m_mActorTex[1]);
 }
 
 void TexManager::FreeTex(std::map<int,HTEXTURE>& mTex)
@@ -297,10 +299,10 @@ bool TexManager::LoadActor()
 			strncpy(strID,mit->second.c_str(),found);
 			strID[found] = '\0';
 			ID = atoi(strID);
-			m_mActorTex[ID] = App::sInstance().GetHGE()->Texture_Load(mit->first.c_str());
+			m_mActorTex[(ID-1)%2][(ID+1)/2] = App::sInstance().GetHGE()->Texture_Load(mit->first.c_str());
 		}
 	}
-	if (m_mActorTex.empty())
+	if (m_mActorTex[0].empty() || m_mActorTex[1].empty())
 	{
 		return false;
 	}
@@ -405,26 +407,37 @@ HTEXTURE TexManager::GetSceneTex(int _ID)
 	return 0;
 }
 
-HTEXTURE TexManager::GetActorTex(int _ID)
+void TexManager::GetActorTex(int _ID,HTEXTURE& tex1,HTEXTURE& tex2)
 {
-	for (std::map<int,HTEXTURE>::iterator it=m_mActorTex.begin();it!=m_mActorTex.end();it++)
+	for (std::map<int,HTEXTURE>::iterator it=m_mActorTex[0].begin();it!=m_mActorTex[0].end();it++)
 	{
 		if(_ID == it->first)
-			return it->second;
+		{
+			tex1 = it->second;
+		}
+	}
+	for (std::map<int,HTEXTURE>::iterator it=m_mActorTex[1].begin();it!=m_mActorTex[1].end();it++)
+	{
+		if(_ID == it->first)
+		{
+			tex2 = it->second;
+		}
 	}
 	//没有找到，从文件载入
-	HTEXTURE actorTex = LoadTexFromFile("res\\tex\\Actor",_ID);
-	if(actorTex)
+	HTEXTURE actorTex0 = LoadTexFromFile("res\\tex\\Actor",(_ID-1)*2+1);
+	HTEXTURE actorTex1 = LoadTexFromFile("res\\tex\\Actor",_ID*2);
+	if(actorTex0 || actorTex1)
 	{
-		m_mActorTex[_ID] = actorTex;
-		return actorTex;
+		m_mActorTex[0][_ID] = actorTex0;
+		m_mActorTex[1][_ID] = actorTex1;
+		tex1 = actorTex0;
+		tex2 = actorTex1;
 	}
 	else
 	{
 		g_debugString(__FILE__,__FUNCTION__,__LINE__,"载入场景图片失败");
 		exit(0);
 	}
-	return 0;
 }
 
 std::map<int,HTEXTURE> TexManager::GetTex(int _ID)

@@ -1,6 +1,6 @@
 /*
 ** Lua binding: lua
-** Generated automatically by tolua++-1.0.92 on 09/04/13 17:01:07.
+** Generated automatically by tolua++-1.0.92 on 09/04/13 23:43:45.
 */
 
 #ifndef __cplusplus
@@ -54,6 +54,41 @@ static int tolua_lua_Actor_SetPos00(lua_State* tolua_S)
 #ifndef TOLUA_RELEASE
  tolua_lerror:
  tolua_error(tolua_S,"#ferror in function 'SetPos'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: SetAction of class  Actor */
+#ifndef TOLUA_DISABLE_tolua_lua_Actor_SetAction00
+static int tolua_lua_Actor_SetAction00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Actor",0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,3,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,4,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Actor* self = (Actor*)  tolua_tousertype(tolua_S,1,0);
+  int action = ((int)  tolua_tonumber(tolua_S,2,0));
+  int dir = ((int)  tolua_tonumber(tolua_S,3,0));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'SetAction'", NULL);
+#endif
+  {
+   self->SetAction(action,dir);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'SetAction'.",&tolua_err);
  return 0;
 #endif
 }
@@ -196,6 +231,7 @@ TOLUA_API int tolua_lua_open (lua_State* tolua_S)
   tolua_cclass(tolua_S,"Actor","Actor","",NULL);
   tolua_beginmodule(tolua_S,"Actor");
    tolua_function(tolua_S,"SetPos",tolua_lua_Actor_SetPos00);
+   tolua_function(tolua_S,"SetAction",tolua_lua_Actor_SetAction00);
   tolua_endmodule(tolua_S);
   tolua_cclass(tolua_S,"Scene","Scene","",NULL);
   tolua_beginmodule(tolua_S,"Scene");
