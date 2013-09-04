@@ -1,5 +1,13 @@
+class Actor
+{
+public:
+	void SetPos(float posX,float posY);
+}
+
 class Scene
 {
 public:
 	void SetBackground(int texID);
+	void AddActor(int ID);
+	Actor* GetActor(int ID);
 };

@@ -12,6 +12,7 @@ TexManager::TexManager(void)
 	m_mSkillTex.clear();
 	m_mItemTex.clear();
 	m_mSceneTex.clear();
+	m_mActorTex.clear();
 }
 
 
@@ -26,6 +27,7 @@ TexManager::~TexManager(void)
 	FreeTex(m_mSkillTex);
 	FreeTex(m_mItemTex);
 	FreeTex(m_mSceneTex);
+	FreeTex(m_mActorTex);
 }
 
 void TexManager::FreeTex(std::map<int,HTEXTURE>& mTex)
@@ -50,7 +52,9 @@ bool TexManager::LoadTex()
 //	bool bSceneTex = LoadScene();
 	bool bSceneTex = true;
 
-	return (bCharTex && bMapTex && bUITex && bSkillTex && bItemTex && bSceneTex);
+	bool bActorTex = true;
+
+	return (bCharTex && bMapTex && bUITex && bSkillTex && bItemTex && bSceneTex && bActorTex);
 }
 
 bool TexManager::LoadCharTex()
@@ -260,10 +264,43 @@ bool TexManager::LoadScene()
 			char strID[10];
 			strncpy(strID,mit->second.c_str(),found);
 			strID[found] = '\0';
+			ID = atoi(strID);
 			m_mSceneTex[ID] = App::sInstance().GetHGE()->Texture_Load(mit->first.c_str());
 		}
 	}
 	if (m_mSceneTex.empty())
+	{
+		return false;
+	}
+	return true;
+}
+
+bool TexManager::LoadActor()
+{
+	m_mSceneTex.clear();
+
+	char pBuf[MAX_PATH];
+	char pathTex[MAX_PATH];
+	GetCurrentDirectory(MAX_PATH,pBuf);
+	sprintf(pathTex,"%s\\res\\tex\\Actor",pBuf);
+
+	std::map<std::string,std::string> files;
+	g_getFiles(pathTex,files,".png",50,true);
+	size_t found = 0;
+	int ID = 0;
+	for (std::map<std::string,std::string>::iterator mit=files.begin();mit!=files.end();mit++)
+	{
+		found = mit->second.find('.');
+		if(found != 0)
+		{
+			char strID[10];
+			strncpy(strID,mit->second.c_str(),found);
+			strID[found] = '\0';
+			ID = atoi(strID);
+			m_mActorTex[ID] = App::sInstance().GetHGE()->Texture_Load(mit->first.c_str());
+		}
+	}
+	if (m_mActorTex.empty())
 	{
 		return false;
 	}
@@ -359,6 +396,28 @@ HTEXTURE TexManager::GetSceneTex(int _ID)
 	{
 		m_mSceneTex[_ID] = sceneTex;
 		return sceneTex;
+	}
+	else
+	{
+		g_debugString(__FILE__,__FUNCTION__,__LINE__,"载入场景图片失败");
+		exit(0);
+	}
+	return 0;
+}
+
+HTEXTURE TexManager::GetActorTex(int _ID)
+{
+	for (std::map<int,HTEXTURE>::iterator it=m_mActorTex.begin();it!=m_mActorTex.end();it++)
+	{
+		if(_ID == it->first)
+			return it->second;
+	}
+	//没有找到，从文件载入
+	HTEXTURE actorTex = LoadTexFromFile("res\\tex\\Actor",_ID);
+	if(actorTex)
+	{
+		m_mActorTex[_ID] = actorTex;
+		return actorTex;
 	}
 	else
 	{

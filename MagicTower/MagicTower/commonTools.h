@@ -80,6 +80,13 @@ extern lua_State* g_pLua;
 
 #define MAX_DISTANCE  100000
 
+enum eLayer
+{
+	eLayer_MainWnd,	//主界面
+	eLayer_Scene,			//剧情场景
+	eLayer_Fight,				//战斗场景
+};
+
 //错误码
 enum eErrorCode
 {

@@ -54,6 +54,11 @@ bool App::SystemInit()
 	}
 }
 
+void App::SetLayer(eLayer layer)
+{
+	m_eCurLayer = layer;
+}
+
 void App::LuaInit()
 {
 	g_pLua = lua_open();
@@ -133,6 +138,7 @@ bool App::LoadResource()
 	sprintf(pathConfig,"%s\\res\\script\\1_0.lua",pBuf);
 	luaL_dofile(g_pLua,pathConfig);
 
+	m_eCurLayer = eLayer_Scene;
 	return true;
 }
 
@@ -167,25 +173,6 @@ void App::CleanUp()
 {
 	m_pHge->System_Shutdown();
 	m_pHge->Release();
-}
-
-bool App::AppRender()
-{
-	m_pHge->Gfx_Clear(0X00000000);
-	m_pHge->Gfx_BeginScene();
-
-	MapManager::sInstance().Render();
-	DrawMouseRect();
-	CreatureManager::sInstance().Render();
-	TipWnd::sInstance().Render();
-	UISystem::sInstance().Render();
-	SkillManager::sInstance().Render();
-
-	MapManager::sInstance().GetCurrentMap()->RenderTitle();
-
-	Scene::sInstance().Render();
-	m_pHge->Gfx_EndScene();
-	return false;
 }
 
 void App::DrawMouseRect()
@@ -236,6 +223,40 @@ void App::DrawBox(int startX,int startY,DWORD color,int width,int boxWidth,int b
 	DrawRect(startX,startY + boxLength - width,startX + boxWidth,startY + boxLength,color);
 }
 
+bool App::AppRender()
+{
+	m_pHge->Gfx_Clear(0X00000000);
+	m_pHge->Gfx_BeginScene();
+
+	switch(m_eCurLayer)
+	{
+	case eLayer_MainWnd:
+		{
+
+		}
+		break;
+	case eLayer_Scene:
+		{
+			UISystem::sInstance().Render();
+			Scene::sInstance().Render();
+		}		
+		break;
+	case eLayer_Fight:
+		{
+			MapManager::sInstance().Render();
+			DrawMouseRect();
+			CreatureManager::sInstance().Render();
+			TipWnd::sInstance().Render();
+			UISystem::sInstance().Render();
+			SkillManager::sInstance().Render();
+			MapManager::sInstance().GetCurrentMap()->RenderTitle();
+		}
+		break;
+	}
+	m_pHge->Gfx_EndScene();
+	return false;
+}
+
 bool App::AppUpdate()
 {
 	if (m_pHge->Input_GetKeyState(HGEK_ESCAPE))
@@ -258,11 +279,6 @@ bool App::AppUpdate()
 		yMap = ypos - MAP_OFF_Y;
 		m_iBlock.xpos = (int)(xMap/MAP_RECT);
 		m_iBlock.ypos = (int)(yMap/MAP_RECT);
-
-// 		if(g_getLButtonState(m_pHge) == eLButtonState_Up)
-// 		{
-// 			player->Move(m_iBlock.xpos,m_iBlock.ypos);
-// 		}
 	}
 	else
 	{
@@ -270,30 +286,36 @@ bool App::AppUpdate()
 		m_iBlock.ypos = -1;
 	}
 
-// 	if (g_getKeyState(m_pHge,HGEK_W)==eKeyState_Down)
-// 		player->Move(eDirection_Up);
-// 	else if (g_getKeyState(m_pHge,HGEK_S)==eKeyState_Down)
-// 		player->Move(eDirection_Down);
-// 	else if (g_getKeyState(m_pHge,HGEK_A)==eKeyState_Down)
-// 		player->Move(eDirection_Left);
-// 	else if (g_getKeyState(m_pHge,HGEK_D)==eKeyState_Down)
-// 		player->Move(eDirection_Right);
-// 	else if (g_getKeyState(m_pHge,HGEK_J)==eKeyState_Down)
-// 		player->GeginHit();
-
 	float dt = m_pHge->Timer_GetDelta();
-	MapManager::sInstance().Update(dt);
 
-	if(!MapManager::sInstance().GetCurrentMap()->IsShowTitle())
+	switch(m_eCurLayer)
 	{
-		CreatureManager::sInstance().Strategy();
-		ActionProcess::sInstance().Update();
-		CreatureManager::sInstance().Update(dt);
-		TipWnd::sInstance().Update(dt);
-		UISystem::sInstance().Update(dt);
-		SkillManager::sInstance().Update(dt);
-	}
+	case eLayer_MainWnd:
+		{
 
+		}
+		break;
+	case eLayer_Scene:
+		{
+			Scene::sInstance().Update(dt);
+			UISystem::sInstance().Update(dt);
+		}		
+		break;
+	case eLayer_Fight:
+		{
+			MapManager::sInstance().Update(dt);
+			if(!MapManager::sInstance().GetCurrentMap()->IsShowTitle())
+			{
+				CreatureManager::sInstance().Strategy();
+				ActionProcess::sInstance().Update();
+				CreatureManager::sInstance().Update(dt);
+				TipWnd::sInstance().Update(dt);
+				UISystem::sInstance().Update(dt);
+				SkillManager::sInstance().Update(dt);
+			}
+		}
+		break;
+	}
 	return false;
 }
 

@@ -1,2 +1,5 @@
 local scene = GetScene()
-scene:SetBackground(0)
+scene:SetBackground(1)
+scene:AddActor(1)
+local actor1 = scene:GetActor(1)
+actor1:SetPos(100,200)

@@ -26,9 +26,14 @@ public:
 	void DrawBox(int startX,int startY,DWORD color,int width,int boxWidth,int boxLength);
 	//画矩形
 	void DrawRect(float left,float top,float right,float bottom,DWORD color);
+
+	//设置当前图层
+	void SetLayer(eLayer layer);
 private:
 	HGE* m_pHge;
 	Block m_iBlock;	//鼠标所在block
+
+	eLayer m_eCurLayer;		//当前正在显示的图层
 
 	//画出鼠标位置的方格
 	void DrawMouseRect();
