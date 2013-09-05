@@ -1,6 +1,6 @@
 /*
 ** Lua binding: lua
-** Generated automatically by tolua++-1.0.92 on 09/04/13 23:43:45.
+** Generated automatically by tolua++-1.0.92 on 09/05/13 17:41:00.
 */
 
 #ifndef __cplusplus
@@ -194,6 +194,81 @@ static int tolua_lua_Scene_GetActor00(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* method: PushAction of class  Scene */
+#ifndef TOLUA_DISABLE_tolua_lua_Scene_PushAction00
+static int tolua_lua_Scene_PushAction00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Scene",0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,3,0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,4,0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,5,1,&tolua_err) ||
+     !tolua_isnumber(tolua_S,6,1,&tolua_err) ||
+     !tolua_isnumber(tolua_S,7,1,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,8,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Scene* self = (Scene*)  tolua_tousertype(tolua_S,1,0);
+  int ID = ((int)  tolua_tonumber(tolua_S,2,0));
+  int action = ((int)  tolua_tonumber(tolua_S,3,0));
+  int dir = ((int)  tolua_tonumber(tolua_S,4,0));
+  unsigned long time = (( unsigned long)  tolua_tonumber(tolua_S,5,0));
+  unsigned long data = (( unsigned long)  tolua_tonumber(tolua_S,6,0));
+  int num = ((int)  tolua_tonumber(tolua_S,7,-1));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'PushAction'", NULL);
+#endif
+  {
+   self->PushAction(ID,action,dir,time,data,num);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'PushAction'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: GetCurrentNum of class  Scene */
+#ifndef TOLUA_DISABLE_tolua_lua_Scene_GetCurrentNum00
+static int tolua_lua_Scene_GetCurrentNum00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Scene",0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Scene* self = (Scene*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'GetCurrentNum'", NULL);
+#endif
+  {
+   int tolua_ret = (int)  self->GetCurrentNum();
+   tolua_pushnumber(tolua_S,(lua_Number)tolua_ret);
+  }
+ }
+ return 1;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'GetCurrentNum'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* function: GetScene */
 #ifndef TOLUA_DISABLE_tolua_lua_GetScene00
 static int tolua_lua_GetScene00(lua_State* tolua_S)
@@ -238,6 +313,8 @@ TOLUA_API int tolua_lua_open (lua_State* tolua_S)
    tolua_function(tolua_S,"SetBackground",tolua_lua_Scene_SetBackground00);
    tolua_function(tolua_S,"AddActor",tolua_lua_Scene_AddActor00);
    tolua_function(tolua_S,"GetActor",tolua_lua_Scene_GetActor00);
+   tolua_function(tolua_S,"PushAction",tolua_lua_Scene_PushAction00);
+   tolua_function(tolua_S,"GetCurrentNum",tolua_lua_Scene_GetCurrentNum00);
   tolua_endmodule(tolua_S);
   tolua_function(tolua_S,"GetScene",tolua_lua_GetScene00);
  tolua_endmodule(tolua_S);

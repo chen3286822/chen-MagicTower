@@ -37,13 +37,6 @@ struct Action
 	}
 };
 
-enum eActionState
-{
-	eActionState_PickAction = 0,
-	eActionState_Process,
-	eActionState_End,
-};
-
 class ActionProcess : public Singleton<ActionProcess>
 {
 public:

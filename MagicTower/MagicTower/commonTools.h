@@ -87,6 +87,13 @@ enum eLayer
 	eLayer_Fight,				//Õ½¶·³¡¾°
 };
 
+enum eActionState
+{
+	eActionState_PickAction = 0,
+	eActionState_Process,
+	eActionState_End,
+};
+
 //´íÎóÂë
 enum eErrorCode
 {

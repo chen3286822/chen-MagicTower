@@ -2,5 +2,10 @@ $#include "MagicTower/MagicTower/commonTools.h"
 $#include "MagicTower/MagicTower/Scene.h"
 $#include "MagicTower/MagicTower/LuaGlobalFunc.h"
 
+typedef unsigned long DWORD;
+typedef unsigned char BYTE;
+typedef unsigned short WORD;
+typedef unsigned int UINT;
+
 $pfile "scene.pkg"
 $pfile "globalFunc.pkg"

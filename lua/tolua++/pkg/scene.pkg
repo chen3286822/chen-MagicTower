@@ -11,4 +11,6 @@ public:
 	void SetBackground(int texID);
 	void AddActor(int ID);
 	Actor* GetActor(int ID);
+	void PushAction(int ID,int action,int dir,DWORD time=0,DWORD data=0,int num=-1);
+	int GetCurrentNum();
 };

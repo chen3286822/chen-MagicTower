@@ -26,6 +26,34 @@ enum eAction
 	eAction_Cut,			//砍下
 	eAction_Inspire,		//鼓舞
 };
+
+struct NewAction
+{
+	int m_nID;
+	eAction m_eAction;
+	eDirection m_eDir;
+	DWORD m_dwTime;
+	DWORD m_dwData;
+	int m_nNum;
+	NewAction()
+	{
+		m_nID = 0;
+		m_eAction = eAction_Stand;
+		m_eDir = eDirection_Right;
+		m_dwTime = 0;
+		m_dwData = 0;
+		m_nNum = -1;
+	}
+	NewAction(int id,eAction action,eDirection dir,DWORD time,DWORD data,int num)
+	{
+		m_nID = id;
+		m_eAction = action;
+		m_eDir = dir;
+		m_dwTime = time;
+		m_dwData = data;
+		m_nNum = num;
+	}
+};
 //场景中的演员
 class Actor
 {
@@ -43,15 +71,25 @@ public:
 
 	void SetPos(float posX,float posY);
 	void SetAction(int action,int dir);
+	
+	//是否处于行动中
+	bool IsInAction();
+	void PushAction(NewAction action);
 private:
 	hgeAnimation* m_pAnim;
 	HTEXTURE m_iTex[2];
 	float m_fPosX;
 	float m_fPosY;
+	float m_fStartX;
+	float m_fStartY;
 	eDirection m_eDir;
 	eAction m_eAction;
+	NewAction m_iCurAction;
 };
 
+//push walk动作，需要填入步数和方向参数
+//步数是把场景按照斜十字方向分为了10*10的小格子
+//每个格子代表一步
 class Scene : public Singleton<Scene>
 {
 public:
@@ -64,9 +102,17 @@ public:
 	void SetBackground(int texID);
 	void AddActor(int ID);
 	Actor* GetActor(int ID);
+	//给指定角色添加指定动作
+	//动作序号表示该动作执行的顺序，如果几个动作序号相同
+	//则表示是同时进行的动作，但是要等到这几个角色都处于可行动时才可以执行
+	void PushAction(int ID,int action,int dir,DWORD time=0,DWORD data=0,int num=-1);
+	int GetCurrentNum(){return m_Num;}
 private:
 	hgeSprite* m_pBackground;
 	std::map<int,Actor*> m_mActors;
+	int m_Num;	//记录当前动作的序号
+	std::list<std::vector<NewAction>> m_lVNewAction;
+	eActionState m_eState;
 };
 
 #endif

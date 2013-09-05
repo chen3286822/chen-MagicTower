@@ -7,6 +7,7 @@ Actor::Actor()
 	m_fPosX = m_fPosY = 0;
 	m_eDir = eDirection_Right;
 	m_eAction = eAction_Stand;
+	m_fStartX = m_fStartY = 0;
 }
 
 Actor::~Actor()
@@ -63,6 +64,74 @@ void Actor::Render()
 
 void Actor::Update(float dt)
 {
+	if (m_iCurAction.m_dwTime > 0)
+	{
+		int pastTime = (int)(dt*1000);
+		if(m_iCurAction.m_dwTime > pastTime)
+			m_iCurAction.m_dwTime -= pastTime;
+		else
+			m_iCurAction.m_dwTime = 0;
+	}
+	if (m_iCurAction.m_eAction == eAction_Walk)
+	{
+		if (m_iCurAction.m_dwData > 0)
+		{
+			if (abs(m_fPosX-m_fStartX)>=64 && abs(m_fPosY-m_fStartY)>=40)
+			{
+				m_iCurAction.m_dwData -= 1;
+				//矫正偏移
+				if (m_iCurAction.m_eDir == eDirection_Down)
+				{
+					m_fPosX = m_fStartX-64;
+					m_fPosY = m_fStartY+40;
+				}
+				else if (m_iCurAction.m_eDir == eDirection_Up)
+				{
+					m_fPosX = m_fStartX+64;
+					m_fPosY = m_fStartY-40;
+				}
+				else if (m_iCurAction.m_eDir == eDirection_Left)
+				{
+					m_fPosX = m_fStartX-64;
+					m_fPosY = m_fStartY-40;
+				}
+				else if (m_iCurAction.m_eDir == eDirection_Right)
+				{
+					m_fPosX = m_fStartX+64;
+					m_fPosY = m_fStartY+40;
+				}
+				 m_fStartX = m_fPosX;
+				 m_fStartY = m_fPosY;
+			}
+			if (m_iCurAction.m_eDir == eDirection_Down)
+			{
+				m_fPosX -= dt*64;
+				m_fPosY += dt*40;
+			}
+			else if (m_iCurAction.m_eDir == eDirection_Up)
+			{
+				m_fPosX += dt*64;
+				m_fPosY -= dt*40;
+			}
+			else if (m_iCurAction.m_eDir == eDirection_Left)
+			{
+				m_fPosX -= dt*64;
+				m_fPosY -= dt*40;
+			}
+			else if (m_iCurAction.m_eDir == eDirection_Right)
+			{
+				m_fPosX += dt*64;
+				m_fPosY += dt*40;
+			}
+		}
+		//到达目的地
+		else
+		{
+			SetAction(eAction_Stand,m_iCurAction.m_eDir);
+			m_iCurAction.m_eAction = eAction_Stand;
+			m_iCurAction.m_dwTime = 0;
+		}
+	}
 	if (m_pAnim)
 	{
 		m_pAnim->Update(dt);
@@ -103,6 +172,8 @@ void Actor::SetPos(float posX,float posY)
 {
 	m_fPosX = posX;
 	m_fPosY = posY;
+	m_fStartX = posX;
+	m_fStartY = posY;
 }
 
 void Actor::SetAction(int action,int dir)
@@ -124,9 +195,37 @@ void Actor::SetAction(int action,int dir)
 // 	m_pAnim->Resume();
 }
 
+bool Actor::IsInAction()
+{
+	//非移动类动作判断剩余时间
+	if (m_iCurAction.m_dwTime == 0 && m_iCurAction.m_eAction!=eAction_Walk)
+	{
+		return false;
+	}
+	//移动类动作判断是否处于目的地
+	if (m_iCurAction.m_eAction==eAction_Walk)
+	{
+		//剩余格数走完了
+		if (m_iCurAction.m_dwData == 0)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+void Actor::PushAction(NewAction action)
+{
+	m_iCurAction = action;
+	SetAction(m_iCurAction.m_eAction,m_iCurAction.m_eDir);
+}
+
 Scene::Scene()
 {
 	m_pBackground = new hgeSprite(0,0,0,640,400);
+	m_lVNewAction.clear();
+	m_Num = 0;
+	m_eState = eActionState_PickAction;
 }
 
 Scene::~Scene()
@@ -152,6 +251,54 @@ void Scene::Render()
 
 void Scene::Update(float dt)
 {
+	if (m_eState == eActionState_PickAction)
+	{
+		if (!m_lVNewAction.empty())
+		{
+			std::vector<NewAction> vAction = m_lVNewAction.front();
+			bool bCanPushAction = true;
+			for (int i=0;i<vAction.size();i++)
+			{
+				if(GetActor(vAction[i].m_nID)->IsInAction())
+				{	
+					bCanPushAction = false;
+					break;
+				}
+			}
+			//可以推送动作给演员
+			if (bCanPushAction)
+			{
+				for (int i=0;i<vAction.size();i++)
+				{
+					GetActor(vAction[i].m_nID)->PushAction(vAction[i]);
+				}
+				m_eState = eActionState_Process;
+			}
+		}
+	}
+	else if (m_eState == eActionState_Process)
+	{
+		std::vector<NewAction> vAction = m_lVNewAction.front();
+		bool bActionOver = true;
+		for (int i=0;i<vAction.size();i++)
+		{
+			if(GetActor(vAction[i].m_nID)->IsInAction())
+			{	
+				bActionOver = false;
+				break;
+			}
+		}
+		if (bActionOver)
+		{
+			m_eState = eActionState_End;
+		}
+	}
+	else if (m_eState == eActionState_End)
+	{
+		m_lVNewAction.pop_front();
+		m_eState = eActionState_PickAction;
+	}
+
 	for (std::map<int,Actor*>::iterator it=m_mActors.begin();it!=m_mActors.end();it++)
 	{
 		it->second->Update(dt);
@@ -189,4 +336,44 @@ Actor* Scene::GetActor(int ID)
 		return (it->second);
 	}
 	return NULL;
+}
+
+void Scene::PushAction(int ID,int action,int dir,DWORD time,DWORD data,int num)
+{
+	int aNum = 0;
+	if(num == -1 || num==m_Num)
+	{
+		//新序号，一个新的动作
+		aNum = m_Num;
+		m_Num++;
+		//此处赋值num是为了下面push动作的判断
+		if(num!=-1)
+			num = m_Num;
+	}
+	else if(num < m_Num)
+	{
+		//采用以前的序号，说明该动作也以前的动作是并行的
+		aNum = num;
+	}
+	else
+		//错误序号
+		return;
+	NewAction aAction(ID,(eAction)action,(eDirection)dir,time,data,aNum);
+	if(num == -1 || num==m_Num)
+	{
+		std::vector<NewAction> vAction;
+		vAction.push_back(aAction);
+		m_lVNewAction.push_back(vAction);
+	}
+	else
+	{
+		int index=0;
+		for (std::list<std::vector<NewAction>>::iterator it=m_lVNewAction.begin();it!=m_lVNewAction.end();it++,index++)
+		{
+			if(index == num)
+			{
+				it->push_back(aAction);
+			}
+		}
+	}
 }
