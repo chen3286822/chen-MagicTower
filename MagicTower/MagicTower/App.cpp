@@ -97,7 +97,11 @@ bool App::LoadResource()
 	UISystem::sCreate();
 	ConfigManager::sCreate();
 	SkillManager::sCreate();
+	//载入UI
+	UISystem::sInstance().Init();
 	Scene::sCreate();
+
+
 
 	CreatureManager::sInstance().Init();
 	FontManager::sInstance().InitFont();
@@ -109,9 +113,6 @@ bool App::LoadResource()
 		MessageBox(NULL, "纹理或关卡载入失败", "Error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
 		return false;
 	}
-
-	//载入UI
-	UISystem::sInstance().Init();
 
 	player = new Character;
 	player->Init(MapManager::sInstance().GetCurrentMap()->GetLevel(),34,100,1,Block(5,5));
@@ -237,8 +238,8 @@ bool App::AppRender()
 		break;
 	case eLayer_Scene:
 		{
-			UISystem::sInstance().Render();
 			Scene::sInstance().Render();
+			UISystem::sInstance().Render();
 		}		
 		break;
 	case eLayer_Fight:

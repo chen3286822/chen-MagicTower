@@ -73,6 +73,9 @@
     <ClCompile Include="..\..\lua\tolua++\tolua_to.c">
       <Filter>tolua++</Filter>
     </ClCompile>
+    <ClCompile Include="WndDialog.cpp">
+      <Filter>Windows\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
@@ -167,6 +170,9 @@
     </ClInclude>
     <ClInclude Include="..\..\lua\tolua++\Lua_API.h">
       <Filter>LuaGlobal</Filter>
+    </ClInclude>
+    <ClInclude Include="WndDialog.h">
+      <Filter>Windows\Head Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

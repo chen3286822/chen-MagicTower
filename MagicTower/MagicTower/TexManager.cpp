@@ -14,6 +14,7 @@ TexManager::TexManager(void)
 	m_mSceneTex.clear();
 	m_mActorTex[0].clear();
 	m_mActorTex[1].clear();
+	m_mHeadTex.clear();
 }
 
 
@@ -30,6 +31,7 @@ TexManager::~TexManager(void)
 	FreeTex(m_mSceneTex);
 	FreeTex(m_mActorTex[0]);
 	FreeTex(m_mActorTex[1]);
+	FreeTex(m_mHeadTex);
 }
 
 void TexManager::FreeTex(std::map<int,HTEXTURE>& mTex)
@@ -53,10 +55,12 @@ bool TexManager::LoadTex()
 	bool bItemTex = true;
 //	bool bSceneTex = LoadScene();
 	bool bSceneTex = true;
-
+//	bool bActorTex = LoadActor();
 	bool bActorTex = true;
+//	bool bHeadTex = LoadHead();
+	bool bHeadTex = true;
 
-	return (bCharTex && bMapTex && bUITex && bSkillTex && bItemTex && bSceneTex && bActorTex);
+	return (bCharTex && bMapTex && bUITex && bSkillTex && bItemTex && bSceneTex && bActorTex && bHeadTex);
 }
 
 bool TexManager::LoadCharTex()
@@ -309,6 +313,39 @@ bool TexManager::LoadActor()
 	return true;
 }
 
+bool TexManager::LoadHead()
+{
+	m_mSceneTex.clear();
+
+	char pBuf[MAX_PATH];
+	char pathTex[MAX_PATH];
+	GetCurrentDirectory(MAX_PATH,pBuf);
+	sprintf(pathTex,"%s\\res\\tex\\Head",pBuf);
+
+	std::map<std::string,std::string> files;
+	g_getFiles(pathTex,files,".png",50,true);
+	size_t found = 0;
+	int ID = 0;
+	for (std::map<std::string,std::string>::iterator mit=files.begin();mit!=files.end();mit++)
+	{
+		found = mit->second.find('.');
+		if(found != 0)
+		{
+			char strID[10];
+			strncpy(strID,mit->second.c_str(),found);
+			strID[found] = '\0';
+			ID = atoi(strID);
+			m_mHeadTex[ID] = App::sInstance().GetHGE()->Texture_Load(mit->first.c_str());
+		}
+	}
+	if (m_mHeadTex.empty())
+	{
+		return false;
+	}
+	return true;
+}
+
+
 HTEXTURE TexManager::LoadTexFromFile(std::string resPath,int texID)
 {
 	char pBuf[MAX_PATH];
@@ -435,9 +472,31 @@ void TexManager::GetActorTex(int _ID,HTEXTURE& tex1,HTEXTURE& tex2)
 	}
 	else
 	{
-		g_debugString(__FILE__,__FUNCTION__,__LINE__,"载入场景图片失败");
+		g_debugString(__FILE__,__FUNCTION__,__LINE__,"载入演员图片失败");
 		exit(0);
 	}
+}
+
+HTEXTURE TexManager::GetHeadTex(int _ID)
+{
+	for (std::map<int,HTEXTURE>::iterator it=m_mHeadTex.begin();it!=m_mHeadTex.end();it++)
+	{
+		if(_ID == it->first)
+			return it->second;
+	}
+	//没有找到，从文件载入
+	HTEXTURE headTex = LoadTexFromFile("res\\tex\\Head",_ID);
+	if(headTex)
+	{
+		m_mHeadTex[_ID] = headTex;
+		return headTex;
+	}
+	else
+	{
+		g_debugString(__FILE__,__FUNCTION__,__LINE__,"载入头像图片失败");
+		exit(0);
+	}
+	return 0;
 }
 
 std::map<int,HTEXTURE> TexManager::GetTex(int _ID)

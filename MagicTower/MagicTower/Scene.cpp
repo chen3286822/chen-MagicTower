@@ -1,5 +1,7 @@
 #include "Scene.h"
 #include "TexManager.h"
+#include "UI.h"
+#include "WndDialog.h"
 
 Actor::Actor()
 {
@@ -191,8 +193,11 @@ void Actor::SetAction(int action,int dir)
 	int index = 0,frames = 0;
 	sGetActionIndex(Action,index,frames);
 	m_pAnim->ResetFrames(0,FLOAT_PIC_SQUARE_HEIGHT*index,FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT,frames,8,true);
-// 	m_pAnim->SetMode(HGEANIM_LOOP|HGEANIM_FWD);
-// 	m_pAnim->Resume();
+	if (action == eAction_Walk)
+		m_pAnim->SetMode(HGEANIM_LOOP|HGEANIM_PINGPONG);
+	else
+ 		m_pAnim->SetMode(HGEANIM_LOOP|HGEANIM_FWD);
+ 	m_pAnim->Resume();
 }
 
 bool Actor::IsInAction()
@@ -226,6 +231,13 @@ Scene::Scene()
 	m_lVNewAction.clear();
 	m_Num = 0;
 	m_eState = eActionState_PickAction;
+
+	WndDialog* dialog = (WndDialog*)UISystem::sInstance().PopUpWindow(eWindowID_Dialog);
+	if (dialog)
+	{
+		dialog->SetName("²Ü²Ù");
+		dialog->SetHead(1);
+	}
 }
 
 Scene::~Scene()
@@ -241,7 +253,7 @@ void Scene::Render()
 {
 	if (m_pBackground)
 	{
-		m_pBackground->Render((APP_WIDTH-640)/2,(APP_HEIGHT-400)/2);
+		m_pBackground->Render((APP_WIDTH-640)/2,(APP_HEIGHT-400)/2-55);
 	}
 	for (std::map<int,Actor*>::iterator it=m_mActors.begin();it!=m_mActors.end();it++)
 	{

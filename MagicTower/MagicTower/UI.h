@@ -37,6 +37,7 @@ enum eUIID
 	eUIID_VerticalButtonOn = 18,
 	eUIID_VerticalButtonDown = 19,
 	eUIID_VerticalButtonDisable = 20,
+	eUIID_Dialog = 21,
 };
 
 enum eWindowID
@@ -45,6 +46,7 @@ enum eWindowID
 	eWindowID_CharInfo,
 	eWindowID_Select,
 	eWindowID_MainTitle,
+	eWindowID_Dialog,
 };
 
 enum eMessage
