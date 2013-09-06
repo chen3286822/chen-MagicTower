@@ -16,3 +16,10 @@ eAction_Treat = 14
 eAction_Cut = 15
 eAction_Inspire = 16
 eAction_Talk = 17
+eAction_Hide = 18
+eAction_Appear = 19
+
+eDir_Down = 1
+eDir_Up = 2
+eDir_Left = 3
+eDir_Right = 4

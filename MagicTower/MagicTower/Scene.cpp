@@ -10,6 +10,8 @@ Actor::Actor()
 	m_eDir = eDirection_Right;
 	m_eAction = eAction_Stand;
 	m_fStartX = m_fStartY = 0;
+	m_fBgOffsetX = m_fBgOffsetY = 0.0f;
+	m_bHide = false;
 }
 
 Actor::~Actor()
@@ -55,17 +57,19 @@ void Actor::sGetActionIndex(eAction action,int& index,int& frames)
 
 void Actor::Render()
 {
-	if(m_pAnim)
+	if(m_pAnim && !m_bHide)
 	{
 		if(m_eDir == eDirection_Left || m_eDir == eDirection_Right)
-			m_pAnim->RenderSymmetry(m_fPosX,m_fPosY,1);
+			m_pAnim->RenderSymmetry(m_fPosX + m_fBgOffsetX,m_fPosY + m_fBgOffsetY,1);
 		else
-			m_pAnim->Render(m_fPosX,m_fPosY);
+			m_pAnim->Render(m_fPosX + m_fBgOffsetX,m_fPosY + m_fBgOffsetY);
 	}
 }
 
 void Actor::Update(float dt)
 {
+	if (m_bHide)
+		return;
 	if (m_iCurAction.m_dwTime > 0)
 	{
 		int pastTime = (int)(dt*1000);
@@ -202,6 +206,11 @@ void Actor::SetAction(int action,int dir)
 
 bool Actor::IsInAction()
 {
+	//隐藏时属于非活动状态
+	if (m_bHide)
+	{
+		return false;
+	}
 	//非移动类动作判断剩余时间
 	if (m_iCurAction.m_dwTime == 0 && m_iCurAction.m_eAction!=eAction_Walk)
 	{
@@ -221,8 +230,27 @@ bool Actor::IsInAction()
 
 void Actor::PushAction(NewAction action)
 {
+	if (action.m_eAction == eAction_Hide)
+	{
+		m_bHide = true;
+		return;
+	}
+	else if (action.m_eAction == eAction_Appear)
+	{
+		m_bHide = false;
+		SetAction(eAction_Stand,action.m_eDir);
+		m_iCurAction = action;
+		m_iCurAction.m_eAction = eAction_Stand;	
+		return;
+	}
 	m_iCurAction = action;
 	SetAction(m_iCurAction.m_eAction,m_iCurAction.m_eDir);
+}
+
+void Actor::SetBgOffset(float x,float y)
+{
+	m_fBgOffsetX = x;
+	m_fBgOffsetY = y;
 }
 
 Scene::Scene()
@@ -231,6 +259,8 @@ Scene::Scene()
 	m_lVNewAction.clear();
 	m_Num = 0;
 	m_eState = eActionState_PickAction;
+	m_fBgOffsetX = (APP_WIDTH-640)/2;
+	m_fBgOffsetY = (APP_HEIGHT-400)/2-55;
 
 	//对话框需要提前打开，并隐藏
 	WndDialog* dialog = (WndDialog*)UISystem::sInstance().PopUpWindow(eWindowID_Dialog);
@@ -249,11 +279,24 @@ Scene::~Scene()
 	}
 }
 
+void Scene::Release()
+{
+	for (std::map<int,Actor*>::iterator it=m_mActors.begin();it!=m_mActors.end();it++)
+	{
+		gSafeDelete(it->second);
+	}
+	m_pBackground->SetTexture(0);
+	m_Num = 0;
+	m_eState = eActionState_PickAction;
+	m_lVNewAction.clear();
+	m_mActors.clear();
+}
+
 void Scene::Render()
 {
 	if (m_pBackground)
 	{
-		m_pBackground->Render((APP_WIDTH-640)/2,(APP_HEIGHT-400)/2-55);
+		m_pBackground->Render(m_fBgOffsetX,m_fBgOffsetY);
 	}
 	for (std::map<int,Actor*>::iterator it=m_mActors.begin();it!=m_mActors.end();it++)
 	{
@@ -378,7 +421,7 @@ void Scene::SetBackground(int texID)
 	}
 }
 
-void Scene::AddActor(int ID)
+Actor* Scene::AddActor(int ID)
 {
 	std::map<int,Actor*>::iterator it = m_mActors.find(ID);
 	if (it == m_mActors.end())
@@ -388,8 +431,11 @@ void Scene::AddActor(int ID)
 		TexManager::sInstance().GetActorTex(ID,tex1,tex2);
 		newActor->SetAnimTex(tex1,tex2);
 		newActor->SetFrames(0,0,FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_HEIGHT,1,8);
+		newActor->SetBgOffset(m_fBgOffsetX,m_fBgOffsetY);
 		m_mActors[ID] = newActor;
+		return m_mActors[ID];
 	}
+	return NULL;
 }
 
 Actor* Scene::GetActor(int ID)

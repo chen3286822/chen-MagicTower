@@ -25,7 +25,11 @@ enum eAction
 	eAction_Treat,			//威胁
 	eAction_Cut,			//砍下
 	eAction_Inspire,		//鼓舞
+
+	//特殊动作
 	eAction_Talk,			//说话，此动作不属于人物动作
+	eAction_Hide,			//隐藏人物动作
+	eAction_Appear,		//出现人物动作
 };
 
 struct NewAction
@@ -76,10 +80,13 @@ public:
 
 	void SetPos(float posX,float posY);
 	void SetAction(int action,int dir);
+	void SetHide(bool hide){m_bHide = hide;}
+	bool IsHide(){return m_bHide;}
 	
 	//是否处于行动中
 	bool IsInAction();
 	void PushAction(NewAction action);
+	void SetBgOffset(float x,float y);
 private:
 	hgeAnimation* m_pAnim;
 	HTEXTURE m_iTex[2];
@@ -90,6 +97,9 @@ private:
 	eDirection m_eDir;
 	eAction m_eAction;
 	NewAction m_iCurAction;
+	float m_fBgOffsetX;	//背景图绘制偏移
+	float m_fBgOffsetY;
+	bool m_bHide;
 };
 
 //push walk动作，需要填入步数和方向参数
@@ -104,8 +114,10 @@ public:
 	void Render();
 	void Update(float dt);
 
+	void Release();
+
 	void SetBackground(int texID);
-	void AddActor(int ID);
+	Actor* AddActor(int ID);
 	Actor* GetActor(int ID);
 	//给指定角色添加指定动作
 	//动作序号表示该动作执行的顺序，如果几个动作序号相同
@@ -121,6 +133,8 @@ private:
 	int m_Num;	//记录当前动作的序号
 	std::list<std::vector<NewAction>> m_lVNewAction;
 	eActionState m_eState;
+	float m_fBgOffsetX;	//背景图绘制偏移
+	float m_fBgOffsetY;
 };
 
 #endif

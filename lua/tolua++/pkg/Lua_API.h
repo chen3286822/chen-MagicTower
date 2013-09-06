@@ -1,6 +1,6 @@
 /*
 ** Lua binding: lua
-** Generated automatically by tolua++-1.0.92 on 09/06/13 18:35:24.
+** Generated automatically by tolua++-1.0.92 on 09/07/13 01:32:05.
 */
 
 #ifndef __cplusplus
@@ -94,6 +94,71 @@ static int tolua_lua_Actor_SetAction00(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* method: SetHide of class  Actor */
+#ifndef TOLUA_DISABLE_tolua_lua_Actor_SetHide00
+static int tolua_lua_Actor_SetHide00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Actor",0,&tolua_err) ||
+     !tolua_isboolean(tolua_S,2,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,3,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Actor* self = (Actor*)  tolua_tousertype(tolua_S,1,0);
+  bool hide = ((bool)  tolua_toboolean(tolua_S,2,0));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'SetHide'", NULL);
+#endif
+  {
+   self->SetHide(hide);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'SetHide'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: IsHide of class  Actor */
+#ifndef TOLUA_DISABLE_tolua_lua_Actor_IsHide00
+static int tolua_lua_Actor_IsHide00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Actor",0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Actor* self = (Actor*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'IsHide'", NULL);
+#endif
+  {
+   bool tolua_ret = (bool)  self->IsHide();
+   tolua_pushboolean(tolua_S,(bool)tolua_ret);
+  }
+ }
+ return 1;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'IsHide'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* method: SetBackground of class  Scene */
 #ifndef TOLUA_DISABLE_tolua_lua_Scene_SetBackground00
 static int tolua_lua_Scene_SetBackground00(lua_State* tolua_S)
@@ -148,10 +213,11 @@ static int tolua_lua_Scene_AddActor00(lua_State* tolua_S)
   if (!self) tolua_error(tolua_S,"invalid 'self' in function 'AddActor'", NULL);
 #endif
   {
-   self->AddActor(ID);
+   Actor* tolua_ret = (Actor*)  self->AddActor(ID);
+    tolua_pushusertype(tolua_S,(void*)tolua_ret,"Actor");
   }
  }
- return 0;
+ return 1;
 #ifndef TOLUA_RELEASE
  tolua_lerror:
  tolua_error(tolua_S,"#ferror in function 'AddActor'.",&tolua_err);
@@ -346,6 +412,8 @@ TOLUA_API int tolua_lua_open (lua_State* tolua_S)
   tolua_beginmodule(tolua_S,"Actor");
    tolua_function(tolua_S,"SetPos",tolua_lua_Actor_SetPos00);
    tolua_function(tolua_S,"SetAction",tolua_lua_Actor_SetAction00);
+   tolua_function(tolua_S,"SetHide",tolua_lua_Actor_SetHide00);
+   tolua_function(tolua_S,"IsHide",tolua_lua_Actor_IsHide00);
   tolua_endmodule(tolua_S);
   tolua_cclass(tolua_S,"Scene","Scene","",NULL);
   tolua_beginmodule(tolua_S,"Scene");

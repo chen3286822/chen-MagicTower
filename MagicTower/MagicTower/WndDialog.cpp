@@ -23,6 +23,22 @@ WndDialog::~WndDialog()
 	gSafeDelete(m_pHead);
 }
 
+void WndDialog::Release()
+{
+	m_pBindChar = NULL;
+	m_nID = -1;
+	m_pHead->SetTexture(0);
+	m_nNextWordIndex = 0;
+	m_dwTime = 50;
+	m_dwPastTime = 0;
+	m_dwWordShowTime = 3000;
+	m_dwWordShowPastTime = 0;
+	m_lWords.clear();
+	m_strCurWord.clear();
+	m_strName.clear();
+	SetShow(false);
+}
+
 void	WndDialog::SetBindChar(Character* bindChar)
 {
 	m_pBindChar = bindChar;
@@ -68,6 +84,14 @@ void WndDialog::Update(float dt)
 	{
 		if (m_nNextWordIndex < m_lWords.front().size())
 		{
+			//如果点击鼠标，则直接显示完所有的内容
+			if (g_getLButtonState(App::sInstance().GetHGE()) == eLButtonState_Up && IsOnControl())
+			{
+				m_dwPastTime = 0;
+				m_strCurWord = m_lWords.front();
+				m_nNextWordIndex = m_lWords.front().size();
+			}
+
 			DWORD pastTime = (int)(dt*1000);
 			if (m_dwPastTime + pastTime < m_dwTime)
 			{
@@ -111,7 +135,7 @@ void WndDialog::Update(float dt)
 				if (m_lWords.empty())
 				{
 					//没有话显示了，隐藏窗口	
-					SetShow(true);
+					SetShow(false);
 				}
 				m_strCurWord.clear();
 				m_nNextWordIndex = 0;
@@ -132,7 +156,13 @@ void WndDialog::Render()
 
 	font = FontManager::sInstance().GetFont(FontAttr(eFontType_SongTi,eFontSize_FontTitle));
 	font->SetColor(0xFF000000);
-	font->Print(m_fPosX+100,m_fPosY+35,"%s",m_strCurWord.c_str());
+	std::string strLine;
+	int lines = m_strCurWord.size()/LINECHAR + 1;
+	for (int i=0;i<lines;i++)
+	{
+		strLine.assign(m_strCurWord,i*LINECHAR,LINECHAR);
+		font->Print(m_fPosX+100,m_fPosY+35 + i*(eFontSize_FontTitle+2) ,"%s",strLine.c_str());
+	}
 }
 
 void WndDialog::PushWords(int ID,const char* name,const char* word)
@@ -157,7 +187,7 @@ void WndDialog::PushWords(int ID,const char* name,const char* word)
 
 bool WndDialog::IsFinishWords()
 {
-	if (!m_strCurWord.empty() && m_lWords.empty())
+	if (!m_strCurWord.empty() && !m_lWords.empty())
 	{
 		return false;
 	}

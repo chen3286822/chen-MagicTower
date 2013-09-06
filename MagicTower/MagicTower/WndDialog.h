@@ -2,7 +2,7 @@
 #define WND_DIALOG_H
 
 #include "UI.h"
-
+#define LINECHAR 60
 class WndDialog : public UIWindow
 {
 	CREATEWINDOW(WndDialog)
@@ -12,6 +12,7 @@ public:
 
 	virtual void Update(float dt);
 	virtual void Render();
+	virtual void Release();
 	void	SetBindChar(Character* bindChar);
 	bool SetHead(int ID);
 	void SetName(std::string name);

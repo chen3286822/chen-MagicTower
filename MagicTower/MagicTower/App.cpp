@@ -12,6 +12,7 @@
 #include "Scene.h"
 #include "LuaGlobalFunc.h"
 #include "Lua_API.h"
+#include "WndDialog.h"
 
 
 bool update();
@@ -268,6 +269,19 @@ bool App::AppUpdate()
 		int top = lua_gettop(g_pLua);
 		const char* errMsg = lua_tostring(g_pLua,-1);
 		MessageBox(NULL,errMsg,"Error!",MB_OK);
+	}
+
+	if (g_getKeyState(m_pHge,HGEK_F2)==eKeyState_Down)
+	{
+		Scene::sInstance().Release();
+		WndDialog* dialog = (WndDialog*)UISystem::sInstance().GetWindow(eWindowID_Dialog);
+		if(dialog)
+			dialog->Release();
+		char pBuf[MAX_PATH];
+		char pathConfig[MAX_PATH];
+		GetCurrentDirectory(MAX_PATH,pBuf);
+		sprintf(pathConfig,"%s\\res\\script\\1_0.lua",pBuf);
+		luaL_dofile(g_pLua,pathConfig);
 	}
 
 
