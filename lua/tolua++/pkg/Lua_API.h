@@ -1,6 +1,6 @@
 /*
 ** Lua binding: lua
-** Generated automatically by tolua++-1.0.92 on 09/05/13 17:41:00.
+** Generated automatically by tolua++-1.0.92 on 09/06/13 18:35:24.
 */
 
 #ifndef __cplusplus
@@ -269,6 +269,45 @@ static int tolua_lua_Scene_GetCurrentNum00(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* method: PushWords of class  Scene */
+#ifndef TOLUA_DISABLE_tolua_lua_Scene_PushWords00
+static int tolua_lua_Scene_PushWords00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Scene",0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
+     !tolua_isstring(tolua_S,3,0,&tolua_err) ||
+     !tolua_isstring(tolua_S,4,0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,5,1,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,6,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Scene* self = (Scene*)  tolua_tousertype(tolua_S,1,0);
+  int head = ((int)  tolua_tonumber(tolua_S,2,0));
+  const char* name = ((const char*)  tolua_tostring(tolua_S,3,0));
+  const char* words = ((const char*)  tolua_tostring(tolua_S,4,0));
+  int num = ((int)  tolua_tonumber(tolua_S,5,-1));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'PushWords'", NULL);
+#endif
+  {
+   self->PushWords(head,name,words,num);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'PushWords'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* function: GetScene */
 #ifndef TOLUA_DISABLE_tolua_lua_GetScene00
 static int tolua_lua_GetScene00(lua_State* tolua_S)
@@ -315,6 +354,7 @@ TOLUA_API int tolua_lua_open (lua_State* tolua_S)
    tolua_function(tolua_S,"GetActor",tolua_lua_Scene_GetActor00);
    tolua_function(tolua_S,"PushAction",tolua_lua_Scene_PushAction00);
    tolua_function(tolua_S,"GetCurrentNum",tolua_lua_Scene_GetCurrentNum00);
+   tolua_function(tolua_S,"PushWords",tolua_lua_Scene_PushWords00);
   tolua_endmodule(tolua_S);
   tolua_function(tolua_S,"GetScene",tolua_lua_GetScene00);
  tolua_endmodule(tolua_S);

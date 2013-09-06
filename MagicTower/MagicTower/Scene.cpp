@@ -232,11 +232,11 @@ Scene::Scene()
 	m_Num = 0;
 	m_eState = eActionState_PickAction;
 
+	//对话框需要提前打开，并隐藏
 	WndDialog* dialog = (WndDialog*)UISystem::sInstance().PopUpWindow(eWindowID_Dialog);
 	if (dialog)
 	{
-		dialog->SetName("曹操");
-		dialog->SetHead(1);
+		dialog->SetShow(false);
 	}
 }
 
@@ -271,18 +271,60 @@ void Scene::Update(float dt)
 			bool bCanPushAction = true;
 			for (int i=0;i<vAction.size();i++)
 			{
-				if(GetActor(vAction[i].m_nID)->IsInAction())
-				{	
-					bCanPushAction = false;
-					break;
+				if (vAction[i].m_nID!=-1)
+				{
+					Actor* actor = GetActor(vAction[i].m_nID);
+					if(actor)
+					{
+						if(actor->IsInAction())
+						{	
+							bCanPushAction = false;
+							break;
+						}
+					}
+					else
+					{
+						g_debugString(__FILE__,__FUNCTION__,__LINE__,"场景中动作有错误，找不到对应演员");
+						exit(0);
+					}
 				}
+			}
+			//是否有对话未完成
+			if (bCanPushAction)
+			{
+				WndDialog* dialog = (WndDialog*)UISystem::sInstance().GetWindow(eWindowID_Dialog);
+				if(dialog && !dialog->IsFinishWords())
+					bCanPushAction = false;
 			}
 			//可以推送动作给演员
 			if (bCanPushAction)
 			{
 				for (int i=0;i<vAction.size();i++)
 				{
-					GetActor(vAction[i].m_nID)->PushAction(vAction[i]);
+					if(vAction[i].m_nID != -1)
+					{
+						Actor* actor = GetActor(vAction[i].m_nID);
+						if(actor)
+							actor->PushAction(vAction[i]);
+						else
+						{
+							g_debugString(__FILE__,__FUNCTION__,__LINE__,"推送动作有错误，找不到对应演员");
+							exit(0);
+						}
+					}
+					else
+					{
+						//推送对话动作给对话框
+						if (vAction[i].m_eAction == eAction_Talk)
+						{
+							WndDialog* dialog = (WndDialog*)UISystem::sInstance().GetWindow(eWindowID_Dialog);
+							if (dialog)
+							{
+								dialog->SetShow(true);
+								dialog->PushWords(vAction[i].m_dwData,vAction[i].m_strName.c_str(),vAction[i].m_strWords.c_str());
+							}
+						}
+					}
 				}
 				m_eState = eActionState_Process;
 			}
@@ -294,11 +336,21 @@ void Scene::Update(float dt)
 		bool bActionOver = true;
 		for (int i=0;i<vAction.size();i++)
 		{
-			if(GetActor(vAction[i].m_nID)->IsInAction())
-			{	
-				bActionOver = false;
-				break;
+			if (vAction[i].m_nID!=-1)
+			{
+				Actor* actor = GetActor(vAction[i].m_nID);
+				if (actor && actor->IsInAction())
+				{
+					bActionOver = false;
+					break;
+				}
 			}
+		}
+		if (bActionOver)
+		{
+			WndDialog* dialog = (WndDialog*)UISystem::sInstance().GetWindow(eWindowID_Dialog);
+			if(dialog && !dialog->IsFinishWords())
+				bActionOver = false;
 		}
 		if (bActionOver)
 		{
@@ -371,6 +423,52 @@ void Scene::PushAction(int ID,int action,int dir,DWORD time,DWORD data,int num)
 		//错误序号
 		return;
 	NewAction aAction(ID,(eAction)action,(eDirection)dir,time,data,aNum);
+	if(num == -1 || num==m_Num)
+	{
+		std::vector<NewAction> vAction;
+		vAction.push_back(aAction);
+		m_lVNewAction.push_back(vAction);
+	}
+	else
+	{
+		int index=0;
+		for (std::list<std::vector<NewAction>>::iterator it=m_lVNewAction.begin();it!=m_lVNewAction.end();it++,index++)
+		{
+			if(index == num)
+			{
+				it->push_back(aAction);
+			}
+		}
+	}
+}
+
+void Scene::PushWords(int head,const char* name,const char* words,int num)
+{
+	//检查合法性
+	if (name == NULL || words == NULL)
+		return;
+
+	int aNum = 0;
+	if(num == -1 || num==m_Num)
+	{
+		//新序号，一个新的动作
+		aNum = m_Num;
+		m_Num++;
+		//此处赋值num是为了下面push动作的判断
+		if(num!=-1)
+			num = m_Num;
+	}
+	else if(num < m_Num)
+	{
+		//采用以前的序号，说明该动作也以前的动作是并行的
+		aNum = num;
+	}
+	else
+		//错误序号
+		return;
+	NewAction aAction(-1,eAction_Talk,eDirection_None,0,head,aNum);
+	aAction.m_strName = name;
+	aAction.m_strWords = words;
 	if(num == -1 || num==m_Num)
 	{
 		std::vector<NewAction> vAction;

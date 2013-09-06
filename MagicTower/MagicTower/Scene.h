@@ -25,6 +25,7 @@ enum eAction
 	eAction_Treat,			//威胁
 	eAction_Cut,			//砍下
 	eAction_Inspire,		//鼓舞
+	eAction_Talk,			//说话，此动作不属于人物动作
 };
 
 struct NewAction
@@ -35,6 +36,8 @@ struct NewAction
 	DWORD m_dwTime;
 	DWORD m_dwData;
 	int m_nNum;
+	std::string m_strName;
+	std::string m_strWords;
 	NewAction()
 	{
 		m_nID = 0;
@@ -43,6 +46,8 @@ struct NewAction
 		m_dwTime = 0;
 		m_dwData = 0;
 		m_nNum = -1;
+		m_strName = "";
+		m_strWords = "";
 	}
 	NewAction(int id,eAction action,eDirection dir,DWORD time,DWORD data,int num)
 	{
@@ -107,6 +112,9 @@ public:
 	//则表示是同时进行的动作，但是要等到这几个角色都处于可行动时才可以执行
 	void PushAction(int ID,int action,int dir,DWORD time=0,DWORD data=0,int num=-1);
 	int GetCurrentNum(){return m_Num;}
+
+	//推送一个说话动作，此动作和演员动作共享行动队列
+	void PushWords(int head,const char* name,const char* words,int num=-1);
 private:
 	hgeSprite* m_pBackground;
 	std::map<int,Actor*> m_mActors;
