@@ -2,6 +2,7 @@
 #include "TexManager.h"
 #include "UI.h"
 #include "WndDialog.h"
+#include "App.h"
 
 Actor::Actor()
 {
@@ -261,6 +262,9 @@ Scene::Scene()
 	m_eState = eActionState_PickAction;
 	m_fBgOffsetX = (APP_WIDTH-640)/2;
 	m_fBgOffsetY = (APP_HEIGHT-400)/2-55;
+	m_bShowPlaceName = false;
+	m_dwShowTime = 0;
+	m_strPlace.clear();
 
 	//对话框需要提前打开，并隐藏
 	WndDialog* dialog = (WndDialog*)UISystem::sInstance().PopUpWindow(eWindowID_Dialog);
@@ -290,6 +294,9 @@ void Scene::Release()
 	m_eState = eActionState_PickAction;
 	m_lVNewAction.clear();
 	m_mActors.clear();
+	m_bShowPlaceName = false;
+	m_strPlace.clear();
+	m_dwShowTime = 0;
 }
 
 void Scene::Render()
@@ -297,6 +304,15 @@ void Scene::Render()
 	if (m_pBackground)
 	{
 		m_pBackground->Render(m_fBgOffsetX,m_fBgOffsetY);
+	}
+	if (m_bShowPlaceName)
+	{
+		GfxFont* font = FontManager::sInstance().GetFont(FontAttr(eFontType_MSYaHei,eFontSize_FontHuge));
+		font->SetColor(0xFF0000FF);
+		wchar_t out[256];
+		g_CTW(m_strPlace.c_str(),out);
+		SIZE size = font->GetTextSize(out);
+		font->Print(m_fBgOffsetX+(640-size.cx)/2,m_fBgOffsetY+15,"%s",m_strPlace.c_str());
 	}
 	for (std::map<int,Actor*>::iterator it=m_mActors.begin();it!=m_mActors.end();it++)
 	{
@@ -306,6 +322,14 @@ void Scene::Render()
 
 void Scene::Update(float dt)
 {
+	if (m_bShowPlaceName)
+	{
+		if(m_dwShowTime > 2000)
+			m_bShowPlaceName = false;
+		else
+			m_dwShowTime += (int)(dt*1000);
+		return;
+	}
 	if (m_eState == eActionState_PickAction)
 	{
 		if (!m_lVNewAction.empty())
@@ -404,12 +428,24 @@ void Scene::Update(float dt)
 	{
 		m_lVNewAction.pop_front();
 		m_eState = eActionState_PickAction;
+		//场景结束
+		if (m_lVNewAction.empty())
+		{
+			App::sInstance().StartNextScene();
+		}
 	}
 
 	for (std::map<int,Actor*>::iterator it=m_mActors.begin();it!=m_mActors.end();it++)
 	{
 		it->second->Update(dt);
 	}
+}
+
+void Scene::SetPlace(const char* name)
+{
+	m_strPlace = name;
+	m_bShowPlaceName = true;
+	m_dwShowTime = 0;
 }
 
 void Scene::SetBackground(int texID)

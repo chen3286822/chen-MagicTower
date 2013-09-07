@@ -112,6 +112,7 @@
     <ClCompile Include="commonTools.cpp" />
     <ClCompile Include="CreatureManager.cpp" />
     <ClCompile Include="FontManager.cpp" />
+    <ClCompile Include="MyLua.cpp" />
     <ClCompile Include="LuaGlobalFunc.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MapManager.cpp" />
@@ -146,6 +147,7 @@
     <ClInclude Include="CreatureManager.h" />
     <ClInclude Include="FontManager.h" />
     <ClInclude Include="GfxFont.h" />
+    <ClInclude Include="MyLua.h" />
     <ClInclude Include="LuaGlobalFunc.h" />
     <ClInclude Include="MapManager.h" />
     <ClInclude Include="Markup.h" />

@@ -10,6 +10,7 @@ public:
 class Scene
 {
 public:
+	void SetPlace(const char* name);
 	void SetBackground(int texID);
 	Actor* AddActor(int ID);
 	Actor* GetActor(int ID);

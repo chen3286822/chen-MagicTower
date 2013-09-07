@@ -116,6 +116,7 @@ public:
 
 	void Release();
 
+	void SetPlace(const char* name);
 	void SetBackground(int texID);
 	Actor* AddActor(int ID);
 	Actor* GetActor(int ID);
@@ -135,6 +136,9 @@ private:
 	eActionState m_eState;
 	float m_fBgOffsetX;	//背景图绘制偏移
 	float m_fBgOffsetY;
+	std::string m_strPlace;	//场景地点
+	bool m_bShowPlaceName;	//是否显示场景名称
+	DWORD m_dwShowTime;	//场景名称显示时间
 };
 
 #endif

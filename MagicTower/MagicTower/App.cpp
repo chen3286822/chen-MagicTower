@@ -11,8 +11,8 @@
 #include "SkillManager.h"
 #include "Scene.h"
 #include "LuaGlobalFunc.h"
-#include "Lua_API.h"
 #include "WndDialog.h"
+#include "MyLua.h"
 
 
 bool update();
@@ -60,21 +60,10 @@ void App::SetLayer(eLayer layer)
 	m_eCurLayer = layer;
 }
 
-void App::LuaInit()
-{
-	g_pLua = lua_open();
-	luaL_openlibs(g_pLua);
-
-	luaopen_lua(g_pLua);
-}
-
 bool App::LoadResource()
 {
 	//lua初始化
-	LuaInit();
-	Lua_RegisterFunc();
-
-
+	g_MyLua.Init();
 
 	//lua简单测试
 // 	char pBuf[MAX_PATH];
@@ -137,10 +126,16 @@ bool App::LoadResource()
 	char pBuf[MAX_PATH];
 	char pathConfig[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH,pBuf);
-	sprintf(pathConfig,"%s\\res\\script\\1_0.lua",pBuf);
-	luaL_dofile(g_pLua,pathConfig);
+	sprintf(pathConfig,"%s\\res\\script\\1_1.lua",pBuf);
+	luaL_dofile(g_MyLua.GetLuaState(),pathConfig);
+	sprintf(pathConfig,"%s\\res\\script\\1_2.lua",pBuf);
+	luaL_dofile(g_MyLua.GetLuaState(),pathConfig);
+	//luaL_loadfile(g_pLua,pathConfig);
+	lua_getglobal(g_MyLua.GetLuaState(), "PreScene1_1");
+	lua_pcall(g_MyLua.GetLuaState(), 0, LUA_MULTRET, 0);
 
 	m_eCurLayer = eLayer_Scene;
+	m_bCheckNextScene = false;
 	return true;
 }
 
@@ -168,7 +163,7 @@ void App::FreeResource()
 	MapManager::sDestroy();
 
 	//lua 释放
-	lua_close(g_pLua);
+	g_MyLua.Release();
 }
 
 void App::CleanUp()
@@ -266,9 +261,7 @@ bool App::AppUpdate()
 
 	if (g_getKeyState(m_pHge,HGEK_F1)==eKeyState_Down)
 	{
-		int top = lua_gettop(g_pLua);
-		const char* errMsg = lua_tostring(g_pLua,-1);
-		MessageBox(NULL,errMsg,"Error!",MB_OK);
+		g_MyLua.PopErrorMsg();
 	}
 
 	if (g_getKeyState(m_pHge,HGEK_F2)==eKeyState_Down)
@@ -277,11 +270,11 @@ bool App::AppUpdate()
 		WndDialog* dialog = (WndDialog*)UISystem::sInstance().GetWindow(eWindowID_Dialog);
 		if(dialog)
 			dialog->Release();
-		char pBuf[MAX_PATH];
-		char pathConfig[MAX_PATH];
-		GetCurrentDirectory(MAX_PATH,pBuf);
-		sprintf(pathConfig,"%s\\res\\script\\1_0.lua",pBuf);
-		luaL_dofile(g_pLua,pathConfig);
+ 		char pBuf[MAX_PATH];
+ 		char pathConfig[MAX_PATH];
+ 		GetCurrentDirectory(MAX_PATH,pBuf);
+ 		sprintf(pathConfig,"%s\\res\\script\\1_0.lua",pBuf);
+ 		luaL_dofile(g_MyLua.GetLuaState(),pathConfig);
 	}
 
 
@@ -312,6 +305,17 @@ bool App::AppUpdate()
 		break;
 	case eLayer_Scene:
 		{
+			if (m_bCheckNextScene)
+			{
+				//先清楚上一个场景数据
+				Scene::sInstance().Release();
+				//检查有没有下一个场景需要加载
+
+				//没有的话，进入战斗
+				m_eCurLayer = eLayer_Fight;
+				m_bCheckNextScene = false;
+				return false;
+			}
 			Scene::sInstance().Update(dt);
 			UISystem::sInstance().Update(dt);
 		}		
@@ -332,6 +336,11 @@ bool App::AppUpdate()
 		break;
 	}
 	return false;
+}
+
+void App::StartNextScene()
+{
+	m_bCheckNextScene = true;
 }
 
 bool update()

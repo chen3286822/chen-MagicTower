@@ -20,7 +20,7 @@ static int Max(lua_State* L);
 */
 static int Move(lua_State* L);
 
-void Lua_RegisterFunc();
+void Lua_RegisterFunc(lua_State* L);
 ///////////////////////////////////////////////////////////////////////
 /*
 	取得全局Scene的指针

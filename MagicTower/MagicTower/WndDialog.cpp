@@ -75,8 +75,19 @@ void WndDialog::Update(float dt)
 		if (!m_lWords.empty())
 		{
 			std::string wholeWord = m_lWords.front();
-			m_strCurWord.assign(wholeWord,0,1);
-			m_nNextWordIndex = 1;
+// 			wchar_t temp[1024];
+// 			g_CTW(wholeWord.c_str(),temp);
+// 			temp[1] = '\0';
+			if(wholeWord[0] < 0)
+			{
+				m_strCurWord.assign(wholeWord,0,2);
+				m_nNextWordIndex = 2;
+			}
+			else
+			{
+				m_strCurWord.assign(wholeWord,0,1);
+				m_nNextWordIndex = 1;
+			}
 			m_dwPastTime = 0;
 		}
 	}
@@ -100,8 +111,16 @@ void WndDialog::Update(float dt)
 			else
 			{
 				m_dwPastTime = 0;
-				m_strCurWord.assign(m_lWords.front(),0,m_nNextWordIndex+1);
-				m_nNextWordIndex++;
+				if (m_lWords.front()[m_nNextWordIndex] < 0)
+				{
+					m_strCurWord.assign(m_lWords.front(),0,m_nNextWordIndex+2);
+					m_nNextWordIndex += 2;
+				}
+				else
+				{
+					m_strCurWord.assign(m_lWords.front(),0,m_nNextWordIndex+1);
+					m_nNextWordIndex++;
+				}				
 			}
 		}
 		else

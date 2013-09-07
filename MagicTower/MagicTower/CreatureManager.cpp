@@ -305,21 +305,19 @@ void CreatureManager::ShowCreatureInfo()
 		{
 			return;
 		}
-		if (commandWindow && commandWindow->GetBindChar() && commandWindow->GetBindChar()->GetActionStage() == eActionStage_AttackStage)
+		if (m_nSelectNum!=-1)
 		{
-			if(commandWindow->GetBindChar()->CanHitTarget(cha))
+			Character* selectChar = GetCreature(m_nSelectNum);
+			if(selectChar)
 			{
-// 				UIWindow* charInfoWindow = UISystem::sInstance().GetWindow(eWindowID_CharInfo);
-// 				if(charInfoWindow)
-// 				{
-// 					charInfoWindow->SetShow(true);
-// 					charInfoWindow->SetBindChar(cha);
-// 				}			
-				UIWindow* charInfoWindow = UISystem::sInstance().PopUpWindow(eWindowID_CharInfo);
-				if(charInfoWindow)
-					charInfoWindow->SetBindChar(cha);
+				if(selectChar->GetActionStage() == eActionStage_AttackStage && selectChar->CanHitTarget(cha))
+				{
+					UIWindow* charInfoWindow = UISystem::sInstance().PopUpWindow(eWindowID_CharInfo);
+					if(charInfoWindow)
+						charInfoWindow->SetBindChar(cha);
+					return;
+				}
 			}
-			return;
 		}
 		//得到单位，显示其信息
 		char temp[256] = {0};

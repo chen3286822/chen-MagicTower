@@ -53,10 +53,10 @@ static int Move(lua_State* L)
 	return 0;
 }
 
-void Lua_RegisterFunc()
+void Lua_RegisterFunc(lua_State* L)
 {
-	lua_register(g_pLua,"Max",Max);
-	lua_register(g_pLua,"Move",Move);
+	lua_register(L,"Max",Max);
+	lua_register(L,"Move",Move);
 }
 
 Scene* GetScene()

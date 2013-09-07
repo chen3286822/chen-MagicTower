@@ -29,14 +29,15 @@ public:
 
 	//设置当前图层
 	void SetLayer(eLayer layer);
+	void StartNextScene();	//开始下一个场景
 private:
 	HGE* m_pHge;
 	Block m_iBlock;	//鼠标所在block
 
 	eLayer m_eCurLayer;		//当前正在显示的图层
+	bool m_bCheckNextScene;	//检查是否开始下一个场景
 
 	//画出鼠标位置的方格
 	void DrawMouseRect();
-	void LuaInit();
 };
 
