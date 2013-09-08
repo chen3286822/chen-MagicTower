@@ -37,9 +37,49 @@ void MyLua::LoadString(const char* str)
 	}
 }
 
-void MyLua::RunFunc(const char* func)
+void MyLua::RunFunc(const char* func,const char* format,...)
 {
+	int iRet = 0;
+	lua_getglobal(m_pLuaState,func);
 
+	va_list arg_list;
+	va_start(arg_list,format);
+	char* pFormat = (char*)format;
+	while(*pFormat != '\0')
+	{
+		if('%' == *pFormat)
+		{
+			++pFormat;
+			switch(*pFormat)
+			{
+			case 'f':
+				lua_pushnumber(m_pLuaState,va_arg(arg_list,double));
+				break;
+			case 'd':
+			case 'i':
+				lua_pushnumber(m_pLuaState,va_arg(arg_list,int));
+				break;
+			case 's':
+				lua_pushstring(m_pLuaState,va_arg(arg_list,char*));
+				break;
+			case 'z':
+				lua_pushlightuserdata(m_pLuaState,va_arg(arg_list,void*));
+				break;
+			default:
+				break;
+			}
+			iRet++;
+		}
+		++pFormat;
+	}
+	va_end(arg_list);
+	iRet = lua_pcall(m_pLuaState,iRet,LUA_MULTRET,0);
+	if (iRet != 0)
+	{
+		char temp[256];
+		sprintf(temp,"调用脚本函数%s错误",func);
+		g_debugString(__FILE__,__FUNCTION__,__LINE__,temp);
+	}
 }
 
 void MyLua::LoadSceneScript(int level)

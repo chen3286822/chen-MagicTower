@@ -14,7 +14,7 @@ public:
 
 	void LoadFile(const char* file);
 	void LoadString(const char* str);
-	void RunFunc(const char* func);
+	void RunFunc(const char* func,const char* format,...);
 
 	//载入特定关的所有脚本
 	void LoadSceneScript(int level);

@@ -29,7 +29,7 @@
 #include <algorithm>
 #include "Singleton.h"
 #include "MagicTowerEdit\MagicTowerEdit\Resource.h"
-
+#include "vld.h"
 
 #include "Markup.h"
 #include <io.h>
