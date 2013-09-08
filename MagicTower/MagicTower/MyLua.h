@@ -7,7 +7,7 @@ class MyLua
 {
 public:
 	MyLua();
-	~MyLua();
+	virtual ~MyLua();
 
 	void Init(){}
 	void Release(){}

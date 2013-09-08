@@ -15,7 +15,7 @@ public:
 	};
 
 	WndSelect();
-	~WndSelect();
+	virtual ~WndSelect();
 
 // 	virtual void Render(){}
  	virtual void Update(float dt);

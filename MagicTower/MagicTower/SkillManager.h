@@ -26,7 +26,7 @@ class SkillManager :  public Singleton<SkillManager>
 {
 public:
 	SkillManager();
-	~SkillManager();
+	virtual ~SkillManager();
 
 	void CreateSkill(int id, Character* cha);
 	void CreateSkill(int id, std::vector<Character*> vCha);

@@ -277,7 +277,7 @@ bool App::AppUpdate()
 //  		GetCurrentDirectory(MAX_PATH,pBuf);
 //  		sprintf(pathConfig,"%s\\res\\script\\1_0.lua",pBuf);
 //  		luaL_dofile(g_MyLua.GetLuaState(),pathConfig);
-		g_MyLua.RunFunc("PreScene1_1","");
+		g_MyLua.RunFunc("PreScene1_0","");
 	}
 
 

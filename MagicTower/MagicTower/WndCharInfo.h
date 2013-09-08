@@ -9,7 +9,7 @@ class WndCharInfo : public UIWindow
 	CREATEWINDOW(WndCharInfo)
 public:
 	WndCharInfo();
-	~WndCharInfo();
+	virtual ~WndCharInfo();
 
 	virtual void Render();
 

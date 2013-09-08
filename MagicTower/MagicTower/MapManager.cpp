@@ -41,6 +41,11 @@ void Map::Init()
 //	GoIntoTurn(eCampTurn_Friend);
 }
 
+void Map::Release()
+{
+	m_iPathFinder.Release();
+}
+
 void Map::AddTurn()
 {
 	m_nCurTurn++;
@@ -231,6 +236,9 @@ MapManager::MapManager(void)
 
 MapManager::~MapManager(void)
 {
+	//释放当前地图资源
+	GetCurrentMap()->Release();
+
 	gSafeDelete(m_pMarkUp);
 	for (std::vector<Map*>::iterator it=m_vMaps.begin();it!=m_vMaps.end();it++)
 	{

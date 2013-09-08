@@ -18,7 +18,7 @@ class PictureController :
 public:
 	PictureController(void);
 	PictureController(HGE* _hge,float _left,float _top,float _right,float _bottom,int _picNum);
-	~PictureController(void);
+	virtual ~PictureController(void);
 
 	void init();
 

@@ -9,6 +9,7 @@ public:
 	~Map();
 
 	void Init();
+	void Release();
 	void Render();
 	void Update(float dt);
 
@@ -68,7 +69,7 @@ class MapManager : public Singleton<MapManager>
 {
 public:
 	MapManager(void);
-	~MapManager(void);
+	virtual ~MapManager(void);
 
 	bool LoadMaps();
 	Map* GetMap(int level);

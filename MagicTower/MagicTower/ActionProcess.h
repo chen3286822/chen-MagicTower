@@ -47,7 +47,7 @@ public:
 		m_iCurAction.Clear();
 		m_nLeftTime = -1;
 	}
-	~ActionProcess(){}
+	virtual ~ActionProcess(){}
 
 	void PushAction(eNotification notify,Character* cast,Character* target,DWORD time)
 	{

@@ -37,7 +37,7 @@ class Character
 {
 public:
 	Character(void);
-	~Character(void);
+	virtual ~Character(void);
 
 	void Render();
 	void Update(float delta); 

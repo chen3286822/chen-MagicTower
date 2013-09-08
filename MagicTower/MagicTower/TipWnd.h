@@ -40,7 +40,7 @@ class TipWnd : public Singleton<TipWnd>
 {
 public:
 	TipWnd();
-	~TipWnd();
+	virtual ~TipWnd();
 
 	void Render();
 	void Update(float delta);

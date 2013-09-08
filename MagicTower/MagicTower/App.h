@@ -5,7 +5,7 @@ class App : public Singleton<App>
 {
 public:
 	App(void);
-	~App(void);
+	virtual ~App(void);
 
 	bool SystemInit();
 	bool LoadResource();

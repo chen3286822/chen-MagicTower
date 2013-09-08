@@ -31,7 +31,7 @@ class TexManager :public Singleton<TexManager>
 {
 public:
 	TexManager(void);
-	~TexManager(void);
+	virtual ~TexManager(void);
 
 	bool LoadTex();
 

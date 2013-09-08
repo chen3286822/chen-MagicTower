@@ -110,7 +110,7 @@ public:
 		m_mSkillConfig.clear();
 		m_mSkillInfo.clear();
 	}
-	~ConfigManager(){}
+	virtual ~ConfigManager(){}
 
 	void LoadConfig()
 	{
@@ -155,7 +155,7 @@ public:
 					ssteam >> skillID[i] >> cTemp;
 					m_mCreatureSkill[strKey].push_back(skillID[i]);
 				}
-
+				gSafeDeleteArray(skillID);
 // 				int searchPos = 0;
 // 				for (int i=0;i<skillNum;i++)
 // 				{

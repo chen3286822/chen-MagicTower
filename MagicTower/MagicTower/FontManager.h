@@ -38,7 +38,7 @@ class FontManager : public Singleton<FontManager>
 {
 public:
 	FontManager();
-	~FontManager();
+	virtual ~FontManager();
 
 	//有点问题，createFont函数需要从font family中寻找字体，目前没有实现加载用户字体
 	//暂不使用其加载字体

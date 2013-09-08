@@ -446,11 +446,13 @@ HTEXTURE TexManager::GetSceneTex(int _ID)
 
 void TexManager::GetActorTex(int _ID,HTEXTURE& tex1,HTEXTURE& tex2)
 {
+	bool bFind1 = false,bFind2 = false;
 	for (std::map<int,HTEXTURE>::iterator it=m_mActorTex[0].begin();it!=m_mActorTex[0].end();it++)
 	{
 		if(_ID == it->first)
 		{
 			tex1 = it->second;
+			bFind1 = true;
 		}
 	}
 	for (std::map<int,HTEXTURE>::iterator it=m_mActorTex[1].begin();it!=m_mActorTex[1].end();it++)
@@ -458,8 +460,11 @@ void TexManager::GetActorTex(int _ID,HTEXTURE& tex1,HTEXTURE& tex2)
 		if(_ID == it->first)
 		{
 			tex2 = it->second;
+			bFind2 = true;
 		}
 	}
+	if(bFind1 && bFind2)
+		return;
 	//没有找到，从文件载入
 	HTEXTURE actorTex0 = LoadTexFromFile("res\\tex\\Actor",(_ID-1)*2+1);
 	HTEXTURE actorTex1 = LoadTexFromFile("res\\tex\\Actor",_ID*2);

@@ -50,7 +50,8 @@ public:
 	{
 		for (int i=0;i<m_nWidth;i++)
 		{
-			gSafeDeleteArray(m_ppbIsInHeap[i]);
+			if(m_ppbIsInHeap)
+				gSafeDeleteArray(m_ppbIsInHeap[i]);
 		}
 		gSafeDeleteArray(m_ppbIsInHeap);
 	}

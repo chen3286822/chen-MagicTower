@@ -422,7 +422,7 @@ class UIWindow
 public:
 	UIWindow();
 	UIWindow(HTEXTURE,float,float,float,float,float,float);
-	~UIWindow();
+	virtual ~UIWindow();
 
 	virtual void					Init(){m_pContainer->Enter();}
 	virtual void					Release(){}
@@ -470,7 +470,7 @@ class UISystem : public Singleton<UISystem>
 {
 public:
 	UISystem();
-	~UISystem(){}
+	virtual ~UISystem(){}
 
 	void Init();
 	void Release();

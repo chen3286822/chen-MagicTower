@@ -36,7 +36,7 @@ class CreatureManager : public Singleton<CreatureManager>
 {
 public:
 	CreatureManager();
-	~CreatureManager();
+	virtual ~CreatureManager();
 
 	void Init();
 	void Render();

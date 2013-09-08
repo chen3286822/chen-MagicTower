@@ -109,7 +109,7 @@ class Scene : public Singleton<Scene>
 {
 public:
 	Scene();
-	~Scene();
+	virtual ~Scene();
 
 	void Render();
 	void Update(float dt);

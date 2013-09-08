@@ -8,7 +8,7 @@ class WndDialog : public UIWindow
 	CREATEWINDOW(WndDialog)
 public:
 	WndDialog();
-	~WndDialog();
+	virtual ~WndDialog();
 
 	virtual void Update(float dt);
 	virtual void Render();

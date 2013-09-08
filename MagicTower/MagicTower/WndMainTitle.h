@@ -16,7 +16,7 @@ public:
 	};
 
 	WndMainTitle();
-	~WndMainTitle();
+	virtual ~WndMainTitle();
 
 	virtual void Update(float dt);
 	virtual void	SetRenderPositon(float _x,float _y);
