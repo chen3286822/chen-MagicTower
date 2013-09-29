@@ -6,8 +6,8 @@
 class AStar
 {
 public:
-	AStar(){}
-	virtual ~AStar(){}
+	AStar();
+	virtual ~AStar(){Release();}
 	void Run(int startX,int startY,int endX,int endY);
 	void Init(int width,int height);
 	void UpdateMap();

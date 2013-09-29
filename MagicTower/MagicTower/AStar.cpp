@@ -1,6 +1,19 @@
 #include "AStar.h"
 #include "MapManager.h"
 
+AStar::AStar()
+{
+	m_ppiMap = NULL;
+	m_ppnHeightGraph = NULL;
+	m_ppnGScore = NULL;
+	m_ppnFScore = NULL;
+	m_ppnHScore = NULL;
+	m_ppbIsInCloseList = NULL;
+	m_lPath.clear();
+	m_nWidth = 0;
+	m_nHeight = 0;
+}
+
 void AStar::Init(int width,int height)
 {
 	Map* currentMap = MapManager::sInstance().GetCurrentMap();
