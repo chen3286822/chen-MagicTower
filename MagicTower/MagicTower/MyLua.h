@@ -17,7 +17,7 @@ public:
 	void RunFunc(const char* func,const char* format,...);
 
 	//载入特定关的所有脚本
-	void LoadSceneScript(int level);
+	void LoadScript(int level);
 	
 	void PopErrorMsg();
 

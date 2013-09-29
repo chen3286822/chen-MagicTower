@@ -1,0 +1,5 @@
+class Map
+{
+public:
+	void SetTurns(int turn);
+}

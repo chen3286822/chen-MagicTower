@@ -19,6 +19,7 @@ public:
 	inline int	GetLevel(){return m_nlevel;}
 	inline void SetWidthLength(int _width,int _length){m_nWidth = _width; m_nLength = _length;}
 	inline void GetWidthLength(int& _width,int& _length){_width = m_nWidth; _length = m_nLength;}
+	inline void SetTurns(int turn){m_nTurns = turn;}
 	inline int&	GetTurns(){return m_nTurns;}
 	inline int&	GetCurrentTurn(){return m_nCurTurn;}
 
@@ -73,6 +74,7 @@ public:
 
 	bool LoadMaps();
 	Map* GetMap(int level);
+	inline void SetCurrentLevel(int _level){m_nCurrentLevel = _level;}
 	inline Map* GetCurrentMap(){return GetMap(m_nCurrentLevel);}
 	void Render();
 	void Update(float dt);
@@ -83,6 +85,6 @@ private:
 
 	CMarkup*	m_pMarkUp;
 
-	inline void SetCurrentLevel(int _level){m_nCurrentLevel = _level;}
+
 };
 

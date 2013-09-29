@@ -6,6 +6,7 @@
 */
 #include "commonTools.h"
 #include "CreatureManager.h"
+#include "MapManager.h"
 class Scene;
 
 /*
@@ -26,5 +27,15 @@ void Lua_RegisterFunc(lua_State* L);
 	取得全局Scene的指针
 */
 Scene* GetScene();
+
+/*
+	设置当前关卡
+*/
+void SetCurrentMap(int level);
+
+/*
+	取得当前关卡地图的指针
+*/
+Map* GetCurMap();
 
 #endif

@@ -82,13 +82,14 @@ void MyLua::RunFunc(const char* func,const char* format,...)
 	}
 }
 
-void MyLua::LoadSceneScript(int level)
+void MyLua::LoadScript(int level)
 {
 	char pBuf[MAX_PATH];
 	char pathConfig[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH,pBuf);
 	for (int i=0;i<3;i++)
 	{
+		//每关3个脚本文件：战前脚本、战斗脚本、战后脚本
 		sprintf(pathConfig,"%s\\res\\script\\%d_%d.lua",pBuf,level,i);
 		if (_access(pBuf,0) == 0)
 		{

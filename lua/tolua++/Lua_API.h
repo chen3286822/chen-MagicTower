@@ -1,6 +1,6 @@
 /*
 ** Lua binding: lua
-** Generated automatically by tolua++-1.0.92 on 09/07/13 22:27:12.
+** Generated automatically by tolua++-1.0.92 on 09/29/13 17:52:10.
 */
 
 #ifndef __cplusplus
@@ -16,12 +16,14 @@ TOLUA_API int  tolua_lua_open (lua_State* tolua_S);
 #include "MagicTower/MagicTower/commonTools.h"
 #include "MagicTower/MagicTower/Scene.h"
 #include "MagicTower/MagicTower/LuaGlobalFunc.h"
+#include "MagicTower/MagicTower/MapManager.h"
 
 /* function to register type */
 static void tolua_reg_types (lua_State* tolua_S)
 {
- tolua_usertype(tolua_S,"Scene");
+ tolua_usertype(tolua_S,"Map");
  tolua_usertype(tolua_S,"Actor");
+ tolua_usertype(tolua_S,"Scene");
 }
 
 /* method: SetPos of class  Actor */
@@ -407,6 +409,39 @@ static int tolua_lua_Scene_PushWords00(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* method: SetTurns of class  Map */
+#ifndef TOLUA_DISABLE_tolua_lua_Map_SetTurns00
+static int tolua_lua_Map_SetTurns00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Map",0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,3,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Map* self = (Map*)  tolua_tousertype(tolua_S,1,0);
+  int turn = ((int)  tolua_tonumber(tolua_S,2,0));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'SetTurns'", NULL);
+#endif
+  {
+   self->SetTurns(turn);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'SetTurns'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* function: GetScene */
 #ifndef TOLUA_DISABLE_tolua_lua_GetScene00
 static int tolua_lua_GetScene00(lua_State* tolua_S)
@@ -429,6 +464,61 @@ static int tolua_lua_GetScene00(lua_State* tolua_S)
 #ifndef TOLUA_RELEASE
  tolua_lerror:
  tolua_error(tolua_S,"#ferror in function 'GetScene'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* function: SetCurrentMap */
+#ifndef TOLUA_DISABLE_tolua_lua_SetCurrentMap00
+static int tolua_lua_SetCurrentMap00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isnumber(tolua_S,1,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  int level = ((int)  tolua_tonumber(tolua_S,1,0));
+  {
+   SetCurrentMap(level);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'SetCurrentMap'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* function: GetCurMap */
+#ifndef TOLUA_DISABLE_tolua_lua_GetCurMap00
+static int tolua_lua_GetCurMap00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isnoobj(tolua_S,1,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  {
+   Map* tolua_ret = (Map*)  GetCurMap();
+    tolua_pushusertype(tolua_S,(void*)tolua_ret,"Map");
+  }
+ }
+ return 1;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'GetCurMap'.",&tolua_err);
  return 0;
 #endif
 }
@@ -458,7 +548,13 @@ TOLUA_API int tolua_lua_open (lua_State* tolua_S)
    tolua_function(tolua_S,"GetCurrentNum",tolua_lua_Scene_GetCurrentNum00);
    tolua_function(tolua_S,"PushWords",tolua_lua_Scene_PushWords00);
   tolua_endmodule(tolua_S);
+  tolua_cclass(tolua_S,"Map","Map","",NULL);
+  tolua_beginmodule(tolua_S,"Map");
+   tolua_function(tolua_S,"SetTurns",tolua_lua_Map_SetTurns00);
+  tolua_endmodule(tolua_S);
   tolua_function(tolua_S,"GetScene",tolua_lua_GetScene00);
+  tolua_function(tolua_S,"SetCurrentMap",tolua_lua_SetCurrentMap00);
+  tolua_function(tolua_S,"GetCurMap",tolua_lua_GetCurMap00);
  tolua_endmodule(tolua_S);
  return 1;
 }

@@ -10,7 +10,7 @@ require "unity"
 结束剧情：无
 ]]
 
-function PreScene1_2()
+function PostFight()
 	local scene = GetScene()
 	scene:SetPlace("曹操行宫")
 	scene:SetBackground(0)

@@ -63,3 +63,13 @@ Scene* GetScene()
 {
 	return (Scene::sInstancePtr());
 }
+
+void SetCurrentMap(int level)
+{
+	MapManager::sInstance().SetCurrentLevel(level);
+}
+
+Map* GetCurMap()
+{
+	return (MapManager::sInstance().GetCurrentMap());
+}

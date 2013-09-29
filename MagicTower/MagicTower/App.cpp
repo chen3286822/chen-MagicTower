@@ -133,7 +133,7 @@ bool App::LoadResource()
 // 	//luaL_loadfile(g_pLua,pathConfig);
 // 	lua_getglobal(g_MyLua.GetLuaState(), "PreScene1_1");
 // 	lua_pcall(g_MyLua.GetLuaState(), 0, LUA_MULTRET, 0);
-	g_MyLua.LoadSceneScript(MapManager::sInstance().GetCurrentMap()->GetLevel());
+	g_MyLua.LoadScript(MapManager::sInstance().GetCurrentMap()->GetLevel());
 	g_MyLua.RunFunc("PreScene1_0","");
 
 	m_eCurLayer = eLayer_Scene;
