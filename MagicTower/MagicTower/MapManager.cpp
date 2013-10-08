@@ -349,12 +349,12 @@ bool MapManager::LoadMaps()
 	}
 
 	//将所有地图文件按照level属性进行排序
-	//load 完所有地图文件，设置当前关卡为第一关并初始化
+	//load 完所有地图文件
 	if(m_vMaps.empty())
 		return false;
 	std::sort(m_vMaps.begin(),m_vMaps.end(),Map::Less_than);
-	SetCurrentLevel(m_vMaps[0]->GetLevel());
-	GetCurrentMap()->Init();
+// 	SetCurrentLevel(m_vMaps[0]->GetLevel());
+// 	GetCurrentMap()->Init();
 	return true;
 }
 

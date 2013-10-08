@@ -104,19 +104,19 @@ bool App::LoadResource()
 		return false;
 	}
 
-	player = new Character;
-	player->Init(MapManager::sInstance().GetCurrentMap()->GetLevel(),34,100,1,Block(5,5));
-	player->SetCamp(eCamp_Friend);
-	player->SetMoveAbility(4,MapManager::sInstance().GetCurrentMap());
-	player->GetName() = "路人甲";
-	CreatureManager::sInstance().AddFriend(player);
-
-	Character* player2 = new Character;
-	player2->Init(MapManager::sInstance().GetCurrentMap()->GetLevel(),25,101,1,Block(5,6));
-	player2->SetCamp(eCamp_Enemy);
-	player2->SetMoveAbility(3,MapManager::sInstance().GetCurrentMap());
-	player2->GetName() = "路人乙";
-	CreatureManager::sInstance().AddEnemy(player2);
+// 	player = new Character;
+// 	player->Init(MapManager::sInstance().GetCurrentMap()->GetLevel(),34,100,1,Block(5,5));
+// 	player->SetCamp(eCamp_Friend);
+// 	player->SetMoveAbility(4,MapManager::sInstance().GetCurrentMap());
+// 	player->GetName() = "路人甲";
+// 	CreatureManager::sInstance().AddFriend(player);
+// 
+// 	Character* player2 = new Character;
+// 	player2->Init(MapManager::sInstance().GetCurrentMap()->GetLevel(),25,101,1,Block(5,6));
+// 	player2->SetCamp(eCamp_Enemy);
+// 	player2->SetMoveAbility(3,MapManager::sInstance().GetCurrentMap());
+// 	player2->GetName() = "路人乙";
+// 	CreatureManager::sInstance().AddEnemy(player2);
 
 	CreatureManager::sInstance().AddItem(98,30);
 	CreatureManager::sInstance().AddItem(49,1);
@@ -133,8 +133,18 @@ bool App::LoadResource()
 // 	//luaL_loadfile(g_pLua,pathConfig);
 // 	lua_getglobal(g_MyLua.GetLuaState(), "PreScene1_1");
 // 	lua_pcall(g_MyLua.GetLuaState(), 0, LUA_MULTRET, 0);
+
+	//初始化，载入第一关脚本
+	char pBuf[MAX_PATH];
+	char pathConfig[MAX_PATH];
+	GetCurrentDirectory(MAX_PATH,pBuf);
+	sprintf(pathConfig,"%s\\res\\script\\top.lua",pBuf);
+	g_MyLua.LoadFile(pathConfig);
+	g_MyLua.RunFunc("init","");
 	g_MyLua.LoadScript(MapManager::sInstance().GetCurrentMap()->GetLevel());
-	g_MyLua.RunFunc("PreScene1_0","");
+	//运行第一关剧情脚本
+	sprintf(pBuf,"PreScene%d",MapManager::sInstance().GetCurrentMap()->GetLevel());
+	g_MyLua.RunFunc(pBuf,"");
 
 	m_eCurLayer = eLayer_Scene;
 	m_bCheckNextScene = false;
@@ -277,7 +287,7 @@ bool App::AppUpdate()
 //  		GetCurrentDirectory(MAX_PATH,pBuf);
 //  		sprintf(pathConfig,"%s\\res\\script\\1_0.lua",pBuf);
 //  		luaL_dofile(g_MyLua.GetLuaState(),pathConfig);
-		g_MyLua.RunFunc("PreScene1_0","");
+		g_MyLua.RunFunc("PreScene1","");
 	}
 
 
@@ -317,6 +327,10 @@ bool App::AppUpdate()
 				//没有的话，进入战斗
 				m_eCurLayer = eLayer_Fight;
 				m_bCheckNextScene = false;
+				//载入战斗前的脚本
+				char pBuf[MAX_PATH];
+				sprintf(pBuf,"PreFight%d",MapManager::sInstance().GetCurrentMap()->GetLevel());
+				g_MyLua.RunFunc(pBuf,"");
 				return false;
 			}
 			Scene::sInstance().Update(dt);

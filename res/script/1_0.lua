@@ -18,7 +18,7 @@ ID_Xiahoudun = 2
 ID_Yujin = 3
 ID_Zhangliao = 5
 
-function PreScene1_0()
+function PreScene1()
 --[[≥ı ºªØ]]
 	local scene = GetScene()
 	scene:SetPlace("≤‹≤Ÿ––π¨")
