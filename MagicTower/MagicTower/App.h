@@ -36,6 +36,7 @@ private:
 
 	eLayer m_eCurLayer;		//当前正在显示的图层
 	bool m_bCheckNextScene;	//检查是否开始下一个场景
+	bool m_bCheckPreFight;		//是否需要载入战前脚本
 
 	//画出鼠标位置的方格
 	void DrawMouseRect();

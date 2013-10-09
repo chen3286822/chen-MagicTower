@@ -74,3 +74,13 @@ Map* GetCurMap()
 {
 	return (MapManager::sInstance().GetCurrentMap());
 }
+
+CreatureManager* GetCreature()
+{
+	return (CreatureManager::sInstancePtr());
+}
+
+Character* GetChar()
+{
+	return (new Character);
+}

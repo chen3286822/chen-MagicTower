@@ -2,12 +2,26 @@ $#include "MagicTower/MagicTower/commonTools.h"
 $#include "MagicTower/MagicTower/Scene.h"
 $#include "MagicTower/MagicTower/LuaGlobalFunc.h"
 $#include "MagicTower/MagicTower/MapManager.h"
+$#include "MagicTower/MagicTower/Character.h"
+$#include "MagicTower/MagicTower/CreatureManager.h"
 
 typedef unsigned long DWORD;
 typedef unsigned char BYTE;
 typedef unsigned short WORD;
 typedef unsigned int UINT;
 
+struct tagBlock
+{
+	int xpos;
+	int ypos;	
+	DWORD	attri;
+	tagBlock(int _x,int _y);
+	tagBlock();
+};
+typedef struct tagBlock Block;
+
 $pfile "scene.pkg"
 $pfile "map.pkg"
 $pfile "globalFunc.pkg"
+$pfile "character.pkg"
+$pfile "creature.pkg"

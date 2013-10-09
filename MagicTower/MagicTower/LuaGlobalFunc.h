@@ -7,6 +7,7 @@
 #include "commonTools.h"
 #include "CreatureManager.h"
 #include "MapManager.h"
+#include "Character.h"
 class Scene;
 
 /*
@@ -38,4 +39,13 @@ void SetCurrentMap(int level);
 */
 Map* GetCurMap();
 
+/*
+	取得单位管理器
+*/
+CreatureManager* GetCreature();
+
+/*
+	生成一个单位
+*/
+Character* GetChar();
 #endif

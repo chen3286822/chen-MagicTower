@@ -90,6 +90,7 @@ bool App::LoadResource()
 	//载入UI
 	UISystem::sInstance().Init();
 	Scene::sCreate();
+	Scene::sInstance().Init();
 
 
 
@@ -143,11 +144,12 @@ bool App::LoadResource()
 	g_MyLua.RunFunc("init","");
 	g_MyLua.LoadScript(MapManager::sInstance().GetCurrentMap()->GetLevel());
 	//运行第一关剧情脚本
-	sprintf(pBuf,"PreScene%d",MapManager::sInstance().GetCurrentMap()->GetLevel());
-	g_MyLua.RunFunc(pBuf,"");
+//	sprintf(pBuf,"PreScene%d",MapManager::sInstance().GetCurrentMap()->GetLevel());
+//	g_MyLua.RunFunc(pBuf,"");
 
 	m_eCurLayer = eLayer_Scene;
-	m_bCheckNextScene = false;
+	m_bCheckNextScene = true;
+	m_bCheckPreFight = false;
 	return true;
 }
 
@@ -282,11 +284,6 @@ bool App::AppUpdate()
 		WndDialog* dialog = (WndDialog*)UISystem::sInstance().GetWindow(eWindowID_Dialog);
 		if(dialog)
 			dialog->Release();
-//  		char pBuf[MAX_PATH];
-//  		char pathConfig[MAX_PATH];
-//  		GetCurrentDirectory(MAX_PATH,pBuf);
-//  		sprintf(pathConfig,"%s\\res\\script\\1_0.lua",pBuf);
-//  		luaL_dofile(g_MyLua.GetLuaState(),pathConfig);
 		g_MyLua.RunFunc("PreScene1","");
 	}
 
@@ -327,10 +324,7 @@ bool App::AppUpdate()
 				//没有的话，进入战斗
 				m_eCurLayer = eLayer_Fight;
 				m_bCheckNextScene = false;
-				//载入战斗前的脚本
-				char pBuf[MAX_PATH];
-				sprintf(pBuf,"PreFight%d",MapManager::sInstance().GetCurrentMap()->GetLevel());
-				g_MyLua.RunFunc(pBuf,"");
+				m_bCheckPreFight = true;
 				return false;
 			}
 			Scene::sInstance().Update(dt);
@@ -339,6 +333,14 @@ bool App::AppUpdate()
 		break;
 	case eLayer_Fight:
 		{
+			if (m_bCheckPreFight)
+			{
+				//载入战斗前的脚本
+				char pBuf[MAX_PATH];
+				sprintf(pBuf,"PreFight%d",MapManager::sInstance().GetCurrentMap()->GetLevel());
+				g_MyLua.RunFunc(pBuf,"");
+				m_bCheckPreFight = false;
+			}
 			MapManager::sInstance().Update(dt);
 			if(!MapManager::sInstance().GetCurrentMap()->IsShowTitle())
 			{

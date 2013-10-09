@@ -114,6 +114,7 @@ public:
 	void Render();
 	void Update(float dt);
 
+	void Init();
 	void Release();
 
 	void SetPlace(const char* name);

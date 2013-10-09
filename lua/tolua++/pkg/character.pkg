@@ -1,0 +1,8 @@
+class Character
+{
+public:
+	void Init(int _Level,int _ID,int _Num,int _Action,Block _block);
+	void SetMoveAbility(int _ability,Map* map);
+	void SetCamp(int _camp);
+	void SetName(const char* name);
+}

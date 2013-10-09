@@ -100,6 +100,7 @@ public:
 	void ResetFrame();
 
 	// Ù–‘œ‡πÿ
+	void SetName(const char* name){m_strName = name;}
 	std::string&	GetName(){return m_strName;}
 	std::string&	GetKind(){return m_strKind;}
 	eAttackType& GetAttackType(){return m_eAttackType;}

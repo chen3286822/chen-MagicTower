@@ -1,0 +1,12 @@
+class CreatureManager
+{
+public:
+	void AddEnemy(Character* _enemy);
+	void AddFriend(Character* _friend);
+	Character* GetEnemy(int x,int  y);
+	Character* GetEnemy(int num);
+	Character* GetFriend(int x,int  y);
+	Character* GetFriend(int num);
+	Character* GetCreature(int x,int  y);
+	Character* GetCreature(int num);
+}

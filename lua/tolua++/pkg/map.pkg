@@ -2,4 +2,5 @@ class Map
 {
 public:
 	void SetTurns(int turn);
+	int GetLevel();
 }

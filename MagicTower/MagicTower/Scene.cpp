@@ -256,7 +256,7 @@ void Actor::SetBgOffset(float x,float y)
 
 Scene::Scene()
 {
-	m_pBackground = new hgeSprite(0,0,0,640,400);
+	m_pBackground = NULL;
 	m_lVNewAction.clear();
 	m_Num = 0;
 	m_eState = eActionState_PickAction;
@@ -274,6 +274,12 @@ Scene::Scene()
 	}
 }
 
+void Scene::Init()
+{
+	m_pBackground = new hgeSprite(0,0,0,640,400);
+	m_mActors.clear();
+}
+
 Scene::~Scene()
 {
 	gSafeDelete(m_pBackground);
@@ -289,7 +295,7 @@ void Scene::Release()
 	{
 		gSafeDelete(it->second);
 	}
-	m_pBackground->SetTexture(0);
+	gSafeDelete(m_pBackground);
 	m_Num = 0;
 	m_eState = eActionState_PickAction;
 	m_lVNewAction.clear();
