@@ -48,4 +48,9 @@ CreatureManager* GetCreature();
 	生成一个单位
 */
 Character* GetChar();
+
+/*
+	弹出测试窗口
+*/
+void MyMessageBox(const char* msg);
 #endif

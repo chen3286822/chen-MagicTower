@@ -3,4 +3,5 @@ class Map
 public:
 	void SetTurns(int turn);
 	int GetLevel();
+	void AddTrigger(int triggerID,const char* func,int turns,int num1,int num2,int x,int y);
 }

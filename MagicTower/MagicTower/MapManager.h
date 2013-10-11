@@ -2,6 +2,19 @@
 #include "commonTools.h"
 #include "AStar.h"
 
+//触发器
+struct Trigger
+{
+	eTrigger m_eTrigger;
+	int m_nTurns;
+	int m_nNum1;	//作为地点触发的num，接触击杀触发的num1
+	int m_nNum2;	//作为击杀接触触发的num2
+	int m_nPosX;
+	int m_nPosY;
+	bool m_bEffective;	//是否有效
+	string m_strFunc;	//触发时调用的函数名
+};
+
 class Map
 {
 public:
@@ -47,6 +60,15 @@ public:
 	//为了支持stl的sort算法
 	static bool Less_than( Map* &m1, Map* &m2) {return m1->m_nlevel < m2->m_nlevel;}
 
+	//触发器相关
+	//添加触发器，触发条件不需要的设为-1
+	void AddTrigger(int triggerID,const char* func,int turns,int num1,int num2,int x,int y);
+	void ClearTrigger();
+	bool IsTriggerTurns(int turns);
+	bool IsTriggerLocation(int num);
+	bool IsTriggerTouch(int num);
+	bool IsTriggerKill(int num);
+
 private:
 	std::vector<MapObject*> m_vObjList;	//代表地图上所有物件,一些静态物体
 	std::vector<Block> m_vBlocks; //代表地图上所有格子
@@ -64,6 +86,8 @@ private:
 	hgeSprite* m_pMapSpr;
 	AStar m_iPathFinder;
 	std::vector<Block*>	m_vSpecificRange;	//限定的寻路范围 
+
+	std::vector<Trigger> m_vTriggers;	//本地图包含的触发器
 };
 
 class MapManager : public Singleton<MapManager>

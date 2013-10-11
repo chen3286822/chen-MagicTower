@@ -85,6 +85,15 @@ enum eLayer
 	eLayer_Fight,				//战斗场景
 };
 
+//战斗时剧情触发器
+enum eTrigger
+{
+	eTrigger_Turns,			//回合数触发：到达一定回合自动触发(回合数)
+	eTrigger_Location,	//地点触发：到达某地点后触发(num，地点x，y，不指定num则默认为所有自己单位到达xy可触发)
+	eTrigger_Touch,		//接触触发：接触特定单位后触发(num1，num2，不指定num1则默认为所有自己单位接触num2可触发)
+	eTrigger_Kill,				//击杀触发：击杀特定单位后触发(num1，num2，不指定num1则默认为所有自己单位击杀num2可触发)
+};
+
 enum eActionState
 {
 	eActionState_PickAction = 0,

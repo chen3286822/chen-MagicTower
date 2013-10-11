@@ -3,3 +3,4 @@ void SetCurrentMap(int level);
 Map* GetCurMap();
 CreatureManager* GetCreature();
 Character* GetChar();
+void MyMessageBox(const char* msg);

@@ -7,10 +7,16 @@ function PreFight1()
 	map:SetTurns(20);
 	local player1 = GetChar();
 	local block = tagBlock(5,5);
-	player1:Init(map:GetLevel(),34,100,1,block);
+	player1:Init(map:GetLevel(),115,100,1,block);
 	player1:SetCamp(0);
 	player1:SetMoveAbility(4,map);
-	player1:SetName("Â·ÈË¼×");
+	player1:SetName("ÕÅÁÉ");
 	local creaMgr = GetCreature();
 	creaMgr:AddFriend(player1);
+
+	map:AddTrigger(0,"turnUp",3,-1,-1,-1,-1);
+end
+
+function turnUp()
+	MyMessageBox("time is up!");
 end

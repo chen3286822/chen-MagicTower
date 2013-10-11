@@ -510,8 +510,8 @@ bool CreatureManager::ResetAllCreature()
 	if (m_eCampTurn == eCampTurn_Enemy)
 	{
 		m_eCampTurn = eCampTurn_Friend;
-		//MapManager::sInstance().GetCurrentMap()->AddTurn();
-		//MapManager::sInstance().GetCurrentMap()->GoIntoTurn(m_eCampTurn);
+		MapManager::sInstance().GetCurrentMap()->AddTurn();
+		MapManager::sInstance().GetCurrentMap()->GoIntoTurn(m_eCampTurn);
 	}
 
 	for (VCharacter::iterator it=m_VEnemyList.begin();it!=m_VEnemyList.end();it++)

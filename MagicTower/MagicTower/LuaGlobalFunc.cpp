@@ -84,3 +84,8 @@ Character* GetChar()
 {
 	return (new Character);
 }
+
+void MyMessageBox(const char* msg)
+{
+	MessageBox(NULL,msg,"",MB_OK);
+}

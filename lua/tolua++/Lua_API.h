@@ -1,6 +1,6 @@
 /*
 ** Lua binding: lua
-** Generated automatically by tolua++-1.0.92 on 10/09/13 11:21:41.
+** Generated automatically by tolua++-1.0.92 on 10/11/13 14:52:13.
 */
 
 #ifndef __cplusplus
@@ -693,6 +693,51 @@ static int tolua_lua_Map_GetLevel00(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* method: AddTrigger of class  Map */
+#ifndef TOLUA_DISABLE_tolua_lua_Map_AddTrigger00
+static int tolua_lua_Map_AddTrigger00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Map",0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
+     !tolua_isstring(tolua_S,3,0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,4,0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,5,0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,6,0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,7,0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,8,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,9,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Map* self = (Map*)  tolua_tousertype(tolua_S,1,0);
+  int triggerID = ((int)  tolua_tonumber(tolua_S,2,0));
+  const char* func = ((const char*)  tolua_tostring(tolua_S,3,0));
+  int turns = ((int)  tolua_tonumber(tolua_S,4,0));
+  int num1 = ((int)  tolua_tonumber(tolua_S,5,0));
+  int num2 = ((int)  tolua_tonumber(tolua_S,6,0));
+  int x = ((int)  tolua_tonumber(tolua_S,7,0));
+  int y = ((int)  tolua_tonumber(tolua_S,8,0));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'AddTrigger'", NULL);
+#endif
+  {
+   self->AddTrigger(triggerID,func,turns,num1,num2,x,y);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'AddTrigger'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* function: GetScene */
 #ifndef TOLUA_DISABLE_tolua_lua_GetScene00
 static int tolua_lua_GetScene00(lua_State* tolua_S)
@@ -824,6 +869,34 @@ static int tolua_lua_GetChar00(lua_State* tolua_S)
 #ifndef TOLUA_RELEASE
  tolua_lerror:
  tolua_error(tolua_S,"#ferror in function 'GetChar'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* function: MyMessageBox */
+#ifndef TOLUA_DISABLE_tolua_lua_MyMessageBox00
+static int tolua_lua_MyMessageBox00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isstring(tolua_S,1,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  const char* msg = ((const char*)  tolua_tostring(tolua_S,1,0));
+  {
+   MyMessageBox(msg);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'MyMessageBox'.",&tolua_err);
  return 0;
 #endif
 }
@@ -1276,12 +1349,14 @@ TOLUA_API int tolua_lua_open (lua_State* tolua_S)
   tolua_beginmodule(tolua_S,"Map");
    tolua_function(tolua_S,"SetTurns",tolua_lua_Map_SetTurns00);
    tolua_function(tolua_S,"GetLevel",tolua_lua_Map_GetLevel00);
+   tolua_function(tolua_S,"AddTrigger",tolua_lua_Map_AddTrigger00);
   tolua_endmodule(tolua_S);
   tolua_function(tolua_S,"GetScene",tolua_lua_GetScene00);
   tolua_function(tolua_S,"SetCurrentMap",tolua_lua_SetCurrentMap00);
   tolua_function(tolua_S,"GetCurMap",tolua_lua_GetCurMap00);
   tolua_function(tolua_S,"GetCreature",tolua_lua_GetCreature00);
   tolua_function(tolua_S,"GetChar",tolua_lua_GetChar00);
+  tolua_function(tolua_S,"MyMessageBox",tolua_lua_MyMessageBox00);
   tolua_cclass(tolua_S,"Character","Character","",NULL);
   tolua_beginmodule(tolua_S,"Character");
    tolua_function(tolua_S,"Init",tolua_lua_Character_Init00);

@@ -5,6 +5,7 @@
 #include "FontManager.h"
 #include "GfxFont.h"
 #include "App.h"
+#include "MyLua.h"
 
 Map::Map()
 {
@@ -37,8 +38,8 @@ void Map::Init()
 {
 	m_iPathFinder.Init(m_nWidth,m_nLength);
 
-//	AddTurn();
-//	GoIntoTurn(eCampTurn_Friend);
+	AddTurn();
+	GoIntoTurn(eCampTurn_Friend);
 }
 
 void Map::Release()
@@ -51,6 +52,8 @@ void Map::AddTurn()
 	m_nCurTurn++;
 	m_bShowTurns = true;
 	m_nShowTurnTime = 1500;
+
+	IsTriggerTurns(m_nCurTurn);
 
 	//隐藏鼠标，禁止操作
 	App::sInstance().GetHGE()->System_SetState(HGE_HIDEMOUSE,true);
@@ -224,6 +227,180 @@ std::vector<Block*> Map::FindPath(int startX,int startY,int endX,int endY)
 	}
 	m_vSpecificRange.clear();
 	return vPath;
+}
+
+void Map::AddTrigger(int triggerID,const char* func,int turns,int num1,int num2,int x,int y)
+{
+	Trigger aTrigger;
+	switch((eTrigger)triggerID)
+	{
+	case eTrigger_Turns:
+		{
+			aTrigger.m_eTrigger = eTrigger_Turns;
+			aTrigger.m_nTurns = turns;
+		}
+		break;
+	case eTrigger_Touch:
+		{
+			aTrigger.m_eTrigger = eTrigger_Touch;
+			aTrigger.m_nNum1 = num1;
+			aTrigger.m_nNum2 = num2;
+		}
+		break;
+	case eTrigger_Location:
+		{
+			aTrigger.m_eTrigger = eTrigger_Location;
+			aTrigger.m_nNum1 = num1;
+			aTrigger.m_nPosX = x;
+			aTrigger.m_nPosY = y;
+		}
+		break;
+	case eTrigger_Kill:
+		{
+			aTrigger.m_eTrigger = eTrigger_Kill;
+			aTrigger.m_nNum1 = num1;
+			aTrigger.m_nNum2 = num2;
+		}
+		break;
+	default:
+		return;
+	}
+	aTrigger.m_strFunc = func;
+	aTrigger.m_bEffective = true;
+	m_vTriggers.push_back(aTrigger);
+}
+
+void Map::ClearTrigger()
+{
+	m_vTriggers.clear();
+}
+
+bool Map::IsTriggerTurns(int turns)
+{
+	for (std::vector<Trigger>::iterator it=m_vTriggers.begin();it!=m_vTriggers.end();it++)
+	{
+		if(it->m_eTrigger == eTrigger_Turns && it->m_bEffective == true)
+		{
+			if (turns >= it->m_nTurns)
+			{
+				g_MyLua.RunFunc(it->m_strFunc.c_str(),"");
+				it->m_bEffective = false;
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+bool Map::IsTriggerLocation(int num)
+{
+	for (std::vector<Trigger>::iterator it=m_vTriggers.begin();it!=m_vTriggers.end();it++)
+	{
+		if(it->m_eTrigger == eTrigger_Location && it->m_bEffective == true)
+		{
+			if (num == it->m_nNum1)
+			{
+				Character* cha = CreatureManager::sInstance().GetCreature(num);
+				if (cha->GetBlock().xpos == it->m_nPosX && cha->GetBlock().ypos ==it->m_nPosY)
+				{
+					g_MyLua.RunFunc(it->m_strFunc.c_str(),"");
+					it->m_bEffective = false;
+					return true;
+				}
+			}
+			//不指定单位
+			else if (it->m_nNum1 == -1)
+			{
+				//检查指定地点是否有玩家单位
+				Character* cha = CreatureManager::sInstance().GetFriend(it->m_nPosX,it->m_nPosY);
+				if (cha != NULL)
+				{
+					g_MyLua.RunFunc(it->m_strFunc.c_str(),"");
+					it->m_bEffective = false;
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+
+bool Map::IsTriggerTouch(int num)
+{
+	for (std::vector<Trigger>::iterator it=m_vTriggers.begin();it!=m_vTriggers.end();it++)
+	{
+		if(it->m_eTrigger == eTrigger_Touch && it->m_bEffective == true)
+		{
+			if (num == it->m_nNum1)
+			{
+				Character* cha = CreatureManager::sInstance().GetCreature(num);
+				Character* target = CreatureManager::sInstance().GetCreature(it->m_nNum2);
+				if (cha && target)
+				{
+					//是否接触，即是否是上下左右相邻的关系
+					if(abs(cha->GetBlock().xpos-target->GetBlock().xpos)+abs(cha->GetBlock().ypos-target->GetBlock().ypos) == 1)
+					{
+						g_MyLua.RunFunc(it->m_strFunc.c_str(),"");
+						it->m_bEffective = false;
+						return true;
+					}
+				}				
+			}
+			//不指定单位
+			else if (it->m_nNum1 == -1)
+			{
+				//检查指定单位周围是否有玩家单位
+				Character* target = CreatureManager::sInstance().GetCreature(it->m_nNum2);
+				int x[4] = {0,0,1,-1};
+				int y[4] = {1,-1,0,0};
+				for (int i=0;i<4;i++)
+				{
+					Character* cha = CreatureManager::sInstance().GetFriend(target->GetBlock().xpos+x[i],target->GetBlock().ypos+y[i]);
+					if(cha != NULL)
+					{
+						g_MyLua.RunFunc(it->m_strFunc.c_str(),"");
+						it->m_bEffective = false;
+						return true;
+					}
+				}
+			}
+		}
+	}
+	return false;
+}
+
+bool Map::IsTriggerKill(int num)
+{
+	for (std::vector<Trigger>::iterator it=m_vTriggers.begin();it!=m_vTriggers.end();it++)
+	{
+		if(it->m_eTrigger == eTrigger_Touch && it->m_bEffective == true)
+		{
+			if (num == it->m_nNum1)
+			{
+				Character* target = CreatureManager::sInstance().GetCreature(it->m_nNum2);
+				//被击杀
+				if (target && target->GetDead()==true)
+				{
+					g_MyLua.RunFunc(it->m_strFunc.c_str(),"");
+					it->m_bEffective = false;
+					return true;
+				}				
+			}
+			//不指定单位
+			else if (it->m_nNum1 == -1)
+			{
+				//目标死亡
+				Character* target = CreatureManager::sInstance().GetCreature(it->m_nNum2);
+				if(target != NULL && target->GetDead() == true)
+				{
+					g_MyLua.RunFunc(it->m_strFunc.c_str(),"");
+					it->m_bEffective = false;
+					return true;
+				}
+			}
+		}
+	}
+	return false;
 }
 
 MapManager::MapManager(void)
