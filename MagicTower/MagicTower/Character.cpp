@@ -457,6 +457,12 @@ void Character::SetFinish(bool _finish)
 		m_iOrigBlock.ypos = m_iBlock.ypos;
 		m_eOrigDir = m_eCurDir;
 		ResetFrame();
+
+		//行动完后检查是否触发剧情
+		//检查是否接触触发
+		MapManager::sInstance().GetCurrentMap()->IsTriggerTouch(m_nNum);
+		//检查是否移动触发
+		MapManager::sInstance().GetCurrentMap()->IsTriggerLocation(m_nNum);
 	}
 }
 

@@ -324,6 +324,8 @@ void CreatureManager::ShowCreatureInfo()
 		TipWnd::sInstance().Clear();
 		sprintf(temp," ID   : %d",cha->GetID());
 		TipWnd::sInstance().AddText(temp,0xFFFFFFFF,-1,-1,eFontType_MSYaHei,eFontSize_FontMiddle);
+		sprintf(temp," Num   : %d",cha->GetNum());
+		TipWnd::sInstance().AddText(temp,0xFFFFFFFF,-1,-1,eFontType_MSYaHei,eFontSize_FontMiddle);
 		sprintf(temp," ×ø±ê : %d , %d",cha->GetBlock().xpos,cha->GetBlock().ypos);
 		TipWnd::sInstance().AddText(temp,0xFFFFFFFF,-1,-1,eFontType_MSYaHei,eFontSize_FontMiddle);
 		sprintf(temp," ÉúÃüÖµ£º%d",cha->GetHP());

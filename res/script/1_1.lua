@@ -15,8 +15,13 @@ function PreFight1()
 	creaMgr:AddFriend(player1);
 
 	map:AddTrigger(0,"turnUp",3,-1,-1,-1,-1);
+	map:AddTrigger(2,"touch",-1,100,4,-1,-1);
 end
 
 function turnUp()
 	MyMessageBox("time is up!");
+end
+
+function touch()
+	MyMessageBox("touch the target!");
 end
