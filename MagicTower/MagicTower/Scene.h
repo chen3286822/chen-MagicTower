@@ -30,6 +30,20 @@ enum eAction
 	eAction_Talk,			//说话，此动作不属于人物动作
 	eAction_Hide,			//隐藏人物动作
 	eAction_Appear,		//出现人物动作
+
+	//战斗场景动作
+	eAction_FightActionStart;	//战斗场景动作开始
+
+	eAction_Turn,			//转向
+	eAction_Attack,		//攻击
+	eAction_Crit,				//暴击
+	eAction_Attacked,	//被攻击
+	eAction_Defend,		//防御
+	eAction_Dead,			//死亡、受伤
+	eAction_Walk,			//原地走路
+	eAction_Move,			//移动
+
+	eAction_FightActionEnd,		//战斗场景动作结束
 };
 
 struct NewAction

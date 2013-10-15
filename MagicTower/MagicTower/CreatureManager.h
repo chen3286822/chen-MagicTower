@@ -4,6 +4,7 @@
 #include "commonTools.h"
 #include "Character.h"
 #include "ConfigManager.h"
+#include "Scene.h"
 
 struct Pair
 {
@@ -111,6 +112,17 @@ public:
 	void RemoveItem(int id);
 	//预先计算物品并且推送动作
 	void PreItemAndPushAction(Character* cast,Character* target);
+
+	//战斗剧情相关
+	//暂停正常游戏流程
+	void SetPause(bool pause){m_bPause = pause;}
+	bool GetPause(){return m_bPause;}
+	//添加剧情动作
+	void AddAction(eAction action,int num,DWORD time=0,eDirection dir=eDirection_None,DWORD data=0,const char*name=NULL,const char* word=NULL);
+	void ClearAction(){m_lActions.clear();}
+	//处理动作
+	void ProcessAction();
+	
 private:
 	VCharacter  m_VFriendList;
 	VCharacter	m_VEnemyList;
@@ -127,6 +139,11 @@ private:
 	VCharacter m_vSkillTargets;//技能释放目标
 
 	LItems m_lItems;		//玩家存储的物品
+
+	bool m_bPause;		//触发剧情，暂停流程
+
+	std::list<NewAction> m_lActions;	//单位的战斗剧情动作列表
+	eActionState m_eState; //控制列表
 };
 
 

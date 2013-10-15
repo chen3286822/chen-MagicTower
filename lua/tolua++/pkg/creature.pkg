@@ -9,4 +9,6 @@ public:
 	Character* GetFriend(int num);
 	Character* GetCreature(int x,int  y);
 	Character* GetCreature(int num);
+	void SetPause(bool pause);
+	bool GetPause();
 }

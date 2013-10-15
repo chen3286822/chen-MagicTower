@@ -1,6 +1,6 @@
 /*
 ** Lua binding: lua
-** Generated automatically by tolua++-1.0.92 on 10/11/13 14:52:13.
+** Generated automatically by tolua++-1.0.92 on 10/15/13 11:27:41.
 */
 
 #ifndef __cplusplus
@@ -1305,6 +1305,71 @@ tolua_lerror:
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* method: SetPause of class  CreatureManager */
+#ifndef TOLUA_DISABLE_tolua_lua_CreatureManager_SetPause00
+static int tolua_lua_CreatureManager_SetPause00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"CreatureManager",0,&tolua_err) ||
+     !tolua_isboolean(tolua_S,2,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,3,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  CreatureManager* self = (CreatureManager*)  tolua_tousertype(tolua_S,1,0);
+  bool pause = ((bool)  tolua_toboolean(tolua_S,2,0));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'SetPause'", NULL);
+#endif
+  {
+   self->SetPause(pause);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'SetPause'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: GetPause of class  CreatureManager */
+#ifndef TOLUA_DISABLE_tolua_lua_CreatureManager_GetPause00
+static int tolua_lua_CreatureManager_GetPause00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"CreatureManager",0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  CreatureManager* self = (CreatureManager*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'GetPause'", NULL);
+#endif
+  {
+   bool tolua_ret = (bool)  self->GetPause();
+   tolua_pushboolean(tolua_S,(bool)tolua_ret);
+  }
+ }
+ return 1;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'GetPause'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* Open function */
 TOLUA_API int tolua_lua_open (lua_State* tolua_S)
 {
@@ -1374,6 +1439,8 @@ TOLUA_API int tolua_lua_open (lua_State* tolua_S)
    tolua_function(tolua_S,"GetFriend",tolua_lua_CreatureManager_GetFriend01);
    tolua_function(tolua_S,"GetCreature",tolua_lua_CreatureManager_GetCreature00);
    tolua_function(tolua_S,"GetCreature",tolua_lua_CreatureManager_GetCreature01);
+   tolua_function(tolua_S,"SetPause",tolua_lua_CreatureManager_SetPause00);
+   tolua_function(tolua_S,"GetPause",tolua_lua_CreatureManager_GetPause00);
   tolua_endmodule(tolua_S);
  tolua_endmodule(tolua_S);
  return 1;

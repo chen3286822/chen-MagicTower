@@ -14,8 +14,10 @@ function PreFight1()
 	local creaMgr = GetCreature();
 	creaMgr:AddFriend(player1);
 
-	map:AddTrigger(0,"turnUp",3,-1,-1,-1,-1);
+	--map:AddTrigger(0,"turnUp",3,-1,-1,-1,-1);
 	map:AddTrigger(2,"touch",-1,100,4,-1,-1);
+	map:AddTrigger(1,"location",-1,100,-1,2,3);
+	map:AddTrigger(3,"kill",-1,100,3,-1,-1);
 end
 
 function turnUp()
@@ -24,4 +26,14 @@ end
 
 function touch()
 	MyMessageBox("touch the target!");
+	local creaMgr = GetCreature();
+	creaMgr:SetPause(true);
+end
+
+function location()
+	MyMessageBox("go to the target!");
+end
+
+function kill()
+	MyMessageBox("kill the target!");
 end

@@ -51,7 +51,7 @@ void Map::AddTurn()
 {
 	m_nCurTurn++;
 	m_bShowTurns = true;
-	m_nShowTurnTime = 1500;
+	m_nShowTurnTime = 0;
 
 	IsTriggerTurns(m_nCurTurn);
 
@@ -63,7 +63,7 @@ void Map::GoIntoTurn(eCampTurn turn)
 {
 	m_eCurCampTurn = turn;
 	m_bShowCampTurn = true;
-	m_nShowCampTurnTime = 1500;
+	m_nShowCampTurnTime = 0;
 
 	//Òþ²ØÊó±ê£¬½ûÖ¹²Ù×÷
 	App::sInstance().GetHGE()->System_SetState(HGE_HIDEMOUSE,true);
@@ -373,7 +373,7 @@ bool Map::IsTriggerKill(int num)
 {
 	for (std::vector<Trigger>::iterator it=m_vTriggers.begin();it!=m_vTriggers.end();it++)
 	{
-		if(it->m_eTrigger == eTrigger_Touch && it->m_bEffective == true)
+		if(it->m_eTrigger == eTrigger_Kill && it->m_bEffective == true)
 		{
 			if (num == it->m_nNum1)
 			{

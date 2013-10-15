@@ -5,6 +5,7 @@
 #include "Character.h"
 #include "CreatureManager.h"
 #include "ConfigManager.h"
+#include "MapManager.h"
 
 typedef eNotification (Character::*LPActionFunc)(Character*,DWORD);
 
@@ -220,6 +221,7 @@ public:
 			case eNotify_Dead:
 				{
 					action.m_pTarget->GetDead() = true;
+					MapManager::sInstance().GetCurrentMap()->IsTriggerKill(action.m_pCast->GetNum());
 				}
 				break;
 			case eNotify_FinishAttack:

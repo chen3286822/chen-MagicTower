@@ -26,6 +26,9 @@ void CreatureManager::Init()
 	m_vPair.clear();
 	m_mAttackRange.clear();
 	m_mSkillRange.clear();
+	m_bPause = false;
+	m_eState = eActionState_PickAction;
+	m_lActions.clear();
 
 	m_vPair.push_back(Pair(0,0));	/*0*/			
 	m_vPair.push_back(Pair(1,0));	/*1*/				m_vPair.push_back(Pair(1,-1));		/*2*/
@@ -115,6 +118,8 @@ void CreatureManager::Render()
 
 void CreatureManager::Update(float delta)
 {
+	ProcessAction();
+
 	for (VCharacter::iterator it=m_VEnemyList.begin();it!=m_VEnemyList.end();it++)
 	{
 		if((*it)->GetDead() == true)
@@ -350,6 +355,9 @@ void CreatureManager::ShowCreatureInfo()
 
 void CreatureManager::Strategy()
 {
+	if(m_bPause)
+		return;
+
 	//当前有单位行动中，等待其行动完成
 	if(m_nActionCreatureNum != -1)
 		return;
@@ -817,84 +825,159 @@ void CreatureManager::PreItemAndPushAction(Character* cast,Character* target)
 
 void CreatureManager::SelectCreature()
 {
-	//友方回合才可以进行选择操作，包括查看敌方行动范围
-	if (m_eCampTurn == eCampTurn_Friend)
+	if (!m_bPause)
 	{
-		Block mouseBlock = App::sInstance().GetMouseBlock();
-		Character* selectChar = NULL;
-		if (mouseBlock.xpos!=-1 && mouseBlock.ypos!=-1)
+		//友方回合才可以进行选择操作，包括查看敌方行动范围
+		if (m_eCampTurn == eCampTurn_Friend)
 		{
-			selectChar = GetCreature(mouseBlock.xpos,mouseBlock.ypos);
-			//选中单位
-			if(selectChar!=NULL)
+			Block mouseBlock = App::sInstance().GetMouseBlock();
+			Character* selectChar = NULL;
+			if (mouseBlock.xpos!=-1 && mouseBlock.ypos!=-1)
 			{
-				int nLastSelect = m_nSelectNum;
-				if (selectChar->GetCamp() == eCamp_Friend )
+				selectChar = GetCreature(mouseBlock.xpos,mouseBlock.ypos);
+				//选中单位
+				if(selectChar!=NULL)
 				{
-					//上次没有选择单位
-					if(nLastSelect == -1)
+					int nLastSelect = m_nSelectNum;
+					if (selectChar->GetCamp() == eCamp_Friend )
 					{
-						//选中的未行动友方进入移动阶段
-						if(!selectChar->GetFinish())
+						//上次没有选择单位
+						if(nLastSelect == -1)
 						{
-							m_nSelectNum = selectChar->GetNum();
-							selectChar->SetActionStage(eActionStage_MoveStage);
-						}
-					}
-					//连续两次点击同一友方单位
-					else if(nLastSelect == selectChar->GetNum())
-					{
-						if(!selectChar->GetFinish())
-						{
-							if(selectChar->GetActionStage()== eActionStage_MoveStage)
+							//选中的未行动友方进入移动阶段
+							if(!selectChar->GetFinish())
 							{
-								//跳过移动阶段，进入操作阶段
-								selectChar->SetActionStage(eActionStage_HandleStage);
-								//打开操作界面
-// 								UIWindow* commandWindow = UISystem::sInstance().GetWindow(eWindowID_Command);
-// 								if(commandWindow)
-// 								{
-// 									commandWindow->SetShow(true);
-// 									commandWindow->SetBindChar(selectChar);
-// 								}
-								 UIWindow* commandWindow = UISystem::sInstance().PopUpWindow(eWindowID_Command);
-								 if(commandWindow)
-									 commandWindow->SetBindChar(selectChar);
-							}
-							else if (selectChar->GetActionStage()== eActionStage_SkillStage && selectChar->GetCastSkill()!=-1)
-							{
-								//对自己释放技能
-								if(selectChar->CanSkillHitTarget(selectChar))
-								{
-									m_nSelectNum = -1;
-									PreSkillAndPushAction(selectChar,selectChar);
-									return;
-								}
-							}
-							else if (selectChar->GetActionStage() == eActionStage_ItemStage && selectChar->GetUseItem()!=-1)
-							{
-								//对自己使用物品
-								if (selectChar->CanUseItem(selectChar))
-								{
-									m_nSelectNum = -1;
-									PreItemAndPushAction(selectChar,selectChar);
-									return;
-								}
+								m_nSelectNum = selectChar->GetNum();
+								selectChar->SetActionStage(eActionStage_MoveStage);
 							}
 						}
+						//连续两次点击同一友方单位
+						else if(nLastSelect == selectChar->GetNum())
+						{
+							if(!selectChar->GetFinish())
+							{
+								if(selectChar->GetActionStage()== eActionStage_MoveStage)
+								{
+									//跳过移动阶段，进入操作阶段
+									selectChar->SetActionStage(eActionStage_HandleStage);
+									//打开操作界面
+									// 								UIWindow* commandWindow = UISystem::sInstance().GetWindow(eWindowID_Command);
+									// 								if(commandWindow)
+									// 								{
+									// 									commandWindow->SetShow(true);
+									// 									commandWindow->SetBindChar(selectChar);
+									// 								}
+									UIWindow* commandWindow = UISystem::sInstance().PopUpWindow(eWindowID_Command);
+									if(commandWindow)
+										commandWindow->SetBindChar(selectChar);
+								}
+								else if (selectChar->GetActionStage()== eActionStage_SkillStage && selectChar->GetCastSkill()!=-1)
+								{
+									//对自己释放技能
+									if(selectChar->CanSkillHitTarget(selectChar))
+									{
+										m_nSelectNum = -1;
+										PreSkillAndPushAction(selectChar,selectChar);
+										return;
+									}
+								}
+								else if (selectChar->GetActionStage() == eActionStage_ItemStage && selectChar->GetUseItem()!=-1)
+								{
+									//对自己使用物品
+									if (selectChar->CanUseItem(selectChar))
+									{
+										m_nSelectNum = -1;
+										PreItemAndPushAction(selectChar,selectChar);
+										return;
+									}
+								}
+							}
+						}
+						//其他情况
+						else
+						{
+							Character* lastChar = GetCreature(nLastSelect);
+							if(lastChar != NULL)
+							{
+								//上次点的是别的友方
+								if(lastChar->GetCamp() == eCamp_Friend)
+								{
+									if(lastChar->GetActionStage() == eActionStage_SkillStage && lastChar->GetCastSkill()!=-1)
+									{
+										//对友方释放技能
+										if(lastChar->CanSkillHitTarget(selectChar))
+										{
+											m_nSelectNum = -1;
+											PreSkillAndPushAction(lastChar,selectChar);
+											return;
+										}
+									}
+									else if (lastChar->GetActionStage() == eActionStage_ItemStage && lastChar->GetUseItem()!= -1)
+									{
+										if (lastChar->CanUseItem(selectChar))
+										{
+											m_nSelectNum = -1;
+											PreItemAndPushAction(lastChar,selectChar);
+											return;
+										}
+									}
+									else if(lastChar->GetFinish() && !selectChar->GetFinish())
+									{
+										m_nSelectNum = selectChar->GetNum();
+										selectChar->SetActionStage(eActionStage_MoveStage);
+									}
+									// 									//上次的友方返回至待命阶段
+									// 									lastChar->SetActionStage(eActionStage_WaitStage);
+									// 									selectChar->SetActionStage(eActionStage_MoveStage);
+								}
+								else if(lastChar->GetCamp() == eCamp_Enemy)
+								{
+									if(!selectChar->GetFinish())
+									{
+										m_nSelectNum = selectChar->GetNum();
+										selectChar->SetActionStage(eActionStage_MoveStage);
+									}
+								}
+							}
+							else 
+								//这里是错误分支，不可以运行到这里
+								g_debugString(__FILE__,__FUNCTION__,__LINE__);
+							return;
+						}
 					}
-					//其他情况
-					else
+					else if (selectChar->GetCamp() == eCamp_Enemy)
 					{
 						Character* lastChar = GetCreature(nLastSelect);
-						if(lastChar != NULL)
+						if(lastChar!=NULL) 
 						{
-							//上次点的是别的友方
-							if(lastChar->GetCamp() == eCamp_Friend)
+							if(lastChar->GetCamp()==eCamp_Friend)
 							{
-								if(lastChar->GetActionStage() == eActionStage_SkillStage && lastChar->GetCastSkill()!=-1)
+								if(lastChar->GetActionStage() == eActionStage_AttackStage)
 								{
-									//对友方释放技能
+									//判断是否可以攻击到选中单位
+									if(lastChar->CanHitTarget(selectChar))
+									{
+										//										lastChar->SetTarget(selectChar->GetNum());
+										//隐藏单位信息窗口
+										// 									UIWindow* charInfoWindow = UISystem::sInstance().GetWindow(eWindowID_CharInfo);
+										// 									if(charInfoWindow && charInfoWindow->IsShow())
+										// 									{
+										// 										charInfoWindow->SetShow(false);
+										// 										UIWindow* commandWnd = UISystem::sInstance().GetWindow(eWindowID_Command);
+										// 										if(commandWnd)
+										// 											commandWnd->SetBindChar(NULL);
+										// 									}	
+										UISystem::sInstance().CloseWindow(eWindowID_CharInfo);
+
+										m_nSelectNum = -1;
+										//lastChar->GeginHit();
+										//进行预计算
+										PreAttackAndPushAction(lastChar,selectChar);
+										return;
+									}
+								}
+								else if (lastChar->GetActionStage() == eActionStage_SkillStage && lastChar->GetCastSkill()!=-1)
+								{
 									if(lastChar->CanSkillHitTarget(selectChar))
 									{
 										m_nSelectNum = -1;
@@ -902,121 +985,49 @@ void CreatureManager::SelectCreature()
 										return;
 									}
 								}
-								else if (lastChar->GetActionStage() == eActionStage_ItemStage && lastChar->GetUseItem()!= -1)
-								{
-									if (lastChar->CanUseItem(selectChar))
-									{
-										m_nSelectNum = -1;
-										PreItemAndPushAction(lastChar,selectChar);
-										return;
-									}
-								}
-								else if(lastChar->GetFinish() && !selectChar->GetFinish())
-								{
-									m_nSelectNum = selectChar->GetNum();
-									selectChar->SetActionStage(eActionStage_MoveStage);
-								}
-								// 									//上次的友方返回至待命阶段
-								// 									lastChar->SetActionStage(eActionStage_WaitStage);
-								// 									selectChar->SetActionStage(eActionStage_MoveStage);
+								// 							else if (lastChar->GetActionStage() == eActionStage_ItemStage && lastChar->GetUseItem()!=-1)
+								// 							{
+								// 								if (lastChar->CanUseItem(selectChar))
+								// 								{
+								// 									m_nSelectNum = -1;
+								// 									PreItemAndPushAction(lastChar,selectChar);
+								// 									return;
+								// 								}
+								// 							}
 							}
-							else if(lastChar->GetCamp() == eCamp_Enemy)
+							else if (lastChar->GetCamp() == eCamp_Enemy)
 							{
-								if(!selectChar->GetFinish())
-								{
-									m_nSelectNum = selectChar->GetNum();
-									selectChar->SetActionStage(eActionStage_MoveStage);
-								}
+								m_nSelectNum = selectChar->GetNum();
 							}
 						}
-						else 
-							//这里是错误分支，不可以运行到这里
-							g_debugString(__FILE__,__FUNCTION__,__LINE__);
-							return;
-					}
-				}
-				else if (selectChar->GetCamp() == eCamp_Enemy)
-				{
-					Character* lastChar = GetCreature(nLastSelect);
-					if(lastChar!=NULL) 
-					{
-						if(lastChar->GetCamp()==eCamp_Friend)
-						{
-							if(lastChar->GetActionStage() == eActionStage_AttackStage)
-							{
-								//判断是否可以攻击到选中单位
-								if(lastChar->CanHitTarget(selectChar))
-								{
-									//										lastChar->SetTarget(selectChar->GetNum());
-									//隐藏单位信息窗口
-// 									UIWindow* charInfoWindow = UISystem::sInstance().GetWindow(eWindowID_CharInfo);
-// 									if(charInfoWindow && charInfoWindow->IsShow())
-// 									{
-// 										charInfoWindow->SetShow(false);
-// 										UIWindow* commandWnd = UISystem::sInstance().GetWindow(eWindowID_Command);
-// 										if(commandWnd)
-// 											commandWnd->SetBindChar(NULL);
-// 									}	
-									UISystem::sInstance().CloseWindow(eWindowID_CharInfo);
-
-									m_nSelectNum = -1;
-									//lastChar->GeginHit();
-									//进行预计算
-									PreAttackAndPushAction(lastChar,selectChar);
-									return;
-								}
-							}
-							else if (lastChar->GetActionStage() == eActionStage_SkillStage && lastChar->GetCastSkill()!=-1)
-							{
-								if(lastChar->CanSkillHitTarget(selectChar))
-								{
-									m_nSelectNum = -1;
-									PreSkillAndPushAction(lastChar,selectChar);
-									return;
-								}
-							}
-// 							else if (lastChar->GetActionStage() == eActionStage_ItemStage && lastChar->GetUseItem()!=-1)
-// 							{
-// 								if (lastChar->CanUseItem(selectChar))
-// 								{
-// 									m_nSelectNum = -1;
-// 									PreItemAndPushAction(lastChar,selectChar);
-// 									return;
-// 								}
-// 							}
-						}
-						else if (lastChar->GetCamp() == eCamp_Enemy)
+						else
 						{
 							m_nSelectNum = selectChar->GetNum();
 						}
 					}
-					else
-					{
-						m_nSelectNum = selectChar->GetNum();
-					}
 				}
-			}
-			//点中地面
-			else
-			{
-				if (m_nSelectNum>=0)
+				//点中地面
+				else
 				{
-					selectChar = GetCreature(m_nSelectNum);
-					if (selectChar!= NULL)
+					if (m_nSelectNum>=0)
 					{
-						if(selectChar->GetCamp() == eCamp_Friend && selectChar->GetActionStage() == eActionStage_MoveStage)
+						selectChar = GetCreature(m_nSelectNum);
+						if (selectChar!= NULL)
 						{
-							//判断是否可以移动过去
-							int length = abs(mouseBlock.xpos - selectChar->GetBlock().xpos) + abs(mouseBlock.ypos - selectChar->GetBlock().ypos);
-							//超过移动范围
-							if(length > selectChar->GetMoveAbility())
-								return;
+							if(selectChar->GetCamp() == eCamp_Friend && selectChar->GetActionStage() == eActionStage_MoveStage)
+							{
+								//判断是否可以移动过去
+								int length = abs(mouseBlock.xpos - selectChar->GetBlock().xpos) + abs(mouseBlock.ypos - selectChar->GetBlock().ypos);
+								//超过移动范围
+								if(length > selectChar->GetMoveAbility())
+									return;
 
-							//移动过去，记录原始位置
-							selectChar->GetOrigBlock().xpos = selectChar->GetBlock().xpos;
-							selectChar->GetOrigBlock().ypos = selectChar->GetBlock().ypos;
-							selectChar->GetOrigDirection() = selectChar->GetCurDirection();
-							selectChar->Move(mouseBlock.xpos,mouseBlock.ypos);
+								//移动过去，记录原始位置
+								selectChar->GetOrigBlock().xpos = selectChar->GetBlock().xpos;
+								selectChar->GetOrigBlock().ypos = selectChar->GetBlock().ypos;
+								selectChar->GetOrigDirection() = selectChar->GetCurDirection();
+								selectChar->Move(mouseBlock.xpos,mouseBlock.ypos);
+							}
 						}
 					}
 				}
@@ -1139,4 +1150,55 @@ void CreatureManager::RemoveItem(int id)
 	}
 	if (it->m_nNum == 0)
 		m_lItems.erase(it);
+}
+
+void CreatureManager::AddAction(eAction action,int num,DWORD time,eDirection dir,DWORD data,const char*name,const char* word)
+{
+	NewAction newAction;
+	newAction.m_eAction = action;
+	newAction.m_nNum = num;
+	newAction.m_dwTime = time;
+	newAction.m_eDir = dir;
+	newAction.m_dwData = data;
+	newAction.m_strName = name;
+	newAction.m_strWords = word;
+	m_lActions.push_back(newAction);
+}
+
+void CreatureManager::ProcessAction()
+{
+	//必须是正常流程暂停才能进行剧情流程
+	if(!m_bPause)
+		return;
+
+	if (m_eState == eActionState_PickAction)
+	{
+		if(!m_lActions.empty())
+		{
+			NewAction aAction = m_lActions.front();
+			//是单位战斗场景动作
+			if (aAction.m_eAction > eAction_FightActionStart && aAction.m_eAction < eAction_FightActionEnd)
+			{
+
+			}
+			//对话动作
+			else if (aAction.m_eAction == eAction_Talk)
+			{
+
+			}
+		}
+		else
+		{
+			//暂停了正常流程，但是剧情已经没有动作，故恢复正常流程
+			m_bPause = false;
+		}
+	}
+	else if (m_eState == eActionState_Process)
+	{
+
+	}
+	else if (m_eState == eActionState_End)
+	{
+
+	}
 }

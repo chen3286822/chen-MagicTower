@@ -79,13 +79,17 @@ public:
 	bool CanHitTarget(Character* target);	//是否可以攻击目标
 	bool CanSkillHitTarget(Character* target);	//技能是否可以击中目标
 //	void GeginHit();
-//	int TowardToAttacker(int src);	//面对着攻击者
-//	void Attack();	//开始攻击
-//	void Crit();		//开始暴击
-//	void Attacked();	//开始被攻击
-//	void Defend(); //开始防御
-//	void Counter();	//反击
-//	void Dead();	//开始死亡动画
+
+	//战斗剧情动作
+	void Talk(int head,const char* name,const char* word);//说话
+	void Turn(int dir,DWORD time);		//转向
+	void Attack(DWORD time);					//攻击
+	void Crit(DWORD time);						//暴击
+	void Attacked(DWORD time);				//被攻击
+	void Defend(DWORD time);				//防御
+	void Dead(DWORD time);					//死亡动画
+	void Walk(DWORD time);						//原地走路
+	void Move(int x,int y);							//移动
 
 	//动作
 	void TowardToAttacker(eNotification notify,Character* target,int time);
@@ -130,6 +134,9 @@ public:
 	int&	GetUseItem(){return m_nUseItem;}
 	bool	CanUseItem(Character* target);
 	void	ItemEffect(Item item);
+
+	//剧情动作相关
+	void PushAction(NewAction action);
 private:
 	hgeAnimation* m_pAnimation;
 	std::map<int,HTEXTURE> m_mCharTex; //存储单位的各个图片动作
@@ -194,6 +201,9 @@ private:
 	float m_fDrawItemX;	//绘制物品的坐标
 	float m_fDrawItemY;
 	Character* m_pItemTarget;	//物品使用目标
+
+	//剧情动作
+	NewAction m_iAction; //剧情动作
 };
 
 

@@ -1073,3 +1073,54 @@ void	Character::ItemEffect(Item item)
 		}
 	}
 }
+
+void Character::Talk(int head,const char* name,const char* word)
+{
+	CreatureManager::sInstance().AddAction(eAction_Talk,m_nNum,0,eDirection_None,head,name,word);
+}
+
+void Character::Turn(int dir,DWORD time)
+{
+	CreatureManager::sInstance().AddAction(eAction_Turn,m_nNum,time,(eDirection)dir);
+}
+
+void Character::Attack(DWORD time)
+{
+	CreatureManager::sInstance().AddAction(eAction_Attack,m_nNum,time);
+}
+
+void Character::Crit(DWORD time)
+{
+	CreatureManager::sInstance().AddAction(eAction_Crit,m_nNum,time);
+}
+
+void Character::Attacked(DWORD time)
+{
+	CreatureManager::sInstance().AddAction(eAction_Attacked,m_nNum,time);
+}
+
+void Character::Defend(DWORD time)
+{
+	CreatureManager::sInstance().AddAction(eAction_Defend,m_nNum,time);
+}
+
+void Character::Dead(DWORD time)
+{
+	CreatureManager::sInstance().AddAction(eAction_Dead,m_nNum,time);
+}
+
+void Character::Walk(DWORD time)
+{
+	CreatureManager::sInstance().AddAction(eAction_Walk,m_nNum,time);
+}
+
+void Character::Move(int x,int y)
+{
+	DWORD data = x + y << 8;
+	CreatureManager::sInstance().AddAction(eAction_Move,m_nNum,0,eDirection_None,data);
+}
+
+void Character::PushAction(NewAction action)
+{
+	m_iAction = action;
+}
