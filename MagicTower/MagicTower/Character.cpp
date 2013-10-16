@@ -1103,9 +1103,14 @@ void	Character::ItemEffect(Item item)
 	}
 }
 
-void Character::Talk(int head,const char* name,const char* word)
+void Character::Talk(int head,const char* word)
 {
-	CreatureManager::sInstance().AddAction(eAction_Talk,m_nNum,0,eDirection_None,head,name,word);
+	CreatureManager::sInstance().AddAction(eAction_Talk,m_nNum,0,eDirection_None,head,m_strName.c_str(),word);
+}
+
+void Character::Wait(DWORD time)
+{
+	CreatureManager::sInstance().AddAction(eAction_Wait,m_nNum,time);
 }
 
 void Character::Turn(int dir,DWORD time)
@@ -1113,15 +1118,16 @@ void Character::Turn(int dir,DWORD time)
 	CreatureManager::sInstance().AddAction(eAction_Turn,m_nNum,time,(eDirection)dir);
 }
 
-void Character::Attack(DWORD time)
+void Character::Attack()
 {
-	CreatureManager::sInstance().AddAction(eAction_Attack,m_nNum,time);
+	CreatureManager::sInstance().AddAction(eAction_Attack,m_nNum,500);
 }
 
-void Character::Crit(DWORD time)
+void Character::Crit()
 {
-	CreatureManager::sInstance().AddAction(eAction_Crit,m_nNum,time);
-	CreatureManager::sInstance().AddAction(eAction_Attack,m_nNum,time);
+	//默认暴击动画持续1秒
+	CreatureManager::sInstance().AddAction(eAction_Crit,m_nNum,1000);
+	CreatureManager::sInstance().AddAction(eAction_Attack,m_nNum,500);
 }
 
 void Character::Attacked(DWORD time)
@@ -1155,10 +1161,16 @@ void Character::PushAction(NewAction action)
 	//执行剧情动作，颜色归为正常
 	if(action.m_eAction != eAction_None)
 		ChangeColor(0xFFFFFFFF);
+	//颜色恢复为行动过状态
+	else
+		ChangeColor(0xFF59636C);
 
 	m_iAction = action;
 	switch(m_iAction.m_eAction)
 	{
+	case eAction_Wait:
+		m_eCharState = eCharacterState_Wait;
+		break;
 	case eAction_Turn:
 		m_eCurDir = m_iAction.m_eDir;
 		m_eOrigDir = m_eCurDir;

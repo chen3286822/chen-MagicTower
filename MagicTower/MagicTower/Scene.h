@@ -34,6 +34,7 @@ enum eAction
 	//战斗场景动作
 	eAction_FightActionStart,	//战斗场景动作开始
 	eAction_None,			//空白动作，用于初始化
+	eAction_Wait,			//等待
 	eAction_Turn,			//转向
 	eAction_Attack,		//攻击
 	eAction_Crit,				//暴击

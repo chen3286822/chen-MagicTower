@@ -1,6 +1,6 @@
 /*
 ** Lua binding: lua
-** Generated automatically by tolua++-1.0.92 on 10/16/13 17:21:58.
+** Generated automatically by tolua++-1.0.92 on 10/16/13 21:43:19.
 */
 
 #ifndef __cplusplus
@@ -1054,8 +1054,7 @@ static int tolua_lua_Character_Talk00(lua_State* tolua_S)
      !tolua_isusertype(tolua_S,1,"Character",0,&tolua_err) ||
      !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
      !tolua_isstring(tolua_S,3,0,&tolua_err) ||
-     !tolua_isstring(tolua_S,4,0,&tolua_err) ||
-     !tolua_isnoobj(tolua_S,5,&tolua_err)
+     !tolua_isnoobj(tolua_S,4,&tolua_err)
  )
   goto tolua_lerror;
  else
@@ -1063,19 +1062,51 @@ static int tolua_lua_Character_Talk00(lua_State* tolua_S)
  {
   Character* self = (Character*)  tolua_tousertype(tolua_S,1,0);
   int head = ((int)  tolua_tonumber(tolua_S,2,0));
-  const char* name = ((const char*)  tolua_tostring(tolua_S,3,0));
-  const char* word = ((const char*)  tolua_tostring(tolua_S,4,0));
+  const char* word = ((const char*)  tolua_tostring(tolua_S,3,0));
 #ifndef TOLUA_RELEASE
   if (!self) tolua_error(tolua_S,"invalid 'self' in function 'Talk'", NULL);
 #endif
   {
-   self->Talk(head,name,word);
+   self->Talk(head,word);
   }
  }
  return 0;
 #ifndef TOLUA_RELEASE
  tolua_lerror:
  tolua_error(tolua_S,"#ferror in function 'Talk'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: Wait of class  Character */
+#ifndef TOLUA_DISABLE_tolua_lua_Character_Wait00
+static int tolua_lua_Character_Wait00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Character",0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,3,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Character* self = (Character*)  tolua_tousertype(tolua_S,1,0);
+  unsigned long time = (( unsigned long)  tolua_tonumber(tolua_S,2,0));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'Wait'", NULL);
+#endif
+  {
+   self->Wait(time);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'Wait'.",&tolua_err);
  return 0;
 #endif
 }
@@ -1124,20 +1155,18 @@ static int tolua_lua_Character_Attack00(lua_State* tolua_S)
  tolua_Error tolua_err;
  if (
      !tolua_isusertype(tolua_S,1,"Character",0,&tolua_err) ||
-     !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
-     !tolua_isnoobj(tolua_S,3,&tolua_err)
+     !tolua_isnoobj(tolua_S,2,&tolua_err)
  )
   goto tolua_lerror;
  else
 #endif
  {
   Character* self = (Character*)  tolua_tousertype(tolua_S,1,0);
-  unsigned long time = (( unsigned long)  tolua_tonumber(tolua_S,2,0));
 #ifndef TOLUA_RELEASE
   if (!self) tolua_error(tolua_S,"invalid 'self' in function 'Attack'", NULL);
 #endif
   {
-   self->Attack(time);
+   self->Attack();
   }
  }
  return 0;
@@ -1157,20 +1186,18 @@ static int tolua_lua_Character_Crit00(lua_State* tolua_S)
  tolua_Error tolua_err;
  if (
      !tolua_isusertype(tolua_S,1,"Character",0,&tolua_err) ||
-     !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
-     !tolua_isnoobj(tolua_S,3,&tolua_err)
+     !tolua_isnoobj(tolua_S,2,&tolua_err)
  )
   goto tolua_lerror;
  else
 #endif
  {
   Character* self = (Character*)  tolua_tousertype(tolua_S,1,0);
-  unsigned long time = (( unsigned long)  tolua_tonumber(tolua_S,2,0));
 #ifndef TOLUA_RELEASE
   if (!self) tolua_error(tolua_S,"invalid 'self' in function 'Crit'", NULL);
 #endif
   {
-   self->Crit(time);
+   self->Crit();
   }
  }
  return 0;
@@ -1734,6 +1761,7 @@ TOLUA_API int tolua_lua_open (lua_State* tolua_S)
    tolua_function(tolua_S,"SetCamp",tolua_lua_Character_SetCamp00);
    tolua_function(tolua_S,"SetName",tolua_lua_Character_SetName00);
    tolua_function(tolua_S,"Talk",tolua_lua_Character_Talk00);
+   tolua_function(tolua_S,"Wait",tolua_lua_Character_Wait00);
    tolua_function(tolua_S,"Turn",tolua_lua_Character_Turn00);
    tolua_function(tolua_S,"Attack",tolua_lua_Character_Attack00);
    tolua_function(tolua_S,"Crit",tolua_lua_Character_Crit00);

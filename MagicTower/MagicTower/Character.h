@@ -82,10 +82,11 @@ public:
 //	void GeginHit();
 
 	//战斗剧情动作
-	void Talk(int head,const char* name,const char* word);//说话
+	void Talk(int head,const char* word);//说话
+	void Wait(DWORD time);		//等待一段时间
 	void Turn(int dir,DWORD time);		//转向
-	void Attack(DWORD time);					//攻击
-	void Crit(DWORD time);						//暴击
+	void Attack();					//攻击
+	void Crit();						//暴击
 	void Attacked(DWORD time);				//被攻击
 	void Defend(DWORD time);				//防御
 	void Hurt(DWORD time);					//受伤、死亡动画

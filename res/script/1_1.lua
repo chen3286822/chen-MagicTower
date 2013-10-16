@@ -30,15 +30,16 @@ function touch()
 	creaMgr:SetPause(true);
 
 	local cha = creaMgr:GetCreature(100);
-	--cha:Turn(3,1000);
-	--cha:Attack(1000);
-	--cha:Crit(1000);
-	--cha:Attacked(1000);
-	--cha:Defend(1000);
-	--cha:Hurt(1000);
-	--cha:Step(1000);
+	cha:Turn(3,1000);
+	cha:Attack();
+	cha:Crit();
+	cha:Attacked(1000);
+	cha:Defend(1000);
+	cha:Hurt(1000);
+	cha:Step(1000);
+	cha:Wait(2000);
 	cha:MoveTo(3,0);
-	cha:Talk(3,"嫖蘇","込込込")
+	cha:Talk(3,"込込込")
 end
 
 function location()
