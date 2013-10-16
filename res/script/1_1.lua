@@ -25,9 +25,20 @@ function turnUp()
 end
 
 function touch()
-	MyMessageBox("touch the target!");
+	--MyMessageBox("touch the target!");
 	local creaMgr = GetCreature();
 	creaMgr:SetPause(true);
+
+	local cha = creaMgr:GetCreature(100);
+	--cha:Turn(3,1000);
+	--cha:Attack(1000);
+	--cha:Crit(1000);
+	--cha:Attacked(1000);
+	--cha:Defend(1000);
+	--cha:Hurt(1000);
+	--cha:Step(1000);
+	cha:MoveTo(3,0);
+	cha:Talk(3,"ÕÅÁÉ","¹þ¹þ¹þ")
 end
 
 function location()

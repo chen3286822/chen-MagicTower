@@ -4,6 +4,7 @@
 #include "TipWnd.h"
 #include "UI.h"
 #include "ActionProcess.h"
+#include "WndDialog.h"
 
 CreatureManager::CreatureManager()
 {
@@ -1179,12 +1180,23 @@ void CreatureManager::ProcessAction()
 			//是单位战斗场景动作
 			if (aAction.m_eAction > eAction_FightActionStart && aAction.m_eAction < eAction_FightActionEnd)
 			{
-
+				Character* target = GetCreature(aAction.m_nNum);
+				if (target)
+				{
+					target->PushAction(aAction);
+					m_eState = eActionState_Process;
+				}
 			}
 			//对话动作
 			else if (aAction.m_eAction == eAction_Talk)
 			{
-
+				WndDialog* dialog = (WndDialog*)UISystem::sInstance().GetWindow(eWindowID_Dialog);
+				if (dialog)
+				{
+					dialog->SetShow(true);
+					dialog->PushWords(aAction.m_dwData,aAction.m_strName.c_str(),aAction.m_strWords.c_str());
+					m_eState = eActionState_Process;
+				}
 			}
 		}
 		else
@@ -1195,10 +1207,48 @@ void CreatureManager::ProcessAction()
 	}
 	else if (m_eState == eActionState_Process)
 	{
-
+		bool bActionOver = true;
+		NewAction aAction = m_lActions.front();
+		Character* target = GetCreature(aAction.m_nNum);
+		if (target && target->IsInAction())
+		{
+			bActionOver = false;
+			if (aAction.m_eAction == eAction_Crit)
+			{
+				int nTempColor = (int)(255*target->GetAction().m_dwTime/1000);
+				DWORD dwCritColor = (nTempColor + (nTempColor << 8)) | 0xFFFF0000;
+				target->ChangeColor(dwCritColor);
+			}
+		}
+		if (bActionOver)
+		{
+			WndDialog* dialog = (WndDialog*)UISystem::sInstance().GetWindow(eWindowID_Dialog);
+			if(dialog && !dialog->IsFinishWords())
+				bActionOver = false;
+		}
+		if (bActionOver)
+		{
+			m_eState = eActionState_End;
+		}
 	}
 	else if (m_eState == eActionState_End)
 	{
-
+		NewAction aAction = m_lActions.front();
+		Character* target = GetCreature(aAction.m_nNum);
+		if (aAction.m_eAction == eAction_Crit)
+		{
+			if (target)
+			{
+				target->ChangeColor(0xFFFFFFFF);
+			}
+		}
+		m_lActions.pop_front();
+		//如果此时没有动作了，则赋值空白动作
+		if (m_lActions.empty())
+		{
+			aAction.m_eAction = eAction_None;
+			target->PushAction(aAction);
+		}
+		m_eState = eActionState_PickAction;
 	}
 }

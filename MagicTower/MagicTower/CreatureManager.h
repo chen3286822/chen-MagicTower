@@ -118,7 +118,7 @@ public:
 	void SetPause(bool pause){m_bPause = pause;}
 	bool GetPause(){return m_bPause;}
 	//添加剧情动作
-	void AddAction(eAction action,int num,DWORD time=0,eDirection dir=eDirection_None,DWORD data=0,const char*name=NULL,const char* word=NULL);
+	void AddAction(eAction action,int num,DWORD time=0,eDirection dir=eDirection_None,DWORD data=0,const char*name="",const char* word="");
 	void ClearAction(){m_lActions.clear();}
 	//处理动作
 	void ProcessAction();

@@ -151,6 +151,11 @@ enum eCharacterState
 	eCharacterState_Attacked = 4,
 	eCharacterState_Healed = 5,
 	eCharacterState_UseItem = 6,
+	eCharacterState_Turn = 7,
+	eCharacterState_Attack = 8,
+	eCharacterState_Crit = 9,
+	eCharacterState_Hurt = 10,
+	eCharacterState_Step = 11,
 };
 
 //¶¯×÷Í¼°ü

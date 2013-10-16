@@ -1,6 +1,7 @@
 #pragma once
 #include "commonTools.h"
 #include "SkillManager.h"
+#include "Scene.h"
 
 /*
 单位状态变化：
@@ -43,7 +44,7 @@ public:
 	void Update(float delta); 
 
 	void Init(int _Level,int _ID,int _Num,int _Action,Block _block);
-	eErrorCode Move(int tarX,int tarY);	//向目标移动
+	eErrorCode Move(int tarX,int tarY,bool bAllBlockInclude=false,bool bNoMoveAbilityLimit=false);	//向目标移动, bAllBlockInclude :是否包含所有格子，不管是否被占据 bNoMoveAbilityLimit:是否采用全地图范围
 	void Move(eDirection dir);		//以格子为单位移动
 
 	void SetMove(bool _move){m_bCanMove = _move;}
@@ -68,7 +69,7 @@ public:
 	int GetID(){return m_nID;}
 	int GetNum(){return m_nNum;}
 
-	std::vector<Block*> CreateRange(Map* map,int range,bool bAllBlockInclude=false);	//bAllBlockInclude :是否包含所有格子，不管是否被占据
+	std::vector<Block*> CreateRange(Map* map,int range,bool bAllBlockInclude=false,bool bNoMoveAbilityLimit=false);	//bAllBlockInclude :是否包含所有格子，不管是否被占据
 
 	void CancelMove();	//取消移动，回到原来位置
 
@@ -87,9 +88,9 @@ public:
 	void Crit(DWORD time);						//暴击
 	void Attacked(DWORD time);				//被攻击
 	void Defend(DWORD time);				//防御
-	void Dead(DWORD time);					//死亡动画
-	void Walk(DWORD time);						//原地走路
-	void Move(int x,int y);							//移动
+	void Hurt(DWORD time);					//受伤、死亡动画
+	void Step(DWORD time);						//原地走路
+	void MoveTo(int x,int y);							//移动
 
 	//动作
 	void TowardToAttacker(eNotification notify,Character* target,int time);
@@ -137,6 +138,8 @@ public:
 
 	//剧情动作相关
 	void PushAction(NewAction action);
+	NewAction GetAction(){return m_iAction;}
+	bool IsInAction();
 private:
 	hgeAnimation* m_pAnimation;
 	std::map<int,HTEXTURE> m_mCharTex; //存储单位的各个图片动作

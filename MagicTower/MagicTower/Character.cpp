@@ -97,6 +97,8 @@ void Character::Init(int _Level,int _ID,int _Num,int _Action,Block _block)
 	m_fDrawItemY = 0.0;
 	m_pItemTarget = NULL;
 
+	m_iAction.m_eAction = eAction_None;
+
 	m_pAnimation->SetMode(HGEANIM_LOOP|HGEANIM_FWD);
 	m_pAnimation->Play();
 }
@@ -130,6 +132,20 @@ void Character::Update(float delta)
 {
 	if(m_eCharState == eCharacterState_Stand/* || (m_eCharState==eCharacterState_Fight && m_eAttackState==eAttackState_Waiting)*/)
 		return;
+
+	//剧情动作时间减少
+	if (m_iAction.m_dwTime > 0 && m_iAction.m_eAction!=eAction_Move && m_iAction.m_eAction!=eAction_None)
+	{
+		int pastTime = (int)(delta*1000);
+		if(m_iAction.m_dwTime > pastTime)
+			m_iAction.m_dwTime -= pastTime;
+		else
+		{
+			m_iAction.m_dwTime = 0;
+			if(m_iAction.m_eAction != eAction_Crit)
+				ResetFrame();
+		}
+	}
 
 	if (m_nDrawItem!=0)
 	{
@@ -251,14 +267,9 @@ void Character::Update(float delta)
 				m_lPathDir.clear();
 
 				//友方单位打开操作界面
-				if (m_nCamp == eCamp_Friend)
+				//处于剧情动作移动时不能打开操作面板
+				if (m_nCamp == eCamp_Friend && m_iAction.m_eAction==eAction_None)
 				{
-// 					UIWindow* commandWindow = UISystem::sInstance().GetWindow(eWindowID_Command);
-// 					if(commandWindow)
-// 					{
-// 						commandWindow->SetShow(true);
-// 						commandWindow->SetBindChar(this);
-// 					}
 					UIWindow* commandWindow = UISystem::sInstance().PopUpWindow(eWindowID_Command);
 					if(commandWindow)
 						commandWindow->SetBindChar(this);
@@ -500,7 +511,7 @@ void	Character::SetMoveAbility(int _ability,Map* map)
 // 			CreateMoveRange(map);
 }
 
-std::vector<Block*> Character::CreateRange(Map* map,int _range,bool bAllBlockInclude)
+std::vector<Block*> Character::CreateRange(Map* map,int _range,bool bAllBlockInclude,bool bNoMoveAbilityLimit)
 {
 	std::vector<Block*> range;
 	if (map)
@@ -508,23 +519,41 @@ std::vector<Block*> Character::CreateRange(Map* map,int _range,bool bAllBlockInc
 		int mapWidth = 0,mapLength = 0;
 		map->GetWidthLength(mapWidth,mapLength);
 		int offX = 0,offY = 0;
-		for (int i=m_iBlock.xpos-_range;i<=m_iBlock.xpos+_range;i++)
+		if(bNoMoveAbilityLimit)
 		{
-			if(i >= 0 && i< mapWidth)
+			for (int i=0;i<mapWidth;i++)
 			{
-				for (int j=m_iBlock.ypos-_range;j<=m_iBlock.ypos+_range;j++)
+				for (int j=0;j<mapLength;j++)
 				{
-					if (j >= 0 && j < mapLength)
+					if(!bAllBlockInclude && (i==m_iBlock.xpos && j==m_iBlock.ypos))
+						continue;
+					if (!map->GetBlockOccupied(i,j) || bAllBlockInclude)
 					{
-						offX = abs(i - m_iBlock.xpos);
-						offY = abs(j - m_iBlock.ypos);
-						if(offX + offY > _range)
-							continue;
-						if(!bAllBlockInclude && (i==m_iBlock.xpos && j==m_iBlock.ypos))
-							continue;
-						if (!map->GetBlockOccupied(i,j) || bAllBlockInclude)
+						range.push_back(map->GetBlock(i,j));
+					}
+				}
+			}
+		}
+		else
+		{
+			for (int i=m_iBlock.xpos-_range;i<=m_iBlock.xpos+_range;i++)
+			{
+				if(i >= 0 && i< mapWidth)
+				{
+					for (int j=m_iBlock.ypos-_range;j<=m_iBlock.ypos+_range;j++)
+					{
+						if (j >= 0 && j < mapLength)
 						{
-							range.push_back(map->GetBlock(i,j));
+							offX = abs(i - m_iBlock.xpos);
+							offY = abs(j - m_iBlock.ypos);
+							if(offX + offY > _range)
+								continue;
+							if(!bAllBlockInclude && (i==m_iBlock.xpos && j==m_iBlock.ypos))
+								continue;
+							if (!map->GetBlockOccupied(i,j) || bAllBlockInclude)
+							{
+								range.push_back(map->GetBlock(i,j));
+							}
 						}
 					}
 				}
@@ -534,7 +563,7 @@ std::vector<Block*> Character::CreateRange(Map* map,int _range,bool bAllBlockInc
 	return range;
 }
 
-eErrorCode Character::Move(int tarX,int tarY)
+eErrorCode Character::Move(int tarX,int tarY,bool bAllBlockInclude,bool bNoMoveAbilityLimit)
 {
 	//单位不可移动
 	if (!m_bCanMove) 
@@ -548,7 +577,7 @@ eErrorCode Character::Move(int tarX,int tarY)
 		return eErrorCode_NotStandState; 
 	}
 
-	MapManager::sInstance().GetCurrentMap()->SetSpecificRange(CreateRange(MapManager::sInstance().GetCurrentMap(),m_nMoveAbility));
+	MapManager::sInstance().GetCurrentMap()->SetSpecificRange(CreateRange(MapManager::sInstance().GetCurrentMap(),m_nMoveAbility,bAllBlockInclude,bNoMoveAbilityLimit));
 	vector<Block*> path = MapManager::sInstance().GetCurrentMap()->FindPath(m_iBlock.xpos,m_iBlock.ypos,tarX,tarY);
 	if(!path.empty())
 	{
@@ -1092,6 +1121,7 @@ void Character::Attack(DWORD time)
 void Character::Crit(DWORD time)
 {
 	CreatureManager::sInstance().AddAction(eAction_Crit,m_nNum,time);
+	CreatureManager::sInstance().AddAction(eAction_Attack,m_nNum,time);
 }
 
 void Character::Attacked(DWORD time)
@@ -1104,23 +1134,108 @@ void Character::Defend(DWORD time)
 	CreatureManager::sInstance().AddAction(eAction_Defend,m_nNum,time);
 }
 
-void Character::Dead(DWORD time)
+void Character::Hurt(DWORD time)
 {
-	CreatureManager::sInstance().AddAction(eAction_Dead,m_nNum,time);
+	CreatureManager::sInstance().AddAction(eAction_Hurt,m_nNum,time);
 }
 
-void Character::Walk(DWORD time)
+void Character::Step(DWORD time)
 {
-	CreatureManager::sInstance().AddAction(eAction_Walk,m_nNum,time);
+	CreatureManager::sInstance().AddAction(eAction_Step,m_nNum,time);
 }
 
-void Character::Move(int x,int y)
+void Character::MoveTo(int x,int y)
 {
-	DWORD data = x + y << 8;
+	DWORD data = x + (y << 8);
 	CreatureManager::sInstance().AddAction(eAction_Move,m_nNum,0,eDirection_None,data);
 }
 
 void Character::PushAction(NewAction action)
 {
+	//执行剧情动作，颜色归为正常
+	if(action.m_eAction != eAction_None)
+		ChangeColor(0xFFFFFFFF);
+
 	m_iAction = action;
+	switch(m_iAction.m_eAction)
+	{
+	case eAction_Turn:
+		m_eCurDir = m_iAction.m_eDir;
+		m_eOrigDir = m_eCurDir;
+		m_pAnimation->SetTexture(m_mCharTex[eActionTex_Stand]);
+		m_pAnimation->ResetFrames(0,(GetTexDir(m_eCurDir)-1)*FLOAT_PIC_SQUARE_WIDTH + 6*FLOAT_PIC_SQUARE_WIDTH,
+			FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_WIDTH,1,8,true);
+		m_pAnimation->SetMode(HGEANIM_FWD | HGEANIM_LOOP);
+		m_eCharState = eCharacterState_Turn;
+		break;
+	case eAction_Attack:
+		m_pAnimation->SetTexture(m_mCharTex[eActionTex_Attack]);
+		m_pAnimation->ResetFrames(0,4*(GetTexDir(m_eCurDir)-1)*FLOAT_PIC_SQUARE_HEIGHT,
+			FLOAT_PIC_SQUARE_HEIGHT,FLOAT_PIC_SQUARE_HEIGHT,4,8,true);
+		m_pAnimation->SetMode(HGEANIM_FWD | HGEANIM_NOLOOP);
+		m_eCharState = eCharacterState_Attack;
+		break;
+	case eAction_Crit:
+		m_pAnimation->SetTexture(m_mCharTex[eActionTex_Attack]);
+		m_pAnimation->ResetFrames(0,4*(GetTexDir(m_eCurDir)-1)*FLOAT_PIC_SQUARE_HEIGHT,
+			FLOAT_PIC_SQUARE_HEIGHT,FLOAT_PIC_SQUARE_HEIGHT,1,8,true);
+		m_pAnimation->SetMode(HGEANIM_FWD | HGEANIM_LOOP);
+		m_eCharState = eCharacterState_Crit;
+		break;
+	case eAction_Attacked:
+		m_pAnimation->SetTexture(m_mCharTex[eActionTex_Attacked]);
+		m_pAnimation->ResetFrames(0,3*FLOAT_PIC_SQUARE_WIDTH,
+			FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_WIDTH,1,8,true);
+		m_pAnimation->SetMode(HGEANIM_FWD | HGEANIM_LOOP);
+		m_eCharState = eCharacterState_Attacked;
+		break;
+	case eAction_Defend:
+		m_pAnimation->SetTexture(m_mCharTex[eActionTex_Defend]);
+		m_pAnimation->ResetFrames(0,(GetTexDir(m_eCurDir)-1)*FLOAT_PIC_SQUARE_WIDTH,
+			FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_WIDTH,1,8,true);
+		m_pAnimation->SetMode(HGEANIM_FWD | HGEANIM_LOOP);
+		m_eCharState = eCharacterState_Defense;
+		break;
+	case eAction_Hurt:
+		m_pAnimation->SetTexture(m_mCharTex[eActionTex_Dead]);
+		m_pAnimation->ResetFrames(0,9*FLOAT_PIC_SQUARE_WIDTH,
+			FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_WIDTH,2,6,true);
+		m_pAnimation->SetMode(HGEANIM_FWD | HGEANIM_LOOP);
+		m_eCharState = eCharacterState_Hurt;
+		break;
+	case eAction_Step:
+		m_pAnimation->SetTexture(m_mCharTex[eCharacterState_Walk]);
+		m_pAnimation->ResetFrames(0,2*(GetTexDir(m_eCurDir)-1)*FLOAT_PIC_SQUARE_WIDTH,
+			FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_WIDTH,2,8,true);
+		m_pAnimation->SetMode(HGEANIM_LOOP|HGEANIM_FWD);
+		m_eCharState = eCharacterState_Step;
+		break;
+	case eAction_Move:
+		{
+			int x = m_iAction.m_dwData & 0x00FF;
+			int y = m_iAction.m_dwData >> 8;
+			Move(x,y,true,true);
+		}
+		break;
+	}
+}
+
+bool Character::IsInAction()
+{
+	//非移动类动作判断剩余时间
+	if (m_iAction.m_dwTime == 0 && m_iAction.m_eAction!=eAction_Move)
+	{
+		return false;
+	}
+	//移动类动作判断是否处于目的地
+	if (m_iAction.m_eAction==eAction_Move)
+	{
+		int x = m_iAction.m_dwData & 0x00FF;
+		int y = m_iAction.m_dwData >> 8;
+		if (m_iBlock.xpos == x && m_iBlock.ypos == y)
+		{
+			return false;
+		}
+	}
+	return true;
 }

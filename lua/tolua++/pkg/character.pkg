@@ -5,4 +5,14 @@ public:
 	void SetMoveAbility(int _ability,Map* map);
 	void SetCamp(int _camp);
 	void SetName(const char* name);
+	
+	void Talk(int head,const char* name,const char* word);
+	void Turn(int dir,DWORD time);
+	void Attack(DWORD time);
+	void Crit(DWORD time);
+	void Attacked(DWORD time);
+	void Defend(DWORD time);
+	void Hurt(DWORD time);
+	void Step(DWORD time);
+	void MoveTo(int x,int y);
 }

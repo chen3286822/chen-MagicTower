@@ -1,6 +1,6 @@
 /*
 ** Lua binding: lua
-** Generated automatically by tolua++-1.0.92 on 10/15/13 11:27:41.
+** Generated automatically by tolua++-1.0.92 on 10/16/13 17:21:58.
 */
 
 #ifndef __cplusplus
@@ -1044,6 +1044,311 @@ static int tolua_lua_Character_SetName00(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* method: Talk of class  Character */
+#ifndef TOLUA_DISABLE_tolua_lua_Character_Talk00
+static int tolua_lua_Character_Talk00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Character",0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
+     !tolua_isstring(tolua_S,3,0,&tolua_err) ||
+     !tolua_isstring(tolua_S,4,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,5,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Character* self = (Character*)  tolua_tousertype(tolua_S,1,0);
+  int head = ((int)  tolua_tonumber(tolua_S,2,0));
+  const char* name = ((const char*)  tolua_tostring(tolua_S,3,0));
+  const char* word = ((const char*)  tolua_tostring(tolua_S,4,0));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'Talk'", NULL);
+#endif
+  {
+   self->Talk(head,name,word);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'Talk'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: Turn of class  Character */
+#ifndef TOLUA_DISABLE_tolua_lua_Character_Turn00
+static int tolua_lua_Character_Turn00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Character",0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,3,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,4,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Character* self = (Character*)  tolua_tousertype(tolua_S,1,0);
+  int dir = ((int)  tolua_tonumber(tolua_S,2,0));
+  unsigned long time = (( unsigned long)  tolua_tonumber(tolua_S,3,0));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'Turn'", NULL);
+#endif
+  {
+   self->Turn(dir,time);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'Turn'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: Attack of class  Character */
+#ifndef TOLUA_DISABLE_tolua_lua_Character_Attack00
+static int tolua_lua_Character_Attack00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Character",0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,3,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Character* self = (Character*)  tolua_tousertype(tolua_S,1,0);
+  unsigned long time = (( unsigned long)  tolua_tonumber(tolua_S,2,0));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'Attack'", NULL);
+#endif
+  {
+   self->Attack(time);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'Attack'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: Crit of class  Character */
+#ifndef TOLUA_DISABLE_tolua_lua_Character_Crit00
+static int tolua_lua_Character_Crit00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Character",0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,3,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Character* self = (Character*)  tolua_tousertype(tolua_S,1,0);
+  unsigned long time = (( unsigned long)  tolua_tonumber(tolua_S,2,0));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'Crit'", NULL);
+#endif
+  {
+   self->Crit(time);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'Crit'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: Attacked of class  Character */
+#ifndef TOLUA_DISABLE_tolua_lua_Character_Attacked00
+static int tolua_lua_Character_Attacked00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Character",0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,3,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Character* self = (Character*)  tolua_tousertype(tolua_S,1,0);
+  unsigned long time = (( unsigned long)  tolua_tonumber(tolua_S,2,0));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'Attacked'", NULL);
+#endif
+  {
+   self->Attacked(time);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'Attacked'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: Defend of class  Character */
+#ifndef TOLUA_DISABLE_tolua_lua_Character_Defend00
+static int tolua_lua_Character_Defend00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Character",0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,3,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Character* self = (Character*)  tolua_tousertype(tolua_S,1,0);
+  unsigned long time = (( unsigned long)  tolua_tonumber(tolua_S,2,0));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'Defend'", NULL);
+#endif
+  {
+   self->Defend(time);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'Defend'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: Hurt of class  Character */
+#ifndef TOLUA_DISABLE_tolua_lua_Character_Hurt00
+static int tolua_lua_Character_Hurt00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Character",0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,3,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Character* self = (Character*)  tolua_tousertype(tolua_S,1,0);
+  unsigned long time = (( unsigned long)  tolua_tonumber(tolua_S,2,0));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'Hurt'", NULL);
+#endif
+  {
+   self->Hurt(time);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'Hurt'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: Step of class  Character */
+#ifndef TOLUA_DISABLE_tolua_lua_Character_Step00
+static int tolua_lua_Character_Step00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Character",0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,3,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Character* self = (Character*)  tolua_tousertype(tolua_S,1,0);
+  unsigned long time = (( unsigned long)  tolua_tonumber(tolua_S,2,0));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'Step'", NULL);
+#endif
+  {
+   self->Step(time);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'Step'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: MoveTo of class  Character */
+#ifndef TOLUA_DISABLE_tolua_lua_Character_MoveTo00
+static int tolua_lua_Character_MoveTo00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Character",0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,3,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,4,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Character* self = (Character*)  tolua_tousertype(tolua_S,1,0);
+  int x = ((int)  tolua_tonumber(tolua_S,2,0));
+  int y = ((int)  tolua_tonumber(tolua_S,3,0));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'MoveTo'", NULL);
+#endif
+  {
+   self->MoveTo(x,y);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'MoveTo'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* method: AddEnemy of class  CreatureManager */
 #ifndef TOLUA_DISABLE_tolua_lua_CreatureManager_AddEnemy00
 static int tolua_lua_CreatureManager_AddEnemy00(lua_State* tolua_S)
@@ -1428,6 +1733,15 @@ TOLUA_API int tolua_lua_open (lua_State* tolua_S)
    tolua_function(tolua_S,"SetMoveAbility",tolua_lua_Character_SetMoveAbility00);
    tolua_function(tolua_S,"SetCamp",tolua_lua_Character_SetCamp00);
    tolua_function(tolua_S,"SetName",tolua_lua_Character_SetName00);
+   tolua_function(tolua_S,"Talk",tolua_lua_Character_Talk00);
+   tolua_function(tolua_S,"Turn",tolua_lua_Character_Turn00);
+   tolua_function(tolua_S,"Attack",tolua_lua_Character_Attack00);
+   tolua_function(tolua_S,"Crit",tolua_lua_Character_Crit00);
+   tolua_function(tolua_S,"Attacked",tolua_lua_Character_Attacked00);
+   tolua_function(tolua_S,"Defend",tolua_lua_Character_Defend00);
+   tolua_function(tolua_S,"Hurt",tolua_lua_Character_Hurt00);
+   tolua_function(tolua_S,"Step",tolua_lua_Character_Step00);
+   tolua_function(tolua_S,"MoveTo",tolua_lua_Character_MoveTo00);
   tolua_endmodule(tolua_S);
   tolua_cclass(tolua_S,"CreatureManager","CreatureManager","",NULL);
   tolua_beginmodule(tolua_S,"CreatureManager");
