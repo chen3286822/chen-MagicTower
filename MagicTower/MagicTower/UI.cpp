@@ -4,6 +4,7 @@
 #include "WndSelect.h"
 #include "WndMainTitle.h"
 #include "WndDialog.h"
+#include "WndSummary.h"
 
 UIWindow::UIWindow()
 {
@@ -92,6 +93,7 @@ void UISystem::Init()
 	ADDWINDOW(eWindowID_Select,WndSelect)
 	ADDWINDOW(eWindowID_MainTitle,WndMainTitle)
 	ADDWINDOW(eWindowID_Dialog,WndDialog)
+	ADDWINDOW(eWindowID_Summary,WndSummary)
 
 // 	for (std::map<eWindowID,UIWindow*>::iterator mit=m_mWindows.begin();mit!=m_mWindows.end();mit++)
 // 		mit->second->Init();

@@ -157,6 +157,8 @@ enum eCharacterState
 	eCharacterState_Crit = 10,
 	eCharacterState_Hurt = 11,
 	eCharacterState_Step = 12,
+	eCharacterState_Disappear = 13,
+	eCharacterState_Appear = 14,
 };
 
 //¶¯×÷Í¼°ü

@@ -127,6 +127,7 @@
     <ClCompile Include="WndDialog.cpp" />
     <ClCompile Include="WndMainTitle.cpp" />
     <ClCompile Include="WndSelect.cpp" />
+    <ClCompile Include="WndSummary.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\lua\include\lauxlib.h" />
@@ -162,6 +163,7 @@
     <ClInclude Include="WndDialog.h" />
     <ClInclude Include="WndMainTitle.h" />
     <ClInclude Include="WndSelect.h" />
+    <ClInclude Include="WndSummary.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram1.cd" />

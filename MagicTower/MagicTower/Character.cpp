@@ -58,6 +58,7 @@ void Character::Init(int _Level,int _ID,int _Num,int _Action,Block _block)
 	m_nLeftDistance = 0;
 	m_eCurDir = (eDirection)(_Action%4+1);
 	m_eOrigDir = m_eCurDir;
+	m_bHide = false;
 	m_eCharState = eCharacterState_Stand;
 	//为初始化的人物所在地图块设置属性
 	Map* theMap = MapManager::sInstance().GetMap(m_nMapLevel);
@@ -65,6 +66,7 @@ void Character::Init(int _Level,int _ID,int _Num,int _Action,Block _block)
 
 	//初始化单位属性(读配置+计算)
 	//测试，直接赋值
+	m_nHead = 1;
 	char name[50];
 	sprintf(name,"%d号小兵",m_nNum);
 	m_strName = name;
@@ -1156,6 +1158,17 @@ void Character::MoveTo(int x,int y)
 	CreatureManager::sInstance().AddAction(eAction_Move,m_nNum,0,eDirection_None,data);
 }
 
+void Character::Disappear()
+{
+	CreatureManager::sInstance().AddAction(eAction_Disappear,m_nNum,1000);
+}
+
+void Character::Appear(int dir,int x,int y)
+{
+	DWORD data = x + (y << 8);
+	CreatureManager::sInstance().AddAction(eAction_Appears,m_nNum,1000,(eDirection)dir,data);
+}
+
 void Character::PushAction(NewAction action)
 {
 	//执行剧情动作，颜色归为正常
@@ -1168,6 +1181,30 @@ void Character::PushAction(NewAction action)
 	m_iAction = action;
 	switch(m_iAction.m_eAction)
 	{
+	case eAction_Appears:
+		{
+			m_bHide = false;
+			ChangeColor(0x00FFFFFF);
+			Map* theMap = MapManager::sInstance().GetCurrentMap();
+			int x = m_iAction.m_dwData & 0x00FF;
+			int y = m_iAction.m_dwData >> 8;
+			Block* oldBlock = theMap->GetBlock(x,y);
+			if(oldBlock!=NULL)
+				setOccupied((oldBlock->attri),1);
+			m_iBlock = m_iOrigBlock = *oldBlock;
+			m_eCurDir = m_eOrigDir = m_iAction.m_eDir;
+			m_fXPos = (MAP_RECT-FLOAT_PIC_SQUARE_WIDTH)/2+MAP_OFF_X +MAP_RECT*m_iBlock.xpos;
+			m_fYPos = MAP_OFF_Y+MAP_RECT*m_iBlock.ypos;
+			m_fStartX = m_fXPos;
+			m_fStartY = m_fYPos;
+			m_eCharState = eCharacterState_Appear;
+		}
+		break;
+	case eAction_Disappear:
+		{
+			m_eCharState = eCharacterState_Disappear;
+		}
+		break;
 	case eAction_Wait:
 		m_eCharState = eCharacterState_Wait;
 		break;
@@ -1234,6 +1271,8 @@ void Character::PushAction(NewAction action)
 
 bool Character::IsInAction()
 {
+	if(m_iAction.m_eAction == eAction_None)
+		return false;
 	//非移动类动作判断剩余时间
 	if (m_iAction.m_dwTime == 0 && m_iAction.m_eAction!=eAction_Move)
 	{

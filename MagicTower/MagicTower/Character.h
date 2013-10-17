@@ -68,6 +68,8 @@ public:
 	eDirection& GetOrigDirection(){return m_eOrigDir;}
 	int GetID(){return m_nID;}
 	int GetNum(){return m_nNum;}
+	bool GetHide(){return m_bHide;}
+	void SetHide(bool hide){m_bHide = hide;}
 
 	std::vector<Block*> CreateRange(Map* map,int range,bool bAllBlockInclude=false,bool bNoMoveAbilityLimit=false);	//bAllBlockInclude :是否包含所有格子，不管是否被占据
 
@@ -92,6 +94,8 @@ public:
 	void Hurt(DWORD time);					//受伤、死亡动画
 	void Step(DWORD time);						//原地走路
 	void MoveTo(int x,int y);							//移动
+	void Disappear();			//暂时隐藏单位
+	void Appear(int dir,int x,int y);		//隐藏单位出现
 
 	//动作
 	void TowardToAttacker(eNotification notify,Character* target,int time);
@@ -106,6 +110,8 @@ public:
 	void ResetFrame();
 
 	//属性相关
+	void SetHead(int head){m_nHead = head;}
+	int GetHead(){return m_nHead;}
 	void SetName(const char* name){m_strName = name;}
 	std::string&	GetName(){return m_strName;}
 	std::string&	GetKind(){return m_strKind;}
@@ -155,6 +161,7 @@ private:
 	int m_nMoveAbility;		//代表移动力
 	bool m_bFinishAct;	//代表是否行动过
 	int	m_nCamp;		//单位阵营
+	bool m_bHide;		//是否隐藏
 	eActionStage m_eActionStage;	//单位所处阶段，只有轮到该单位行动时才有效
 
 	eCharacterState m_eCharState; //单位当前的状态 
@@ -172,6 +179,7 @@ private:
 	eNotification m_eNotify;			//动作通知类型
 
 	//单位属性
+	int m_nHead;		//头像编号
 	std::string m_strName;	//名称
 	std::string m_strKind;		//兵种
 	eAttackType m_eAttackType;		//攻击类型

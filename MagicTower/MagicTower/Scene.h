@@ -43,6 +43,8 @@ enum eAction
 	eAction_Hurt,			//死亡、受伤
 	eAction_Step,			//原地走路
 	eAction_Move,			//移动
+	eAction_Disappear,//消失
+	eAction_Appears,	//出现
 
 	eAction_FightActionEnd,		//战斗场景动作结束
 };

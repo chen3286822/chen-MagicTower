@@ -5,6 +5,7 @@
 #include "UI.h"
 #include "ActionProcess.h"
 #include "WndDialog.h"
+#include "WndSummary.h"
 
 CreatureManager::CreatureManager()
 {
@@ -107,12 +108,12 @@ void CreatureManager::Render()
 
 	for (VCharacter::iterator it=m_VEnemyList.begin();it!=m_VEnemyList.end();it++)
 	{
-		if((*it)->GetDead() != true)
+		if((*it)->GetDead() != true && (*it)->GetHide() != true)
 			(*it)->Render();
 	}
 	for (VCharacter::iterator it=m_VFriendList.begin();it!=m_VFriendList.end();it++)
 	{
-		if((*it)->GetDead() != true)
+		if((*it)->GetDead() != true && (*it)->GetHide() != true)
 			(*it)->Render();
 	}
 }
@@ -125,14 +126,14 @@ void CreatureManager::Update(float delta)
 	{
 		if((*it)->GetDead() == true)
 			m_VEnemyDeadList.push_back(*it);
-		else
+		else if((*it)->GetHide() != true)
 			(*it)->Update(delta);
 	}
 	for (VCharacter::iterator it=m_VFriendList.begin();it!=m_VFriendList.end();it++)
 	{
 		if((*it)->GetDead() == true)
 			m_VFriendDeadList.push_back(*it);
-		else
+		else if((*it)->GetHide() != true)
 			(*it)->Update(delta);
 	}
 
@@ -431,7 +432,7 @@ Character* CreatureManager::GetNextEnemy()
 {
 	for (VCharacter::iterator it=m_VEnemyList.begin();it!=m_VEnemyList.end();it++)
 	{
-		if((*it)->GetFinish() == false)	//尚未行动
+		if((*it)->GetFinish() == false && (*it)->GetHide()==false)	//尚未行动
 			return *it;
 	}
 	return NULL;	//所有人都行动过，理应等待下个回合
@@ -501,7 +502,7 @@ bool CreatureManager::ResetAllCreature()
 {
 	for (VCharacter::iterator it=m_VFriendList.begin();it!=m_VFriendList.end();it++)
 	{
-		if((*it)->GetFinish() == false)	//有友方尚未行动
+		if((*it)->GetFinish() == false && (*it)->GetHide()==false)	//有友方尚未行动
 			return false;
 	}
 	//友方行动完，进入敌方回合
@@ -514,7 +515,7 @@ bool CreatureManager::ResetAllCreature()
 
 	for (VCharacter::iterator it=m_VEnemyList.begin();it!=m_VEnemyList.end();it++)
 	{
-		if((*it)->GetFinish() == false)	//有敌方尚未行动
+		if((*it)->GetFinish() == false && (*it)->GetHide()==false)	//有敌方尚未行动
 			return false;
 	}
 	//敌方行动完，进入下一回合
@@ -839,6 +840,11 @@ void CreatureManager::SelectCreature()
 				//选中单位
 				if(selectChar!=NULL)
 				{
+					//关闭总结窗口
+					UIWindow* summaryWindow = UISystem::sInstance().GetWindow(eWindowID_Summary);
+					if(summaryWindow && summaryWindow->IsShow())
+						UISystem::sInstance().CloseWindow(eWindowID_Summary);
+
 					int nLastSelect = m_nSelectNum;
 					if (selectChar->GetCamp() == eCamp_Friend )
 					{
@@ -1092,6 +1098,27 @@ void CreatureManager::UnSelectCreature()
 		else
 			m_nSelectNum = -1;
 	}
+	else
+	{
+		Block mouseBlock = App::sInstance().GetMouseBlock();
+		Character* selectChar = NULL;
+		if (mouseBlock.xpos!=-1 && mouseBlock.ypos!=-1)
+		{
+			UIWindow* summaryWindow = UISystem::sInstance().GetWindow(eWindowID_Summary);
+			if(summaryWindow && summaryWindow->IsShow())
+				UISystem::sInstance().CloseWindow(eWindowID_Summary);
+			else
+			{
+				selectChar = GetCreature(mouseBlock.xpos,mouseBlock.ypos);
+				if (selectChar)
+				{
+					summaryWindow = UISystem::sInstance().PopUpWindow(eWindowID_Summary);
+					if(summaryWindow)
+						summaryWindow->SetBindChar(selectChar);
+				}
+			}
+		}
+	}
 }
 
 void CreatureManager::ProcessSelectCreature()
@@ -1219,6 +1246,18 @@ void CreatureManager::ProcessAction()
 				DWORD dwCritColor = (nTempColor + (nTempColor << 8)) | 0xFFFF0000;
 				target->ChangeColor(dwCritColor);
 			}
+			else if (aAction.m_eAction == eAction_Disappear)
+			{
+				int nTempColor = (int)(255*target->GetAction().m_dwTime/1000);
+				DWORD color = (nTempColor << 24) | 0x00FFFFFF;
+				target->ChangeColor(color);
+			}
+			else if (aAction.m_eAction == eAction_Appears)
+			{
+				int nTempColor = (int)(255*(1000-target->GetAction().m_dwTime)/1000);
+				DWORD color = (nTempColor << 24) | 0x00FFFFFF;
+				target->ChangeColor(color);
+			}
 		}
 		if (bActionOver)
 		{
@@ -1241,6 +1280,19 @@ void CreatureManager::ProcessAction()
 			{
 				target->ChangeColor(0xFFFFFFFF);
 			}
+		}
+		else if (aAction.m_eAction == eAction_Disappear)
+		{
+			Map* theMap = MapManager::sInstance().GetCurrentMap();
+			Block* oldBlock = theMap->GetBlock(target->GetBlock().xpos,target->GetBlock().ypos);
+			if(oldBlock!=NULL)
+				setOccupied((oldBlock->attri),0);
+			target->GetBlock().xpos = target->GetBlock().ypos = -1;
+			target->GetOrigBlock().xpos = target->GetOrigBlock().ypos = -1;
+			target->SetHide(true);
+		}
+		else if (aAction.m_eAction == eAction_Appears)
+		{
 		}
 		m_lActions.pop_front();
 		//如果此时没有动作了，则赋值空白动作

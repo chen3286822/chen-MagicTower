@@ -2,9 +2,13 @@ class Character
 {
 public:
 	void Init(int _Level,int _ID,int _Num,int _Action,Block _block);
+	void SetHead(int head);
+	int GetHead();
 	void SetMoveAbility(int _ability,Map* map);
 	void SetCamp(int _camp);
 	void SetName(const char* name);
+	bool GetHide();
+	void SetHide(bool hide);
 	
 	void Talk(int head,const char* word);
 	void Wait(DWORD time);
@@ -16,4 +20,6 @@ public:
 	void Hurt(DWORD time);
 	void Step(DWORD time);
 	void MoveTo(int x,int y);
+	void Disappear();
+	void Appear(int dir,int x,int y);
 }

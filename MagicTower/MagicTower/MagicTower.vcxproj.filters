@@ -79,6 +79,9 @@
     <ClCompile Include="MyLua.cpp">
       <Filter>LuaGlobal</Filter>
     </ClCompile>
+    <ClCompile Include="WndSummary.cpp">
+      <Filter>Windows\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
@@ -179,6 +182,9 @@
     </ClInclude>
     <ClInclude Include="MyLua.h">
       <Filter>LuaGlobal</Filter>
+    </ClInclude>
+    <ClInclude Include="WndSummary.h">
+      <Filter>Windows\Head Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

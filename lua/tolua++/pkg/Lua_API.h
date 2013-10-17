@@ -1,6 +1,6 @@
 /*
 ** Lua binding: lua
-** Generated automatically by tolua++-1.0.92 on 10/16/13 21:43:19.
+** Generated automatically by tolua++-1.0.92 on 10/17/13 11:37:09.
 */
 
 #ifndef __cplusplus
@@ -1044,6 +1044,71 @@ static int tolua_lua_Character_SetName00(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* method: GetHide of class  Character */
+#ifndef TOLUA_DISABLE_tolua_lua_Character_GetHide00
+static int tolua_lua_Character_GetHide00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Character",0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Character* self = (Character*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'GetHide'", NULL);
+#endif
+  {
+   bool tolua_ret = (bool)  self->GetHide();
+   tolua_pushboolean(tolua_S,(bool)tolua_ret);
+  }
+ }
+ return 1;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'GetHide'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: SetHide of class  Character */
+#ifndef TOLUA_DISABLE_tolua_lua_Character_SetHide00
+static int tolua_lua_Character_SetHide00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Character",0,&tolua_err) ||
+     !tolua_isboolean(tolua_S,2,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,3,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Character* self = (Character*)  tolua_tousertype(tolua_S,1,0);
+  bool hide = ((bool)  tolua_toboolean(tolua_S,2,0));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'SetHide'", NULL);
+#endif
+  {
+   self->SetHide(hide);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'SetHide'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* method: Talk of class  Character */
 #ifndef TOLUA_DISABLE_tolua_lua_Character_Talk00
 static int tolua_lua_Character_Talk00(lua_State* tolua_S)
@@ -1371,6 +1436,74 @@ static int tolua_lua_Character_MoveTo00(lua_State* tolua_S)
 #ifndef TOLUA_RELEASE
  tolua_lerror:
  tolua_error(tolua_S,"#ferror in function 'MoveTo'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: Disappear of class  Character */
+#ifndef TOLUA_DISABLE_tolua_lua_Character_Disappear00
+static int tolua_lua_Character_Disappear00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Character",0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Character* self = (Character*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'Disappear'", NULL);
+#endif
+  {
+   self->Disappear();
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'Disappear'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: Appear of class  Character */
+#ifndef TOLUA_DISABLE_tolua_lua_Character_Appear00
+static int tolua_lua_Character_Appear00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Character",0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,3,0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,4,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,5,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Character* self = (Character*)  tolua_tousertype(tolua_S,1,0);
+  int dir = ((int)  tolua_tonumber(tolua_S,2,0));
+  int x = ((int)  tolua_tonumber(tolua_S,3,0));
+  int y = ((int)  tolua_tonumber(tolua_S,4,0));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'Appear'", NULL);
+#endif
+  {
+   self->Appear(dir,x,y);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'Appear'.",&tolua_err);
  return 0;
 #endif
 }
@@ -1760,6 +1893,8 @@ TOLUA_API int tolua_lua_open (lua_State* tolua_S)
    tolua_function(tolua_S,"SetMoveAbility",tolua_lua_Character_SetMoveAbility00);
    tolua_function(tolua_S,"SetCamp",tolua_lua_Character_SetCamp00);
    tolua_function(tolua_S,"SetName",tolua_lua_Character_SetName00);
+   tolua_function(tolua_S,"GetHide",tolua_lua_Character_GetHide00);
+   tolua_function(tolua_S,"SetHide",tolua_lua_Character_SetHide00);
    tolua_function(tolua_S,"Talk",tolua_lua_Character_Talk00);
    tolua_function(tolua_S,"Wait",tolua_lua_Character_Wait00);
    tolua_function(tolua_S,"Turn",tolua_lua_Character_Turn00);
@@ -1770,6 +1905,8 @@ TOLUA_API int tolua_lua_open (lua_State* tolua_S)
    tolua_function(tolua_S,"Hurt",tolua_lua_Character_Hurt00);
    tolua_function(tolua_S,"Step",tolua_lua_Character_Step00);
    tolua_function(tolua_S,"MoveTo",tolua_lua_Character_MoveTo00);
+   tolua_function(tolua_S,"Disappear",tolua_lua_Character_Disappear00);
+   tolua_function(tolua_S,"Appear",tolua_lua_Character_Appear00);
   tolua_endmodule(tolua_S);
   tolua_cclass(tolua_S,"CreatureManager","CreatureManager","",NULL);
   tolua_beginmodule(tolua_S,"CreatureManager");

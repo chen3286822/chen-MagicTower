@@ -14,6 +14,15 @@ function PreFight1()
 	local creaMgr = GetCreature();
 	creaMgr:AddFriend(player1);
 
+
+	local cha1 = creaMgr:GetCreature(2);
+	cha1:SetHide(true);
+	local cha2 = creaMgr:GetCreature(3);
+	cha2:SetHide(true);
+	local cha3 = creaMgr:GetCreature(5);
+	cha3:SetHide(true);
+
+
 	--map:AddTrigger(0,"turnUp",3,-1,-1,-1,-1);
 	map:AddTrigger(2,"touch",-1,100,4,-1,-1);
 	map:AddTrigger(1,"location",-1,100,-1,2,3);
@@ -29,6 +38,13 @@ function touch()
 	local creaMgr = GetCreature();
 	creaMgr:SetPause(true);
 
+	local cha1 = creaMgr:GetCreature(2);
+	cha1:SetHide(false);
+	local cha2 = creaMgr:GetCreature(3);
+	cha2:SetHide(false);
+	local cha3 = creaMgr:GetCreature(5);
+	cha3:SetHide(false);
+
 	local cha = creaMgr:GetCreature(100);
 	cha:Turn(3,1000);
 	cha:Attack();
@@ -36,6 +52,8 @@ function touch()
 	cha:Attacked(1000);
 	cha:Defend(1000);
 	cha:Hurt(1000);
+	cha:Disappear();
+	cha:Appear(1,2,0);
 	cha:Step(1000);
 	cha:Wait(2000);
 	cha:MoveTo(3,0);
