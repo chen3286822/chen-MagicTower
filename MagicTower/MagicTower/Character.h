@@ -110,6 +110,11 @@ public:
 	void ResetFrame();
 
 	//属性相关
+	int& GetForce(){return m_nForce;}
+	int& GetIntelligence(){return m_nIntelligence;}
+	int& GetCharm(){return m_nCharm;}
+	const char* GetIntro(){return m_strIntro.c_str();}
+	void SetIntro(const char* intro){m_strIntro = intro;}
 	void SetHead(int head){m_nHead = head;}
 	int GetHead(){return m_nHead;}
 	void SetName(const char* name){m_strName = name;}
@@ -118,6 +123,7 @@ public:
 	eAttackType& GetAttackType(){return m_eAttackType;}
 	int&	GetAttack(){return m_nAttack;}
 	int&	GetDefend(){return m_nDefend;}
+	int&	GetSkillDamage(){return m_nSkillDamage;}
 	float&	GetCrit(){return m_fCrit;}
 	float&	GetDodge(){return m_fDodge;}
 	int&	GetHP(){return m_nHP;}
@@ -178,13 +184,20 @@ private:
 	int m_nActionTime;		//动作需要时间
 	eNotification m_eNotify;			//动作通知类型
 
-	//单位属性
+	//人物属性
+	int m_nIntelligence;		//智力
+	int m_nForce;				//武力
+	int m_nCharm;				//魅力
 	int m_nHead;		//头像编号
 	std::string m_strName;	//名称
+	std::string m_strIntro;	//人物介绍，限制一定字数
+
+	//单位属性
 	std::string m_strKind;		//兵种
 	eAttackType m_eAttackType;		//攻击类型
-	int m_nAttack;		//攻击力
+	int m_nAttack;		//物理攻击
 	int m_nDefend;	//防御力
+	int m_nSkillDamage;	//法术攻击
 	float m_fCrit;			//暴击概率
 	float m_fDodge;	//闪避概率(防御概率)
 	int m_nHP;				//生命值

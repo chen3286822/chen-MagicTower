@@ -257,8 +257,8 @@ bool App::AppRender()
 			MapManager::sInstance().Render();
 			DrawMouseRect();
 			CreatureManager::sInstance().Render();
-			TipWnd::sInstance().Render();
 			UISystem::sInstance().Render();
+			TipWnd::sInstance().Render();
 			SkillManager::sInstance().Render();
 			MapManager::sInstance().GetCurrentMap()->RenderTitle();
 		}

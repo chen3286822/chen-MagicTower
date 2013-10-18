@@ -39,6 +39,12 @@ enum eUIID
 	eUIID_VerticalButtonDisable = 20,
 	eUIID_Dialog = 21,
 	eUIID_WndSummary = 22,
+	eUIID_DefendIcon = 23,
+	eUIID_AttackIcon = 24,
+	eUIID_DodgeIcon = 25,
+	eUIID_SkillDamageIcon = 26,
+	eUIID_CritIcon = 27,
+	eUIID_MagicDefendIcon = 28,
 };
 
 enum eWindowID
@@ -430,6 +436,7 @@ public:
 	virtual void					Release(){}
 	virtual void					Render();
 	virtual void					Update(float dt){}
+	virtual void					OnMouseOver(float x,float y){}
 
 	hgeGUI*						GetContainer(){return m_pContainer;}
 

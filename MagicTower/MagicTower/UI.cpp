@@ -142,6 +142,16 @@ void UISystem::Update(float dt)
 			if (pWindow->m_pWindow->IsShow())
 			{
 				pWindow->m_pWindow->Update(dt);
+				if(pWindow->m_pWindow->IsOnControl())
+				{
+					float x,y;
+					HGE* hge = hgeCreate(HGE_VERSION);
+					hge->Input_GetMousePos(&x,&y);
+					hge->Release();
+					float offX = pWindow->m_pWindow->GetX();
+					float offY = pWindow->m_pWindow->GetY();
+					pWindow->m_pWindow->OnMouseOver(x-offX,y-offY);
+				}
 			}
 		}
 		pWindow = pWindow->m_pNext;

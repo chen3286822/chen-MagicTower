@@ -66,6 +66,10 @@ void Character::Init(int _Level,int _ID,int _Num,int _Action,Block _block)
 
 	//初始化单位属性(读配置+计算)
 	//测试，直接赋值
+	m_strIntro = "    张辽，原是吕布手下大将，白门楼之后投降曹操，成为曹操得力助手，与关羽交好。在逍遥津一役大败东吴，威名远扬。";
+	m_nForce = 50;
+	m_nIntelligence = 48;
+	m_nCharm = 20;
 	m_nHead = 1;
 	char name[50];
 	sprintf(name,"%d号小兵",m_nNum);
@@ -74,6 +78,7 @@ void Character::Init(int _Level,int _ID,int _Num,int _Action,Block _block)
 	m_eAttackType = eAttackType_Normal;
 	m_nAttack = 5;
 	m_nDefend = 2;
+	m_nSkillDamage = 3;
 	m_fCrit = 0.8f;
 	m_fDodge = 0.2f;
 	m_nHP = 10;

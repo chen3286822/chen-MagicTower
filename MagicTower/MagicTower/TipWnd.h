@@ -64,6 +64,8 @@ private:
 	int m_OffLeft,m_OffRight,m_OffTop,m_OffBottom;	//tip窗口上下左右预留的空白位置
 	bool m_Show;	//是否显示tip窗口
 	int m_XPos,m_YPos;	//显示tip窗口时所在的格子，用于固定tip窗口位置
+
+	void CalTipSizeAndRender(bool bRend=false);		//预先计算窗口大小，也可以直接绘制
 };
 
 

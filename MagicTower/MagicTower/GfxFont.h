@@ -66,6 +66,8 @@ public:
 		m_nKerningWidth    = 0;
 		m_nKerningHeight= 0;
 
+		m_fLimitWidth = -1;
+
 		m_pSprite = new hgeSprite(0, 0, 0, 0, 0);
 		m_pSprite->SetColor(ARGB(255, 255, 255, 255));
 	}
@@ -82,6 +84,14 @@ public:
 	}
 
 public:
+	void SetTextWidth(float width)
+	{
+		if(width > m_nFontSize || width == -1)
+			m_fLimitWidth = width;
+	}
+	
+	float GetTextWidth(){return m_fLimitWidth;}
+
 	// 渲染文本
 	virtual void    Print( float x, float y, const char *format, ... )
 	{
@@ -107,6 +117,12 @@ public:
 				unsigned int idx = GetGlyphByCharacter(*text);
 				if (idx > 0)
 				{
+					//换行
+					if(m_fLimitWidth!=-1 && offsetX - x >= m_fLimitWidth)
+					{
+						offsetY += (m_nFontSize + m_nKerningHeight);
+						offsetX = x;
+					}
 					m_pSprite->SetTexture(m_Glyphs[idx].t);
 					m_pSprite->SetTextureRect(0, 0, m_Glyphs[idx].w, m_Glyphs[idx].h);
 					m_pSprite->Render(offsetX - m_Glyphs[idx].x, offsetY - m_Glyphs[idx].y);
@@ -330,6 +346,8 @@ private:
 	float                m_nFontSize;
 	float                m_nKerningWidth;
 	float                m_nKerningHeight;
+
+	float				 m_fLimitWidth;	//限制文本宽度
 
 	HGE*                m_pHGE;
 	hgeSprite*            m_pSprite;
