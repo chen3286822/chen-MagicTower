@@ -276,6 +276,12 @@ struct  tagMapObject
 };
 typedef struct tagMapObject MapObject;
 
+enum eAlign
+{
+	eAlign_Left,
+	eAlign_Center,
+	eAlign_Right,
+};
 
 enum eDirection
 {
@@ -428,5 +434,6 @@ eRButtonState g_getRButtonState(HGE* hge);
 int g_getTerrainCost(int terrain);	//根据地形取得消耗
 int g_RandomInt(int start,int end);	//从start 到end中选取随机数，范围[start,end]
 void g_debugString(char* file,char* func,int line,char* msg="");	//错误输出
+void g_getAlignString(char* src,int setWitdh,eAlign alignType,eFontType type,eFontSize size);	//根据对齐方式来格式化字符串
 
 #endif

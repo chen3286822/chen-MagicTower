@@ -79,6 +79,7 @@ void Character::Init(int _Level,int _ID,int _Num,int _Action,Block _block)
 	m_nAttack = 5;
 	m_nDefend = 2;
 	m_nSkillDamage = 3;
+	m_nSkillDefend = 2;
 	m_fCrit = 0.8f;
 	m_fDodge = 0.2f;
 	m_nHP = 10;

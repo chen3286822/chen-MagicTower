@@ -30,8 +30,12 @@ public:
 private:
 	Character* m_pBindChar;
 	hgeSprite* m_pHead;		//头像
+
 	hgeAnimation* m_pAnim;	//兵种
 	hgeSprite* m_pIcons[6];	//6项属性的图标
+	hgeSprite* m_pWeapon; //武器栏
+	hgeSprite* m_pCloth;		//盔甲栏
+	hgeSprite* m_pEquip;		//装备栏
 
 	int m_nShowType;	//应该显示哪页内容
 
@@ -39,6 +43,7 @@ private:
 	UIButton* m_pArmsButton;	//查看兵种
 	UIButton* m_pSkillButton;		//查看技能
 	UIButton* m_pEquipButton;	//查看装备
+	static std::string m_sStrAttr[6];		//属性描述
 };
 
 

@@ -18,8 +18,8 @@ void TipWnd::Clear()
 	m_vStringLine.clear();
 	m_OffX = 0;
 	m_OffY = 0;
-	m_Width = 50;	//最小限制，以免不显示tip窗口
-	m_Height = 50;
+	m_Width = 0;	//最小限制，以免不显示tip窗口
+	m_Height = 0;
 	m_LastX = 0;
 	m_LastY = 0;
 	m_OffLeft = m_OffRight = 5;
@@ -63,6 +63,7 @@ void TipWnd::CalTipSizeAndRender(bool bRend)
 	{
 		m_LastX = m_OffX;
 		m_LastY = m_OffY;
+		//m_Height = 0;
 		for (VStringLine::iterator it=m_vStringLine.begin();it!=m_vStringLine.end();it++)
 		{
 			GfxFont* font = FontManager::sInstance().GetFont(FontAttr(it->fontType,it->size));

@@ -5,6 +5,10 @@
 #include "App.h"
 #include "TipWnd.h"
 
+std::string WndSummary::m_sStrAttr[6] = {"物理攻击，普通攻击期望造成的伤害","技能攻击，技能攻击造成的伤害加成",
+	"物理防御，用于防御物理攻击","技能防御，用于防御技能伤害",
+	"闪避，躲闪敌方物理攻击的几率","暴击，对敌方造成两倍伤害的几率"};
+
 WndSummary::WndSummary() :
 UIWindow(TexManager::sInstance().GetUITex(eUIID_WndSummary),0,0,500,184,0,0)
 {
@@ -51,6 +55,10 @@ UIWindow(TexManager::sInstance().GetUITex(eUIID_WndSummary),0,0,500,184,0,0)
 	m_pIcons[3] = new hgeSprite(TexManager::sInstance().GetUITex(eUIID_MagicDefendIcon),0,0,28,26);	//法术防御
 	m_pIcons[4] = new hgeSprite(TexManager::sInstance().GetUITex(eUIID_DodgeIcon),0,0,28,27);	//闪避
 	m_pIcons[5] = new hgeSprite(TexManager::sInstance().GetUITex(eUIID_CritIcon),0,0,27,24);	//暴击
+	
+	m_pWeapon = new hgeSprite(TexManager::sInstance().GetUITex(eUIID_WeaponGrid),0,0,52,52);	//武器栏
+	m_pCloth = new hgeSprite(TexManager::sInstance().GetUITex(eUIID_ClothGrid),0,0,52,52);	//盔甲栏
+	m_pEquip = new hgeSprite(TexManager::sInstance().GetUITex(eUIID_EquipGrid),0,0,52,52);	//装备栏
 
 	m_nShowType = 1;
 }
@@ -65,6 +73,9 @@ WndSummary::~WndSummary()
 	gSafeDelete(m_pAnim);
 	for(int i=0;i<6;i++)
 		gSafeDelete(m_pIcons[i]);
+	gSafeDelete(m_pWeapon);
+	gSafeDelete(m_pCloth);
+	gSafeDelete(m_pEquip);
 }
 
 void	WndSummary::SetBindChar(Character* bindChar)
@@ -165,21 +176,28 @@ void WndSummary::Render()
 		float length = 100*((float)m_pBindChar->GetForce()/100.0f);
 		if(length >= 100)
 			length = 100;
-		App::sInstance().DrawRect(m_fPosX+191,m_fPosY+56,m_fPosX+189+length,m_fPosY+54+5,0xFF0000FF);
+		App::sInstance().DrawRect(m_fPosX+190,m_fPosY+55,m_fPosX+190+length,m_fPosY+55+5,0xFF0000FF);
 
 		font->Print(m_fPosX+160,m_fPosY+68,"智力");
 		App::sInstance().DrawBox(m_fPosX+190,m_fPosY+75,0xFF000000,1,100,5);
 		length = 100*((float)m_pBindChar->GetIntelligence()/100.0f);
 		if(length >= 100)
 			length = 100;
-		App::sInstance().DrawRect(m_fPosX+191,m_fPosY+76,m_fPosX+189+length,m_fPosY+74+5,0xFF00FF00);
+		App::sInstance().DrawRect(m_fPosX+190,m_fPosY+75,m_fPosX+190+length,m_fPosY+75+5,0xFF00FF00);
 
 		font->Print(m_fPosX+160,m_fPosY+88,"魅力");
 		App::sInstance().DrawBox(m_fPosX+190,m_fPosY+95,0xFF000000,1,100,5);
-		length = 100*((float)m_pBindChar->GetIntelligence()/100.0f);
+		length = 100*((float)m_pBindChar->GetCharm()/100.0f);
 		if(length >= 100)
 			length = 100;
-		App::sInstance().DrawRect(m_fPosX+191,m_fPosY+96,m_fPosX+189+length,m_fPosY+94+5,0xFFFFFFFF);
+		App::sInstance().DrawRect(m_fPosX+190,m_fPosY+95,m_fPosX+190+length,m_fPosY+95+5,0xFFFFFFFF);
+
+		font->Print(m_fPosX+160,m_fPosY+108,"经验");
+		App::sInstance().DrawBox(m_fPosX+190,m_fPosY+115,0xFF000000,1,100,5);
+		length = 100*((float)m_pBindChar->GetExp()/100.0f);
+		if(length >= 100)
+			length = 100;
+		App::sInstance().DrawRect(m_fPosX+190,m_fPosY+115,m_fPosX+190+length,m_fPosY+115+5,0xFFAC1FB4);
 
 		font->SetColor(0xFF0000FF);
 		font->Print(m_fPosX+295,m_fPosY+48,"%d",m_pBindChar->GetForce());
@@ -187,10 +205,14 @@ void WndSummary::Render()
 		font->Print(m_fPosX+295,m_fPosY+68,"%d",m_pBindChar->GetIntelligence());
 		font->SetColor(0xFFFFFFFF);
 		font->Print(m_fPosX+295,m_fPosY+88,"%d",m_pBindChar->GetCharm());
+		font->SetColor(0xFFAC1FB4);
+		font->Print(m_fPosX+295,m_fPosY+108,"Lv.%d",m_pBindChar->GetLevel());
 
 		//绘制介绍
+		font->SetColor(0xFFFFFFFF);
 		font->SetTextWidth(120);
 		font->Print(m_fPosX+350,m_fPosY+45,"%s",m_pBindChar->GetIntro());
+		font->SetTextWidth(-1);
 	}
 	//兵种介绍
 	else if (m_nShowType == 2)
@@ -204,30 +226,90 @@ void WndSummary::Render()
 		font->Print(m_fPosX+103,m_fPosY+121,"%s",m_pBindChar->GetKind().c_str());
 
 		//6项基本属性
-		for (int i=0;i<6;i++)
+		font = FontManager::sInstance().GetFont(FontAttr(eFontType_MSYaHei,eFontSize_FontMiddle));
+		font->SetColor(0xFF000000);
+		float attr[6] = {m_pBindChar->GetAttack(),m_pBindChar->GetSkillDamage(),m_pBindChar->GetDefend(),
+			m_pBindChar->GetSkillDefend(),m_pBindChar->GetDodge(),m_pBindChar->GetCrit()};
+		for (int i=0;i<3;i++)
 		{
-			m_pIcons[i]->Render(m_fPosX+160,m_fPosY+50+i*30);
+			for(int j=0;j<2;j++)
+			{
+				m_pIcons[j+i*2]->Render(m_fPosX+160+j*60,m_fPosY+50+i*30);
+				if(j + i*2 >= 4)
+					font->Print(m_fPosX+160+j*60+28,m_fPosY+52+i*30,"%d%%",(int)(100*attr[j+i*2]));
+				else
+					font->Print(m_fPosX+160+j*60+28,m_fPosY+52+i*30,"%.0f",attr[j+i*2]);
+			}
 		}
+
+		//3个物品栏
+		m_pWeapon->Render(m_fPosX+290,m_fPosY+52);
+		m_pCloth->Render(m_fPosX+360,m_fPosY+52);
+		m_pEquip->Render(m_fPosX+430,m_fPosY+52);
+		font = FontManager::sInstance().GetFont(FontAttr(eFontType_MSYaHei,eFontSize_FontBig));
+		font->SetColor(0xFFFFFFFF);
+		//测试装备名称
+		char temp[256];
+		sprintf(temp,"倚天剑");
+		g_getAlignString(temp,52,eAlign_Center,eFontType_MSYaHei,eFontSize_FontBig);
+		font->Print(m_fPosX+290,m_fPosY+105,temp);
+		font->Print(m_fPosX+360,m_fPosY+105,"昊天凯");
+		font->Print(m_fPosX+430,m_fPosY+105,"八卦盘");
 	}
 }
 
 void WndSummary::OnMouseOver(float x,float y)
 {
 	char temp[256] = {0};
-	if (x >= 90 && x < 90+FLOAT_PIC_SQUARE_WIDTH &&
-		y >= 50 && y < 50+FLOAT_PIC_SQUARE_WIDTH && m_nShowType==2)
+	if (m_nShowType == 1)
 	{
-		TipWnd::sInstance().Clear();
-		//测试，暂时没有加入兵种信息
-		sprintf(temp,"    近卫兵，重步兵的进阶兵种。拥有更加坚固的盔甲，以及更高的生命。");
-		TipWnd::sInstance().AddText(temp,0xFFFFFFFF,-1,-1,eFontType_MSYaHei,eFontSize_FontMiddle,true,60);
-		TipWnd::sInstance().SetShow(true);
-		TipWnd::sInstance().SetOffset(x+m_fPosX+15,y+m_fPosY+15);
+		if(x >= 190 && x < 290 && y >= 115 && y< 119)
+		{
+			TipWnd::sInstance().Clear();
+			sprintf(temp,"%d/%d",m_pBindChar->GetExp(),m_pBindChar->GetExpTotal());
+			TipWnd::sInstance().AddText(temp,0xFFFFFFFF,-1,-1,eFontType_MSYaHei,eFontSize_FontMiddle,false);
+			TipWnd::sInstance().SetShow(true);
+			TipWnd::sInstance().SetOffset(x+m_fPosX+15,y+m_fPosY+15);
+			return;
+		}
+	}
+	else if (m_nShowType == 2)
+	{
+		if(x >= 90 && x < 90+FLOAT_PIC_SQUARE_WIDTH &&
+		y >= 50 && y < 50+FLOAT_PIC_SQUARE_WIDTH)
+		{
+			TipWnd::sInstance().Clear();
+			//测试，暂时没有加入兵种信息
+			sprintf(temp,"    近卫兵，重步兵的进阶兵种。拥有更加坚固的盔甲，以及更高的生命。");
+			TipWnd::sInstance().AddText(temp,0xFFFFFFFF,-1,-1,eFontType_MSYaHei,eFontSize_FontMiddle,true,60);
+			TipWnd::sInstance().SetShow(true);
+			TipWnd::sInstance().SetOffset(x+m_fPosX+15,y+m_fPosY+15);
+			return;
+		}
+		else
+		{
+			for (int i=0;i<3;i++)
+			{
+				for(int j=0;j<2;j++)
+				{
+					if(x >= 160+j*60 && x < 160+j*60+26 && y >=50+i*30 && y < 50+i*30+25)
+					{
+						TipWnd::sInstance().Clear();
+						sprintf(temp,"%s",m_sStrAttr[j+i*2].c_str());
+						TipWnd::sInstance().AddText(temp,0xFFFFFFFF,-1,-1,eFontType_MSYaHei,eFontSize_FontMiddle,false);
+						TipWnd::sInstance().SetShow(true);
+						TipWnd::sInstance().SetOffset(x+m_fPosX+15,y+m_fPosY+15);
+						return;
+					}
+				}
+			}
+		}
 	}
 	else
 	{
 		TipWnd::sInstance().Clear();
 		TipWnd::sInstance().SetShow(false);
+		return;
 	}
 }
 

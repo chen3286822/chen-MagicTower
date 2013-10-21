@@ -239,7 +239,7 @@ void CreatureManager::ShowAttackRange(Character* creature)
 					offY = m_vPair[*it].y + charBlock.ypos;
 					if (offX >= 0 && offX < mapWidth && offY >= 0 && offY < mapLength)
 					{					
-						App::sInstance().DrawBox(MAP_OFF_X + offX*MAP_RECT,MAP_OFF_Y + offY*MAP_RECT,0xBFFF0000,8,MAP_RECT,MAP_RECT);
+						App::sInstance().DrawBox(MAP_OFF_X + offX*MAP_RECT+4,MAP_OFF_Y + offY*MAP_RECT+4,0xBFFF0000,8,MAP_RECT-8,MAP_RECT-8);
 					}
 				}
 			}
@@ -268,7 +268,7 @@ void CreatureManager::ShowSkillRange(int skillID)
 			{
 				offX = mouseBlock.xpos;
 				offY = mouseBlock.ypos;
-				App::sInstance().DrawBox(MAP_OFF_X + offX*MAP_RECT,MAP_OFF_Y + offY*MAP_RECT,color,8,MAP_RECT,MAP_RECT);
+				App::sInstance().DrawBox(MAP_OFF_X + offX*MAP_RECT+4,MAP_OFF_Y + offY*MAP_RECT+4,color,8,MAP_RECT-8,MAP_RECT-8);
 			}
 			else
 			{
@@ -278,7 +278,7 @@ void CreatureManager::ShowSkillRange(int skillID)
 					offY = m_vPair[*it].y + mouseBlock.ypos;
 					if (offX >= 0 && offX < mapWidth && offY >= 0 && offY < mapLength)
 					{					
-						App::sInstance().DrawBox(MAP_OFF_X + offX*MAP_RECT,MAP_OFF_Y + offY*MAP_RECT,color,8,MAP_RECT,MAP_RECT);
+						App::sInstance().DrawBox(MAP_OFF_X + offX*MAP_RECT+4,MAP_OFF_Y + offY*MAP_RECT+4,color,8,MAP_RECT-8,MAP_RECT-8);
 					}
 				}
 			}

@@ -43,12 +43,12 @@ void WndCharInfo::Render()
 
 	//»æÖÆHP
 	font->Print(m_fPosX+120,m_fPosY+80,"%d/%d",m_pBindChar->GetHP(),m_pBindChar->GetHPMax());
-	App::sInstance().DrawBox(m_fPosX+100,m_fPosY+95,0xFFFF0000,1,100,10);
+	App::sInstance().DrawBox(m_fPosX+100,m_fPosY+95,0xFFFF0000,1,100,8);
 	float length = 100*((float)m_pBindChar->GetHP()/(float)m_pBindChar->GetHPMax());
-	App::sInstance().DrawRect(m_fPosX+101,m_fPosY+96,m_fPosX+99+length,m_fPosY+94+10,0xFFFF0000);
+	App::sInstance().DrawRect(m_fPosX+100,m_fPosY+95,m_fPosX+100+length,m_fPosY+95+8,0xFFFF0000);
 	//»æÖÆMP
 	font->Print(m_fPosX+120,m_fPosY+110,"%d/%d",m_pBindChar->GetMP(),m_pBindChar->GetMPMax());
-	App::sInstance().DrawBox(m_fPosX+100,m_fPosY+125,0xFF0000FF,1,100,10);
+	App::sInstance().DrawBox(m_fPosX+100,m_fPosY+125,0xFF0000FF,1,100,8);
 	length = 100*((float)m_pBindChar->GetMP()/(float)m_pBindChar->GetMPMax());
-	App::sInstance().DrawRect(m_fPosX+101,m_fPosY+126,m_fPosX+99+length,m_fPosY+124+10,0xFF0000FF);
+	App::sInstance().DrawRect(m_fPosX+100,m_fPosY+125,m_fPosX+100+length,m_fPosY+125+8,0xFF0000FF);
 }

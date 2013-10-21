@@ -228,10 +228,10 @@ void App::DrawSmallRect(Block block,DWORD color)
 
 void App::DrawBox(int startX,int startY,DWORD color,int width,int boxWidth,int boxLength)
 {
-	DrawRect(startX,startY,	startX + boxWidth,startY + width,color);
-	DrawRect(startX,startY + width,startX + width,startY + boxLength - width,color);
-	DrawRect(startX + boxWidth - width,startY + width,startX+ boxWidth,startY + boxLength - width,color);
-	DrawRect(startX,startY + boxLength - width,startX + boxWidth,startY + boxLength,color);
+	DrawRect(startX-width,startY-width,	startX + boxWidth+width,startY,color);
+	DrawRect(startX-width,startY,startX,startY + boxLength,color);
+	DrawRect(startX + boxWidth,startY,startX+ boxWidth+width,startY + boxLength,color);
+	DrawRect(startX-width,startY + boxLength,startX + boxWidth+width,startY + boxLength+width,color);
 }
 
 bool App::AppRender()

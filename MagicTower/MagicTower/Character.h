@@ -124,6 +124,7 @@ public:
 	int&	GetAttack(){return m_nAttack;}
 	int&	GetDefend(){return m_nDefend;}
 	int&	GetSkillDamage(){return m_nSkillDamage;}
+	int&	GetSkillDefend(){return m_nSkillDefend;}
 	float&	GetCrit(){return m_fCrit;}
 	float&	GetDodge(){return m_fDodge;}
 	int&	GetHP(){return m_nHP;}
@@ -198,6 +199,7 @@ private:
 	int m_nAttack;		//物理攻击
 	int m_nDefend;	//防御力
 	int m_nSkillDamage;	//法术攻击
+	int m_nSkillDefend; //法术防御
 	float m_fCrit;			//暴击概率
 	float m_fDodge;	//闪避概率(防御概率)
 	int m_nHP;				//生命值

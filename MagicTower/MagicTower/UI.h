@@ -45,6 +45,9 @@ enum eUIID
 	eUIID_SkillDamageIcon = 26,
 	eUIID_CritIcon = 27,
 	eUIID_MagicDefendIcon = 28,
+	eUIID_WeaponGrid = 29,
+	eUIID_ClothGrid = 30,
+	eUIID_EquipGrid = 31,
 };
 
 enum eWindowID

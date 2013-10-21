@@ -1,5 +1,6 @@
 #include "commonTools.h"
 #include "GfxFont.h"
+#include "FontManager.h"
 #include <fstream>
 
 const unsigned char GfxFont::g_byAlphaLevel[65] = 
@@ -296,4 +297,31 @@ void g_debugString(char* file,char* func,int line,char* msg)
 
 	OutputDebugString(temp);
 	MessageBox(NULL,temp,"´íÎó",MB_OK);
+}
+
+void g_getAlignString(char* src,int setWitdh,eAlign alignType,eFontType type,eFontSize size)
+{
+	GfxFont* font = FontManager::sInstance().GetFont(FontAttr(type,size));
+	wchar_t out[256];
+	g_CTW(src,out);
+	int length = font->GetTextSize(out).cx;
+	if (setWitdh <= length)
+		return;
+
+	if(alignType == eAlign_Left)
+		return;
+	else if(alignType == eAlign_Center || alignType == eAlign_Right)
+	{
+		int preSpace = 0;
+		if(alignType == eAlign_Center)
+			preSpace = (setWitdh-length)/2;
+		else
+			preSpace = setWitdh - length;
+
+		std::string strSpace;
+		strSpace.assign(preSpace,' ');
+		strSpace.append(src);
+		sprintf(src,"%s",strSpace.c_str());
+		return;
+	}
 }
