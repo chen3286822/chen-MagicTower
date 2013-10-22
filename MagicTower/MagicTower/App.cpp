@@ -347,8 +347,8 @@ bool App::AppUpdate()
 				CreatureManager::sInstance().Strategy();
 				ActionProcess::sInstance().Update();
 				CreatureManager::sInstance().Update(dt);
-				TipWnd::sInstance().Update(dt);
 				UISystem::sInstance().Update(dt);
+				TipWnd::sInstance().Update(dt);				
 				SkillManager::sInstance().Update(dt);
 			}
 		}

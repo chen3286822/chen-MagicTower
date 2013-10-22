@@ -244,7 +244,7 @@ void TipWnd::Render()
 
 		for (int i=0;i<4;i++)
 		{
-			quad.v[i].col = 0xAF484848;
+			quad.v[i].col = 0xCF484848;
 			quad.v[i].z = 0.5;
 		}
 		quad.blend = BLEND_DEFAULT_Z;
@@ -434,5 +434,70 @@ void TipWnd::Update(float delta)
 			else
 				m_OffY = ypos + m_OffTop + MAP_OFF_Y;
 		}
+		else if (m_XPos == -1 && m_YPos == -1)
+		{
+			if(m_OffX + m_Width >= APP_WIDTH)
+				m_OffX = APP_WIDTH - m_Width;
+			else if (m_OffX < 0)
+				m_OffX = 0;
+		}
 	}
+}
+
+void TipWnd::ParseItem(Item item)
+{
+	char temp[256] = {0};
+	Clear();
+	sprintf(temp,"%s",item.m_strName.c_str());
+	AddText(temp,0xFFFFFFFF,-1,-1,eFontType_MSYaHei,eFontSize_FontMiddle,true);
+	if (item.m_nType == 2)
+		sprintf(temp,"武器");
+	else if(item.m_nType == 3)
+		sprintf(temp,"盔甲");
+	else if(item.m_nType == 4)
+		sprintf(temp,"装备");
+	else
+		sprintf(temp,"消耗品");
+	AddText(temp,0xFF00FF00,-1,-1,eFontType_MSYaHei,eFontSize_FontSmall,true);
+	AddEmptyLine();
+	for (std::map<int,int>::iterator it=item.m_mEffect.begin();it!=item.m_mEffect.end();it++)
+	{
+		switch(it->first)
+		{
+		case 1:
+			sprintf(temp,"生命恢复 +%d点",it->second);
+			break;
+		case 2:
+			sprintf(temp,"魔法恢复 +%d点",it->second);
+			break;
+		case 3:
+			sprintf(temp,"物理攻击 +%d",it->second);
+			break;
+		case 4:
+			sprintf(temp,"物理防御 +%d",it->second);
+			break;
+		case 5:
+			sprintf(temp,"暴击增加 +%d%%",it->second);
+			break;
+		case 6:
+			sprintf(temp,"闪避增加 +%d%%",it->second);
+			break;
+		case 7:
+			sprintf(temp,"攻击范围增加，仅适用于未扩展的攻击范围类型");
+			break;
+		case 8:
+			sprintf(temp,"移动力 +%d点",it->second);
+			break;
+		default:
+			sprintf(temp,"神奇的未知属性");
+			break;
+		}
+		AddText(temp,0xFF0000FF,-1,-1,eFontType_MSYaHei,eFontSize_FontMiddle,false);
+		AddEmptyLine();
+	}
+
+	AddEmptyLine();
+	sprintf(temp,"    %s",item.m_strInfo.c_str());
+	AddText(temp,0xFF00FF00,-1,-1,eFontType_MSYaHei,eFontSize_FontMiddle,true,100);
+	SetShow(true);
 }

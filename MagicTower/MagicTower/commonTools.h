@@ -265,6 +265,16 @@ enum eAttackType
 	eAttackType_Magic,			//魔法攻击
 };
 
+//装备栏位
+enum eEquipGrid
+{
+	eEquipGrid_Weapon = 0,
+	eEquipGrid_Cloth = 1,
+	eEquipGrid_Equip = 2,
+
+	eEquipGrid_TotalEquip,
+};
+
 struct  tagMapObject
 {
 	hgeSprite* spr;	//物体的贴图

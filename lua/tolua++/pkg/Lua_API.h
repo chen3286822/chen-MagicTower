@@ -1,6 +1,6 @@
 /*
 ** Lua binding: lua
-** Generated automatically by tolua++-1.0.92 on 10/17/13 11:37:09.
+** Generated automatically by tolua++-1.0.92 on 10/22/13 11:15:26.
 */
 
 #ifndef __cplusplus
@@ -943,6 +943,71 @@ static int tolua_lua_Character_Init00(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* method: SetHead of class  Character */
+#ifndef TOLUA_DISABLE_tolua_lua_Character_SetHead00
+static int tolua_lua_Character_SetHead00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Character",0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,3,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Character* self = (Character*)  tolua_tousertype(tolua_S,1,0);
+  int head = ((int)  tolua_tonumber(tolua_S,2,0));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'SetHead'", NULL);
+#endif
+  {
+   self->SetHead(head);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'SetHead'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: GetHead of class  Character */
+#ifndef TOLUA_DISABLE_tolua_lua_Character_GetHead00
+static int tolua_lua_Character_GetHead00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Character",0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Character* self = (Character*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'GetHead'", NULL);
+#endif
+  {
+   int tolua_ret = (int)  self->GetHead();
+   tolua_pushnumber(tolua_S,(lua_Number)tolua_ret);
+  }
+ }
+ return 1;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'GetHead'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* method: SetMoveAbility of class  Character */
 #ifndef TOLUA_DISABLE_tolua_lua_Character_SetMoveAbility00
 static int tolua_lua_Character_SetMoveAbility00(lua_State* tolua_S)
@@ -1509,6 +1574,74 @@ static int tolua_lua_Character_Appear00(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* method: AddEquip of class  Character */
+#ifndef TOLUA_DISABLE_tolua_lua_Character_AddEquip00
+static int tolua_lua_Character_AddEquip00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Character",0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,3,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,4,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Character* self = (Character*)  tolua_tousertype(tolua_S,1,0);
+  int grid = ((int)  tolua_tonumber(tolua_S,2,0));
+  int equipID = ((int)  tolua_tonumber(tolua_S,3,0));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'AddEquip'", NULL);
+#endif
+  {
+   self->AddEquip(grid,equipID);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'AddEquip'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: RemoveEquip of class  Character */
+#ifndef TOLUA_DISABLE_tolua_lua_Character_RemoveEquip00
+static int tolua_lua_Character_RemoveEquip00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Character",0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,3,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Character* self = (Character*)  tolua_tousertype(tolua_S,1,0);
+  int grid = ((int)  tolua_tonumber(tolua_S,2,0));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'RemoveEquip'", NULL);
+#endif
+  {
+   self->RemoveEquip(grid);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'RemoveEquip'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* method: AddEnemy of class  CreatureManager */
 #ifndef TOLUA_DISABLE_tolua_lua_CreatureManager_AddEnemy00
 static int tolua_lua_CreatureManager_AddEnemy00(lua_State* tolua_S)
@@ -1890,6 +2023,8 @@ TOLUA_API int tolua_lua_open (lua_State* tolua_S)
   tolua_cclass(tolua_S,"Character","Character","",NULL);
   tolua_beginmodule(tolua_S,"Character");
    tolua_function(tolua_S,"Init",tolua_lua_Character_Init00);
+   tolua_function(tolua_S,"SetHead",tolua_lua_Character_SetHead00);
+   tolua_function(tolua_S,"GetHead",tolua_lua_Character_GetHead00);
    tolua_function(tolua_S,"SetMoveAbility",tolua_lua_Character_SetMoveAbility00);
    tolua_function(tolua_S,"SetCamp",tolua_lua_Character_SetCamp00);
    tolua_function(tolua_S,"SetName",tolua_lua_Character_SetName00);
@@ -1907,6 +2042,8 @@ TOLUA_API int tolua_lua_open (lua_State* tolua_S)
    tolua_function(tolua_S,"MoveTo",tolua_lua_Character_MoveTo00);
    tolua_function(tolua_S,"Disappear",tolua_lua_Character_Disappear00);
    tolua_function(tolua_S,"Appear",tolua_lua_Character_Appear00);
+   tolua_function(tolua_S,"AddEquip",tolua_lua_Character_AddEquip00);
+   tolua_function(tolua_S,"RemoveEquip",tolua_lua_Character_RemoveEquip00);
   tolua_endmodule(tolua_S);
   tolua_cclass(tolua_S,"CreatureManager","CreatureManager","",NULL);
   tolua_beginmodule(tolua_S,"CreatureManager");

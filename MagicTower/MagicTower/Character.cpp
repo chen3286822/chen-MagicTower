@@ -5,7 +5,6 @@
 #include "CreatureManager.h"
 #include "UI.h"
 #include "ActionProcess.h"
-#include "ConfigManager.h"
 
 
 Character::Character(void)
@@ -1051,7 +1050,7 @@ bool	Character::CanUseItem(Character* target)
 	return true;
 }
 
-void	Character::ItemEffect(Item item)
+void	Character::ItemEffect(Item item,bool bAdd)
 {
 	if (item.m_nType == 1)	//可使用物品
 	{
@@ -1093,18 +1092,100 @@ void	Character::ItemEffect(Item item)
 					{
 					case eAttackRange_Cross:
 						m_eAttackRange = eAttackRange_CrossEx;
+						break;
 					case eAttackRange_Box:
 						m_eAttackRange = eAttackRange_BoxEx;
+						break;
 					case eAttackRange_BigCross:
 						m_eAttackRange = eAttackRange_BigCrossEx;
+						break;
 					case eAttackRange_Arrow:
 						m_eAttackRange = eAttackRange_ArrowEx;
+						break;
 					}
 					//其他范围无法加成
 				}
 				break;
 			case 8:	//移动力永久加成
 				m_nMoveAbility += it->second;
+				break;
+			}
+		}
+	}
+	else if (item.m_nType >= 2 && item.m_nType <= 4)		//装备
+	{
+		for (std::map<int,int>::iterator it=item.m_mEffect.begin();it!=item.m_mEffect.end();it++)
+		{
+			int value = bAdd?it->second:(-1*it->second);
+			switch(it->first)
+			{
+			case 3:
+				m_nAttack += value;
+				if(m_nAttack <= 0)
+					m_nAttack = 0;
+				break;
+			case 4:
+				m_nDefend += value;
+				if(m_nDefend <= 0)
+					m_nDefend = 0;
+				break;
+			case 5:	//暴击永久加成
+				m_fCrit += value;
+				if(m_fCrit <= 0)
+					m_fCrit = 0;
+				break;
+			case 6:	//闪避永久加成
+				m_fDodge += value;
+				if(m_fDodge <= 0)
+					m_fDodge = 0;
+				break;
+			case 7:	//攻击范围永久加成
+				{
+					//有bug，比如我是eAttackRange_CrossEx，装备了加成范围的装备，没有实际加成
+					//然后卸下装备，却会将我的范围变成eAttackRange_Cross,需要添加一套
+					//加成属性变量，不能直接将属性算在单位自身属性上
+					switch(m_eAttackRange)
+					{
+					case eAttackRange_Cross:
+						if(bAdd)
+							m_eAttackRange = eAttackRange_CrossEx;
+						break;
+					case eAttackRange_Box:
+						if(bAdd)
+							m_eAttackRange = eAttackRange_BoxEx;
+						break;
+					case eAttackRange_BigCross:
+						if(bAdd)
+							m_eAttackRange = eAttackRange_BigCrossEx;
+						break;
+					case eAttackRange_Arrow:
+						if(bAdd)
+							m_eAttackRange = eAttackRange_ArrowEx;
+						break;
+					case eAttackRange_CrossEx:
+						if(!bAdd)
+							m_eAttackRange = eAttackRange_Cross;
+						break;
+					case eAttackRange_BoxEx:
+						if(!bAdd)
+							m_eAttackRange = eAttackRange_Box;
+						break;
+					case eAttackRange_BigCrossEx:
+						if(!bAdd)
+							m_eAttackRange = eAttackRange_BigCross;
+						break;
+					case eAttackRange_ArrowEx:
+						if(!bAdd)
+							m_eAttackRange = eAttackRange_Arrow;
+						break;
+					}
+					//其他范围无法加成
+				}
+				break;
+			case 8:	//移动力永久加成
+				m_nMoveAbility += value;
+				if(m_nMoveAbility <= 1)
+					m_nMoveAbility = 1;
 				break;
 			}
 		}
@@ -1295,4 +1376,49 @@ bool Character::IsInAction()
 		}
 	}
 	return true;
+}
+
+void Character::AddEquip(int grid,int equipID)
+{
+	if(grid >= eEquipGrid_TotalEquip)
+		return;
+
+	//已经有装备了
+	if(m_iEquip[grid].m_nID != -1)
+		return;
+
+	std::map<int,Item>::iterator it = ConfigManager::sInstance().GetItemInfo().find(equipID);
+	if(it!=ConfigManager::sInstance().GetItemInfo().end())
+	{
+		m_iEquip[grid] = it->second;
+
+		//属性加成
+		ItemEffect(it->second,true);
+	}
+}
+
+void Character::RemoveEquip(int grid)
+{
+	if(grid >= eEquipGrid_TotalEquip)
+		return;
+
+	//移除属性
+	if (m_iEquip[grid].m_nID != -1)
+	{
+		ItemEffect(m_iEquip[grid],false);
+	}
+
+	m_iEquip[grid].m_nID = -1;
+	m_iEquip[grid].m_mEffect.clear();
+	m_iEquip[grid].m_nType = -1;
+	m_iEquip[grid].m_strName = "";
+}
+
+Item Character::GetEquip(int grid)
+{
+	Item temp;
+	if(grid >= eEquipGrid_TotalEquip)
+		return temp;
+
+	return m_iEquip[grid];
 }

@@ -74,19 +74,22 @@ struct Item
 	std::string m_strName;					//物品名称
 	int m_nType;										//物品类型
 	std::map<int,int> m_mEffect;		//物品效果
+	std::string m_strInfo;						//描述信息
 	Item()
 	{
 		m_nID = -1;
 		m_strName = "";
 		m_nType = -1;
 		m_mEffect.clear();
+		m_strInfo = "";
 	}
-	Item(int id,std::string name,int type,std::map<int,int> effect)
+	Item(int id,std::string name,int type,std::map<int,int> effect,std::string info)
 	{
 		m_nID = id;
 		m_strName = name;
 		m_nType = type;
 		m_mEffect = effect;
+		m_strInfo = info;
 	}
 	Item& operator=(const Item& item)
 	{
@@ -94,6 +97,7 @@ struct Item
 		m_strName = item.m_strName;
 		m_nType = item.m_nType;
 		m_mEffect = item.m_mEffect;
+		m_strInfo = item.m_strInfo;
 		return *this;
 	}
 };
@@ -243,9 +247,10 @@ public:
 				std::string name = "";
 				int type = -1;
 				int num = 0;
+				std::string info = "";
 				std::stringstream ssteam(mit->second);
 				char cTemp;
-				ssteam >> name >> cTemp >> type >> cTemp >> num >> cTemp;
+				ssteam >> name >> cTemp >> type >> cTemp >> info >> cTemp >> num >> cTemp;
 				int effectType = -1;
 				int effectValue = -1;
 				std::map<int,int> effect;
@@ -254,7 +259,7 @@ public:
 					ssteam >> effectType >> cTemp >> effectValue >> cTemp;
 					effect[effectType] = effectValue;
 				}
-				m_mItemInfo[ID] = Item(ID,name,type,effect);
+				m_mItemInfo[ID] = Item(ID,name,type,effect,info);
 			}
 		}
 	}

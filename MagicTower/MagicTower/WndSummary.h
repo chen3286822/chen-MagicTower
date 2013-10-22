@@ -13,7 +13,6 @@ public:
 		eControlID_CharButton = 1,
 		eControlID_ArmsButton,
 		eControlID_SkillButton,
-		eControlID_EquipButton,
 	};
 
 	WndSummary();
@@ -33,16 +32,16 @@ private:
 
 	hgeAnimation* m_pAnim;	//兵种
 	hgeSprite* m_pIcons[6];	//6项属性的图标
-	hgeSprite* m_pWeapon; //武器栏
-	hgeSprite* m_pCloth;		//盔甲栏
-	hgeSprite* m_pEquip;		//装备栏
+	hgeSprite* m_pWeaponGrid; //武器栏
+	hgeSprite* m_pClothGrid;		//盔甲栏
+	hgeSprite* m_pEquipGrid;		//装备栏
+	hgeSprite* m_pEquip[eEquipGrid_TotalEquip];	//装备图标 
 
 	int m_nShowType;	//应该显示哪页内容
 
 	UIButton* m_pCharButton;	//查看人物
 	UIButton* m_pArmsButton;	//查看兵种
 	UIButton* m_pSkillButton;		//查看技能
-	UIButton* m_pEquipButton;	//查看装备
 	static std::string m_sStrAttr[6];		//属性描述
 };
 

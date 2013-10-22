@@ -11,6 +11,9 @@ function PreFight1()
 	player1:SetCamp(0);
 	player1:SetMoveAbility(4,map);
 	player1:SetName("уеаи");
+	player1:AddEquip(0,23);
+	player1:AddEquip(1,37);
+	player1:AddEquip(2,56);
 	local creaMgr = GetCreature();
 	creaMgr:AddFriend(player1);
 

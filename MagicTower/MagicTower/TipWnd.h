@@ -2,6 +2,7 @@
 #define TIP_WND_H
 
 #include "commonTools.h"
+#include "ConfigManager.h"
 
 struct StringLine
 {
@@ -56,6 +57,7 @@ public:
 	bool IsShow(){return m_Show;}
 	void SetPos(int xpos,int ypos){m_XPos=xpos;m_YPos=ypos;}
 
+	void ParseItem(Item item);
 private:
 	VStringLine m_vStringLine;
 	float m_OffX,m_OffY;	//绘制的tip相对于父窗口的偏移

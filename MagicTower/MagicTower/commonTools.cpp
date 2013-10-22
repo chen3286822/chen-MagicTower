@@ -312,11 +312,14 @@ void g_getAlignString(char* src,int setWitdh,eAlign alignType,eFontType type,eFo
 		return;
 	else if(alignType == eAlign_Center || alignType == eAlign_Right)
 	{
+		g_CTW(" ",out);
+		int spaceLength = font->GetTextSize(out).cx;
 		int preSpace = 0;
 		if(alignType == eAlign_Center)
 			preSpace = (setWitdh-length)/2;
 		else
 			preSpace = setWitdh - length;
+		preSpace = preSpace/spaceLength;
 
 		std::string strSpace;
 		strSpace.assign(preSpace,' ');

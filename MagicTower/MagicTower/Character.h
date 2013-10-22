@@ -2,6 +2,7 @@
 #include "commonTools.h"
 #include "SkillManager.h"
 #include "Scene.h"
+#include "ConfigManager.h"
 
 /*
 单位状态变化：
@@ -148,7 +149,12 @@ public:
 	//物品
 	int&	GetUseItem(){return m_nUseItem;}
 	bool	CanUseItem(Character* target);
-	void	ItemEffect(Item item);
+	void	ItemEffect(Item item,bool bAdd=true);
+
+	//装备
+	void AddEquip(int grid,int equipID);
+	void RemoveEquip(int grid);
+	Item GetEquip(int grid);
 
 	//剧情动作相关
 	void PushAction(NewAction action);
@@ -231,6 +237,9 @@ private:
 
 	//剧情动作
 	NewAction m_iAction; //剧情动作
+
+	//装备
+	Item m_iEquip[eEquipGrid_TotalEquip];
 };
 
 

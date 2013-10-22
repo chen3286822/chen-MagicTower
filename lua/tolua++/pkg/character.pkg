@@ -22,4 +22,7 @@ public:
 	void MoveTo(int x,int y);
 	void Disappear();
 	void Appear(int dir,int x,int y);
+	
+	void AddEquip(int grid,int equipID);
+	void RemoveEquip(int grid);
 }

@@ -15,21 +15,17 @@ UIWindow(TexManager::sInstance().GetUITex(eUIID_WndSummary),0,0,500,184,0,0)
 	m_pContainer = new hgeGUI;
 	m_pCharButton = new UIButton(eControlID_CharButton,m_fPosX+50,m_fPosY+150,105,27,TexManager::sInstance().GetUITex(eUIID_SmallButtonUp),TexManager::sInstance().GetUITex(eUIID_SmallButtonDown),TexManager::sInstance().GetUITex(eUIID_SmallButtonOn),TexManager::sInstance().GetUITex(eUIID_SmallButtonDisable),0,0);
 	m_pArmsButton = new UIButton(eControlID_ArmsButton,m_fPosX+165,m_fPosY+150,105,27,TexManager::sInstance().GetUITex(eUIID_SmallButtonUp),TexManager::sInstance().GetUITex(eUIID_SmallButtonDown),TexManager::sInstance().GetUITex(eUIID_SmallButtonOn),TexManager::sInstance().GetUITex(eUIID_SmallButtonDisable),0,0);
-	m_pEquipButton = new UIButton(eControlID_EquipButton,m_fPosX+280,m_fPosY+150,105,27,TexManager::sInstance().GetUITex(eUIID_SmallButtonUp),TexManager::sInstance().GetUITex(eUIID_SmallButtonDown),TexManager::sInstance().GetUITex(eUIID_SmallButtonOn),TexManager::sInstance().GetUITex(eUIID_SmallButtonDisable),0,0);
-	m_pSkillButton = new UIButton(eControlID_SkillButton,m_fPosX+395,m_fPosY+150,105,27,TexManager::sInstance().GetUITex(eUIID_SmallButtonUp),TexManager::sInstance().GetUITex(eUIID_SmallButtonDown),TexManager::sInstance().GetUITex(eUIID_SmallButtonOn),TexManager::sInstance().GetUITex(eUIID_SmallButtonDisable),0,0);
+	m_pSkillButton = new UIButton(eControlID_SkillButton,m_fPosX+280,m_fPosY+150,105,27,TexManager::sInstance().GetUITex(eUIID_SmallButtonUp),TexManager::sInstance().GetUITex(eUIID_SmallButtonDown),TexManager::sInstance().GetUITex(eUIID_SmallButtonOn),TexManager::sInstance().GetUITex(eUIID_SmallButtonDisable),0,0);
 
 
-	m_pCharButton->OffsetX = 50;
+	m_pCharButton->OffsetX = 80;
 	m_pCharButton->OffsetY = 150;
-	m_pArmsButton->OffsetX = 165;
+	m_pArmsButton->OffsetX = 205;
 	m_pArmsButton->OffsetY = 150;
-	m_pEquipButton->OffsetX = 280;
-	m_pEquipButton->OffsetY = 150;
-	m_pSkillButton->OffsetX = 395;
+	m_pSkillButton->OffsetX = 330;
 	m_pSkillButton->OffsetY = 150;
 	m_pContainer->AddCtrl(m_pCharButton);
 	m_pContainer->AddCtrl(m_pArmsButton);
-	m_pContainer->AddCtrl(m_pEquipButton);
 	m_pContainer->AddCtrl(m_pSkillButton);
 
 	m_pCharButton->SetFont(eFontType_MSYaHei,eFontSize_FontMiddle);
@@ -37,9 +33,6 @@ UIWindow(TexManager::sInstance().GetUITex(eUIID_WndSummary),0,0,500,184,0,0)
 
 	m_pArmsButton->SetFont(eFontType_MSYaHei,eFontSize_FontMiddle);
 	m_pArmsButton->SetText("兵种介绍",0xFF9D988E);
-
-	m_pEquipButton->SetFont(eFontType_MSYaHei,eFontSize_FontMiddle);
-	m_pEquipButton->SetText("查看装备",0xFF9D988E);
 
 	m_pSkillButton->SetFont(eFontType_MSYaHei,eFontSize_FontMiddle);
 	m_pSkillButton->SetText("查看技能",0xFF9D988E);
@@ -56,9 +49,14 @@ UIWindow(TexManager::sInstance().GetUITex(eUIID_WndSummary),0,0,500,184,0,0)
 	m_pIcons[4] = new hgeSprite(TexManager::sInstance().GetUITex(eUIID_DodgeIcon),0,0,28,27);	//闪避
 	m_pIcons[5] = new hgeSprite(TexManager::sInstance().GetUITex(eUIID_CritIcon),0,0,27,24);	//暴击
 	
-	m_pWeapon = new hgeSprite(TexManager::sInstance().GetUITex(eUIID_WeaponGrid),0,0,52,52);	//武器栏
-	m_pCloth = new hgeSprite(TexManager::sInstance().GetUITex(eUIID_ClothGrid),0,0,52,52);	//盔甲栏
-	m_pEquip = new hgeSprite(TexManager::sInstance().GetUITex(eUIID_EquipGrid),0,0,52,52);	//装备栏
+	m_pWeaponGrid = new hgeSprite(TexManager::sInstance().GetUITex(eUIID_WeaponGrid),0,0,52,52);	//武器栏
+	m_pClothGrid = new hgeSprite(TexManager::sInstance().GetUITex(eUIID_ClothGrid),0,0,52,52);	//盔甲栏
+	m_pEquipGrid = new hgeSprite(TexManager::sInstance().GetUITex(eUIID_EquipGrid),0,0,52,52);	//装备栏
+
+	for (int i=0;i<eEquipGrid_TotalEquip;i++)
+	{
+		m_pEquip[i] = NULL;
+	}
 
 	m_nShowType = 1;
 }
@@ -67,15 +65,16 @@ WndSummary::~WndSummary()
 {
 	m_pContainer->DelCtrl(eControlID_CharButton);
 	m_pContainer->DelCtrl(eControlID_ArmsButton);
-	m_pContainer->DelCtrl(eControlID_EquipButton);
 	m_pContainer->DelCtrl(eControlID_SkillButton);
 	gSafeDelete(m_pHead);
 	gSafeDelete(m_pAnim);
 	for(int i=0;i<6;i++)
 		gSafeDelete(m_pIcons[i]);
-	gSafeDelete(m_pWeapon);
-	gSafeDelete(m_pCloth);
-	gSafeDelete(m_pEquip);
+	gSafeDelete(m_pWeaponGrid);
+	gSafeDelete(m_pClothGrid);
+	gSafeDelete(m_pEquipGrid);
+	for (int i=0;i<eEquipGrid_TotalEquip;i++)
+		gSafeDelete(m_pEquip[i]);
 }
 
 void	WndSummary::SetBindChar(Character* bindChar)
@@ -95,7 +94,6 @@ void	WndSummary::SetBindChar(Character* bindChar)
 
 		m_pCharButton->ResetPosition(m_fPosX+m_pCharButton->OffsetX,m_fPosY+m_pCharButton->OffsetY);
 		m_pArmsButton->ResetPosition(m_fPosX+m_pArmsButton->OffsetX,m_fPosY+m_pArmsButton->OffsetY);
-		m_pEquipButton->ResetPosition(m_fPosX+m_pEquipButton->OffsetX,m_fPosY+m_pEquipButton->OffsetY);
 		m_pSkillButton->ResetPosition(m_fPosX+m_pSkillButton->OffsetX,m_fPosY+m_pSkillButton->OffsetY);
 	}
 }
@@ -107,7 +105,6 @@ void WndSummary::SetRenderPositon(float _x,float _y)
 
 	m_pCharButton->ResetPosition(m_fPosX+m_pCharButton->OffsetX,m_fPosY+m_pCharButton->OffsetY);
 	m_pArmsButton->ResetPosition(m_fPosX+m_pArmsButton->OffsetX,m_fPosY+m_pArmsButton->OffsetY);
-	m_pEquipButton->ResetPosition(m_fPosX+m_pEquipButton->OffsetX,m_fPosY+m_pEquipButton->OffsetY);
 	m_pSkillButton->ResetPosition(m_fPosX+m_pSkillButton->OffsetX,m_fPosY+m_pSkillButton->OffsetY);
 }
 
@@ -136,16 +133,13 @@ void WndSummary::Update(float dt)
 			}
 			else			
 				m_pAnim->SetTexture(TexManager::sInstance().GetTex(m_pBindChar->GetID())[eActionTex_Walk]);
-			m_pContainer->Leave();
-		}
-		else if (id == eControlID_EquipButton)
-		{
-			m_nShowType = 3;
+
+
 			m_pContainer->Leave();
 		}
 		else if (id == eControlID_SkillButton)
 		{
-			m_nShowType = 4;
+			m_nShowType = 3;
 			m_pContainer->Leave();
 		}
 		if(m_pAnim)
@@ -243,18 +237,28 @@ void WndSummary::Render()
 		}
 
 		//3个物品栏
-		m_pWeapon->Render(m_fPosX+290,m_fPosY+52);
-		m_pCloth->Render(m_fPosX+360,m_fPosY+52);
-		m_pEquip->Render(m_fPosX+430,m_fPosY+52);
+		m_pWeaponGrid->Render(m_fPosX+290,m_fPosY+52);
+		m_pClothGrid->Render(m_fPosX+360,m_fPosY+52);
+		m_pEquipGrid->Render(m_fPosX+430,m_fPosY+52);
 		font = FontManager::sInstance().GetFont(FontAttr(eFontType_MSYaHei,eFontSize_FontBig));
 		font->SetColor(0xFFFFFFFF);
-		//测试装备名称
-		char temp[256];
-		sprintf(temp,"倚天剑");
-		g_getAlignString(temp,52,eAlign_Center,eFontType_MSYaHei,eFontSize_FontBig);
-		font->Print(m_fPosX+290,m_fPosY+105,temp);
-		font->Print(m_fPosX+360,m_fPosY+105,"昊天凯");
-		font->Print(m_fPosX+430,m_fPosY+105,"八卦盘");
+		for (int i=0;i<eEquipGrid_TotalEquip;i++)
+		{
+			Item itemEquip = m_pBindChar->GetEquip(i);
+			if(itemEquip.m_nID != -1)
+			{
+				if(m_pEquip[i] == NULL)
+					m_pEquip[i] = new hgeSprite(TexManager::sInstance().GetItemTex(itemEquip.m_nID),0,0,32,32);
+				else
+					m_pEquip[i]->SetTexture(TexManager::sInstance().GetItemTex(itemEquip.m_nID));
+				m_pEquip[i]->Render(m_fPosX+300+i*70,m_fPosY+62);
+
+				char temp[256];
+				sprintf(temp,itemEquip.m_strName.c_str());
+				g_getAlignString(temp,52,eAlign_Center,eFontType_MSYaHei,eFontSize_FontBig);
+				font->Print(m_fPosX+293+70*i,m_fPosY+105,temp);
+			}
+		}
 	}
 }
 
@@ -288,6 +292,20 @@ void WndSummary::OnMouseOver(float x,float y)
 		}
 		else
 		{
+			for (int n=0;n<eEquipGrid_TotalEquip;n++)
+			{
+				if(x>= 300+n*70 && x<300+n*70+52 && y>=62 && y<62+52)
+				{
+					Item itemEquip = m_pBindChar->GetEquip(n);
+					if(itemEquip.m_nID != -1)
+					{
+						TipWnd::sInstance().ParseItem(itemEquip);
+						TipWnd::sInstance().SetOffset(x+m_fPosX+15,y+m_fPosY+15);
+					}
+					return;
+				}
+			}
+
 			for (int i=0;i<3;i++)
 			{
 				for(int j=0;j<2;j++)
@@ -315,5 +333,5 @@ void WndSummary::OnMouseOver(float x,float y)
 
 bool WndSummary::IsOnControl()
 {
-	return (m_bShow && (UIWindow::IsOnControl() || m_pCharButton->IsMouseOn() || m_pArmsButton->IsMouseOn() || m_pEquipButton->IsMouseOn() || m_pSkillButton->IsMouseOn()));
+	return (m_bShow && (UIWindow::IsOnControl() || m_pCharButton->IsMouseOn() || m_pArmsButton->IsMouseOn() || m_pSkillButton->IsMouseOn()));
 }
