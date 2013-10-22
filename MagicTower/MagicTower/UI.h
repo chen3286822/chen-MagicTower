@@ -48,6 +48,10 @@ enum eUIID
 	eUIID_WeaponGrid = 29,
 	eUIID_ClothGrid = 30,
 	eUIID_EquipGrid = 31,
+	eUIID_SmallerButtonUp = 32,
+	eUIID_SmallerButtonDown = 33,
+	eUIID_SmallerButtonOn = 34,
+	eUIID_SmallerButtonDisable = 35,
 };
 
 enum eWindowID
@@ -332,6 +336,8 @@ public:
 	 { 
 		 return m_nPageMaxRows; 
 	 }
+
+	 virtual int GetMouseOnItem(){return m_nMouseOnItem;}
 
 	 virtual void Render()
 	  {

@@ -37,6 +37,7 @@ struct SkillInfo
 	int m_nAttack;						//攻击力
 	int m_nLastTurn;					//持续回合数
 	std::string m_strName;		//技能名称
+	std::string m_strInfo;			//技能描述
 	SkillInfo()
 	{
 		m_nID = -1;
@@ -50,8 +51,9 @@ struct SkillInfo
 		m_nAttack = 0;
 		m_nLastTurn = 0;
 		m_strName = "";
+		m_strInfo = "";
 	}
-	SkillInfo(int id,int frames,int attackRange,int offx,int offy,int icon,int castRange,int cost,int skillType,int attack,int lastTurn,std::string name)
+	SkillInfo(int id,int frames,int attackRange,int offx,int offy,int icon,int castRange,int cost,int skillType,int attack,int lastTurn,std::string name,std::string info)
 	{
 		m_nID = id;
 		m_nFrames = frames;
@@ -65,6 +67,7 @@ struct SkillInfo
 		m_nAttack = attack;
 		m_nLastTurn = lastTurn;
 		m_strName = name;
+		m_strInfo = info;
 	}
 };
 
@@ -219,8 +222,14 @@ public:
 				int attack = 0;
 				int lastTurn = 0;
 				std::string name;
-				sscanf(mit->second.c_str(),"%d/%d/%d/%d/%d/%d/%d/%d/%d/%d/%s",&frames,&attackRange,&offx,&offy,&icon,&castRange,&cost,&skillType,&attack,&lastTurn,name.c_str());
-				m_mSkillInfo[ID] = SkillInfo(ID,frames,attackRange,offx,offy,icon,castRange,cost,skillType,attack,lastTurn,name.c_str());
+				std::string info;
+				std::stringstream ssteam(mit->second);
+				char cTemp;
+				ssteam >> name >> cTemp >> frames >> cTemp >> attackRange >> cTemp >> offx
+					>> cTemp >> offy >> cTemp >> icon >> cTemp >> castRange >> cTemp >> cost
+					>> cTemp >> skillType >> cTemp >> attack >> cTemp >> lastTurn >> cTemp >> info;
+				//sscanf(mit->second.c_str(),"%s /%d/%d/%d/%d/%d/%d/%d/%d/%d/%d/%s ",name.c_str(),&frames,&attackRange,&offx,&offy,&icon,&castRange,&cost,&skillType,&attack,&lastTurn,info.c_str());
+				m_mSkillInfo[ID] = SkillInfo(ID,frames,attackRange,offx,offy,icon,castRange,cost,skillType,attack,lastTurn,name.c_str(),info.c_str());
 			}
 		}
 	}

@@ -3,6 +3,7 @@
 #include "TexManager.h"
 #include "Character.h"
 #include "CreatureManager.h"
+#include "TipWnd.h"
 
 WndSelect::WndSelect():
 UIWindow(TexManager::sInstance().GetUITex(eUIID_WndCharInfo),0,0,257,183,0,0)
@@ -112,7 +113,7 @@ void WndSelect::SetBindChar(Character* bindChar)
 				int length = strlen(info.m_strName.c_str());
 				skillName.insert(skillName.end(),30-length,' ');
 				char mp[10];
-				sprintf(mp,"%d",info.m_nCost);
+				sprintf(mp,"%dMP",info.m_nCost);
 				skillName.append(mp);
 				int num = m_pListBox->AddItem(TexManager::sInstance().GetUITex(info.m_nIcon),const_cast<char*>(skillName.c_str()));
 				m_mListItemToSkillId[num] = info.m_nID;
@@ -139,6 +140,40 @@ void WndSelect::SetBindChar(Character* bindChar)
 					int nums = m_pListBox->AddItem(0,const_cast<char*>(name.c_str()));
 					m_mListItemToItemId[nums] = item.m_nID;
 				}
+			}
+		}
+	}
+}
+
+void WndSelect::OnMouseOver(float x,float y)
+{
+	int mouseOnItem = m_pListBox->GetMouseOnItem();
+	if(mouseOnItem == -1)
+		return;
+
+	if(m_pBindChar->GetActionStage() == eActionStage_SkillStage)
+	{
+		std::map<int,int>::iterator it = m_mListItemToSkillId.find(mouseOnItem);
+		if(it!=m_mListItemToSkillId.end())
+		{
+			std::map<int,SkillInfo>::iterator mInfo = ConfigManager::sInstance().GetSkillInfo().find(it->second);
+			if (mInfo != ConfigManager::sInstance().GetSkillInfo().end())
+			{
+				TipWnd::sInstance().ParseSkill(mInfo->second);
+				TipWnd::sInstance().SetOffset(x+m_fPosX+15,y+m_fPosY+15);
+			}
+		}
+	}
+	else if(m_pBindChar->GetActionStage() == eActionStage_ItemStage)
+	{
+		std::map<int,int>::iterator it = m_mListItemToItemId.find(mouseOnItem);
+		if(it!=m_mListItemToItemId.end())
+		{
+			std::map<int,Item>::iterator mit = ConfigManager::sInstance().GetItemInfo().find(it->second);
+			if(mit!=ConfigManager::sInstance().GetItemInfo().end())
+			{
+				TipWnd::sInstance().ParseItem(mit->second);
+				TipWnd::sInstance().SetOffset(x+m_fPosX+15,y+m_fPosY+15);
 			}
 		}
 	}

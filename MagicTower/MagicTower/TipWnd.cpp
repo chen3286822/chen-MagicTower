@@ -446,6 +446,8 @@ void TipWnd::Update(float delta)
 
 void TipWnd::ParseItem(Item item)
 {
+	if(item.m_nID == -1)
+		return;
 	char temp[256] = {0};
 	Clear();
 	sprintf(temp,"%s",item.m_strName.c_str());
@@ -498,6 +500,68 @@ void TipWnd::ParseItem(Item item)
 
 	AddEmptyLine();
 	sprintf(temp,"    %s",item.m_strInfo.c_str());
+	AddText(temp,0xFF00FF00,-1,-1,eFontType_MSYaHei,eFontSize_FontMiddle,true,100);
+	SetShow(true);
+}
+
+void TipWnd::ParseSkill(SkillInfo skill)
+{
+	if(skill.m_nID == -1)
+		return;
+
+	char temp[256] = {0};
+	Clear();
+	sprintf(temp,"%s",skill.m_strName.c_str());
+	AddText(temp,0xFFFFFFFF,-1,-1,eFontType_MSYaHei,eFontSize_FontMiddle,true);
+	sprintf(temp,"消耗%d魔法",skill.m_nCost);
+	AddText(temp,0xFF00FF00,-1,-1,eFontType_MSYaHei,eFontSize_FontSmall,true);
+	AddEmptyLine();
+
+	switch(skill.m_nSkillType)
+	{
+	case 1:
+		sprintf(temp,"可以造成%d点技能伤害",skill.m_nAttack);
+		break;
+	case 2:
+		sprintf(temp,"可以恢复%d点生命",skill.m_nAttack);
+		break;
+	case 3:
+		{
+			int buffType = skill.m_nAttack/1000;
+			int buffValue = skill.m_nAttack%1000;
+			switch(buffType)
+			{
+			case 1:
+				sprintf(temp,"暂时增加%d点生命上限和当前生命，%d回合后恢复",buffValue,skill.m_nLastTurn);
+				break;
+			case 2:
+				sprintf(temp,"暂时增加%d点魔法上限和当前魔法，%d回合后恢复",buffValue,skill.m_nLastTurn);
+				break;
+			case 3:
+				sprintf(temp,"暂时增加%d点物理攻击，%d回合后恢复",buffValue,skill.m_nLastTurn);
+				break;
+			case 4:
+				sprintf(temp,"暂时增加%d点物理防御，%d回合后恢复",buffValue,skill.m_nLastTurn);
+				break;
+			case 5:
+				sprintf(temp,"暂时增加%d%% 暴击率，%d回合后恢复",buffValue,skill.m_nLastTurn);
+				break;
+			case 6:
+				sprintf(temp,"暂时增加%d%% 闪避，%d回合后恢复",buffValue,skill.m_nLastTurn);
+				break;
+			default:
+				sprintf(temp,"未知的神奇技能效果");
+			}
+		}
+		break;
+	default:
+		sprintf(temp,"未知的神奇技能效果");
+	}
+
+	AddText(temp,0xFF0000FF,-1,-1,eFontType_MSYaHei,eFontSize_FontMiddle,true);
+	AddEmptyLine();
+
+	sprintf(temp,"    %s",skill.m_strInfo.c_str());
 	AddText(temp,0xFF00FF00,-1,-1,eFontType_MSYaHei,eFontSize_FontMiddle,true,100);
 	SetShow(true);
 }

@@ -13,6 +13,7 @@ public:
 		eControlID_CharButton = 1,
 		eControlID_ArmsButton,
 		eControlID_SkillButton,
+		eControlID_ListBox,
 	};
 
 	WndSummary();
@@ -36,6 +37,9 @@ private:
 	hgeSprite* m_pClothGrid;		//盔甲栏
 	hgeSprite* m_pEquipGrid;		//装备栏
 	hgeSprite* m_pEquip[eEquipGrid_TotalEquip];	//装备图标 
+
+	UIListBox* m_pListBox;	//技能列表
+	std::map<int,int> m_mListItemToSkillId;
 
 	int m_nShowType;	//应该显示哪页内容
 

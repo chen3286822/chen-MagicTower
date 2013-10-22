@@ -58,14 +58,26 @@ UIWindow(TexManager::sInstance().GetUITex(eUIID_WndSummary),0,0,500,184,0,0)
 		m_pEquip[i] = NULL;
 	}
 
+	m_pListBox = new UIListBox(eControlID_ListBox,m_fPosX+20,m_fPosY+10,257-20,183-10,FontManager::sInstance().GetFont(FontAttr(eFontType_SongTi,eFontSize_FontBig)),0xFFFF0000,0xFF00FF00,0xFFAAAAAA,TexManager::sInstance().GetUITex(eUIID_SelectRect));
+	m_pListBox->AddPageButton(30,130,150,130,53,14,TexManager::sInstance().GetUITex(eUIID_SmallerButtonUp),TexManager::sInstance().GetUITex(eUIID_SmallerButtonDown),TexManager::sInstance().GetUITex(eUIID_SmallerButtonOn),TexManager::sInstance().GetUITex(eUIID_SmallerButtonDisable),0,0);
+	m_pListBox->OffsetX = 20;
+	m_pListBox->OffsetY = 10;
+	m_pContainer->AddCtrl(m_pListBox);
+	m_pListBox->GetPageMaxRows() = 5;
+	m_pListBox->bVisible = false;
+	m_pListBox->bEnabled = false;
+	m_mListItemToSkillId.clear();
+
 	m_nShowType = 1;
 }
 
 WndSummary::~WndSummary()
 {
+	m_pListBox->Clear();
 	m_pContainer->DelCtrl(eControlID_CharButton);
 	m_pContainer->DelCtrl(eControlID_ArmsButton);
 	m_pContainer->DelCtrl(eControlID_SkillButton);
+	m_pContainer->DelCtrl(eControlID_ListBox);
 	gSafeDelete(m_pHead);
 	gSafeDelete(m_pAnim);
 	for(int i=0;i<6;i++)
@@ -92,9 +104,27 @@ void	WndSummary::SetBindChar(Character* bindChar)
 		else
 			m_fPosY = bindChar->GetRealY() + FLOAT_PIC_SQUARE_HEIGHT;
 
+		m_pListBox->Clear();
+		m_mListItemToSkillId.clear();
+		std::map<int,SkillInfo> mInfo = ConfigManager::sInstance().GetSkillInfo(); 
+		std::vector<int> skillList = bindChar->GetSkillList();
+		for (std::vector<int>::iterator it=skillList.begin();it!=skillList.end();it++)
+		{
+			SkillInfo info = mInfo.find(*it)->second;
+			std::string skillName = info.m_strName;
+			int length = strlen(info.m_strName.c_str());
+			skillName.insert(skillName.end(),30-length,' ');
+			char mp[10];
+			sprintf(mp,"%dMP",info.m_nCost);
+			skillName.append(mp);
+			int num = m_pListBox->AddItem(TexManager::sInstance().GetUITex(info.m_nIcon),const_cast<char*>(skillName.c_str()));
+			m_mListItemToSkillId[num] = info.m_nID;
+		}
+
 		m_pCharButton->ResetPosition(m_fPosX+m_pCharButton->OffsetX,m_fPosY+m_pCharButton->OffsetY);
 		m_pArmsButton->ResetPosition(m_fPosX+m_pArmsButton->OffsetX,m_fPosY+m_pArmsButton->OffsetY);
 		m_pSkillButton->ResetPosition(m_fPosX+m_pSkillButton->OffsetX,m_fPosY+m_pSkillButton->OffsetY);
+		m_pListBox->ResetPosition(m_fPosX + m_pListBox->OffsetX,m_fPosY + m_pListBox->OffsetY);
 	}
 }
 
@@ -106,6 +136,7 @@ void WndSummary::SetRenderPositon(float _x,float _y)
 	m_pCharButton->ResetPosition(m_fPosX+m_pCharButton->OffsetX,m_fPosY+m_pCharButton->OffsetY);
 	m_pArmsButton->ResetPosition(m_fPosX+m_pArmsButton->OffsetX,m_fPosY+m_pArmsButton->OffsetY);
 	m_pSkillButton->ResetPosition(m_fPosX+m_pSkillButton->OffsetX,m_fPosY+m_pSkillButton->OffsetY);
+	m_pListBox->ResetPosition(m_fPosX + m_pListBox->OffsetX,m_fPosY + m_pListBox->OffsetY);
 }
 
 void WndSummary::Update(float dt)
@@ -119,11 +150,15 @@ void WndSummary::Update(float dt)
 		}
 		else if (id == eControlID_CharButton)
 		{
+			m_pListBox->bVisible = false;
+			m_pListBox->bEnabled = false;
 			m_nShowType = 1;
 			m_pContainer->Leave();
 		}
 		else if (id == eControlID_ArmsButton)
 		{
+			m_pListBox->bVisible = false;
+			m_pListBox->bEnabled = false;
 			m_nShowType = 2;
 			if(m_pAnim == NULL)
 			{
@@ -140,6 +175,8 @@ void WndSummary::Update(float dt)
 		else if (id == eControlID_SkillButton)
 		{
 			m_nShowType = 3;
+			m_pListBox->bVisible = true;
+			m_pListBox->bEnabled = true;
 			m_pContainer->Leave();
 		}
 		if(m_pAnim)
@@ -259,6 +296,11 @@ void WndSummary::Render()
 				font->Print(m_fPosX+293+70*i,m_fPosY+105,temp);
 			}
 		}
+	}
+	//查看技能
+	else if (m_nShowType == 3)
+	{
+
 	}
 }
 

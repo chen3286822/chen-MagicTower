@@ -20,6 +20,7 @@ public:
 // 	virtual void Render(){}
  	virtual void Update(float dt);
 	virtual void Render();
+	virtual void OnMouseOver(float x,float y);
 	virtual void SetRenderPositon(float _x,float _y);
 	virtual void	SetBindChar(Character* bindChar);
 	virtual Character*	GetBindChar(){return m_pBindChar;}

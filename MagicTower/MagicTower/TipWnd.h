@@ -57,7 +57,10 @@ public:
 	bool IsShow(){return m_Show;}
 	void SetPos(int xpos,int ypos){m_XPos=xpos;m_YPos=ypos;}
 
+	//解析物品
 	void ParseItem(Item item);
+	//解析技能
+	void ParseSkill(SkillInfo skill);
 private:
 	VStringLine m_vStringLine;
 	float m_OffX,m_OffY;	//绘制的tip相对于父窗口的偏移
