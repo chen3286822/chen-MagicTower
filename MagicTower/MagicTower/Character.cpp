@@ -69,7 +69,7 @@ void Character::Init(int _Level,int _ID,int _Num,int _Action,Block _block)
 	m_nForce = 50;
 	m_nIntelligence = 48;
 	m_nCharm = 20;
-	m_nHead = 1;
+	m_nHead = 12;
 	char name[50];
 	sprintf(name,"%dºÅÐ¡±ø",m_nNum);
 	m_strName = name;
@@ -1350,7 +1350,12 @@ void Character::PushAction(NewAction action)
 		{
 			int x = m_iAction.m_dwData & 0x00FF;
 			int y = m_iAction.m_dwData >> 8;
-			Move(x,y,true,true);
+			if(Move(x,y,true,true) == eErrorCode_Success)
+			{
+				Map* theMap = MapManager::sInstance().GetCurrentMap();
+				Block* oldBlock = theMap->GetBlock(x,y);
+				m_iOrigBlock = *oldBlock;
+			}
 		}
 		break;
 	}

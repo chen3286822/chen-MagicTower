@@ -52,6 +52,14 @@ enum eUIID
 	eUIID_SmallerButtonDown = 33,
 	eUIID_SmallerButtonOn = 34,
 	eUIID_SmallerButtonDisable = 35,
+	eUIID_RangeNone = 36,
+	eUIID_RangePoint,
+	eUIID_RangeCross,
+	eUIID_RangeBox,
+	eUIID_RangeBigCross,
+	eUIID_RangeBigCrossEx,
+	eUIID_RangeLine,
+	eUIID_RangeLongLine = 43,
 };
 
 enum eWindowID

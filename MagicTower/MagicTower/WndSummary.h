@@ -14,6 +14,7 @@ public:
 		eControlID_ArmsButton,
 		eControlID_SkillButton,
 		eControlID_ListBox,
+		eControlID_SkillRange,
 	};
 
 	WndSummary();
@@ -40,6 +41,7 @@ private:
 
 	UIListBox* m_pListBox;	//技能列表
 	std::map<int,int> m_mListItemToSkillId;
+	hgeSprite* m_pSkillRange;	//描述技能范围
 
 	int m_nShowType;	//应该显示哪页内容
 

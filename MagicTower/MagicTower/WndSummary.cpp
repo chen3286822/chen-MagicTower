@@ -58,15 +58,17 @@ UIWindow(TexManager::sInstance().GetUITex(eUIID_WndSummary),0,0,500,184,0,0)
 		m_pEquip[i] = NULL;
 	}
 
-	m_pListBox = new UIListBox(eControlID_ListBox,m_fPosX+20,m_fPosY+10,257-20,183-10,FontManager::sInstance().GetFont(FontAttr(eFontType_SongTi,eFontSize_FontBig)),0xFFFF0000,0xFF00FF00,0xFFAAAAAA,TexManager::sInstance().GetUITex(eUIID_SelectRect));
-	m_pListBox->AddPageButton(30,130,150,130,53,14,TexManager::sInstance().GetUITex(eUIID_SmallerButtonUp),TexManager::sInstance().GetUITex(eUIID_SmallerButtonDown),TexManager::sInstance().GetUITex(eUIID_SmallerButtonOn),TexManager::sInstance().GetUITex(eUIID_SmallerButtonDisable),0,0);
-	m_pListBox->OffsetX = 20;
-	m_pListBox->OffsetY = 10;
+	m_pListBox = new UIListBox(eControlID_ListBox,m_fPosX+20,m_fPosY+50,257-20,95-10,FontManager::sInstance().GetFont(FontAttr(eFontType_SongTi,eFontSize_FontBig)),0xFFFF0000,0xFF00FF00,0xFFAAAAAA,TexManager::sInstance().GetUITex(eUIID_SelectRect));
+	m_pListBox->AddPageButton(30,95,150,95,53,14,TexManager::sInstance().GetUITex(eUIID_SmallerButtonUp),TexManager::sInstance().GetUITex(eUIID_SmallerButtonDown),TexManager::sInstance().GetUITex(eUIID_SmallerButtonOn),TexManager::sInstance().GetUITex(eUIID_SmallerButtonDisable),0,0);
+	m_pListBox->OffsetX = 50;
+	m_pListBox->OffsetY = 30;
 	m_pContainer->AddCtrl(m_pListBox);
 	m_pListBox->GetPageMaxRows() = 5;
 	m_pListBox->bVisible = false;
 	m_pListBox->bEnabled = false;
 	m_mListItemToSkillId.clear();
+
+	m_pSkillRange = new hgeSprite(TexManager::sInstance().GetUITex(eUIID_RangeNone),0,0,64,64);
 
 	m_nShowType = 1;
 }
@@ -87,6 +89,7 @@ WndSummary::~WndSummary()
 	gSafeDelete(m_pEquipGrid);
 	for (int i=0;i<eEquipGrid_TotalEquip;i++)
 		gSafeDelete(m_pEquip[i]);
+	gSafeDelete(m_pSkillRange);
 }
 
 void	WndSummary::SetBindChar(Character* bindChar)
@@ -113,7 +116,7 @@ void	WndSummary::SetBindChar(Character* bindChar)
 			SkillInfo info = mInfo.find(*it)->second;
 			std::string skillName = info.m_strName;
 			int length = strlen(info.m_strName.c_str());
-			skillName.insert(skillName.end(),30-length,' ');
+			skillName.insert(skillName.end(),27-length,' ');
 			char mp[10];
 			sprintf(mp,"%dMP",info.m_nCost);
 			skillName.append(mp);
@@ -300,7 +303,20 @@ void WndSummary::Render()
 	//查看技能
 	else if (m_nShowType == 3)
 	{
-
+		int selectItem = m_pListBox->GetSelectedItem();
+		if (selectItem != -1)
+		{
+			std::map<int,int>::iterator it = m_mListItemToSkillId.find(selectItem);
+			if(it!=m_mListItemToSkillId.end())
+			{
+				std::map<int,SkillInfo>::iterator mInfo = ConfigManager::sInstance().GetSkillInfo().find(it->second);
+				if (mInfo != ConfigManager::sInstance().GetSkillInfo().end())
+				{
+					m_pSkillRange->SetTexture(TexManager::sInstance().GetUITex(eUIID_RangeNone+mInfo->second.m_nAttackRange));
+				}
+			}
+		}
+		m_pSkillRange->Render(m_fPosX+300,m_fPosY+40);
 	}
 }
 
@@ -362,6 +378,20 @@ void WndSummary::OnMouseOver(float x,float y)
 						return;
 					}
 				}
+			}
+		}
+	}
+	else if (m_nShowType == 3)
+	{
+		int mouseOnItem = m_pListBox->GetMouseOnItem();
+		std::map<int,int>::iterator it = m_mListItemToSkillId.find(mouseOnItem);
+		if(it!=m_mListItemToSkillId.end())
+		{
+			std::map<int,SkillInfo>::iterator mInfo = ConfigManager::sInstance().GetSkillInfo().find(it->second);
+			if (mInfo != ConfigManager::sInstance().GetSkillInfo().end())
+			{
+				TipWnd::sInstance().ParseSkill(mInfo->second);
+				TipWnd::sInstance().SetOffset(x+m_fPosX+15,y+m_fPosY+15);
 			}
 		}
 	}
