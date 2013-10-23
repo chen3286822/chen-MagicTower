@@ -60,6 +60,10 @@ enum eUIID
 	eUIID_RangeBigCrossEx,
 	eUIID_RangeLine,
 	eUIID_RangeLongLine = 43,
+	eUIID_LongButtonUp = 44,
+	eUIID_LongButtonDown = 45,
+	eUIID_LongButtonDisable = 46,
+	eUIID_Logo = 47,
 };
 
 enum eWindowID

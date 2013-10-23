@@ -56,7 +56,7 @@ void Map::AddTurn()
 	IsTriggerTurns(m_nCurTurn);
 
 	//Òþ²ØÊó±ê£¬½ûÖ¹²Ù×÷
-	App::sInstance().GetHGE()->System_SetState(HGE_HIDEMOUSE,true);
+//	App::sInstance().GetHGE()->System_SetState(HGE_HIDEMOUSE,true);
 }
 
 void Map::GoIntoTurn(eCampTurn turn)
@@ -66,7 +66,7 @@ void Map::GoIntoTurn(eCampTurn turn)
 	m_nShowCampTurnTime = 0;
 
 	//Òþ²ØÊó±ê£¬½ûÖ¹²Ù×÷
-	App::sInstance().GetHGE()->System_SetState(HGE_HIDEMOUSE,true);
+//	App::sInstance().GetHGE()->System_SetState(HGE_HIDEMOUSE,true);
 }
 
 bool Map::IsShowTitle()

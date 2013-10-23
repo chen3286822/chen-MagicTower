@@ -30,6 +30,8 @@ public:
 	//设置当前图层
 	void SetLayer(eLayer layer);
 	void StartNextScene();	//开始下一个场景
+
+	void QuitGame(){m_bQuit = true;}
 private:
 	HGE* m_pHge;
 	Block m_iBlock;	//鼠标所在block
@@ -37,6 +39,8 @@ private:
 	eLayer m_eCurLayer;		//当前正在显示的图层
 	bool m_bCheckNextScene;	//检查是否开始下一个场景
 	bool m_bCheckPreFight;		//是否需要载入战前脚本
+
+	bool m_bQuit; //是否退出游戏
 
 	//画出鼠标位置的方格
 	void DrawMouseRect();

@@ -335,6 +335,7 @@ enum eFontType
 	eFontType_SongTi = 0,
 	eFontType_Calibri,
 	eFontType_MSYaHei,
+	eFontType_KaiTi,
 	eFontType_SystemFont,
 
 
@@ -350,9 +351,10 @@ enum eFontSize
 	eFontSize_FontBig = 14,
 	eFontSize_FontTitle = 16,
 	eFontSize_FontSuper = 18,
+	eFontSize_FontSuperEx = 20,
 	eFontSize_FontHuge = 50,
 
-	eFontSize_FontSizeNum = 6,
+	eFontSize_FontSizeNum = 7,
 };
 
 enum eTerrain

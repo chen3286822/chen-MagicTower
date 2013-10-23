@@ -21,12 +21,15 @@ public:
 	virtual void Update(float dt);
 	virtual void	SetRenderPositon(float _x,float _y);
 	virtual bool	IsOnControl();
+	virtual void Render();
 
 private:
 	UIButton* m_pNewGame;
 	UIButton* m_pLoadGame;
 	UIButton* m_pSet;
 	UIButton* m_pQuit;
+
+	hgeSprite* m_pLogo;
 };
 
 #endif

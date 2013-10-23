@@ -186,6 +186,7 @@
     <ClInclude Include="WndSummary.h">
       <Filter>Windows\Head Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
@@ -215,5 +216,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram1.cd" />
+    <None Include="yunchang.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MagicTower.rc" />
   </ItemGroup>
 </Project>

@@ -1,4 +1,5 @@
 #include "App.h"
+#include "resource.h"
 #include "MapManager.h"
 #include "TexManager.h"
 #include "Character.h"
@@ -13,6 +14,7 @@
 #include "LuaGlobalFunc.h"
 #include "WndDialog.h"
 #include "MyLua.h"
+#include "WndMainTitle.h"
 
 
 bool update();
@@ -36,7 +38,8 @@ bool App::SystemInit()
 	// Set up log file, frame function, render function and window title
 	m_pHge->System_SetState(HGE_FRAMEFUNC, update);
 	m_pHge->System_SetState(HGE_RENDERFUNC,render);
-	m_pHge->System_SetState(HGE_TITLE, "Magic Tower");
+	m_pHge->System_SetState(HGE_ICON, MAKEINTRESOURCE(IDI_ICON));
+	m_pHge->System_SetState(HGE_TITLE, "云长传");
 	m_pHge->System_SetState(HGE_HIDEMOUSE,false);
 
 	// Set up video mode
@@ -105,6 +108,8 @@ bool App::LoadResource()
 		return false;
 	}
 
+	m_bQuit = false;
+
 // 	player = new Character;
 // 	player->Init(MapManager::sInstance().GetCurrentMap()->GetLevel(),34,100,1,Block(5,5));
 // 	player->SetCamp(eCamp_Friend);
@@ -134,7 +139,6 @@ bool App::LoadResource()
 // 	//luaL_loadfile(g_pLua,pathConfig);
 // 	lua_getglobal(g_MyLua.GetLuaState(), "PreScene1_1");
 // 	lua_pcall(g_MyLua.GetLuaState(), 0, LUA_MULTRET, 0);
-
 	//初始化，载入第一关脚本
 	char pBuf[MAX_PATH];
 	char pathConfig[MAX_PATH];
@@ -143,11 +147,13 @@ bool App::LoadResource()
 	g_MyLua.LoadFile(pathConfig);
 	g_MyLua.RunFunc("init","");
 	g_MyLua.LoadScript(MapManager::sInstance().GetCurrentMap()->GetLevel());
+
 	//运行第一关剧情脚本
 //	sprintf(pBuf,"PreScene%d",MapManager::sInstance().GetCurrentMap()->GetLevel());
 //	g_MyLua.RunFunc(pBuf,"");
 
-	m_eCurLayer = eLayer_Scene;
+	m_eCurLayer = eLayer_MainWnd;
+	UISystem::sInstance().PopUpWindow(eWindowID_MainTitle);
 	m_bCheckNextScene = true;
 	m_bCheckPreFight = false;
 	return true;
@@ -243,7 +249,7 @@ bool App::AppRender()
 	{
 	case eLayer_MainWnd:
 		{
-
+			UISystem::sInstance().Render();
 		}
 		break;
 	case eLayer_Scene:
@@ -271,6 +277,9 @@ bool App::AppRender()
 bool App::AppUpdate()
 {
 	if (m_pHge->Input_GetKeyState(HGEK_ESCAPE))
+		return true;
+
+	if(m_bQuit)
 		return true;
 
 	if (g_getKeyState(m_pHge,HGEK_F1)==eKeyState_Down)
@@ -310,7 +319,7 @@ bool App::AppUpdate()
 	{
 	case eLayer_MainWnd:
 		{
-
+			UISystem::sInstance().Update(dt);
 		}
 		break;
 	case eLayer_Scene:

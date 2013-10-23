@@ -20,6 +20,7 @@ MSystemFontTable FontManager::sCreateSystemFontTable()
 	table[eFontType_Calibri] = "Calibri";
 	table[eFontType_SongTi] = "宋体";
 	table[eFontType_MSYaHei] = "微软雅黑";
+	table[eFontType_KaiTi] = "楷体_GB2312";
 	return table;
 }
 
@@ -50,7 +51,7 @@ void FontManager::InitFont()
 		for (int i=0;i<eFontSize_FontSizeNum;i++)
 		{
 			attr.m_nSize = eFontSize_FontSmall + 2*i;
-			if(i == 5)	//huge字体大小
+			if(i == 6)	//huge字体大小
 				attr.m_nSize = 50;
 			GfxFont* font = new GfxFont(sm_mSystemFontTable[(eFontType)j].c_str(),attr.m_nSize);
 			m_mFonts[attr] = font;

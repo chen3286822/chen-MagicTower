@@ -152,6 +152,7 @@
     <ClInclude Include="LuaGlobalFunc.h" />
     <ClInclude Include="MapManager.h" />
     <ClInclude Include="Markup.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="SkillManager.h" />
@@ -167,6 +168,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram1.cd" />
+    <None Include="yunchang.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MagicTower.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
