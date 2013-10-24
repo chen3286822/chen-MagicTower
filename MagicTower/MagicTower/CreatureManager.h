@@ -59,6 +59,10 @@ public:
 	Character* GetCreature(int x,int  y);
 	Character* GetCreature(int num);
 
+	//是否单位死完
+	bool IsEnemyAllDead();
+	bool IsFriendAllDead();
+
 	//显示该单位的相关信息
 	void ShowCreatureInfo();
 	//显示该单位移动范围
@@ -122,7 +126,6 @@ public:
 	void ClearAction(){m_lActions.clear();}
 	//处理动作
 	void ProcessAction();
-	
 private:
 	VCharacter  m_VFriendList;
 	VCharacter	m_VEnemyList;

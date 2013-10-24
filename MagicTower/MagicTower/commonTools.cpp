@@ -3,6 +3,10 @@
 #include "FontManager.h"
 #include <fstream>
 
+#pragma comment(lib,"version.lib")
+
+char g_strVersion[64] = {0};
+
 const unsigned char GfxFont::g_byAlphaLevel[65] = 
 {
 	0,  4,  8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48,
@@ -327,4 +331,52 @@ void g_getAlignString(char* src,int setWitdh,eAlign alignType,eFontType type,eFo
 		sprintf(src,"%s",strSpace.c_str());
 		return;
 	}
+}
+
+DWORD g_getGameVersion()
+{
+	TCHAR szFullPath[MAX_PATH];
+	DWORD dwVerInfoSize = 0;
+	DWORD dwVerHnd;
+	VS_FIXEDFILEINFO* pFileInfo;
+
+	DWORD dwVersion = 0x0;
+
+	GetModuleFileName(NULL,szFullPath,sizeof(szFullPath));
+	dwVerInfoSize = GetFileVersionInfoSize(szFullPath,&dwVerHnd);
+	if (dwVerInfoSize)
+	{
+		HANDLE hMem;
+		LPVOID lpvMem;
+		unsigned int uInfoSize = 0;
+
+		hMem = GlobalAlloc(GMEM_MOVEABLE,dwVerInfoSize);
+		lpvMem = GlobalLock(hMem);
+		GetFileVersionInfo(szFullPath,dwVerHnd,dwVerInfoSize,lpvMem);
+
+		::VerQueryValue(lpvMem, (LPTSTR)("\\"),(void**)&pFileInfo,&uInfoSize);
+
+		WORD nProdVer[4];
+		nProdVer[0] = HIWORD(pFileInfo->dwProductVersionMS);
+		nProdVer[1] = LOWORD(pFileInfo->dwProductVersionMS);
+		nProdVer[2] = HIWORD(pFileInfo->dwProductVersionLS);
+		nProdVer[3] = LOWORD(pFileInfo->dwProductVersionLS);
+
+		for (int i=0;i<4;i++)
+		{
+			dwVersion = (dwVersion << 8) + (BYTE)nProdVer[i];
+		}
+
+		WORD dwVersionTail = HIWORD(pFileInfo->dwFileVersionMS);
+		if (dwVersionTail == 0)
+		{
+			sprintf(g_strVersion,"%d.%d.%d.%d",nProdVer[0],nProdVer[1],nProdVer[2],nProdVer[3]);
+		}
+		else
+			sprintf(g_strVersion,"%d.%d.%d.%d.%d",nProdVer[0],nProdVer[1],nProdVer[2],nProdVer[3],dwVersionTail);
+
+		GlobalUnlock(hMem);
+		GlobalFree(hMem);
+	}
+	return dwVersion;
 }

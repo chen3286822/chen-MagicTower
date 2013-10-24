@@ -1,6 +1,6 @@
 /*
 ** Lua binding: lua
-** Generated automatically by tolua++-1.0.92 on 10/22/13 11:15:26.
+** Generated automatically by tolua++-1.0.92 on 10/24/13 18:20:55.
 */
 
 #ifndef __cplusplus
@@ -688,6 +688,173 @@ static int tolua_lua_Map_GetLevel00(lua_State* tolua_S)
 #ifndef TOLUA_RELEASE
  tolua_lerror:
  tolua_error(tolua_S,"#ferror in function 'GetLevel'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: SetVictoryCondition of class  Map */
+#ifndef TOLUA_DISABLE_tolua_lua_Map_SetVictoryCondition00
+static int tolua_lua_Map_SetVictoryCondition00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Map",0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,3,1,&tolua_err) ||
+     !tolua_isnumber(tolua_S,4,1,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,5,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Map* self = (Map*)  tolua_tousertype(tolua_S,1,0);
+  int condition = ((int)  tolua_tonumber(tolua_S,2,0));
+  int data = ((int)  tolua_tonumber(tolua_S,3,-1));
+  int num = ((int)  tolua_tonumber(tolua_S,4,-1));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'SetVictoryCondition'", NULL);
+#endif
+  {
+   self->SetVictoryCondition(condition,data,num);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'SetVictoryCondition'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: SetVictory of class  Map */
+#ifndef TOLUA_DISABLE_tolua_lua_Map_SetVictory00
+static int tolua_lua_Map_SetVictory00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Map",0,&tolua_err) ||
+     !tolua_isboolean(tolua_S,2,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,3,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Map* self = (Map*)  tolua_tousertype(tolua_S,1,0);
+  bool bVictory = ((bool)  tolua_toboolean(tolua_S,2,0));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'SetVictory'", NULL);
+#endif
+  {
+   self->SetVictory(bVictory);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'SetVictory'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: GetVictory of class  Map */
+#ifndef TOLUA_DISABLE_tolua_lua_Map_GetVictory00
+static int tolua_lua_Map_GetVictory00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Map",0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Map* self = (Map*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'GetVictory'", NULL);
+#endif
+  {
+   bool tolua_ret = (bool)  self->GetVictory();
+   tolua_pushboolean(tolua_S,(bool)tolua_ret);
+  }
+ }
+ return 1;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'GetVictory'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: SetFailed of class  Map */
+#ifndef TOLUA_DISABLE_tolua_lua_Map_SetFailed00
+static int tolua_lua_Map_SetFailed00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Map",0,&tolua_err) ||
+     !tolua_isboolean(tolua_S,2,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,3,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Map* self = (Map*)  tolua_tousertype(tolua_S,1,0);
+  bool bFailed = ((bool)  tolua_toboolean(tolua_S,2,0));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'SetFailed'", NULL);
+#endif
+  {
+   self->SetFailed(bFailed);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'SetFailed'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: GetFailed of class  Map */
+#ifndef TOLUA_DISABLE_tolua_lua_Map_GetFailed00
+static int tolua_lua_Map_GetFailed00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Map",0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Map* self = (Map*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'GetFailed'", NULL);
+#endif
+  {
+   bool tolua_ret = (bool)  self->GetFailed();
+   tolua_pushboolean(tolua_S,(bool)tolua_ret);
+  }
+ }
+ return 1;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'GetFailed'.",&tolua_err);
  return 0;
 #endif
 }
@@ -2012,6 +2179,11 @@ TOLUA_API int tolua_lua_open (lua_State* tolua_S)
   tolua_beginmodule(tolua_S,"Map");
    tolua_function(tolua_S,"SetTurns",tolua_lua_Map_SetTurns00);
    tolua_function(tolua_S,"GetLevel",tolua_lua_Map_GetLevel00);
+   tolua_function(tolua_S,"SetVictoryCondition",tolua_lua_Map_SetVictoryCondition00);
+   tolua_function(tolua_S,"SetVictory",tolua_lua_Map_SetVictory00);
+   tolua_function(tolua_S,"GetVictory",tolua_lua_Map_GetVictory00);
+   tolua_function(tolua_S,"SetFailed",tolua_lua_Map_SetFailed00);
+   tolua_function(tolua_S,"GetFailed",tolua_lua_Map_GetFailed00);
    tolua_function(tolua_S,"AddTrigger",tolua_lua_Map_AddTrigger00);
   tolua_endmodule(tolua_S);
   tolua_function(tolua_S,"GetScene",tolua_lua_GetScene00);

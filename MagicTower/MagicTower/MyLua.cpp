@@ -8,6 +8,7 @@ MyLua::MyLua()
 	luaL_openlibs(m_pLuaState);
 	luaopen_lua(m_pLuaState);
 	Lua_RegisterFunc(m_pLuaState);
+	m_mScriptLoaded.clear();
 }
 
 MyLua::~MyLua()
@@ -15,29 +16,39 @@ MyLua::~MyLua()
 	lua_close(m_pLuaState);
 }
 
-void MyLua::LoadFile(const char* file)
+bool MyLua::LoadFile(const char* file,bool bAlert)
 {
 	int iRet = luaL_dofile(m_pLuaState,file);
 	if (iRet != 0)
 	{
-		char str[256];
-		sprintf(str,"载入lua文件%s失败",file);
-		g_debugString(__FILE__,__FUNCTION__,__LINE__,str);
+		if(bAlert)
+		{
+			char str[256];
+			sprintf(str,"载入lua文件%s失败",file);
+			g_debugString(__FILE__,__FUNCTION__,__LINE__,str);
+		}
+		return false;
 	}
+	return true;
 }
 
-void MyLua::LoadString(const char* str)
+bool MyLua::LoadString(const char* str,bool bAlert)
 {
 	int iRet = luaL_dostring(m_pLuaState,str);
 	if (iRet != 0)
 	{
-		char strTemp[1024];
-		sprintf(strTemp,"载入字符串%s失败",str);
-		g_debugString(__FILE__,__FUNCTION__,__LINE__,strTemp);
+		if (bAlert)
+		{
+			char strTemp[1024];
+			sprintf(strTemp,"载入字符串%s失败",str);
+			g_debugString(__FILE__,__FUNCTION__,__LINE__,strTemp);
+		}
+		return false;
 	}
+	return true;
 }
 
-void MyLua::RunFunc(const char* func,const char* format,...)
+bool MyLua::RunFunc(bool bAlert,const char* func,const char* format,...)
 {
 	int iRet = 0;
 	lua_getglobal(m_pLuaState,func);
@@ -76,10 +87,15 @@ void MyLua::RunFunc(const char* func,const char* format,...)
 	iRet = lua_pcall(m_pLuaState,iRet,LUA_MULTRET,0);
 	if (iRet != 0)
 	{
-		char temp[256];
-		sprintf(temp,"调用脚本函数%s错误",func);
-		g_debugString(__FILE__,__FUNCTION__,__LINE__,temp);
+		if(bAlert)
+		{
+			char temp[256];
+			sprintf(temp,"调用脚本函数%s错误",func);
+			g_debugString(__FILE__,__FUNCTION__,__LINE__,temp);
+		}
+		return false;
 	}
+	return  true;
 }
 
 void MyLua::LoadScript(int level)
@@ -91,11 +107,41 @@ void MyLua::LoadScript(int level)
 	{
 		//每关3个脚本文件：战前脚本、战斗脚本、战后脚本
 		sprintf(pathConfig,"%s\\res\\script\\%d_%d.lua",pBuf,level,i);
-		if (_access(pBuf,0) == 0)
+		if (_access(pathConfig,0) == 0)
 		{
 			luaL_dofile(m_pLuaState,pathConfig);
+			m_mScriptLoaded[level*100+i] = true;
 		}	
 	}
+}
+
+bool MyLua::LoadSpecifyScriptOrNot(int level,eScript script)
+{
+	char pBuf[MAX_PATH];
+	char pathConfig[MAX_PATH];
+	GetCurrentDirectory(MAX_PATH,pBuf);
+	switch(script)
+	{
+	case eScript_PreScene:
+	case eScript_PreFight:
+	case eScript_PostScene:
+		sprintf(pathConfig,"%s\\res\\script\\%d_%d.lua",pBuf,level,(int)script);
+		break;
+	default:
+		return false;
+	}
+	if (_access(pathConfig,0) == 0)
+	{
+		if(m_mScriptLoaded.find(level*100+(int)script) != m_mScriptLoaded.end())
+		{
+			if(m_mScriptLoaded[level*100+(int)script] == true)
+				return true;
+		}
+		luaL_dofile(m_pLuaState,pathConfig);
+		m_mScriptLoaded[level*100+(int)script] = true;
+		return true;
+	}
+	return false;
 }
 
 void MyLua::PopErrorMsg()

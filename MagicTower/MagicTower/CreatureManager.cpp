@@ -122,6 +122,13 @@ void CreatureManager::Update(float delta)
 {
 	ProcessAction();
 
+	//不是出于暂停中，且胜利了，则跳转到战后剧情
+	if (!m_bPause && MapManager::sInstance().GetCurrentMap()->GetVictory() == true)
+	{
+		App::sInstance().SetLayer(eLayer_Scene,true);
+		App::sInstance().StartNextScene();
+	}
+
 	for (VCharacter::iterator it=m_VEnemyList.begin();it!=m_VEnemyList.end();it++)
 	{
 		if((*it)->GetDead() == true)
@@ -496,6 +503,20 @@ Character* CreatureManager::GetCreature(int num)
 		temp = GetFriend(num);
 
 	return temp;
+}
+
+bool CreatureManager::IsEnemyAllDead()
+{
+	if(m_VEnemyList.empty())
+		return true;
+	return false;
+}
+
+bool CreatureManager::IsFriendAllDead()
+{
+	if(m_VFriendList.empty())
+		return true;
+	return false;
 }
 
 bool CreatureManager::ResetAllCreature()

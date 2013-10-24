@@ -5,6 +5,7 @@ require "unity"
 function PreFight1()
 	local map = GetCurMap();
 	map:SetTurns(20);
+	map:SetVictoryCondition(1,5)
 	local player1 = GetChar();
 	local block = tagBlock(5,5);
 	player1:Init(map:GetLevel(),115,100,1,block);

@@ -1,6 +1,7 @@
 #include "WndMainTitle.h"
 #include "FontManager.h"
 #include "App.h"
+#include "MyLua.h"
 
 WndMainTitle::WndMainTitle():
 UIWindow(TexManager::sInstance().GetSceneTex(4),0,0,800,511,0,(APP_HEIGHT-511)/2)
@@ -60,6 +61,21 @@ void WndMainTitle::Update(float dt)
 		}
 		else if (id == eControlID_NewGameButton)
 		{
+			UISystem::sInstance().CloseWindow(eWindowID_MainTitle);
+
+			//执行场景脚本
+			char pBuf[MAX_PATH];
+			char pathConfig[MAX_PATH];
+			GetCurrentDirectory(MAX_PATH,pBuf);
+			sprintf(pathConfig,"%s\\res\\script\\top.lua",pBuf);
+			g_MyLua.LoadFile(pathConfig);
+			//必须执行inti 函数，否则终止游戏
+			g_MyLua.RunFunc(true,"init","");
+
+			//开始执行剧情脚本
+			App::sInstance().StartNextScene();
+			App::sInstance().SetLayer(eLayer_Scene);
+
 			m_pContainer->Leave();
 		}
 		else if (id == eControlID_LoadGameButton)
@@ -86,7 +102,7 @@ void WndMainTitle::Render()
 
 	GfxFont* font = FontManager::sInstance().GetFont(FontAttr(eFontType_SongTi,eFontSize_FontMiddle));
 	font->SetColor(0xFFFFFFFF);
-	font->Print(10,576,"ver. 0.1");
+	font->Print(10,576,"%s",g_strVersion);
 	font->Print(10,588,"Author. Chen");
 }
 

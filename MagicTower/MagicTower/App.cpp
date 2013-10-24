@@ -58,13 +58,21 @@ bool App::SystemInit()
 	}
 }
 
-void App::SetLayer(eLayer layer)
+void App::SetLayer(eLayer layer,bool postScene)
 {
 	m_eCurLayer = layer;
+	if (postScene)
+	{
+		m_bPreOrPostScene = false;
+	}
 }
 
 bool App::LoadResource()
 {
+	//取得游戏版本
+	g_getGameVersion();
+
+
 	//lua初始化
 	g_MyLua.Init();
 
@@ -139,22 +147,13 @@ bool App::LoadResource()
 // 	//luaL_loadfile(g_pLua,pathConfig);
 // 	lua_getglobal(g_MyLua.GetLuaState(), "PreScene1_1");
 // 	lua_pcall(g_MyLua.GetLuaState(), 0, LUA_MULTRET, 0);
-	//初始化，载入第一关脚本
-	char pBuf[MAX_PATH];
-	char pathConfig[MAX_PATH];
-	GetCurrentDirectory(MAX_PATH,pBuf);
-	sprintf(pathConfig,"%s\\res\\script\\top.lua",pBuf);
-	g_MyLua.LoadFile(pathConfig);
-	g_MyLua.RunFunc("init","");
-	g_MyLua.LoadScript(MapManager::sInstance().GetCurrentMap()->GetLevel());
 
-	//运行第一关剧情脚本
-//	sprintf(pBuf,"PreScene%d",MapManager::sInstance().GetCurrentMap()->GetLevel());
-//	g_MyLua.RunFunc(pBuf,"");
 
 	m_eCurLayer = eLayer_MainWnd;
 	UISystem::sInstance().PopUpWindow(eWindowID_MainTitle);
-	m_bCheckNextScene = true;
+	m_bCheckNextScene = false;
+	m_bPreOrPostScene = true;
+	m_nCurSceneNum = 1;
 	m_bCheckPreFight = false;
 	return true;
 }
@@ -293,7 +292,7 @@ bool App::AppUpdate()
 		WndDialog* dialog = (WndDialog*)UISystem::sInstance().GetWindow(eWindowID_Dialog);
 		if(dialog)
 			dialog->Release();
-		g_MyLua.RunFunc("PreScene1","");
+		g_MyLua.RunFunc(true,"PreScene1","");
 	}
 
 
@@ -328,12 +327,84 @@ bool App::AppUpdate()
 			{
 				//先清楚上一个场景数据
 				Scene::sInstance().Release();
-				//检查有没有下一个场景需要加载
+				//重新初始化
+				Scene::sInstance().Init();
+				
+				//检查当前关卡PreScene 是否有脚本
+				if (m_bPreOrPostScene)
+				{
+					bool bBeginFight = false;
+					if(g_MyLua.LoadSpecifyScriptOrNot(MapManager::sInstance().GetCurrentMap()->GetLevel(),eScript_PreScene))
+					{
+						//存在脚本并且已经加载
+						//运行此脚本
+						char pBuf[512];
+						sprintf(pBuf,"PreScene%d_%d",MapManager::sInstance().GetCurrentMap()->GetLevel(),m_nCurSceneNum);
+						if(g_MyLua.RunFunc(false,pBuf,""))
+						{
+							m_nCurSceneNum++;
+							m_bCheckNextScene = false;
+						}
+						else
+						{
+							//没有剧情函数，则直接跳至战斗阶段 
+							bBeginFight = true;
+						}
+					}
+					else
+					{
+						//不存在PreScene脚本，直接跳至战斗阶段
+						bBeginFight = true;
+					}
+					if (bBeginFight)
+					{
+						m_nCurSceneNum = 1;
+						m_eCurLayer = eLayer_Fight;
+						m_bCheckNextScene = false;
+						m_bCheckPreFight = true;
+					}
+				}
+				//检查当前关卡PostScene 是否有脚本
+				else
+				{
+					bool bNextLevel = false;
+					if(g_MyLua.LoadSpecifyScriptOrNot(MapManager::sInstance().GetCurrentMap()->GetLevel(),eScript_PostScene))
+					{
+						//存在脚本并且已经加载
+						//运行此脚本
+						char pBuf[512];
+						sprintf(pBuf,"PostScene%d_%d",MapManager::sInstance().GetCurrentMap()->GetLevel(),m_nCurSceneNum);
+						if(g_MyLua.RunFunc(false,pBuf,""))
+						{
+							m_nCurSceneNum++;
+							m_bCheckNextScene = false;
+						}
+						else
+						{
+							//没有剧情函数，则直接跳至下一关
+							bNextLevel = true;
+						}
+					}
+					else
+					{
+						//不存在PreScene脚本，直接跳至下一关
+						bNextLevel = true;
+					}
+					if (bNextLevel)
+					{
+						m_nCurSceneNum = 1;
+						m_bCheckNextScene = true;
 
-				//没有的话，进入战斗
-				m_eCurLayer = eLayer_Fight;
-				m_bCheckNextScene = false;
-				m_bCheckPreFight = true;
+						//释放上一关相关数据
+						int level = MapManager::sInstance().GetCurrentMap()->GetLevel();
+						MapManager::sInstance().GetCurrentMap()->Release();
+						CreatureManager::sInstance().Release();
+
+						//设置下一关
+						SetCurrentMap(level+1);
+						CreatureManager::sInstance().Init();
+					}
+				}
 				return false;
 			}
 			Scene::sInstance().Update(dt);
@@ -344,10 +415,17 @@ bool App::AppUpdate()
 		{
 			if (m_bCheckPreFight)
 			{
-				//载入战斗前的脚本
-				char pBuf[MAX_PATH];
-				sprintf(pBuf,"PreFight%d",MapManager::sInstance().GetCurrentMap()->GetLevel());
-				g_MyLua.RunFunc(pBuf,"");
+				//载入战前脚本
+				if(g_MyLua.LoadSpecifyScriptOrNot(MapManager::sInstance().GetCurrentMap()->GetLevel(),eScript_PreFight))
+				{
+					//存在脚本并且已经加载
+					//运行此脚本
+					char pBuf[512];
+					sprintf(pBuf,"PreFight%d",MapManager::sInstance().GetCurrentMap()->GetLevel());
+					g_MyLua.RunFunc(false,pBuf,"");
+				}
+				//战前脚本只能有一个
+				//不管是否存在战前脚本，都要继续进行战斗
 				m_bCheckPreFight = false;
 			}
 			MapManager::sInstance().Update(dt);

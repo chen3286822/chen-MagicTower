@@ -1,4 +1,4 @@
-<map level="3" width="8" length="8">
+<map level="2" width="8" length="8">
 <Block>
 <Terrain type="4" xpos="0" ypos="0"/>
 <Terrain type="4" xpos="1" ypos="0"/>
@@ -65,10 +65,10 @@
 <Terrain type="4" xpos="6" ypos="7"/>
 <Terrain type="4" xpos="7" ypos="7"/>
 </Block>
-<Object>
-<Man ID="0" Action="0" xpos="3" ypos="2"/>
-<Man ID="0" Action="0" xpos="5" ypos="2"/>
-<Man ID="0" Action="0" xpos="3" ypos="4"/>
-<Man ID="0" Action="0" xpos="5" ypos="5"/>
-</Object>
+  <Creature>
+    <Man ID="0" Action="0" xpos="3" ypos="2"camp="1"/>
+    <Man ID="0" Action="0" xpos="5" ypos="2"camp="1"/>
+    <Man ID="0" Action="0" xpos="3" ypos="4"camp="1"/>
+    <Man ID="0" Action="0" xpos="5" ypos="5"camp="1"/>
+  </Creature>
 </map>

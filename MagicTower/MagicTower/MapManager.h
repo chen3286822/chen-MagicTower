@@ -15,6 +15,14 @@ struct Trigger
 	string m_strFunc;	//触发时调用的函数名
 };
 
+//胜利条件描述
+struct Victory
+{
+	eVictoryCondition m_eCondition;	//胜利类型
+	std::vector<int> m_vData;		//击败特定单位存储的单位Num，或者到达特定区域存储的坐标，用x，y高低字节组合
+	int m_nNum;		//到达特定区域条件的特定单位号
+};
+
 class Map
 {
 public:
@@ -60,6 +68,14 @@ public:
 	//为了支持stl的sort算法
 	static bool Less_than( Map* &m1, Map* &m2) {return m1->m_nlevel < m2->m_nlevel;}
 
+	//胜利条件
+	void SetVictoryCondition(int condition,int data=-1,int num=-1);	//设置胜利条件，附带胜利信息，如果连续两次调用，类型一致，则附带信息会合并,num指特定单位号
+	void SetVictory(bool bVictory){m_bVictory = bVictory;}
+	bool GetVictory(){return m_bVictory;}
+	void SetFailed(bool bFailed){m_bFailed = bFailed;}
+	bool GetFailed(){return m_bFailed;}
+	bool CheckVictory(eVictoryCondition condition,int data);		//检查是否胜利
+
 	//触发器相关
 	//添加触发器，触发条件不需要的设为-1
 	void AddTrigger(int triggerID,const char* func,int turns,int num1,int num2,int x,int y);
@@ -86,6 +102,10 @@ private:
 	hgeSprite* m_pMapSpr;
 	AStar m_iPathFinder;
 	std::vector<Block*>	m_vSpecificRange;	//限定的寻路范围 
+
+	Victory m_iVictory;		//本关的胜利条件
+	bool m_bVictory;			//是否已经胜利
+	bool m_bFailed;			//是否已经失败
 
 	std::vector<Trigger> m_vTriggers;	//本地图包含的触发器
 };

@@ -28,7 +28,7 @@ public:
 	void DrawRect(float left,float top,float right,float bottom,DWORD color);
 
 	//设置当前图层
-	void SetLayer(eLayer layer);
+	void SetLayer(eLayer layer,bool postScene=false);	//postScene 是否跳转到战后场景
 	void StartNextScene();	//开始下一个场景
 
 	void QuitGame(){m_bQuit = true;}
@@ -37,6 +37,8 @@ private:
 	Block m_iBlock;	//鼠标所在block
 
 	eLayer m_eCurLayer;		//当前正在显示的图层
+	bool m_bPreOrPostScene;	//当前显示的是preScene还是postScene, true是pre
+	int m_nCurSceneNum;		//当前将要运行的Scene的编号，即脚本中PreSceneX_Y中的Y
 	bool m_bCheckNextScene;	//检查是否开始下一个场景
 	bool m_bCheckPreFight;		//是否需要载入战前脚本
 

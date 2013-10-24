@@ -481,6 +481,12 @@ void Character::SetFinish(bool _finish)
 		MapManager::sInstance().GetCurrentMap()->IsTriggerTouch(m_nNum);
 		//检查是否移动触发
 		MapManager::sInstance().GetCurrentMap()->IsTriggerLocation(m_nNum);
+
+		//检查是否胜利
+		if(MapManager::sInstance().GetCurrentMap()->CheckVictory(eVictoryCondition_GetToPosition,m_nNum))
+			MapManager::sInstance().GetCurrentMap()->SetVictory(true);
+		if(MapManager::sInstance().GetCurrentMap()->CheckVictory(eVictoryCondition_KillAllEnemies,-1))
+			MapManager::sInstance().GetCurrentMap()->SetVictory(true);
 	}
 }
 

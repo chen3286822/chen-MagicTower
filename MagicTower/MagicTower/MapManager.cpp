@@ -22,6 +22,12 @@ Map::Map()
 	m_nShowCampTurnTime = 0;
 	m_eCurCampTurn = eCampTurn_Friend;
 	m_pMapSpr = new hgeSprite(0,0,0,0,0);
+
+	m_iVictory.m_eCondition = eVictoryCondition_KillAllEnemies;
+	m_iVictory.m_vData.clear();
+	m_iVictory.m_nNum = -1;
+	m_bVictory = false;
+	m_bFailed = false;
 }
 
 Map::~Map()
@@ -229,6 +235,98 @@ std::vector<Block*> Map::FindPath(int startX,int startY,int endX,int endY)
 	return vPath;
 }
 
+void Map::SetVictoryCondition(int condition,int data,int num)
+{
+	switch(condition)
+	{
+	case eVictoryCondition_KillAllEnemies:
+		m_iVictory.m_eCondition = eVictoryCondition_KillAllEnemies;
+		m_iVictory.m_vData.clear();
+		break;
+	case eVictoryCondition_KillSpecificEnemy:
+		{
+			if(m_iVictory.m_eCondition == eVictoryCondition_KillSpecificEnemy)
+			{
+				m_iVictory.m_vData.push_back(data);
+			}
+			else
+			{
+				m_iVictory.m_eCondition = eVictoryCondition_KillSpecificEnemy;
+				m_iVictory.m_vData.clear();
+				m_iVictory.m_vData.push_back(data);
+			}
+		}
+		break;
+	case eVictoryCondition_GetToPosition:
+		{
+			if(m_iVictory.m_eCondition == eVictoryCondition_GetToPosition && m_iVictory.m_nNum == num)
+			{
+				m_iVictory.m_vData.push_back(data);
+			}
+			else
+			{
+				m_iVictory.m_eCondition = eVictoryCondition_GetToPosition;
+				m_iVictory.m_vData.clear();
+				m_iVictory.m_vData.push_back(data);
+				m_iVictory.m_nNum = num;
+			}
+		}
+		break;
+	}
+}
+
+bool Map::CheckVictory(eVictoryCondition condition,int data)
+{
+	if(m_bVictory)
+		return true;
+
+	if(condition != eVictoryCondition_KillSpecificEnemy)
+		return false;
+
+	switch(m_iVictory.m_eCondition)
+	{
+	case eVictoryCondition_KillAllEnemies:
+		if(CreatureManager::sInstance().IsEnemyAllDead())
+			return true;
+		break;
+	case eVictoryCondition_KillSpecificEnemy:
+		{
+			//data 表示刚刚死的单位
+			for(std::vector<int>::iterator it=m_iVictory.m_vData.begin();it!=m_iVictory.m_vData.end();)
+			{
+				if(*it == data)
+					it = m_iVictory.m_vData.erase(it);
+				else
+					it++;
+			}
+			//特定单位死完
+			if(m_iVictory.m_vData.empty())
+				return true;
+		}
+		break;
+	case eVictoryCondition_GetToPosition:
+		{
+			//data 表示刚刚发生移动的单位
+			if (m_iVictory.m_nNum == data)
+			{
+				Character* cha = CreatureManager::sInstance().GetFriend(data);
+				if (cha)
+				{
+					for(std::vector<int>::iterator it=m_iVictory.m_vData.begin();it!=m_iVictory.m_vData.end();it++)
+					{
+						int x = (*it) >> 8;
+						int y = (*it) & 0x00FF;
+						if(cha->GetBlock().xpos == x && cha->GetBlock().ypos == y)
+							return true;
+					}
+				}
+			}
+		}
+	}
+
+	return false;
+}
+
 void Map::AddTrigger(int triggerID,const char* func,int turns,int num1,int num2,int x,int y)
 {
 	Trigger aTrigger;
@@ -283,7 +381,7 @@ bool Map::IsTriggerTurns(int turns)
 		{
 			if (turns >= it->m_nTurns)
 			{
-				g_MyLua.RunFunc(it->m_strFunc.c_str(),"");
+				g_MyLua.RunFunc(false,it->m_strFunc.c_str(),"");
 				it->m_bEffective = false;
 				return true;
 			}
@@ -303,7 +401,7 @@ bool Map::IsTriggerLocation(int num)
 				Character* cha = CreatureManager::sInstance().GetCreature(num);
 				if (cha->GetBlock().xpos == it->m_nPosX && cha->GetBlock().ypos ==it->m_nPosY)
 				{
-					g_MyLua.RunFunc(it->m_strFunc.c_str(),"");
+					g_MyLua.RunFunc(false,it->m_strFunc.c_str(),"");
 					it->m_bEffective = false;
 					return true;
 				}
@@ -315,7 +413,7 @@ bool Map::IsTriggerLocation(int num)
 				Character* cha = CreatureManager::sInstance().GetFriend(it->m_nPosX,it->m_nPosY);
 				if (cha != NULL)
 				{
-					g_MyLua.RunFunc(it->m_strFunc.c_str(),"");
+					g_MyLua.RunFunc(false,it->m_strFunc.c_str(),"");
 					it->m_bEffective = false;
 					return true;
 				}
@@ -340,7 +438,7 @@ bool Map::IsTriggerTouch(int num)
 					//是否接触，即是否是上下左右相邻的关系
 					if(abs(cha->GetBlock().xpos-target->GetBlock().xpos)+abs(cha->GetBlock().ypos-target->GetBlock().ypos) == 1)
 					{
-						g_MyLua.RunFunc(it->m_strFunc.c_str(),"");
+						g_MyLua.RunFunc(false,it->m_strFunc.c_str(),"");
 						it->m_bEffective = false;
 						return true;
 					}
@@ -358,7 +456,7 @@ bool Map::IsTriggerTouch(int num)
 					Character* cha = CreatureManager::sInstance().GetFriend(target->GetBlock().xpos+x[i],target->GetBlock().ypos+y[i]);
 					if(cha != NULL)
 					{
-						g_MyLua.RunFunc(it->m_strFunc.c_str(),"");
+						g_MyLua.RunFunc(false,it->m_strFunc.c_str(),"");
 						it->m_bEffective = false;
 						return true;
 					}
@@ -381,7 +479,7 @@ bool Map::IsTriggerKill(int num)
 				//被击杀
 				if (target && target->GetDead()==true)
 				{
-					g_MyLua.RunFunc(it->m_strFunc.c_str(),"");
+					g_MyLua.RunFunc(false,it->m_strFunc.c_str(),"");
 					it->m_bEffective = false;
 					return true;
 				}				
@@ -393,7 +491,7 @@ bool Map::IsTriggerKill(int num)
 				Character* target = CreatureManager::sInstance().GetCreature(it->m_nNum2);
 				if(target != NULL && target->GetDead() == true)
 				{
-					g_MyLua.RunFunc(it->m_strFunc.c_str(),"");
+					g_MyLua.RunFunc(false,it->m_strFunc.c_str(),"");
 					it->m_bEffective = false;
 					return true;
 				}
@@ -414,7 +512,9 @@ MapManager::MapManager(void)
 MapManager::~MapManager(void)
 {
 	//释放当前地图资源
-	GetCurrentMap()->Release();
+	Map* theMap = GetCurrentMap();
+	if(theMap)
+		theMap->Release();
 
 	gSafeDelete(m_pMarkUp);
 	for (std::vector<Map*>::iterator it=m_vMaps.begin();it!=m_vMaps.end();it++)

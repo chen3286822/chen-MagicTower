@@ -41,6 +41,8 @@ extern "C"
 #include "lualib.h"
 }
 
+extern char g_strVersion[64];
+
 #define LEVEL_NUM 20
 
 
@@ -83,6 +85,14 @@ enum eLayer
 	eLayer_MainWnd,	//主界面
 	eLayer_Scene,			//剧情场景
 	eLayer_Fight,				//战斗场景
+};
+
+//胜利条件
+enum eVictoryCondition
+{
+	eVictoryCondition_KillAllEnemies,		//击败所有敌人
+	eVictoryCondition_KillSpecificEnemy,	//击败特定敌人
+	eVictoryCondition_GetToPosition,		//到达特定区域
 };
 
 //战斗时剧情触发器
@@ -447,5 +457,5 @@ int g_getTerrainCost(int terrain);	//根据地形取得消耗
 int g_RandomInt(int start,int end);	//从start 到end中选取随机数，范围[start,end]
 void g_debugString(char* file,char* func,int line,char* msg="");	//错误输出
 void g_getAlignString(char* src,int setWitdh,eAlign alignType,eFontType type,eFontSize size);	//根据对齐方式来格式化字符串
-
+DWORD g_getGameVersion();	//取得游戏版本，存储在g_strVersion中
 #endif

@@ -222,6 +222,10 @@ public:
 				{
 					action.m_pTarget->GetDead() = true;
 					MapManager::sInstance().GetCurrentMap()->IsTriggerKill(action.m_pCast->GetNum());
+
+					//检查是否满足胜利条件
+					if(MapManager::sInstance().GetCurrentMap()->CheckVictory(eVictoryCondition_KillSpecificEnemy,action.m_pCast->GetNum()))
+						MapManager::sInstance().GetCurrentMap()->SetVictory(true);
 				}
 				break;
 			case eNotify_FinishAttack:
