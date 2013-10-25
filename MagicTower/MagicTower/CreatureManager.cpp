@@ -1135,12 +1135,15 @@ void CreatureManager::UnSelectCreature()
 				UISystem::sInstance().CloseWindow(eWindowID_Summary);
 			else
 			{
-				selectChar = GetCreature(mouseBlock.xpos,mouseBlock.ypos);
-				if (selectChar)
+				if (m_eCampTurn == eCampTurn_Friend)
 				{
-					summaryWindow = UISystem::sInstance().PopUpWindow(eWindowID_Summary);
-					if(summaryWindow)
-						summaryWindow->SetBindChar(selectChar);
+					selectChar = GetCreature(mouseBlock.xpos,mouseBlock.ypos);
+					if (selectChar)
+					{
+						summaryWindow = UISystem::sInstance().PopUpWindow(eWindowID_Summary);
+						if(summaryWindow)
+							summaryWindow->SetBindChar(selectChar);
+					}
 				}
 			}
 		}
