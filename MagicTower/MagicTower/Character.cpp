@@ -517,7 +517,7 @@ void Character::CancelMove()
 	m_fStartY = m_fYPos;
 }
 
-void	Character::SetMoveAbility(int _ability,Map* map)
+void	Character::SetMoveAbility(int _ability)
 {
 		m_nMoveAbility = _ability;
 // 		if (map)

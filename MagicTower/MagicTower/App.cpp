@@ -110,9 +110,9 @@ bool App::LoadResource()
 
 	ConfigManager::sInstance().LoadConfig();
 
-	if(!TexManager::sInstance().LoadTex() || !MapManager::sInstance().LoadMaps())
+	if(!TexManager::sInstance().LoadTex() /*|| !MapManager::sInstance().LoadMaps()*/)
 	{
-		MessageBox(NULL, "纹理或关卡载入失败", "Error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
+		MessageBox(NULL, "纹理载入失败", "Error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
 		return false;
 	}
 
@@ -392,6 +392,7 @@ bool App::AppUpdate()
 					}
 					if (bNextLevel)
 					{
+						m_bPreOrPostScene = true;
 						m_nCurSceneNum = 1;
 						m_bCheckNextScene = true;
 

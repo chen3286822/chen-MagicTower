@@ -117,6 +117,7 @@ public:
 	virtual ~MapManager(void);
 
 	bool LoadMaps();
+	bool LoadMap(int level);
 	Map* GetMap(int level);
 	inline void SetCurrentLevel(int _level){m_nCurrentLevel = _level;}
 	inline Map* GetCurrentMap(){return GetMap(m_nCurrentLevel);}

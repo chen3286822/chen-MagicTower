@@ -148,6 +148,7 @@ bool TexManager::LoadMap()
 	//载入地图中图块信息
 	m_mMapInfo[eTerrain_Road]			=	blockInfo(96.0f,32.0f,32.0f,32.0f,m_mMap[0]);
 	m_mMapInfo[eTerrain_CityRoad]		=	blockInfo(96.0f,64.0f,32.0f,32.0f,m_mMap[0]);
+	m_mMapInfo[eTerrain_Mountain]			=	blockInfo(96.0f,0.0f,32.0f,32.0f,m_mMap[0]);
 	m_mMapInfo[eTerrain_Forest]			=	blockInfo(96.0f,0.0f,32.0f,32.0f,m_mMap[0]);
 	m_mMapInfo[eTerrain_City]				=	blockInfo(64.0f,192.0f,32.0f,32.0f,m_mMap[0]);
 	return true;

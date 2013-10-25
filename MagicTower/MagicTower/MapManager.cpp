@@ -607,7 +607,7 @@ bool MapManager::LoadMaps()
 // 				if(theBlock != NULL)
 // 					setOccupied((theBlock->attri),1);
 				//测试移动力
-				cha->SetMoveAbility(4,MapManager::sInstance().GetCurrentMap());
+				cha->SetMoveAbility(4/*,MapManager::sInstance().GetCurrentMap()*/);
 
 				if (_camp == eCamp_Friend)
 				{
@@ -632,6 +632,116 @@ bool MapManager::LoadMaps()
 	std::sort(m_vMaps.begin(),m_vMaps.end(),Map::Less_than);
 // 	SetCurrentLevel(m_vMaps[0]->GetLevel());
 // 	GetCurrentMap()->Init();
+	return true;
+}
+
+bool MapManager::LoadMap(int level)
+{
+	//检查是否已经加载了
+	Map* theMap = GetMap(level);
+	if(theMap)
+		return true;
+
+	if(m_pMarkUp==NULL)
+		m_pMarkUp = new CMarkup;
+
+	char pBuf[MAX_PATH];
+	char pathMap[MAX_PATH];
+	GetCurrentDirectory(MAX_PATH,pBuf);
+	sprintf(pathMap,"%s\\res\\Maps\\%d.xml",pBuf,level);
+
+	//不存在该地图
+	if(_access(pathMap,0) != 0)
+		return false;
+
+	m_pMarkUp->Load(pathMap);
+	Map* targetMap = new Map;
+	int _level = 0;
+	int _width = 0,_length = 0;
+	int _ID = 0;
+	int _Action = 0;
+	int _xpos = 0;
+	int _ypos = 0;
+	eCamp _camp = eCamp_Neutral;
+	int num = 0;
+	m_pMarkUp->ResetMainPos();
+	if(m_pMarkUp->FindElem("map"))
+	{
+		_level = atoi(m_pMarkUp->GetAttrib("level").c_str());
+		_width = atoi(m_pMarkUp->GetAttrib("width").c_str());
+		_length = atoi(m_pMarkUp->GetAttrib("length").c_str());
+		if(_level!=0 && _width!=0 && _length!=0)
+		{
+			targetMap->SetLevel(_level);
+			targetMap->SetWidthLength(_width,_length);
+			targetMap->GetTurns() = 20;	//默认20回合一关
+		}
+		else
+			return false;
+	}
+	m_pMarkUp->IntoElem();
+	if(m_pMarkUp->FindElem("Block"))
+	{
+		m_pMarkUp->IntoElem();
+		int _type = 0;
+		while(m_pMarkUp->FindElem("Terrain"))
+		{
+			_type = atoi(m_pMarkUp->GetAttrib("type").c_str());
+			_xpos = atoi(m_pMarkUp->GetAttrib("xpos").c_str());
+			_ypos = atoi(m_pMarkUp->GetAttrib("ypos").c_str());
+			Block _block(_xpos,_ypos);
+			// 				setTerrain(_block.attri,_type);
+			// 				if (_type == HillTop || _type == CityWall)
+			// 				{
+			// 					setStandOn(_type,0);
+			// 				}
+			_block.attri = _type;
+			targetMap->AddBlock(_block);
+		}
+		std::sort(targetMap->GetVBlock().begin(),targetMap->GetVBlock().end(),Block::less_than);
+		m_pMarkUp->OutOfElem();
+	}
+	m_vMaps.push_back(targetMap);
+
+
+	//清楚以前的单位数据
+	CreatureManager::sInstance().Release();
+	//载入预制的单位
+	if(m_pMarkUp->FindElem("Creature"))
+	{
+		m_pMarkUp->IntoElem();
+		while(m_pMarkUp->FindElem("Man"))
+		{
+			_ID = atoi(m_pMarkUp->GetAttrib("ID").c_str());
+			_Action = atoi(m_pMarkUp->GetAttrib("Action").c_str());
+			_xpos = atoi(m_pMarkUp->GetAttrib("xpos").c_str());
+			_ypos = atoi(m_pMarkUp->GetAttrib("ypos").c_str());
+			_camp = (eCamp)(atoi(m_pMarkUp->GetAttrib("camp").c_str()));
+
+			Character* cha = new Character;
+			//				MapObject* mo = new MapObject;
+			cha->Init(targetMap->GetLevel(),_ID,num,_Action,Block(_xpos,_ypos));
+			//地图格子由于单位生成，属性变化移动到单位创建中完成
+			// 				Block* theBlock = level->GetBlock(_xpos,_ypos);
+			// 				if(theBlock != NULL)
+			// 					setOccupied((theBlock->attri),1);
+			//测试移动力
+			cha->SetMoveAbility(4);
+
+			if (_camp == eCamp_Friend)
+			{
+				cha->SetCamp(eCamp_Friend);
+				CreatureManager::sInstance().AddFriend(cha);
+			}
+			else if (_camp == eCamp_Enemy)
+			{
+				cha->SetCamp(eCamp_Enemy);
+				CreatureManager::sInstance().AddEnemy(cha);
+			}
+			num++;
+		}
+		m_pMarkUp->OutOfElem();
+	}	
 	return true;
 }
 

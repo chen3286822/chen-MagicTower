@@ -67,7 +67,9 @@ Scene* GetScene()
 void SetCurrentMap(int level)
 {
 	MapManager::sInstance().SetCurrentLevel(level);
-	MapManager::sInstance().GetCurrentMap()->Init();
+	MapManager::sInstance().LoadMap(level);
+	if(MapManager::sInstance().GetCurrentMap())
+		MapManager::sInstance().GetCurrentMap()->Init();
 }
 
 Map* GetCurMap()

@@ -43,10 +43,7 @@ class ActionProcess : public Singleton<ActionProcess>
 public:
 	ActionProcess()
 	{
-		m_lAction.clear();
-		m_eActionState = eActionState_PickAction;
-		m_iCurAction.Clear();
-		m_nLeftTime = -1;
+		ClearAction();
 	}
 	virtual ~ActionProcess(){}
 
@@ -61,11 +58,26 @@ public:
 		sprintf(temp,"%d ",notify);
 		OutputDebugString(temp);
 	}
-	void PopAction(){m_lAction.pop_front();}
+
+	void PopAction()
+	{
+		if(!m_lAction.empty())
+			m_lAction.pop_front();
+	}
+
 	void TimeUp(DWORD leftTime)
 	{
 		m_nLeftTime = leftTime;
 	}
+
+	void ClearAction()
+	{
+		m_lAction.clear();
+		m_eActionState = eActionState_PickAction;
+		m_iCurAction.Clear();
+		m_nLeftTime = -1;
+	}
+
 	void Update()
 	{
 		if (m_eActionState == eActionState_PickAction)
@@ -221,10 +233,20 @@ public:
 			case eNotify_Dead:
 				{
 					action.m_pTarget->GetDead() = true;
-					MapManager::sInstance().GetCurrentMap()->IsTriggerKill(action.m_pCast->GetNum());
+
+					//如果触发剧情，则终止其他动作
+					if(MapManager::sInstance().GetCurrentMap()->IsTriggerKill(action.m_pCast->GetNum()))
+					{
+						//提前结束动作
+						action.m_pCast->SetFinish(true);
+						action.m_pCast->GetCastSkill() = -1;
+						action.m_pCast->GetUseItem() = -1;
+
+						ClearAction();
+					}
 
 					//检查是否满足胜利条件
-					if(MapManager::sInstance().GetCurrentMap()->CheckVictory(eVictoryCondition_KillSpecificEnemy,action.m_pCast->GetNum()))
+					if(MapManager::sInstance().GetCurrentMap()->CheckVictory(eVictoryCondition_KillSpecificEnemy,action.m_pTarget->GetNum()))
 						MapManager::sInstance().GetCurrentMap()->SetVictory(true);
 				}
 				break;

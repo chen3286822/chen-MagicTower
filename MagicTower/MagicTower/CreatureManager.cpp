@@ -6,6 +6,7 @@
 #include "ActionProcess.h"
 #include "WndDialog.h"
 #include "WndSummary.h"
+#include "ActionProcess.h"
 
 CreatureManager::CreatureManager()
 {
@@ -100,6 +101,8 @@ void CreatureManager::Release()
 		gSafeDelete(*it);
 	for (VCharacter::iterator it=m_VFriendList.begin();it!=m_VFriendList.end();it++)
 		gSafeDelete(*it);
+	m_VEnemyList.clear();
+	m_VFriendList.clear();
 }
 
 void CreatureManager::Render()
@@ -125,6 +128,8 @@ void CreatureManager::Update(float delta)
 	//不是出于暂停中，且胜利了，则跳转到战后剧情
 	if (!m_bPause && MapManager::sInstance().GetCurrentMap()->GetVictory() == true)
 	{
+		//清楚剩余的动作
+		ActionProcess::sInstance().ClearAction();
 		App::sInstance().SetLayer(eLayer_Scene,true);
 		App::sInstance().StartNextScene();
 	}

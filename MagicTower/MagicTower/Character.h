@@ -56,7 +56,7 @@ public:
 	Block& GetOrigBlock(){return m_iOrigBlock;}
 	float GetRealX(){return m_fXPos;}
 	float GetRealY(){return m_fYPos;}
-	void	SetMoveAbility(int _ability,Map* map);
+	void	SetMoveAbility(int _ability);
 	int	GetMoveAbility(){return m_nMoveAbility;}
 	void SetCamp(int _camp){m_nCamp = _camp;}
 	int GetCamp(){return m_nCamp;}

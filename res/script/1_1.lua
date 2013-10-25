@@ -10,7 +10,7 @@ function PreFight1()
 	local block = tagBlock(5,5);
 	player1:Init(map:GetLevel(),115,100,1,block);
 	player1:SetCamp(0);
-	player1:SetMoveAbility(4,map);
+	player1:SetMoveAbility(4);
 	player1:SetName("’≈¡…");
 	player1:AddEquip(0,23);
 	player1:AddEquip(1,37);
@@ -23,14 +23,14 @@ function PreFight1()
 	cha1:SetHide(true);
 	local cha2 = creaMgr:GetCreature(3);
 	cha2:SetHide(true);
-	local cha3 = creaMgr:GetCreature(5);
-	cha3:SetHide(true);
+	--local cha3 = creaMgr:GetCreature(5);
+	--cha3:SetHide(true);
 
 
 	--map:AddTrigger(0,"turnUp",3,-1,-1,-1,-1);
 	map:AddTrigger(2,"touch",-1,100,4,-1,-1);
 	map:AddTrigger(1,"location",-1,100,-1,2,3);
-	map:AddTrigger(3,"kill",-1,100,3,-1,-1);
+	map:AddTrigger(3,"kill",-1,100,5,-1,-1);
 end
 
 function turnUp()
@@ -69,5 +69,11 @@ function location()
 end
 
 function kill()
-	MyMessageBox("kill the target!");
+	local creaMgr = GetCreature();
+	creaMgr:SetPause(true);
+	local cha = creaMgr:GetCreature(100);
+	cha:Turn(3,1000);
+	cha:Attack();
+	cha:Attack();
+	cha:Talk(3,"÷’”⁄…±µÙ¡À£°")
 end

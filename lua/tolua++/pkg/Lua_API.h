@@ -1,6 +1,6 @@
 /*
 ** Lua binding: lua
-** Generated automatically by tolua++-1.0.92 on 10/24/13 18:20:55.
+** Generated automatically by tolua++-1.0.92 on 10/25/13 14:34:07.
 */
 
 #ifndef __cplusplus
@@ -1184,8 +1184,7 @@ static int tolua_lua_Character_SetMoveAbility00(lua_State* tolua_S)
  if (
      !tolua_isusertype(tolua_S,1,"Character",0,&tolua_err) ||
      !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
-     !tolua_isusertype(tolua_S,3,"Map",0,&tolua_err) ||
-     !tolua_isnoobj(tolua_S,4,&tolua_err)
+     !tolua_isnoobj(tolua_S,3,&tolua_err)
  )
   goto tolua_lerror;
  else
@@ -1193,12 +1192,11 @@ static int tolua_lua_Character_SetMoveAbility00(lua_State* tolua_S)
  {
   Character* self = (Character*)  tolua_tousertype(tolua_S,1,0);
   int _ability = ((int)  tolua_tonumber(tolua_S,2,0));
-  Map* map = ((Map*)  tolua_tousertype(tolua_S,3,0));
 #ifndef TOLUA_RELEASE
   if (!self) tolua_error(tolua_S,"invalid 'self' in function 'SetMoveAbility'", NULL);
 #endif
   {
-   self->SetMoveAbility(_ability,map);
+   self->SetMoveAbility(_ability);
   }
  }
  return 0;
