@@ -41,14 +41,21 @@ extern "C"
 #include "lualib.h"
 }
 
+//设定此标记表示不从xml中读取地图文件，而直接从png中读取整个地图
+#define _LOAD_MAP_FROM_PNG
+
 extern char g_strVersion[64];
+extern int g_nMapWidthNum;
+extern int g_nMapHeightNum;
+extern int g_nMapWidth;
+extern int g_nMapHeight;
 
 #define LEVEL_NUM 20
 
 
 
-#define APP_WIDTH	800
-#define APP_HEIGHT	600
+#define APP_WIDTH	960
+#define APP_HEIGHT	672
 #define CHILDWND_OFFX	150
 #define CHILDWND_OFFY	50
 
@@ -68,13 +75,9 @@ extern char g_strVersion[64];
 #define	 Tex_Defend_Width						48
 #define Tex_Defend_Length						240
 
-#define MAP_RECT		64
-#define MAP_OFF_X	10
-#define MAP_OFF_Y	50
-#define MAP_WIDTH_NUM	8
-#define MAP_LENGTH_NUM	8
-#define MAP_WIDTH		MAP_RECT*MAP_WIDTH_NUM
-#define MAP_LENGTH		MAP_RECT*MAP_LENGTH_NUM	
+#define MAP_RECT		48
+#define MAP_OFF_X	0
+#define MAP_OFF_Y	0
 
 #define KEY_NUM 36
 
@@ -378,6 +381,10 @@ enum eTerrain
 	eTerrain_Desert			=		0x000001C,		//沙漠	0011100b
 	eTerrain_CityRoad		=		0x0000020,		//城内道路	0100000b
 	eTerrain_City				=		0x0000024,		//城内	0100100b
+	eTerrain_Castle		=		0x0000028,		//城堡	0101000b
+	eTerrain_Stronghold =	0x0000032,		//据点	0101100b
+	eTerrain_Littlehold		=	0x0000036,		//小据点(小帐篷) 0110000b
+	eTerrain_Fences			=	0x0000040,		//栅栏 0110100b
 };
 
 enum eBlockAttribute		//表示地图格子的属性位
@@ -425,7 +432,7 @@ struct tagBlock
 	}
 	static bool less_than( tagBlock &b1, tagBlock &b2)
 	{
-		return b1.ypos*MAP_WIDTH_NUM+b1.xpos < b2.ypos*MAP_WIDTH_NUM+b2.xpos;
+		return b1.ypos*g_nMapWidthNum+b1.xpos < b2.ypos*g_nMapWidthNum+b2.xpos;
 	}
 };
 typedef struct tagBlock Block;
@@ -444,7 +451,7 @@ struct tagConfig
 };
 typedef struct tagConfig Config;
 
-
+void g_resetGlobalMapValues(int widthNum,int heigthNum);
 eKeyState g_getKeyState(HGE* hge,int Key);
 std::map<std::string,std::string> g_parseConfigFile(const std::string file);
 void g_getFiles( std::string path, std::map<std::string,std::string>& files,char* type,int maxFileNum,bool useDefaultName,bool isCharacter=false);

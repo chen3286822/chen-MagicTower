@@ -20,8 +20,8 @@ public:
 	{
 		m_vHeap.clear();
 		m_vHeap.push_back(NULL);
-		m_nWidth = MAP_WIDTH_NUM;
-		m_nHeight = MAP_LENGTH_NUM;
+		m_nWidth = g_nMapWidthNum;
+		m_nHeight = g_nMapHeightNum;
 		m_ppbIsInHeap = new bool*[m_nWidth];
 		for (int i=0;i<m_nWidth;i++)
 		{

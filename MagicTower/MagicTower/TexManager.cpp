@@ -6,6 +6,7 @@ TexManager::TexManager(void)
 {
 	for(int i=0;i<eActionTex_Num;i++)
 		m_mCharTex[i].clear();
+	m_mMapTex.clear();
 	m_mMap.clear();
 	m_mMapInfo.clear();
 	m_mUITex.clear();
@@ -24,6 +25,7 @@ TexManager::~TexManager(void)
 	{
 		FreeTex(m_mCharTex[i]);
 	}
+	FreeTex(m_mMapTex);
 	FreeTex(m_mMap);
 	FreeTex(m_mUITex);
 	FreeTex(m_mSkillTex);
@@ -46,7 +48,13 @@ bool TexManager::LoadTex()
 {
 //	bool bCharTex = LoadCharTex();
 	bool bCharTex = true;
-	bool bMapTex = LoadMap();
+	bool bMapTex = true;
+	bool bMapBlock = true;
+#ifdef _LOAD_MAP_FROM_PNG
+	
+#else
+	bMapBlock = LoadMapBlock();
+#endif
 //	bool bUITex = LoadUI();
 	bool bUITex = true;
 //	bool bSkillTex = LoadSkill();
@@ -60,7 +68,7 @@ bool TexManager::LoadTex()
 //	bool bHeadTex = LoadHead();
 	bool bHeadTex = true;
 
-	return (bCharTex && bMapTex && bUITex && bSkillTex && bItemTex && bSceneTex && bActorTex && bHeadTex);
+	return (bCharTex && bMapTex&& bMapBlock && bUITex && bSkillTex && bItemTex && bSceneTex && bActorTex && bHeadTex);
 }
 
 bool TexManager::LoadCharTex()
@@ -113,7 +121,39 @@ bool TexManager::LoadCharTex()
 	return true;
 }
 
-bool TexManager::LoadMap()
+bool TexManager::LoadMapTex()
+{
+	m_mUITex.clear();
+
+	char pBuf[MAX_PATH];
+	char pathTex[MAX_PATH];
+	GetCurrentDirectory(MAX_PATH,pBuf);
+	sprintf(pathTex,"%s\\res\\tex\\MapTex",pBuf);
+
+	std::map<std::string,std::string> files;
+	g_getFiles(pathTex,files,".png",50,true);
+	size_t found = 0;
+	int ID = 0;
+	for (std::map<std::string,std::string>::iterator mit=files.begin();mit!=files.end();mit++)
+	{
+		found = mit->second.find('.');
+		if(found != 0)
+		{
+			char strID[10];
+			strncpy(strID,mit->second.c_str(),found);
+			strID[found] = '\0';
+			ID = atoi(strID);
+			m_mMapTex[ID] = App::sInstance().GetHGE()->Texture_Load(mit->first.c_str());
+		}
+	}
+	if (m_mMapTex.empty())
+	{
+		return false;
+	}
+	return true;
+}
+
+bool TexManager::LoadMapBlock()
 {
 	m_mMap.clear();
 	m_mMapInfo.clear();
@@ -121,7 +161,7 @@ bool TexManager::LoadMap()
 	char pBuf[MAX_PATH];
 	char pathTex[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH,pBuf);
-	sprintf(pathTex,"%s\\res\\map",pBuf);
+	sprintf(pathTex,"%s\\res\\MapBlock",pBuf);
 
 	std::map<std::string,std::string> files;
 	g_getFiles(pathTex,files,".png",50,true);
@@ -500,6 +540,28 @@ HTEXTURE TexManager::GetHeadTex(int _ID)
 	else
 	{
 		g_debugString(__FILE__,__FUNCTION__,__LINE__,"载入头像图片失败");
+		exit(0);
+	}
+	return 0;
+}
+
+HTEXTURE TexManager::GetMapTex(int _ID)
+{
+	for (std::map<int,HTEXTURE>::iterator it=m_mMapTex.begin();it!=m_mMapTex.end();it++)
+	{
+		if(_ID == it->first)
+			return it->second;
+	}
+	//没有找到，从文件载入
+	HTEXTURE mapTex = LoadTexFromFile("res\\tex\\MapTex",_ID);
+	if(mapTex)
+	{
+		m_mMapTex[_ID] = mapTex;
+		return mapTex;
+	}
+	else
+	{
+		g_debugString(__FILE__,__FUNCTION__,__LINE__,"载入大地图失败");
 		exit(0);
 	}
 	return 0;

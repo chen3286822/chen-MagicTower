@@ -298,7 +298,7 @@ bool App::AppUpdate()
 
 	float xpos,ypos;
 	m_pHge->Input_GetMousePos(&xpos,&ypos);
-	if(xpos >= MAP_OFF_X && xpos < MAP_OFF_X+MAP_WIDTH && ypos >= MAP_OFF_Y && ypos < MAP_OFF_Y+MAP_LENGTH)
+	if(xpos >= MAP_OFF_X && xpos < MAP_OFF_X+g_nMapWidth && ypos >= MAP_OFF_Y && ypos < MAP_OFF_Y+g_nMapHeight)
 	{
 		float xMap,yMap;
 		xMap = xpos - MAP_OFF_X;
@@ -402,7 +402,15 @@ bool App::AppUpdate()
 						CreatureManager::sInstance().Release();
 
 						//设置下一关
-						SetCurrentMap(level+1);
+						if(!SetCurrentMap(level+1))
+						{
+							//设置下一关失败，返回主界面
+							m_eCurLayer = eLayer_MainWnd;
+							UISystem::sInstance().PopUpWindow(eWindowID_MainTitle);
+							m_bCheckNextScene = false;
+							m_bCheckPreFight = false;
+							return false;
+						}
 						CreatureManager::sInstance().Init();
 					}
 				}

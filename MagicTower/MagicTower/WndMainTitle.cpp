@@ -4,23 +4,23 @@
 #include "MyLua.h"
 
 WndMainTitle::WndMainTitle():
-UIWindow(TexManager::sInstance().GetSceneTex(4),0,0,800,511,0,(APP_HEIGHT-511)/2)
+UIWindow(TexManager::sInstance().GetSceneTex(4),0,0,960,614,(APP_WIDTH-960)/2,(APP_HEIGHT-614)/2)
 {
 	m_pContainer = new hgeGUI;
 
-	m_pNewGame = new UIButton(eControlID_NewGameButton,m_fPosX+165,m_fPosY+220,409,54,TexManager::sInstance().GetUITex(eUIID_LongButtonUp),TexManager::sInstance().GetUITex(eUIID_LongButtonDown),0,0);
-	m_pLoadGame = new UIButton(eControlID_LoadGameButton,m_fPosX+215,m_fPosY+280,409,54,TexManager::sInstance().GetUITex(eUIID_LongButtonUp),TexManager::sInstance().GetUITex(eUIID_LongButtonDown),0,0);
-	m_pSet = new UIButton(eControlID_SetButton,m_fPosX+265,m_fPosY+340,409,54,TexManager::sInstance().GetUITex(eUIID_LongButtonUp),TexManager::sInstance().GetUITex(eUIID_LongButtonDown),0,0);
-	m_pQuit = new UIButton(eControlID_QuitButton,m_fPosX+315,m_fPosY+400,409,54,TexManager::sInstance().GetUITex(eUIID_LongButtonUp),TexManager::sInstance().GetUITex(eUIID_LongButtonDown),0,0);
+	m_pNewGame = new UIButton(eControlID_NewGameButton,m_fPosX+250,m_fPosY+240,409,54,TexManager::sInstance().GetUITex(eUIID_LongButtonUp),TexManager::sInstance().GetUITex(eUIID_LongButtonDown),0,0);
+	m_pLoadGame = new UIButton(eControlID_LoadGameButton,m_fPosX+276,m_fPosY+300,409,54,TexManager::sInstance().GetUITex(eUIID_LongButtonUp),TexManager::sInstance().GetUITex(eUIID_LongButtonDown),0,0);
+	m_pSet = new UIButton(eControlID_SetButton,m_fPosX+302,m_fPosY+360,409,54,TexManager::sInstance().GetUITex(eUIID_LongButtonUp),TexManager::sInstance().GetUITex(eUIID_LongButtonDown),0,0);
+	m_pQuit = new UIButton(eControlID_QuitButton,m_fPosX+328,m_fPosY+420,409,54,TexManager::sInstance().GetUITex(eUIID_LongButtonUp),TexManager::sInstance().GetUITex(eUIID_LongButtonDown),0,0);
 
-	m_pNewGame->OffsetX = 165;
-	m_pNewGame->OffsetY = 220;
-	m_pLoadGame->OffsetX = 215;
-	m_pLoadGame->OffsetY = 280;
-	m_pSet->OffsetX = 265;
-	m_pSet->OffsetY = 340;
-	m_pQuit->OffsetX = 315;
-	m_pQuit->OffsetY = 400;
+	m_pNewGame->OffsetX = 250;
+	m_pNewGame->OffsetY = 240;
+	m_pLoadGame->OffsetX = 276;
+	m_pLoadGame->OffsetY = 300;
+	m_pSet->OffsetX = 302;
+	m_pSet->OffsetY = 360;
+	m_pQuit->OffsetX = 328;
+	m_pQuit->OffsetY = 420;
 	m_pContainer->AddCtrl(m_pNewGame);
 	m_pContainer->AddCtrl(m_pLoadGame);
 	m_pContainer->AddCtrl(m_pSet);
@@ -98,12 +98,12 @@ void WndMainTitle::Render()
 {
 	UIWindow::Render();
 
-	m_pLogo->Render(m_fPosX+197,m_fPosY+40);
+	m_pLogo->Render(m_fPosX+(APP_WIDTH-407)/2,m_fPosY+40);
 
 	GfxFont* font = FontManager::sInstance().GetFont(FontAttr(eFontType_SongTi,eFontSize_FontMiddle));
 	font->SetColor(0xFFFFFFFF);
-	font->Print(10,576,"%s",g_strVersion);
-	font->Print(10,588,"Author. Chen");
+	font->Print(10,900,"%s",g_strVersion);
+	font->Print(10,920,"Author. Chen");
 }
 
 void	WndMainTitle::SetRenderPositon(float _x,float _y)

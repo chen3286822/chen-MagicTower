@@ -421,15 +421,15 @@ void TipWnd::Update(float delta)
 		{
 			xpos = m_XPos*MAP_RECT;
 			ypos = m_YPos*MAP_RECT;
-			if (xpos+MAP_RECT+m_Width+m_OffLeft >= MAP_RECT*MAP_WIDTH_NUM)
+			if (xpos+MAP_RECT+m_Width+m_OffLeft >= MAP_RECT*g_nMapWidthNum)
 			{
 				m_OffX = xpos-m_Width-m_OffRight + MAP_OFF_X;
 			}
 			else
 				m_OffX = xpos + MAP_RECT + m_OffLeft + MAP_OFF_X;
-			if (ypos + m_Height+m_OffTop >= MAP_RECT*MAP_LENGTH_NUM)
+			if (ypos + m_Height+m_OffTop >= MAP_RECT*g_nMapHeightNum)
 			{
-				m_OffY = ypos - (MAP_LENGTH_NUM*MAP_RECT-ypos-m_Height-m_OffTop) + MAP_OFF_Y;
+				m_OffY = ypos - (g_nMapHeightNum*MAP_RECT-ypos-m_Height-m_OffTop) + MAP_OFF_Y;
 			}
 			else
 				m_OffY = ypos + m_OffTop + MAP_OFF_Y;

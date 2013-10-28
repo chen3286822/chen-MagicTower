@@ -1,6 +1,6 @@
 /*
 ** Lua binding: lua
-** Generated automatically by tolua++-1.0.92 on 10/25/13 14:34:07.
+** Generated automatically by tolua++-1.0.92 on 10/28/13 10:33:38.
 */
 
 #ifndef __cplusplus
@@ -948,10 +948,11 @@ static int tolua_lua_SetCurrentMap00(lua_State* tolua_S)
  {
   int level = ((int)  tolua_tonumber(tolua_S,1,0));
   {
-   SetCurrentMap(level);
+   bool tolua_ret = (bool)  SetCurrentMap(level);
+   tolua_pushboolean(tolua_S,(bool)tolua_ret);
   }
  }
- return 0;
+ return 1;
 #ifndef TOLUA_RELEASE
  tolua_lerror:
  tolua_error(tolua_S,"#ferror in function 'SetCurrentMap'.",&tolua_err);

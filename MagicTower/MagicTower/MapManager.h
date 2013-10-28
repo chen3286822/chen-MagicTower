@@ -34,6 +34,7 @@ public:
 	void Render();
 	void Update(float dt);
 
+	void SetMapTex(int level);
 	inline void AddObject(MapObject* mo){m_vObjList.push_back(mo);}
 	inline void AddBlock(Block _block){m_vBlocks.push_back(_block);}
 	inline void SetLevel(int _level){m_nlevel = _level;}
@@ -116,7 +117,9 @@ public:
 	MapManager(void);
 	virtual ~MapManager(void);
 
+	//此函数有问题，暂时不应使用
 	bool LoadMaps();
+
 	bool LoadMap(int level);
 	Map* GetMap(int level);
 	inline void SetCurrentLevel(int _level){m_nCurrentLevel = _level;}

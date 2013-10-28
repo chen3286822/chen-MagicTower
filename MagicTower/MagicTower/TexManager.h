@@ -35,8 +35,9 @@ public:
 
 	bool LoadTex();
 
+	bool LoadMapTex();
 	bool LoadCharTex();
-	bool LoadMap();
+	bool LoadMapBlock();
 	bool LoadUI();
 	bool LoadSkill();
 	bool LoadItem();
@@ -45,6 +46,7 @@ public:
 	bool LoadHead();
 
 	std::map<int,HTEXTURE> GetTex(int _ID);
+	HTEXTURE GetMapTex(int _ID);
 	HTEXTURE GetUITex(int UIID);
 	HTEXTURE GetSkillTex(int _ID);
 	HTEXTURE GetItemTex(int _ID);
@@ -55,6 +57,7 @@ public:
 
 private:
 	std::map<int,HTEXTURE> m_mCharTex[3];		//所有单位的动作图片
+	std::map<int,HTEXTURE> m_mMapTex;		//所有地图图片
 	std::map<int,HTEXTURE> m_mMap;		//所有包含地图图块的图片
 	std::map<int,HTEXTURE> m_mUITex;		//所有UI相关图片
 	std::map<int,HTEXTURE> m_mSkillTex;	//所有技能相关图片

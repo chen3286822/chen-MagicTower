@@ -1,5 +1,5 @@
 Scene* GetScene();
-void SetCurrentMap(int level);
+bool SetCurrentMap(int level);
 Map* GetCurMap();
 CreatureManager* GetCreature();
 Character* GetChar();

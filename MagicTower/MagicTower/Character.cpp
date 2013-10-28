@@ -194,9 +194,9 @@ void Character::Update(float delta)
 	{
 		//½ûÖ¹³¬¹ýµØÍ¼±ß½ç
 		if ((m_iBlock.xpos<=0 && m_eCurDir==eDirection_Left)
-			|| (m_iBlock.xpos>=MAP_WIDTH_NUM-1 && m_eCurDir==eDirection_Right)
+			|| (m_iBlock.xpos>=g_nMapWidthNum-1 && m_eCurDir==eDirection_Right)
 			|| (m_iBlock.ypos<=0 && m_eCurDir==eDirection_Up)
-			|| (m_iBlock.ypos>=MAP_LENGTH_NUM-1 && m_eCurDir==eDirection_Down))
+			|| (m_iBlock.ypos>=g_nMapHeightNum-1 && m_eCurDir==eDirection_Down))
 		{
 			m_eCharState = eCharacterState_Stand;
 //			m_bFinishAct = true;

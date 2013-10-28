@@ -3,7 +3,7 @@
 #include "App.h"
 
 WndDialog::WndDialog() :
-UIWindow(TexManager::sInstance().GetUITex(eUIID_Dialog),0,0,651,155,75,445)
+UIWindow(TexManager::sInstance().GetUITex(eUIID_Dialog),0,0,651,155,(APP_WIDTH-651)/2,515)
 {
 	m_pContainer = new hgeGUI;
 	m_pBindChar = NULL;

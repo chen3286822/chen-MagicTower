@@ -32,7 +32,7 @@ Scene* GetScene();
 /*
 	设置当前关卡
 */
-void SetCurrentMap(int level);
+bool SetCurrentMap(int level);
 
 /*
 	取得当前关卡地图的指针

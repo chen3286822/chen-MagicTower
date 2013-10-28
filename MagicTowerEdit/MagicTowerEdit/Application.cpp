@@ -14,16 +14,16 @@ Application::Application(void)
 	m_MapVertex[0].y = MAP_OFF_Y;
 	m_MapVertex[0].tx = 0;
 	m_MapVertex[0].ty = 0;
-	m_MapVertex[1].x = MAP_OFF_X + MAP_WIDTH;
+	m_MapVertex[1].x = MAP_OFF_X + g_nMapWidth;
 	m_MapVertex[1].y = MAP_OFF_Y;
 	m_MapVertex[1].tx = 1.0f;
 	m_MapVertex[1].ty = 0;
-	m_MapVertex[2].x = MAP_OFF_X + MAP_WIDTH;
-	m_MapVertex[2].y = MAP_OFF_Y + MAP_LENGTH;
+	m_MapVertex[2].x = MAP_OFF_X + g_nMapWidth;
+	m_MapVertex[2].y = MAP_OFF_Y + g_nMapHeight;
 	m_MapVertex[2].tx = 1.0f;
 	m_MapVertex[2].ty = 1.0f;
 	m_MapVertex[3].x = MAP_OFF_X;
-	m_MapVertex[3].y = MAP_OFF_Y + MAP_LENGTH;
+	m_MapVertex[3].y = MAP_OFF_Y + g_nMapHeight;
 	m_MapVertex[3].tx = 0;
 	m_MapVertex[3].ty = 1.0f;
 	for (int i=0;i<4;i++)
@@ -84,9 +84,9 @@ Application::~Application(void)
 // 	 }
 //	 const char* doc = (m_markUp->GetDoc()).c_str();
 	 m_vMapObject.clear();
-	 m_vMapObject.resize(MAP_WIDTH_NUM*MAP_LENGTH_NUM);
+	 m_vMapObject.resize(g_nMapWidthNum*g_nMapHeightNum);
 	 m_Blocks.clear();
-	 m_Blocks.resize(MAP_WIDTH_NUM*MAP_LENGTH_NUM);
+	 m_Blocks.resize(g_nMapWidthNum*g_nMapHeightNum);
 //	 m_vMapObject.clear();
 
 	 char buffer[MAX_PATH];
@@ -122,7 +122,7 @@ Application::~Application(void)
 
 	gSafeDelete(m_markUp);
 
-	for (int i=0;i<MAP_WIDTH_NUM*MAP_LENGTH_NUM;i++)
+	for (int i=0;i<g_nMapWidthNum*g_nMapHeightNum;i++)
 	{
 		if(m_vMapObject[i]!=NULL)
 		{
@@ -183,7 +183,7 @@ Application::~Application(void)
 	 {
 		 float xpos,ypos;
 		 hge->Input_GetMousePos(&xpos,&ypos);
-		 if(xpos >= MAP_OFF_X && xpos < MAP_OFF_X+MAP_WIDTH && ypos >= MAP_OFF_Y && ypos < MAP_OFF_Y+MAP_LENGTH)
+		 if(xpos >= MAP_OFF_X && xpos < MAP_OFF_X+g_nMapWidth && ypos >= MAP_OFF_Y && ypos < MAP_OFF_Y+g_nMapHeight)
 		 {
 			 if (m_markUp==NULL)
 			 {
@@ -198,10 +198,10 @@ Application::~Application(void)
 			 yNum = (int)(yMap/MAP_RECT);
 
 			 //先检查原来是否有物体了，有的话删除掉
-			 if (m_vMapObject[xNum+yNum*MAP_WIDTH_NUM]!=NULL)
+			 if (m_vMapObject[xNum+yNum*g_nMapWidthNum]!=NULL)
 			 {
-				 gSafeDelete(m_vMapObject[xNum+yNum*MAP_WIDTH_NUM]->spr);
-				 gSafeDelete(m_vMapObject[xNum+yNum*MAP_WIDTH_NUM]);
+				 gSafeDelete(m_vMapObject[xNum+yNum*g_nMapWidthNum]->spr);
+				 gSafeDelete(m_vMapObject[xNum+yNum*g_nMapWidthNum]);
 			 }
 
 			 MapObject* mo = new MapObject;
@@ -211,7 +211,7 @@ Application::~Application(void)
 			 mo->xpos			=	xNum;
 			 mo->ypos			=	yNum;
 			 mo->camp			=	eCamp_Enemy;		//先设成敌人，后面需要配置
-			 m_vMapObject[xNum+yNum*MAP_WIDTH_NUM] = mo;
+			 m_vMapObject[xNum+yNum*g_nMapWidthNum] = mo;
 		 }
 
 	 }
@@ -233,7 +233,7 @@ Application::~Application(void)
 
 	 drawMapLine();
 
-	 for (int i=0;i<MAP_WIDTH_NUM*MAP_LENGTH_NUM;i++)
+	 for (int i=0;i<g_nMapWidthNum*g_nMapHeightNum;i++)
 	 {
 		 if(m_vMapObject[i]!=NULL)
 			 m_vMapObject[i]->spr->Render((MAP_RECT-FLOAT_PIC_SQUARE_WIDTH)/2+MAP_OFF_X +MAP_RECT*m_vMapObject[i]->xpos,MAP_OFF_Y+MAP_RECT*m_vMapObject[i]->ypos);
@@ -242,13 +242,13 @@ Application::~Application(void)
 
  void Application::drawMapLine()
  {
-	 for (int i=1;i<MAP_WIDTH_NUM;i++)
+	 for (int i=1;i<g_nMapWidthNum;i++)
 	 {
-		hge->Gfx_RenderLine(MAP_OFF_X+i*MAP_RECT,MAP_OFF_Y,MAP_OFF_X+i*MAP_RECT,MAP_OFF_Y+MAP_LENGTH,0xFF7F7F7F); 
+		hge->Gfx_RenderLine(MAP_OFF_X+i*MAP_RECT,MAP_OFF_Y,MAP_OFF_X+i*MAP_RECT,MAP_OFF_Y+g_nMapHeight,0xFF7F7F7F); 
 	 }
-	for (int j=1;j<MAP_LENGTH_NUM;j++)
+	for (int j=1;j<g_nMapHeightNum;j++)
 	{
-		hge->Gfx_RenderLine(MAP_OFF_X,j*MAP_RECT+MAP_OFF_Y,MAP_OFF_X+MAP_WIDTH,j*MAP_RECT+MAP_OFF_Y,0xFF7F7F7F);
+		hge->Gfx_RenderLine(MAP_OFF_X,j*MAP_RECT+MAP_OFF_Y,MAP_OFF_X+g_nMapWidth,j*MAP_RECT+MAP_OFF_Y,0xFF7F7F7F);
 	}
  }
 
@@ -291,7 +291,7 @@ Application::~Application(void)
 	{
 		float xpos,ypos;
 		hge->Input_GetMousePos(&xpos,&ypos);
-		if(xpos >= MAP_OFF_X && xpos < MAP_OFF_X+MAP_WIDTH && ypos >= MAP_OFF_Y && ypos < MAP_OFF_Y+MAP_LENGTH)
+		if(xpos >= MAP_OFF_X && xpos < MAP_OFF_X+g_nMapWidth && ypos >= MAP_OFF_Y && ypos < MAP_OFF_Y+g_nMapHeight)
 		{
 			m_mouseSpr->Render(xpos-FLOAT_PIC_SQUARE_WIDTH/2,ypos-FLOAT_PIC_SQUARE_HEIGHT/2);
 			drawSmallRect(xpos,ypos);
@@ -312,8 +312,8 @@ Application::~Application(void)
 	 m_markUp->SetDoc("");
 	 m_markUp->AddElem("map");
 	 m_markUp->AddAttrib("level",m_config.level);
-	 m_markUp->AddAttrib("width",MAP_WIDTH_NUM);
-	 m_markUp->AddAttrib("length",MAP_LENGTH_NUM);
+	 m_markUp->AddAttrib("width",g_nMapWidthNum);
+	 m_markUp->AddAttrib("length",g_nMapHeightNum);
 	 m_markUp->IntoElem();
  }
 
@@ -328,21 +328,21 @@ Application::~Application(void)
 	 //为地图添加默认地形
 	 m_markUp->AddElem("Block");
 	 m_markUp->IntoElem();
-	 for (int i=0;i<MAP_WIDTH_NUM*MAP_LENGTH_NUM;i++)
+	 for (int i=0;i<g_nMapWidthNum*g_nMapHeightNum;i++)
 	 {
 		 m_markUp->AddElem("Terrain");
 		 //设置地图块属性
 		 int attr = eTerrain_Road;
 		 setStandOn(attr,1);
 		 m_markUp->AddAttrib("type",attr);
-		 m_markUp->AddAttrib("xpos",i%MAP_WIDTH_NUM);
-		 m_markUp->AddAttrib("ypos",i/MAP_WIDTH_NUM);
+		 m_markUp->AddAttrib("xpos",i%g_nMapWidthNum);
+		 m_markUp->AddAttrib("ypos",i/g_nMapWidthNum);
 	 }
 	 m_markUp->OutOfElem();
 	 m_markUp->AddElem("Creature");
 	 m_markUp->IntoElem();
 	 //添加单位
-	 for (int i=0;i<MAP_WIDTH_NUM*MAP_LENGTH_NUM;i++)
+	 for (int i=0;i<g_nMapWidthNum*g_nMapHeightNum;i++)
 	 {
 		 if(m_vMapObject[i]!=NULL)
 		 {
@@ -361,7 +361,7 @@ Application::~Application(void)
  bool Application::loadMapFromXml()
  {
 	 m_config.clear();
-	 for(int i=0;i<MAP_WIDTH_NUM*MAP_LENGTH_NUM;i++)
+	 for(int i=0;i<g_nMapWidthNum*g_nMapHeightNum;i++)
 		 if(m_vMapObject[i]!=NULL)
 		 {
 			 gSafeDelete(m_vMapObject[i]->spr);
@@ -435,7 +435,7 @@ Application::~Application(void)
 			mo->xpos			=	_xpos;
 			mo->ypos			=	_ypos;
 			mo->camp		=	_camp;
-			m_vMapObject[_xpos+_ypos*MAP_WIDTH_NUM] = mo;
+			m_vMapObject[_xpos+_ypos*g_nMapWidthNum] = mo;
 		}
 		m_markUp->OutOfElem();
 	}

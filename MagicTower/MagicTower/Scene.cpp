@@ -261,7 +261,7 @@ Scene::Scene()
 	m_Num = 0;
 	m_eState = eActionState_PickAction;
 	m_fBgOffsetX = (APP_WIDTH-640)/2;
-	m_fBgOffsetY = (APP_HEIGHT-400)/2-55;
+	m_fBgOffsetY = (APP_HEIGHT-400)/2-30;
 	m_bShowPlaceName = false;
 	m_dwShowTime = 0;
 	m_strPlace.clear();

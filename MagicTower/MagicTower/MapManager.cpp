@@ -80,8 +80,29 @@ bool Map::IsShowTitle()
 	return m_bShowCampTurn || m_bShowTurns;
 }
 
+void Map::SetMapTex(int level)
+{
+	if (!m_pMapSpr)
+		return;
+	
+	HTEXTURE mapTex = TexManager::sInstance().GetMapTex(level);
+	if (mapTex)
+	{
+		m_pMapSpr->SetTexture(mapTex);
+		HGE* hge = hgeCreate(HGE_VERSION);
+		int texWidth = hge->Texture_GetWidth(mapTex);
+		int texHeight = hge->Texture_GetHeight(mapTex);
+		m_pMapSpr->SetTextureRect(0,0,texWidth,texHeight);
+		hge->Release();
+	}
+}
+
 void Map::Render()
 {
+#ifdef _LOAD_MAP_FROM_PNG
+	if(m_pMapSpr)
+		m_pMapSpr->Render(0,0);
+#else
 	for (std::vector<Block>::iterator it=m_vBlocks.begin();it!=m_vBlocks.end();it++)
 	{
 		blockInfo _blockInfo(TexManager::sInstance().GetBlock(getTerrain(it->attri)));
@@ -89,6 +110,7 @@ void Map::Render()
 		m_pMapSpr->SetTextureRect(_blockInfo.m_fX,_blockInfo.m_fY,_blockInfo.m_fWidth,_blockInfo.m_fHeight);
 		m_pMapSpr->RenderStretch(MAP_OFF_X +MAP_RECT*(*it).xpos,MAP_OFF_Y+MAP_RECT*(*it).ypos,MAP_OFF_X +MAP_RECT*(*it).xpos+MAP_RECT,MAP_OFF_Y+MAP_RECT*(*it).ypos+MAP_RECT);
 	}
+#endif
 
 	for (std::vector<MapObject*>::iterator it=m_vObjList.begin();it!=m_vObjList.end();it++)
 	{
@@ -158,9 +180,9 @@ MapObject* Map::GetObject(int x,int y)
 
 Block* Map::GetBlock(int x,int y)
 {
-	if(x < 0 || x >= MAP_WIDTH_NUM || y < 0 || y >= MAP_LENGTH_NUM)
+	if(x < 0 || x >= g_nMapWidthNum || y < 0 || y >= g_nMapHeightNum)
 		return NULL;
-	return &(m_vBlocks[x+y*MAP_WIDTH_NUM]);
+	return &(m_vBlocks[x+y*g_nMapWidthNum]);
 }
 
 void Map::SetBlockOccupied(int xpos,int ypos)
@@ -523,6 +545,8 @@ MapManager::~MapManager(void)
 	}
 }
 
+
+//不应使用该函数，因为地图是一次性全部载入，而每关的单位都会同时载入
 bool MapManager::LoadMaps()
 {
 	m_vMaps.clear();
@@ -645,12 +669,18 @@ bool MapManager::LoadMap(int level)
 	if(m_pMarkUp==NULL)
 		m_pMarkUp = new CMarkup;
 
+	//载入地图配置
 	char pBuf[MAX_PATH];
 	char pathMap[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH,pBuf);
-	sprintf(pathMap,"%s\\res\\Maps\\%d.xml",pBuf,level);
 
-	//不存在该地图
+#ifdef _LOAD_MAP_FROM_PNG
+	sprintf(pathMap,"%s\\res\\tex\\MapTex\\%d.xml",pBuf,level);
+#else
+	sprintf(pathMap,"%s\\res\\Maps\\%d.xml",pBuf,level);
+#endif
+
+	//不存在该地图配置
 	if(_access(pathMap,0) != 0)
 		return false;
 
@@ -672,7 +702,9 @@ bool MapManager::LoadMap(int level)
 		_length = atoi(m_pMarkUp->GetAttrib("length").c_str());
 		if(_level!=0 && _width!=0 && _length!=0)
 		{
+			g_resetGlobalMapValues(_width,_length);
 			targetMap->SetLevel(_level);
+			targetMap->SetMapTex(level);
 			targetMap->SetWidthLength(_width,_length);
 			targetMap->GetTurns() = 20;	//默认20回合一关
 		}
@@ -690,11 +722,6 @@ bool MapManager::LoadMap(int level)
 			_xpos = atoi(m_pMarkUp->GetAttrib("xpos").c_str());
 			_ypos = atoi(m_pMarkUp->GetAttrib("ypos").c_str());
 			Block _block(_xpos,_ypos);
-			// 				setTerrain(_block.attri,_type);
-			// 				if (_type == HillTop || _type == CityWall)
-			// 				{
-			// 					setStandOn(_type,0);
-			// 				}
 			_block.attri = _type;
 			targetMap->AddBlock(_block);
 		}

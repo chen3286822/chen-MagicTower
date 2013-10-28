@@ -6,6 +6,10 @@
 #pragma comment(lib,"version.lib")
 
 char g_strVersion[64] = {0};
+int g_nMapWidthNum = 8;
+int g_nMapHeightNum = 8;
+int g_nMapWidth = g_nMapWidthNum*MAP_RECT;
+int g_nMapHeight = g_nMapHeightNum*MAP_RECT;
 
 const unsigned char GfxFont::g_byAlphaLevel[65] = 
 {
@@ -15,6 +19,14 @@ const unsigned char GfxFont::g_byAlphaLevel[65] =
 	156,160,164,168,172,176,180,184,188,192,196,200,204,
 	208,212,216,220,224,228,232,236,240,244,248,252,255
 };
+
+void g_resetGlobalMapValues(int widthNum,int heigthNum)
+{
+	g_nMapWidthNum  = widthNum;
+	g_nMapHeightNum = heigthNum;
+	g_nMapWidth = g_nMapWidthNum*MAP_RECT;
+	g_nMapHeight = g_nMapHeightNum*MAP_RECT;
+}
 
 eLButtonState g_getLButtonState(HGE* hge)
 {
