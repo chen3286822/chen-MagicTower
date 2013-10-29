@@ -51,7 +51,7 @@ void SkillManager::Render()
 {
 	for (LSkill::iterator it=m_lSkill.begin();it!=m_lSkill.end();it++)
 	{
-		(*it).m_pAnim->Render((*it).m_pChar->GetRealX()+(*it).m_fOffsetX,(*it).m_pChar->GetRealY()+(*it).m_fOffsetY);
+		(*it).m_pAnim->Render((*it).m_pChar->GetShowX()+(*it).m_fOffsetX,(*it).m_pChar->GetShowY()+(*it).m_fOffsetY);
 	}
 }
 

@@ -98,14 +98,14 @@ void	WndSummary::SetBindChar(Character* bindChar)
 	m_pHead->SetTexture(TexManager::sInstance().GetHeadTex(bindChar->GetHead()));
 	if (bindChar)
 	{
-		if(bindChar->GetRealX() + 550 > APP_WIDTH)
+		if(bindChar->GetShowX() + 550 > APP_WIDTH)
 			m_fPosX = 250;
 		else
-			m_fPosX = bindChar->GetRealX() + 50; 
- 		if(bindChar->GetRealY() + 184 + FLOAT_PIC_SQUARE_HEIGHT > APP_HEIGHT)
- 			m_fPosY = bindChar->GetRealY() - 184;
+			m_fPosX = bindChar->GetShowX() + 50; 
+ 		if(bindChar->GetShowY() + 184 + FLOAT_PIC_SQUARE_HEIGHT > APP_HEIGHT)
+ 			m_fPosY = bindChar->GetShowY() - 184;
 		else
-			m_fPosY = bindChar->GetRealY() + FLOAT_PIC_SQUARE_HEIGHT;
+			m_fPosY = bindChar->GetShowY() + FLOAT_PIC_SQUARE_HEIGHT;
 
 		m_pListBox->Clear();
 		m_mListItemToSkillId.clear();

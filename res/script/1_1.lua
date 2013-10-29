@@ -4,6 +4,7 @@ require "unity"
 
 function PreFight1()
 	local map = GetCurMap();
+	map:SetOffXY(0,4);
 	map:SetTurns(20);
 	map:SetVictoryCondition(1,5)
 	local player1 = GetChar();

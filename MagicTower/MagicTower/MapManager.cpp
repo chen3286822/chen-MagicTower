@@ -22,6 +22,8 @@ Map::Map()
 	m_nShowCampTurnTime = 0;
 	m_eCurCampTurn = eCampTurn_Friend;
 	m_pMapSpr = new hgeSprite(0,0,0,0,0);
+	m_nOffX = 0;
+	m_nOffY = 0;
 
 	m_iVictory.m_eCondition = eVictoryCondition_KillAllEnemies;
 	m_iVictory.m_vData.clear();
@@ -97,24 +99,39 @@ void Map::SetMapTex(int level)
 	}
 }
 
+void Map::SetOffXY(int x,int y)
+{
+	if(x < 0 || y < 0)
+		return;
+	
+	if(x > m_nWidth - APP_WIDTH/MAP_RECT || y > m_nLength - APP_HEIGHT/MAP_RECT)
+		return;
+
+	m_nOffX = x;
+	m_nOffY = y;
+}
+
 void Map::Render()
 {
 #ifdef _LOAD_MAP_FROM_PNG
 	if(m_pMapSpr)
+	{
+		m_pMapSpr->SetTextureRect(m_nOffX*MAP_RECT,m_nOffY*MAP_RECT,APP_WIDTH,APP_HEIGHT);
 		m_pMapSpr->Render(0,0);
+	}
 #else
 	for (std::vector<Block>::iterator it=m_vBlocks.begin();it!=m_vBlocks.end();it++)
 	{
 		blockInfo _blockInfo(TexManager::sInstance().GetBlock(getTerrain(it->attri)));
 		m_pMapSpr->SetTexture(_blockInfo.m_iTex);
 		m_pMapSpr->SetTextureRect(_blockInfo.m_fX,_blockInfo.m_fY,_blockInfo.m_fWidth,_blockInfo.m_fHeight);
-		m_pMapSpr->RenderStretch(MAP_OFF_X +MAP_RECT*(*it).xpos,MAP_OFF_Y+MAP_RECT*(*it).ypos,MAP_OFF_X +MAP_RECT*(*it).xpos+MAP_RECT,MAP_OFF_Y+MAP_RECT*(*it).ypos+MAP_RECT);
+		m_pMapSpr->RenderStretch(MAP_OFF_X +MAP_RECT*(*it).xpos-m_nOffX*MAP_RECT,MAP_OFF_Y+MAP_RECT*(*it).ypos-m_nOffY*MAP_RECT,MAP_OFF_X +MAP_RECT*(*it).xpos+MAP_RECT-m_nOffX*MAP_RECT,MAP_OFF_Y+MAP_RECT*(*it).ypos+MAP_RECT-m_nOffY*MAP_RECT);
 	}
 #endif
 
 	for (std::vector<MapObject*>::iterator it=m_vObjList.begin();it!=m_vObjList.end();it++)
 	{
-		(*it)->spr->Render((MAP_RECT-FLOAT_PIC_SQUARE_WIDTH)/2+MAP_OFF_X +MAP_RECT*(*it)->xpos,MAP_OFF_Y+MAP_RECT*(*it)->ypos);
+		(*it)->spr->Render((MAP_RECT-FLOAT_PIC_SQUARE_WIDTH)/2+MAP_OFF_X +MAP_RECT*(*it)->xpos-m_nOffX*MAP_RECT,MAP_OFF_Y+MAP_RECT*(*it)->ypos-m_nOffY*MAP_RECT);
 	}
 }
 

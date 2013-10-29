@@ -94,8 +94,8 @@ void WndSelect::SetBindChar(Character* bindChar)
 	m_pBindChar= bindChar;
 	if (bindChar)
 	{
-		m_fPosX = bindChar->GetRealX() + 50; 
-		m_fPosY = bindChar->GetRealY();
+		m_fPosX = bindChar->GetShowX() + 50; 
+		m_fPosY = bindChar->GetShowY();
 
 		m_pListBox->ResetPosition(m_fPosX + m_pListBox->OffsetX,m_fPosY + m_pListBox->OffsetY);
 		m_pListBox->Clear();

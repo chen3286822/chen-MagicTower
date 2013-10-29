@@ -121,18 +121,42 @@ eDirection Character::GetTexDir(eDirection dir)
 
 void Character::Render()
 {
+	int offx = MapManager::sInstance().GetCurrentMap()->GetOffX()*MAP_RECT;
+	int offy = MapManager::sInstance().GetCurrentMap()->GetOffY()*MAP_RECT;
 	if(m_pAnimation)
 	{
 		if(/*m_eCharState == eCharacterState_Defense && m_eAttackState == eAttackState_Defending && */m_eCurDir == eDirection_Right)	//由于源图片缺少向右的动作，故需要y轴对称绘制
-			m_pAnimation->RenderSymmetry(m_fXPos,m_fYPos,1);
+			m_pAnimation->RenderSymmetry(m_fXPos - offx,m_fYPos - offy,1);
 		else
-			m_pAnimation->Render(m_fXPos,m_fYPos);
+			m_pAnimation->Render(m_fXPos - offx,m_fYPos - offy);
 	}
 
 	if (m_nDrawItem && m_pItemSpr)
 	{
-		m_pItemSpr->Render(m_fDrawItemX + 10,m_fDrawItemY + m_fItemRiseHeight - 20);
+		m_pItemSpr->Render(m_fDrawItemX + 10 - offx,m_fDrawItemY + m_fItemRiseHeight - 20 - offy);
 	}
+}
+
+float Character::GetShowX()
+{
+	Map* theMap = MapManager::sInstance().GetCurrentMap();
+	int offx = 0;
+	if (theMap)
+	{
+		offx = theMap->GetOffX();
+	}
+	return m_fXPos - offx*MAP_RECT;
+}
+
+float Character::GetShowY()
+{
+	Map* theMap = MapManager::sInstance().GetCurrentMap();
+	int offy = 0;
+	if (theMap)
+	{
+		offy = theMap->GetOffY();
+	}
+	return m_fYPos - offy*MAP_RECT;
 }
 
 void Character::Update(float delta)

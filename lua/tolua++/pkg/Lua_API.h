@@ -1,6 +1,6 @@
 /*
 ** Lua binding: lua
-** Generated automatically by tolua++-1.0.92 on 10/28/13 10:33:38.
+** Generated automatically by tolua++-1.0.92 on 10/29/13 15:32:34.
 */
 
 #ifndef __cplusplus
@@ -623,6 +623,105 @@ static int tolua_lua_Scene_PushWords00(lua_State* tolua_S)
 #ifndef TOLUA_RELEASE
  tolua_lerror:
  tolua_error(tolua_S,"#ferror in function 'PushWords'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: GetOffX of class  Map */
+#ifndef TOLUA_DISABLE_tolua_lua_Map_GetOffX00
+static int tolua_lua_Map_GetOffX00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Map",0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Map* self = (Map*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'GetOffX'", NULL);
+#endif
+  {
+   int tolua_ret = (int)  self->GetOffX();
+   tolua_pushnumber(tolua_S,(lua_Number)tolua_ret);
+  }
+ }
+ return 1;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'GetOffX'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: GetOffY of class  Map */
+#ifndef TOLUA_DISABLE_tolua_lua_Map_GetOffY00
+static int tolua_lua_Map_GetOffY00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Map",0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Map* self = (Map*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'GetOffY'", NULL);
+#endif
+  {
+   int tolua_ret = (int)  self->GetOffY();
+   tolua_pushnumber(tolua_S,(lua_Number)tolua_ret);
+  }
+ }
+ return 1;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'GetOffY'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: SetOffXY of class  Map */
+#ifndef TOLUA_DISABLE_tolua_lua_Map_SetOffXY00
+static int tolua_lua_Map_SetOffXY00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Map",0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,3,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,4,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Map* self = (Map*)  tolua_tousertype(tolua_S,1,0);
+  int x = ((int)  tolua_tonumber(tolua_S,2,0));
+  int y = ((int)  tolua_tonumber(tolua_S,3,0));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'SetOffXY'", NULL);
+#endif
+  {
+   self->SetOffXY(x,y);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'SetOffXY'.",&tolua_err);
  return 0;
 #endif
 }
@@ -2176,6 +2275,9 @@ TOLUA_API int tolua_lua_open (lua_State* tolua_S)
   tolua_endmodule(tolua_S);
   tolua_cclass(tolua_S,"Map","Map","",NULL);
   tolua_beginmodule(tolua_S,"Map");
+   tolua_function(tolua_S,"GetOffX",tolua_lua_Map_GetOffX00);
+   tolua_function(tolua_S,"GetOffY",tolua_lua_Map_GetOffY00);
+   tolua_function(tolua_S,"SetOffXY",tolua_lua_Map_SetOffXY00);
    tolua_function(tolua_S,"SetTurns",tolua_lua_Map_SetTurns00);
    tolua_function(tolua_S,"GetLevel",tolua_lua_Map_GetLevel00);
    tolua_function(tolua_S,"SetVictoryCondition",tolua_lua_Map_SetVictoryCondition00);

@@ -22,8 +22,8 @@ void	WndCharInfo::SetBindChar(Character* bindChar)
 	m_pBindChar = bindChar;
 	if (bindChar)
 	{
-		m_fPosX = bindChar->GetRealX() + 50; 
-		m_fPosY = bindChar->GetRealY();
+		m_fPosX = bindChar->GetShowX() + 50; 
+		m_fPosY = bindChar->GetShowY();
 
 		m_pHead->SetTexture(TexManager::sInstance().GetTex(bindChar->GetID())[eActionTex_Walk]);
 		m_pHead->SetTextureRect(0,6*FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_WIDTH);

@@ -199,7 +199,7 @@ void CreatureManager::ShowMoveRange(Character* creature)
 		for (std::vector<Block*>::iterator it=range.begin();it!=range.end();it++)
 		{
 			//画方格表示可以移动
-			App::sInstance().DrawSmallRect(Block((*it)->xpos,(*it)->ypos),color);
+			App::sInstance().DrawSmallRect(Block((*it)->xpos-MapManager::sInstance().GetCurrentMap()->GetOffX(),(*it)->ypos-MapManager::sInstance().GetCurrentMap()->GetOffY()),color);
 		}
 	}
 }
@@ -212,7 +212,7 @@ void CreatureManager::ShowSkillCastRange(Character* creature)
 		std::vector<Block*> range = creature->CreateRange(MapManager::sInstance().GetCurrentMap(),ConfigManager::sInstance().GetSkillInfo().find(creature->GetCastSkill())->second.m_nCastRange,true);
 		for (std::vector<Block*>::iterator it=range.begin();it!=range.end();it++)
 		{
-			App::sInstance().DrawSmallRect(Block((*it)->xpos,(*it)->ypos),color);
+			App::sInstance().DrawSmallRect(Block((*it)->xpos-MapManager::sInstance().GetCurrentMap()->GetOffX(),(*it)->ypos-MapManager::sInstance().GetCurrentMap()->GetOffY()),color);
 		}
 	}
 }
@@ -225,7 +225,7 @@ void CreatureManager::ShowItemCastRange(Character* creature)
 		std::vector<Block*> range = creature->CreateRange(MapManager::sInstance().GetCurrentMap(),1,true);
 		for (std::vector<Block*>::iterator it=range.begin();it!=range.end();it++)
 		{
-			App::sInstance().DrawSmallRect(Block((*it)->xpos,(*it)->ypos),color);
+			App::sInstance().DrawSmallRect(Block((*it)->xpos-MapManager::sInstance().GetCurrentMap()->GetOffX(),(*it)->ypos-MapManager::sInstance().GetCurrentMap()->GetOffY()),color);
 		}
 	}
 }
@@ -247,8 +247,14 @@ void CreatureManager::ShowAttackRange(Character* creature)
 			{
 				for (vector<int>::iterator it=mit->second.begin();it!=mit->second.end();it++)
 				{
-					offX = m_vPair[*it].x + charBlock.xpos;
-					offY = m_vPair[*it].y + charBlock.ypos;
+					int mapOffx = 0,mapOffy = 0;
+					if (currentMap)
+					{
+						mapOffx = currentMap->GetOffX();
+						mapOffy = currentMap->GetOffY();
+					}
+					offX = m_vPair[*it].x + charBlock.xpos - mapOffx;
+					offY = m_vPair[*it].y + charBlock.ypos - mapOffy;
 					if (offX >= 0 && offX < mapWidth && offY >= 0 && offY < mapLength)
 					{					
 						App::sInstance().DrawBox(MAP_OFF_X + offX*MAP_RECT+4,MAP_OFF_Y + offY*MAP_RECT+4,0xBFFF0000,8,MAP_RECT-8,MAP_RECT-8);
@@ -278,16 +284,16 @@ void CreatureManager::ShowSkillRange(int skillID)
 			//直线型特殊处理，只显示一个格子
 			if(mit->first == eSkillRange_ShortLine || mit->first == eSkillRange_Line)
 			{
-				offX = mouseBlock.xpos;
-				offY = mouseBlock.ypos;
+				offX = mouseBlock.xpos - currentMap->GetOffX();
+				offY = mouseBlock.ypos - currentMap->GetOffY();
 				App::sInstance().DrawBox(MAP_OFF_X + offX*MAP_RECT+4,MAP_OFF_Y + offY*MAP_RECT+4,color,8,MAP_RECT-8,MAP_RECT-8);
 			}
 			else
 			{
 				for (vector<int>::iterator it=mit->second.begin();it!=mit->second.end();it++)
 				{
-					offX = m_vPair[*it].x + mouseBlock.xpos;
-					offY = m_vPair[*it].y + mouseBlock.ypos;
+					offX = m_vPair[*it].x + mouseBlock.xpos - currentMap->GetOffX();
+					offY = m_vPair[*it].y + mouseBlock.ypos - currentMap->GetOffY();
 					if (offX >= 0 && offX < mapWidth && offY >= 0 && offY < mapLength)
 					{					
 						App::sInstance().DrawBox(MAP_OFF_X + offX*MAP_RECT+4,MAP_OFF_Y + offY*MAP_RECT+4,color,8,MAP_RECT-8,MAP_RECT-8);
@@ -352,7 +358,14 @@ void CreatureManager::ShowCreatureInfo()
 		sprintf(temp," 攻击力：%d",cha->GetAttack());
 		TipWnd::sInstance().AddText(temp,0xFFFFFFFF,-1,-1,eFontType_MSYaHei,eFontSize_FontMiddle);
 		TipWnd::sInstance().SetShow(true);
-		TipWnd::sInstance().SetPos(block.xpos,block.ypos);
+		Map* theMap = MapManager::sInstance().GetCurrentMap();
+		int offx = 0,offy = 0;
+		if (theMap)
+		{
+			offx = theMap->GetOffX();
+			offy = theMap->GetOffY();
+		}
+		TipWnd::sInstance().SetPos(block.xpos-offx,block.ypos-offy);
 	}
 	else
 	{

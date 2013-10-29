@@ -194,7 +194,19 @@ void App::CleanUp()
 void App::DrawMouseRect()
 {
 	if(m_iBlock.xpos!=-1 && m_iBlock.ypos!=-1 && !(UISystem::sInstance().IsInAnyControl()))
-		DrawSmallRect(m_iBlock,0x4F48A4D5);
+	{
+		Block drawBlock = m_iBlock;
+		Map* theMap = MapManager::sInstance().GetCurrentMap();
+		int offx = 0,offy = 0;
+		if (theMap)
+		{
+			offx = theMap->GetOffX();
+			offy = theMap->GetOffY();
+		}
+		drawBlock.xpos -= offx;
+		drawBlock.ypos -= offy;
+		DrawSmallRect(drawBlock,0x4F48A4D5);
+	}
 }
 
 void App::DrawRect(float left,float top,float right,float bottom,DWORD color)
@@ -303,8 +315,15 @@ bool App::AppUpdate()
 		float xMap,yMap;
 		xMap = xpos - MAP_OFF_X;
 		yMap = ypos - MAP_OFF_Y;
-		m_iBlock.xpos = (int)(xMap/MAP_RECT);
-		m_iBlock.ypos = (int)(yMap/MAP_RECT);
+		Map* theMap = MapManager::sInstance().GetCurrentMap();
+		int offx = 0,offy = 0;
+		if (theMap)
+		{
+			offx = theMap->GetOffX();
+			offy = theMap->GetOffY();
+		}
+		m_iBlock.xpos = (int)(xMap/MAP_RECT) + offx;
+		m_iBlock.ypos = (int)(yMap/MAP_RECT) + offy;
 	}
 	else
 	{

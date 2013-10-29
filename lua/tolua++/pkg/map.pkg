@@ -1,6 +1,9 @@
 class Map
 {
 public:
+	int GetOffX();
+	int GetOffY();
+	void SetOffXY(int x,int y);
 	void SetTurns(int turn);
 	int GetLevel();
 	void SetVictoryCondition(int condition,int data=-1,int num=-1);

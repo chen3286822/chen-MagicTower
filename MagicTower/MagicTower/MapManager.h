@@ -35,6 +35,9 @@ public:
 	void Update(float dt);
 
 	void SetMapTex(int level);
+	inline int GetOffX(){return m_nOffX;}
+	inline int GetOffY(){return m_nOffY;}
+	void SetOffXY(int x,int y);
 	inline void AddObject(MapObject* mo){m_vObjList.push_back(mo);}
 	inline void AddBlock(Block _block){m_vBlocks.push_back(_block);}
 	inline void SetLevel(int _level){m_nlevel = _level;}
@@ -101,6 +104,8 @@ private:
 	eCampTurn m_eCurCampTurn;	//当前阵营
 
 	hgeSprite* m_pMapSpr;
+	int m_nOffX;	//当前显示的地图格子偏移
+	int m_nOffY;	//当前显示的地图格子偏移
 	AStar m_iPathFinder;
 	std::vector<Block*>	m_vSpecificRange;	//限定的寻路范围 
 

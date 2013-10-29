@@ -56,8 +56,8 @@ void	WndCommand::SetBindChar(Character* bindChar)
 	m_pChar = bindChar;
 	if (bindChar)
 	{
-		m_fPosX = bindChar->GetRealX() + 50; 
-		m_fPosY = bindChar->GetRealY();
+		m_fPosX = bindChar->GetShowX() + 50; 
+		m_fPosY = bindChar->GetShowY();
 
 		m_pAttackButton->ResetPosition(m_fPosX+m_pAttackButton->OffsetX,m_fPosY+m_pAttackButton->OffsetY);
 		m_pSkillButton->ResetPosition(m_fPosX+m_pSkillButton->OffsetX,m_fPosY+m_pSkillButton->OffsetY);
