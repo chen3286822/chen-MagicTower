@@ -6,6 +6,7 @@
 #include "GfxFont.h"
 #include "App.h"
 #include "MyLua.h"
+#include "UI.h"
 
 Map::Map()
 {
@@ -48,6 +49,11 @@ void Map::Init()
 
 	AddTurn();
 	GoIntoTurn(eCampTurn_Friend);
+
+	m_dwMapMoveTime[0] = 0;
+	m_dwMapMoveTime[1] = 0;
+	m_dwMapMoveTime[2] = 0;
+	m_dwMapMoveTime[3] = 0;
 }
 
 void Map::Release()
@@ -109,6 +115,8 @@ void Map::SetOffXY(int x,int y)
 
 	m_nOffX = x;
 	m_nOffY = y;
+
+	UISystem::sInstance().ResetPos();
 }
 
 void Map::Render()
@@ -182,6 +190,91 @@ void Map::Update(float dt)
 		m_nShowCampTurnTime -= (int)(dt*1000); 
 		if(m_nShowCampTurnTime <= 0)
 			m_nShowCampTurnTime = 0;
+	}
+
+	//移动地图
+	//必须是自己回合
+	if (CreatureManager::sInstance().GetCampTurn() == eCampTurn_Friend)
+	{
+		Block mouseBlock = App::sInstance().GetMouseBlock();
+		//如果已经在地图边界了，那么就不需要移动地图
+		if (mouseBlock.xpos == 0 || mouseBlock.xpos == m_nWidth-1 ||
+			mouseBlock.ypos == 0 || mouseBlock.ypos == m_nLength-1)
+		{
+			return;
+		}
+
+		//单位移动和选择命令阶段不可移动地图
+		
+
+		bool isMoveMap = false;
+		if(mouseBlock.xpos == m_nOffX)
+		{
+			if(m_nOffX > 0)
+			{
+				m_dwMapMoveTime[0] += dt*1000;
+				if(m_dwMapMoveTime[0] >= 100)
+				{
+					m_nOffX--;
+					isMoveMap = true;
+					m_dwMapMoveTime[0] = 0;
+				}
+			}
+		}
+		else if(mouseBlock.xpos == m_nOffX + APP_WIDTH/MAP_RECT-1)
+		{
+			if(m_nOffX < m_nWidth-1)
+			{
+				m_dwMapMoveTime[1] += dt*1000;
+				if(m_dwMapMoveTime[1] >= 100)
+				{
+					m_nOffX++;
+					isMoveMap = true;
+					m_dwMapMoveTime[1] = 0;
+				}
+			}
+		}
+		else
+		{
+			m_dwMapMoveTime[0] = 0;
+			m_dwMapMoveTime[1] = 0;
+		}
+
+		if(mouseBlock.ypos == m_nOffY)
+		{
+			if(m_nOffY > 0)
+			{
+				m_dwMapMoveTime[2] += dt*1000;
+				if(m_dwMapMoveTime[2] >= 100)
+				{
+					m_nOffY--;
+					isMoveMap = true;
+					m_dwMapMoveTime[2] = 0;
+				}
+			}
+		}
+		else if(mouseBlock.ypos == m_nOffY + APP_HEIGHT/MAP_RECT-1)
+		{
+			if(m_nOffY < m_nLength - 1)
+			{
+				m_dwMapMoveTime[3] += dt*1000;
+				if(m_dwMapMoveTime[3] >= 100)
+				{
+					m_nOffY++;
+					isMoveMap = true;
+					m_dwMapMoveTime[3] = 0;
+				}
+			}
+		}
+		else
+		{
+			m_dwMapMoveTime[2] = 0;
+			m_dwMapMoveTime[3] = 0;
+		}
+
+		//这里只是为了重新设定一些窗口位置
+		if(isMoveMap)
+			SetOffXY(m_nOffX,m_nOffY);
 	}
 }
 

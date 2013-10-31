@@ -59,6 +59,9 @@ public:
 	Character* GetCreature(int x,int  y);
 	Character* GetCreature(int num);
 
+	//取得当前回合信息
+	eCampTurn GetCampTurn(){return m_eCampTurn;}
+
 	//是否单位死完
 	bool IsEnemyAllDead();
 	bool IsFriendAllDead();

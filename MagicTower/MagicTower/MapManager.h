@@ -106,6 +106,7 @@ private:
 	hgeSprite* m_pMapSpr;
 	int m_nOffX;	//当前显示的地图格子偏移
 	int m_nOffY;	//当前显示的地图格子偏移
+	DWORD m_dwMapMoveTime[4];	//通过鼠标移动地图四个方向时的时间间隔，防止地图一下移动过多
 	AStar m_iPathFinder;
 	std::vector<Block*>	m_vSpecificRange;	//限定的寻路范围 
 
