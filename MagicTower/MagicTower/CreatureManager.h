@@ -61,6 +61,8 @@ public:
 
 	//取得当前回合信息
 	eCampTurn GetCampTurn(){return m_eCampTurn;}
+	//取得当前选中的单位号
+	int& GetSelectNum(){return m_nSelectNum;}
 
 	//是否单位死完
 	bool IsEnemyAllDead();

@@ -12,6 +12,7 @@ UIWindow::UIWindow()
 	m_pBackGround = NULL;
 	m_fPosX = m_fPosY = 0;
 	m_bShow = false;
+	m_bNeedResetPos = false;
 }
 
 UIWindow::UIWindow(HTEXTURE tex, float x, float y, float w ,float h, float posX, float posY)
@@ -21,6 +22,7 @@ UIWindow::UIWindow(HTEXTURE tex, float x, float y, float w ,float h, float posX,
 	m_fPosX = posX,
 	m_fPosY = posY;
 	m_bShow = false;
+	m_bNeedResetPos = false;
 }
 
 UIWindow::~UIWindow()
@@ -158,6 +160,23 @@ void UISystem::Update(float dt)
 	}
 
 	ProcessMsg();
+}
+
+void UISystem::ResetPos()
+{
+	WindowNode* pWindow = m_pHeadWindow;
+	while(pWindow)
+	{
+		if (pWindow->m_pWindow)
+		{
+			if (pWindow->m_pWindow->IsShow())
+			{
+				if(pWindow->m_pWindow->IsNeedResetPos())
+					pWindow->m_pWindow->SetRenderPositon(-1,-1);
+			}
+		}
+		pWindow = pWindow->m_pNext;
+	}
 }
 
 UIWindow* UISystem::GetWindow(eWindowID windowID)

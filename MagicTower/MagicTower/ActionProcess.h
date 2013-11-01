@@ -252,6 +252,7 @@ public:
 				break;
 			case eNotify_FinishAttack:
 				{
+					CreatureManager::sInstance().GetSelectNum() = -1;
 					action.m_pCast->SetFinish(true);
 					action.m_pCast->GetCastSkill() = -1;
 					action.m_pCast->GetUseItem() = -1;

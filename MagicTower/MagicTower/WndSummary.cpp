@@ -71,6 +71,8 @@ UIWindow(TexManager::sInstance().GetUITex(eUIID_WndSummary),0,0,500,184,0,0)
 	m_pSkillRange = new hgeSprite(TexManager::sInstance().GetUITex(eUIID_RangeNone),0,0,64,64);
 
 	m_nShowType = 1;
+
+	m_bNeedResetPos = true;
 }
 
 WndSummary::~WndSummary()
@@ -133,8 +135,22 @@ void	WndSummary::SetBindChar(Character* bindChar)
 
 void WndSummary::SetRenderPositon(float _x,float _y)
 {
-	m_fPosX = _x; 
-	m_fPosY = _y;
+	if(_x == -1 && _y == -1)
+	{
+		if(m_pBindChar->GetShowX() + 550 > APP_WIDTH)
+			m_fPosX = 250;
+		else
+			m_fPosX = m_pBindChar->GetShowX() + 50; 
+		if(m_pBindChar->GetShowY() + 184 + FLOAT_PIC_SQUARE_HEIGHT > APP_HEIGHT)
+			m_fPosY = m_pBindChar->GetShowY() - 184;
+		else
+			m_fPosY = m_pBindChar->GetShowY() + FLOAT_PIC_SQUARE_HEIGHT;
+	}
+	else
+	{
+		m_fPosX = _x; 
+		m_fPosY = _y;
+	}
 
 	m_pCharButton->ResetPosition(m_fPosX+m_pCharButton->OffsetX,m_fPosY+m_pCharButton->OffsetY);
 	m_pArmsButton->ResetPosition(m_fPosX+m_pArmsButton->OffsetX,m_fPosY+m_pArmsButton->OffsetY);

@@ -147,10 +147,16 @@ enum eCampTurn
  {
 	 eActionStage_WaitStage = 0,	//待命阶段
 	 eActionStage_MoveStage,		//移动阶段
-	 eActionStage_HandleStage,	//操作阶段(使用物品，释放技能)
-	 eActionStage_AttackStage,	//攻击阶段
-	 eActionStage_ItemStage,		//使用物品阶段
-	 eActionStage_SkillStage,			//使用技能阶段
+	 eActionStage_MovingStage,	//正在移动阶段
+	 eActionStage_HandleStage,	//选择命令阶段
+	 eActionStage_AttackStage,	//选择攻击目标阶段
+	 eActionStage_AttackCastStage,	//攻击中阶段
+	 eActionStage_ItemStage,		//选择物品阶段
+	 eActionStage_ItemTargetStage,//选择物品目标阶段
+	 eActionStage_ItemCastStage,//使用物品阶段
+	 eActionStage_SkillStage,			//选择技能阶段
+	 eActionStage_SkillTargetStage,//选择技能目标阶段
+	 eActionStage_SkillCastStage,//使用技能阶段
  };	
 
 //单位动作状态
@@ -382,9 +388,9 @@ enum eTerrain
 	eTerrain_CityRoad		=		0x0000020,		//城内道路	0100000b
 	eTerrain_City				=		0x0000024,		//城内	0100100b
 	eTerrain_Castle		=		0x0000028,		//城堡	0101000b
-	eTerrain_Stronghold =	0x0000032,		//据点	0101100b
-	eTerrain_Littlehold		=	0x0000036,		//小据点(小帐篷) 0110000b
-	eTerrain_Fences			=	0x0000040,		//栅栏 0110100b
+	eTerrain_Stronghold =	0x000002C,		//据点	0101100b
+	eTerrain_Littlehold		=	0x0000030,		//小据点(小帐篷) 0110000b
+	eTerrain_Fences			=	0x0000034,		//栅栏 0110100b
 };
 
 enum eBlockAttribute		//表示地图格子的属性位

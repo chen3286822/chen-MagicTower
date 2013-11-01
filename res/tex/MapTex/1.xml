@@ -131,16 +131,16 @@
   <Terrain type="8" xpos="2" ypos="6"/>
   <Terrain type="8" xpos="3" ypos="6"/>
   <Terrain type="8" xpos="4" ypos="6"/>
-  <Terrain type="64" xpos="5" ypos="6"/>
-  <Terrain type="64" xpos="6" ypos="6"/>
-  <Terrain type="64" xpos="7" ypos="6"/>
-  <Terrain type="64" xpos="8" ypos="6"/>
+  <Terrain type="52" xpos="5" ypos="6"/>
+  <Terrain type="52" xpos="6" ypos="6"/>
+  <Terrain type="52" xpos="7" ypos="6"/>
+  <Terrain type="52" xpos="8" ypos="6"/>
   <Terrain type="5" xpos="9" ypos="6"/>
   <Terrain type="5" xpos="10" ypos="6"/>
-  <Terrain type="64" xpos="11" ypos="6"/>
-  <Terrain type="64" xpos="12" ypos="6"/>
-  <Terrain type="64" xpos="13" ypos="6"/>
-  <Terrain type="64" xpos="14" ypos="6"/>
+  <Terrain type="52" xpos="11" ypos="6"/>
+  <Terrain type="52" xpos="12" ypos="6"/>
+  <Terrain type="52" xpos="13" ypos="6"/>
+  <Terrain type="52" xpos="14" ypos="6"/>
   <Terrain type="25" xpos="15" ypos="6"/>
   <Terrain type="25" xpos="16" ypos="6"/>
   <Terrain type="8" xpos="17" ypos="6"/>
@@ -152,16 +152,16 @@
   <Terrain type="8" xpos="2" ypos="7"/>
   <Terrain type="8" xpos="3" ypos="7"/>
   <Terrain type="8" xpos="4" ypos="7"/>
-  <Terrain type="64" xpos="5" ypos="7"/>
-  <Terrain type="55" xpos="6" ypos="7"/>
+  <Terrain type="52" xpos="5" ypos="7"/>
+  <Terrain type="49" xpos="6" ypos="7"/>
   <Terrain type="5" xpos="7" ypos="7"/>
   <Terrain type="5" xpos="8" ypos="7"/>
   <Terrain type="5" xpos="9" ypos="7"/>
   <Terrain type="5" xpos="10" ypos="7"/>
   <Terrain type="5" xpos="11" ypos="7"/>
   <Terrain type="5" xpos="12" ypos="7"/>
-  <Terrain type="55" xpos="13" ypos="7"/>
-  <Terrain type="64" xpos="14" ypos="7"/>
+  <Terrain type="49" xpos="13" ypos="7"/>
+  <Terrain type="52" xpos="14" ypos="7"/>
   <Terrain type="25" xpos="15" ypos="7"/>
   <Terrain type="8" xpos="16" ypos="7"/>
   <Terrain type="8" xpos="17" ypos="7"/>
@@ -173,16 +173,16 @@
   <Terrain type="8" xpos="2"   ypos="8"/>
   <Terrain type="8" xpos="3"   ypos="8"/>
   <Terrain type="8" xpos="4"   ypos="8"/>
-  <Terrain type="64" xpos="5"   ypos="8"/>
-  <Terrain type="55" xpos="6"   ypos="8"/>
+  <Terrain type="52" xpos="5"   ypos="8"/>
+  <Terrain type="49" xpos="6"   ypos="8"/>
   <Terrain type="5" xpos="7"   ypos="8"/>
   <Terrain type="5" xpos="8"   ypos="8"/>
   <Terrain type="5" xpos="9"   ypos="8"/>
   <Terrain type="5" xpos="10" ypos="8"/>
   <Terrain type="5" xpos="11" ypos="8"/>
   <Terrain type="5" xpos="12" ypos="8"/>
-  <Terrain type="55" xpos="13" ypos="8"/>
-  <Terrain type="64" xpos="14" ypos="8"/>
+  <Terrain type="49" xpos="13" ypos="8"/>
+  <Terrain type="52" xpos="14" ypos="8"/>
   <Terrain type="25" xpos="15" ypos="8"/>
   <Terrain type="8" xpos="16" ypos="8"/>
   <Terrain type="8" xpos="17" ypos="8"/>
@@ -194,8 +194,8 @@
   <Terrain type="8" xpos="2"   ypos="9"/>
   <Terrain type="8" xpos="3"   ypos="9"/>
   <Terrain type="5" xpos="4"   ypos="9"/>
-  <Terrain type="64" xpos="5"   ypos="9"/>
-  <Terrain type="55" xpos="6"   ypos="9"/>
+  <Terrain type="52" xpos="5"   ypos="9"/>
+  <Terrain type="49" xpos="6"   ypos="9"/>
   <Terrain type="5" xpos="7"   ypos="9"/>
   <Terrain type="5" xpos="8"   ypos="9"/>
   <Terrain type="5" xpos="9"   ypos="9"/>
@@ -203,7 +203,7 @@
   <Terrain type="5" xpos="11" ypos="9"/>
   <Terrain type="5" xpos="12" ypos="9"/>
   <Terrain type="5" xpos="13" ypos="9"/>
-  <Terrain type="64" xpos="14" ypos="9"/>
+  <Terrain type="52" xpos="14" ypos="9"/>
   <Terrain type="25" xpos="15" ypos="9"/>
   <Terrain type="8" xpos="16" ypos="9"/>
   <Terrain type="8" xpos="17" ypos="9"/>
@@ -219,12 +219,12 @@
   <Terrain type="5" xpos="6"   ypos="10"/>
   <Terrain type="5" xpos="7"   ypos="10"/>
   <Terrain type="5" xpos="8"   ypos="10"/>
-  <Terrain type="64" xpos="9"   ypos="10"/>
-  <Terrain type="64" xpos="10" ypos="10"/>
+  <Terrain type="52" xpos="9"   ypos="10"/>
+  <Terrain type="52" xpos="10" ypos="10"/>
   <Terrain type="5" xpos="11" ypos="10"/>
   <Terrain type="5" xpos="12" ypos="10"/>
   <Terrain type="5" xpos="13" ypos="10"/>
-  <Terrain type="64" xpos="14" ypos="10"/>
+  <Terrain type="52" xpos="14" ypos="10"/>
   <Terrain type="8" xpos="15" ypos="10"/>
   <Terrain type="8" xpos="16" ypos="10"/>
   <Terrain type="8" xpos="17" ypos="10"/>
@@ -241,11 +241,11 @@
   <Terrain type="5" xpos="7"   ypos="11"/>
   <Terrain type="5" xpos="8"   ypos="11"/>
   <Terrain type="41" xpos="9"   ypos="11"/>
-  <Terrain type="51" xpos="10" ypos="11"/>
+  <Terrain type="45" xpos="10" ypos="11"/>
   <Terrain type="5" xpos="11" ypos="11"/>
   <Terrain type="5" xpos="12" ypos="11"/>
   <Terrain type="5" xpos="13" ypos="11"/>
-  <Terrain type="64" xpos="14" ypos="11"/>
+  <Terrain type="52" xpos="14" ypos="11"/>
   <Terrain type="8" xpos="15" ypos="11"/>
   <Terrain type="8" xpos="16" ypos="11"/>
   <Terrain type="8" xpos="17" ypos="11"/>
@@ -257,7 +257,7 @@
   <Terrain type="5" xpos="2"   ypos="12"/>
   <Terrain type="5" xpos="3"   ypos="12"/>
   <Terrain type="5" xpos="4"   ypos="12"/>
-  <Terrain type="64" xpos="5"   ypos="12"/>
+  <Terrain type="52" xpos="5"   ypos="12"/>
   <Terrain type="5" xpos="6"   ypos="12"/>
   <Terrain type="5" xpos="7"   ypos="12"/>
   <Terrain type="5" xpos="8"   ypos="12"/>
@@ -265,8 +265,8 @@
   <Terrain type="5" xpos="10" ypos="12"/>
   <Terrain type="5" xpos="11" ypos="12"/>
   <Terrain type="5" xpos="12" ypos="12"/>
-  <Terrain type="51" xpos="13" ypos="12"/>
-  <Terrain type="64" xpos="14" ypos="12"/>
+  <Terrain type="45" xpos="13" ypos="12"/>
+  <Terrain type="52" xpos="14" ypos="12"/>
   <Terrain type="8" xpos="15" ypos="12"/>
   <Terrain type="8" xpos="16" ypos="12"/>
   <Terrain type="8" xpos="17" ypos="12"/>
@@ -278,16 +278,16 @@
   <Terrain type="5" xpos="2"   ypos="13"/>
   <Terrain type="5" xpos="3"   ypos="13"/>
   <Terrain type="5" xpos="4"   ypos="13"/>
-  <Terrain type="64" xpos="5"   ypos="13"/>
-  <Terrain type="55" xpos="6"   ypos="13"/>
-  <Terrain type="55" xpos="7"   ypos="13"/>
+  <Terrain type="52" xpos="5"   ypos="13"/>
+  <Terrain type="49" xpos="6"   ypos="13"/>
+  <Terrain type="49" xpos="7"   ypos="13"/>
   <Terrain type="5" xpos="8"   ypos="13"/>
   <Terrain type="5" xpos="9"   ypos="13"/>
   <Terrain type="5" xpos="10" ypos="13"/>
   <Terrain type="5" xpos="11" ypos="13"/>
   <Terrain type="5" xpos="12" ypos="13"/>
-  <Terrain type="51" xpos="13" ypos="13"/>
-  <Terrain type="64" xpos="14" ypos="13"/>
+  <Terrain type="45" xpos="13" ypos="13"/>
+  <Terrain type="52" xpos="14" ypos="13"/>
   <Terrain type="5" xpos="15" ypos="13"/>
   <Terrain type="8" xpos="16" ypos="13"/>
   <Terrain type="8" xpos="17" ypos="13"/>
@@ -299,16 +299,16 @@
   <Terrain type="5" xpos="2"   ypos="14"/>
   <Terrain type="5" xpos="3"   ypos="14"/>
   <Terrain type="5" xpos="4"   ypos="14"/>
-  <Terrain type="64" xpos="5"   ypos="14"/>
-  <Terrain type="64" xpos="6"   ypos="14"/>
-  <Terrain type="64" xpos="7"   ypos="14"/>
-  <Terrain type="64" xpos="8"   ypos="14"/>
+  <Terrain type="52" xpos="5"   ypos="14"/>
+  <Terrain type="52" xpos="6"   ypos="14"/>
+  <Terrain type="52" xpos="7"   ypos="14"/>
+  <Terrain type="52" xpos="8"   ypos="14"/>
   <Terrain type="5" xpos="9"   ypos="14"/>
   <Terrain type="5" xpos="10" ypos="14"/>
-  <Terrain type="64" xpos="11" ypos="14"/>
-  <Terrain type="64" xpos="12" ypos="14"/>
-  <Terrain type="64" xpos="13" ypos="14"/>
-  <Terrain type="64" xpos="14" ypos="14"/>
+  <Terrain type="52" xpos="11" ypos="14"/>
+  <Terrain type="52" xpos="12" ypos="14"/>
+  <Terrain type="52" xpos="13" ypos="14"/>
+  <Terrain type="52" xpos="14" ypos="14"/>
   <Terrain type="5" xpos="15" ypos="14"/>
   <Terrain type="25" xpos="16" ypos="14"/>
   <Terrain type="25" xpos="17" ypos="14"/>

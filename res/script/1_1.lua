@@ -19,6 +19,18 @@ function PreFight1()
 	local creaMgr = GetCreature();
 	creaMgr:AddFriend(player1);
 
+	local player2 = GetChar();
+	local block2 = tagBlock(8,5);
+	player2:Init(map:GetLevel(),115,101,1,block2);
+	player2:SetCamp(0);
+	player2:SetMoveAbility(4);
+	player2:SetName("уеаи");
+	player2:AddEquip(0,23);
+	player2:AddEquip(1,37);
+	player2:AddEquip(2,56);
+	local creaMgr = GetCreature();
+	creaMgr:AddFriend(player2);
+
 
 	local cha1 = creaMgr:GetCreature(2);
 	cha1:SetHide(true);

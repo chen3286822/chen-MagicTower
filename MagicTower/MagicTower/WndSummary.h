@@ -22,7 +22,7 @@ public:
 
 	virtual void Render();
 	virtual void Update(float dt);
-	virtual void	SetRenderPositon(float _x,float _y);
+	virtual void	SetRenderPositon(float _x=-1,float _y=-1);
 	virtual bool	IsOnControl();
 	virtual void OnMouseOver(float x,float y);
 

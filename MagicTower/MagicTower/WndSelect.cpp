@@ -18,6 +18,8 @@ UIWindow(TexManager::sInstance().GetUITex(eUIID_WndCharInfo),0,0,257,183,0,0)
 	m_pListBox->GetPageMaxRows() = 5;
 	m_mListItemToSkillId.clear();
 	m_mListItemToItemId.clear();
+
+	m_bNeedResetPos = true;
 }
 
 WndSelect::~WndSelect()
@@ -28,8 +30,17 @@ WndSelect::~WndSelect()
 
 void WndSelect::SetRenderPositon(float _x,float _y)
 {
-	m_fPosX = _x; 
-	m_fPosY = _y;
+	if(_x == -1 && _y == -1)
+	{
+		m_fPosX = m_pBindChar->GetShowX() + 50; 
+		m_fPosY = m_pBindChar->GetShowY();
+	}
+	else
+	{
+		m_fPosX = _x; 
+		m_fPosY = _y;
+	}
+
 
 	m_pListBox->ResetPosition(m_fPosX + m_pListBox->OffsetX,m_fPosY + m_pListBox->OffsetY);
 }
@@ -51,6 +62,7 @@ void WndSelect::Update(float dt)
 				std::map<int,int>::iterator it = m_mListItemToSkillId.find(selectItem);
 				if(it!=m_mListItemToSkillId.end())
 				{
+					m_pBindChar->SetActionStage(eActionStage_SkillTargetStage);
 					m_pBindChar->GetCastSkill() = it->second;
 					//SetShow(false);				
 					UISystem::sInstance().CloseWindow(eWindowID_Select);
@@ -65,6 +77,7 @@ void WndSelect::Update(float dt)
 				std::map<int,int>::iterator it = m_mListItemToItemId.find(selectItem);
 				if(it!=m_mListItemToItemId.end())
 				{
+					m_pBindChar->SetActionStage(eActionStage_ItemTargetStage);
 					m_pBindChar->GetUseItem() = it->second;
 					//SetShow(false);				
 					UISystem::sInstance().CloseWindow(eWindowID_Select);

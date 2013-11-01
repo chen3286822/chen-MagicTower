@@ -654,6 +654,8 @@ eErrorCode Character::Move(int tarX,int tarY,bool bAllBlockInclude,bool bNoMoveA
 // 			m_bFinishAct = true;
 		return eErrorCode_NoPath;
 	}
+	//进入正在移动阶段
+	m_eActionStage = eActionStage_MovingStage;
 	return eErrorCode_Success;
 }
 

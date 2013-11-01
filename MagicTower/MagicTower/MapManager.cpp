@@ -204,8 +204,18 @@ void Map::Update(float dt)
 			return;
 		}
 
-		//单位移动和选择命令阶段不可移动地图
-		
+		//单位移动、正在攻击、正在使用物品、正在释放技能阶段不可移动地图
+		int selectNum = CreatureManager::sInstance().GetSelectNum();
+		if (selectNum != -1)
+		{
+			Character* cha = CreatureManager::sInstance().GetCreature(selectNum);
+			if(cha)
+			{
+				if(cha->GetActionStage() == eActionStage_MovingStage || cha->GetActionStage() == eActionStage_AttackCastStage||
+					cha->GetActionStage() == eActionStage_SkillCastStage ||cha->GetActionStage() == eActionStage_ItemCastStage)
+					return;
+			}
+		}
 
 		bool isMoveMap = false;
 		if(mouseBlock.xpos == m_nOffX)

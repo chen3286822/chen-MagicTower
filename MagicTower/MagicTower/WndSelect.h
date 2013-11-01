@@ -21,7 +21,7 @@ public:
  	virtual void Update(float dt);
 	virtual void Render();
 	virtual void OnMouseOver(float x,float y);
-	virtual void SetRenderPositon(float _x,float _y);
+	virtual void SetRenderPositon(float _x=-1,float _y=-1);
 	virtual void	SetBindChar(Character* bindChar);
 	virtual Character*	GetBindChar(){return m_pBindChar;}
 private:

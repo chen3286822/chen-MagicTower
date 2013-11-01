@@ -40,6 +40,8 @@ UIWindow(TexManager::sInstance().GetUITex(eUIID_WndCommand),0,0,166,170,0,0)
 	m_pItemButton->SetFont(eFontType_MSYaHei,eFontSize_FontMiddle);
 	m_pItemButton->SetText("ÎïÆ·",0xFF9D988E);
 
+	m_bNeedResetPos = true;
+
 	m_pChar = NULL;
 }
 
@@ -73,13 +75,21 @@ Character*	WndCommand::GetBindChar()
 
 void WndCommand::SetRenderPositon(float _x,float _y)
 {
-	m_fPosX = _x; 
-	m_fPosY = _y;
+	if(_x == -1 && _y == -1)
+	{
+		m_fPosX = m_pChar->GetShowX() + 50; 
+		m_fPosY = m_pChar->GetShowY();
+	}
+	else
+	{
+		m_fPosX = _x; 
+		m_fPosY = _y;
+	}
 
 	m_pAttackButton->ResetPosition(m_fPosX+m_pAttackButton->OffsetX,m_fPosY+m_pAttackButton->OffsetY);
 	m_pSkillButton->ResetPosition(m_fPosX+m_pSkillButton->OffsetX,m_fPosY+m_pSkillButton->OffsetY);
-	m_pItemButton->ResetPosition(m_fPosX+m_pItemButton->OffsetX,m_fPosY+m_pItemButton->OffsetX);
-	m_pFinishButton->ResetPosition(m_fPosX+m_pFinishButton->OffsetX,m_fPosY+m_pFinishButton->OffsetX);	
+	m_pItemButton->ResetPosition(m_fPosX+m_pItemButton->OffsetX,m_fPosY+m_pItemButton->OffsetY);
+	m_pFinishButton->ResetPosition(m_fPosX+m_pFinishButton->OffsetX,m_fPosY+m_pFinishButton->OffsetY);	
 }
 
 void WndCommand::Update(float dt)

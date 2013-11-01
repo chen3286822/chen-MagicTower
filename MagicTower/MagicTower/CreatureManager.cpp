@@ -727,6 +727,8 @@ void CreatureManager::PreAttackAndPushAction(Character* cast,Character* target)
 		}
 	}
 
+	//设置状态
+	cast->SetActionStage(eActionStage_AttackCastStage);
 
 	//推送动作
 	ActionProcess* process = ActionProcess::sInstancePtr();
@@ -820,6 +822,9 @@ void CreatureManager::PreSkillAndPushAction(Character* cast,Character* target)
 	}
 	m_vSkillTargets = vTar;
 
+	//设置状态
+	cast->SetActionStage(eActionStage_SkillCastStage);
+
 	ActionProcess* process = ActionProcess::sInstancePtr();
 	process->PushAction(eNotify_TowardToAttacker,cast,target,0);
 	process->PushAction(eNotify_CastAction,cast,target,500);
@@ -856,6 +861,9 @@ void CreatureManager::PreItemAndPushAction(Character* cast,Character* target)
 {
 	if(!cast || !target)
 		return;
+
+	//设置状态
+	cast->SetActionStage(eActionStage_ItemCastStage);
 
 	ActionProcess* process = ActionProcess::sInstancePtr();
 	process->PushAction(eNotify_TowardToAttacker,cast,target,0);
@@ -917,22 +925,20 @@ void CreatureManager::SelectCreature()
 									if(commandWindow)
 										commandWindow->SetBindChar(selectChar);
 								}
-								else if (selectChar->GetActionStage()== eActionStage_SkillStage && selectChar->GetCastSkill()!=-1)
+								else if (selectChar->GetActionStage()== eActionStage_SkillTargetStage && selectChar->GetCastSkill()!=-1)
 								{
 									//对自己释放技能
 									if(selectChar->CanSkillHitTarget(selectChar))
 									{
-										m_nSelectNum = -1;
 										PreSkillAndPushAction(selectChar,selectChar);
 										return;
 									}
 								}
-								else if (selectChar->GetActionStage() == eActionStage_ItemStage && selectChar->GetUseItem()!=-1)
+								else if (selectChar->GetActionStage() == eActionStage_ItemTargetStage && selectChar->GetUseItem()!=-1)
 								{
 									//对自己使用物品
 									if (selectChar->CanUseItem(selectChar))
 									{
-										m_nSelectNum = -1;
 										PreItemAndPushAction(selectChar,selectChar);
 										return;
 									}
@@ -948,21 +954,19 @@ void CreatureManager::SelectCreature()
 								//上次点的是别的友方
 								if(lastChar->GetCamp() == eCamp_Friend)
 								{
-									if(lastChar->GetActionStage() == eActionStage_SkillStage && lastChar->GetCastSkill()!=-1)
+									if(lastChar->GetActionStage() == eActionStage_SkillTargetStage && lastChar->GetCastSkill()!=-1)
 									{
 										//对友方释放技能
 										if(lastChar->CanSkillHitTarget(selectChar))
 										{
-											m_nSelectNum = -1;
 											PreSkillAndPushAction(lastChar,selectChar);
 											return;
 										}
 									}
-									else if (lastChar->GetActionStage() == eActionStage_ItemStage && lastChar->GetUseItem()!= -1)
+									else if (lastChar->GetActionStage() == eActionStage_ItemTargetStage && lastChar->GetUseItem()!= -1)
 									{
 										if (lastChar->CanUseItem(selectChar))
 										{
-											m_nSelectNum = -1;
 											PreItemAndPushAction(lastChar,selectChar);
 											return;
 										}
@@ -1015,18 +1019,16 @@ void CreatureManager::SelectCreature()
 										// 									}	
 										UISystem::sInstance().CloseWindow(eWindowID_CharInfo);
 
-										m_nSelectNum = -1;
 										//lastChar->GeginHit();
 										//进行预计算
 										PreAttackAndPushAction(lastChar,selectChar);
 										return;
 									}
 								}
-								else if (lastChar->GetActionStage() == eActionStage_SkillStage && lastChar->GetCastSkill()!=-1)
+								else if (lastChar->GetActionStage() == eActionStage_SkillTargetStage && lastChar->GetCastSkill()!=-1)
 								{
 									if(lastChar->CanSkillHitTarget(selectChar))
 									{
-										m_nSelectNum = -1;
 										PreSkillAndPushAction(lastChar,selectChar);
 										return;
 									}
@@ -1104,8 +1106,9 @@ void CreatureManager::UnSelectCreature()
 // 				}
 				UISystem::sInstance().CloseWindow(eWindowID_Command);
 			}
-			//攻击阶段、技能阶段、使用物品阶段可以返回至操作阶段
-			else if(stage == eActionStage_AttackStage || stage == eActionStage_ItemStage || stage == eActionStage_SkillStage)
+			//选择攻击阶段、选择技能阶段、选择技能目标、选择物品、选择物品目标阶段可以返回至操作阶段
+			else if(stage == eActionStage_AttackStage || stage == eActionStage_ItemTargetStage || stage == eActionStage_SkillTargetStage
+				|| stage == eActionStage_ItemStage || stage == eActionStage_SkillStage)
 			{
 				lastChar->GetCastSkill() = -1;
 				lastChar->SetActionStage(eActionStage_HandleStage);
@@ -1172,12 +1175,12 @@ void CreatureManager::ProcessSelectCreature()
 			ShowMoveRange(selectChar);
 		if(selectChar->GetCamp() == eCamp_Enemy || (selectChar->GetCamp()==eCamp_Friend && (selectChar->GetActionStage()==eActionStage_AttackStage)))
 			ShowAttackRange(selectChar);
-		if(selectChar->GetCamp()==eCamp_Friend && selectChar->GetActionStage()==eActionStage_SkillStage && selectChar->GetCastSkill()!=-1)
+		if(selectChar->GetCamp()==eCamp_Friend && selectChar->GetActionStage()==eActionStage_SkillTargetStage && selectChar->GetCastSkill()!=-1)
 			ShowSkillCastRange(selectChar);
-		if(selectChar->GetCamp() == eCamp_Friend && selectChar->GetActionStage() == eActionStage_ItemStage && selectChar->GetUseItem() != -1)
+		if(selectChar->GetCamp() == eCamp_Friend && selectChar->GetActionStage() == eActionStage_ItemTargetStage && selectChar->GetUseItem() != -1)
 			ShowItemCastRange(selectChar);
 
-		if(selectChar->GetCastSkill() != -1)
+		if(selectChar->GetCastSkill() != -1 && selectChar->GetActionStage() == eActionStage_SkillTargetStage)
 		{
 			ShowSkillRange(selectChar->GetCastSkill());
 		}

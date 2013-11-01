@@ -463,19 +463,21 @@ public:
 
 	float								GetX(){return m_fPosX;}
 	float								GetY(){return m_fPosY;}
-	virtual void					SetRenderPositon(float _x,float _y){m_fPosX = _x; m_fPosY = _y;}
+	virtual void					SetRenderPositon(float _x=-1,float _y=-1){m_fPosX = _x; m_fPosY = _y;}
 	bool								IsShow(){return m_bShow;}
 	void								SetShow(bool _show);
 	virtual bool					IsOnControl();
 	virtual void					SetBindChar(Character* bindChar){}
-	virtual Character*		GetBindChar(){return NULL;}
+	virtual Character*	GetBindChar(){return NULL;}
 
 	eWindowID&				GetID(){return m_eID;}
+	bool								IsNeedResetPos(){return m_bNeedResetPos;}
 protected:
 	hgeGUI* m_pContainer;
 	hgeSprite* m_pBackGround;
 	float m_fPosX;
 	float m_fPosY;
+	bool m_bNeedResetPos; //是否需要根据地图位置重绘窗口
 
 	bool m_bShow;
 	eWindowID m_eID;
@@ -506,6 +508,7 @@ public:
 	void Release();
 	void Render();
 	void Update(float dt);
+	void ResetPos();
 	bool IsInAnyControl();
 	UIWindow* PopUpWindow(eWindowID windowID);
 	void CloseWindow(eWindowID windowID);
