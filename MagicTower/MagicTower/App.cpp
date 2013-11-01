@@ -183,6 +183,9 @@ void App::FreeResource()
 
 	//lua 释放
 	g_MyLua.Release();
+	
+	//释放小地图
+	m_iSmallMap.Destroy();
 }
 
 void App::CleanUp()
@@ -455,6 +458,9 @@ bool App::AppUpdate()
 				//战前脚本只能有一个
 				//不管是否存在战前脚本，都要继续进行战斗
 				m_bCheckPreFight = false;
+
+				//创建小地图子窗口
+				CreateSmallMapWnd();
 			}
 			MapManager::sInstance().Update(dt);
 			if(!MapManager::sInstance().GetCurrentMap()->IsShowTitle())
@@ -470,6 +476,56 @@ bool App::AppUpdate()
 		break;
 	}
 	return false;
+}
+
+LRESULT CALLBACK SmallMapProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+{
+	int wmId, wmEvent;  
+	PAINTSTRUCT ps;  
+	HDC hdc; 
+	switch(msg)
+	{	
+	case WM_CREATE:
+		App::sInstance().GetSmallMap().Load(TEXT("F:\\Project\\chen-MagicTower\\res\\tex\\SmallMap\\1.png"));
+		return FALSE;
+	case WM_PAINT:
+		hdc = BeginPaint(hwnd, &ps); 
+		App::sInstance().GetSmallMap().Draw(hdc,0,0);
+		//App::sInstance().GetSmallMap().ReleaseDC();
+		EndPaint(hwnd, &ps);  
+		return FALSE;
+	}
+	return DefWindowProc(hwnd, msg, wparam, lparam);
+}
+
+void App::CreateSmallMapWnd()
+{
+	HINSTANCE hInstance = GetModuleHandle(0);
+	WNDCLASS		winclass;
+	winclass.style = CS_DBLCLKS | CS_OWNDC | CS_HREDRAW | CS_VREDRAW | CS_NOCLOSE;
+	winclass.lpfnWndProc	= SmallMapProc;
+	winclass.cbClsExtra		= 0;
+	winclass.cbWndExtra		= 0;
+	winclass.hInstance		= hInstance;
+	winclass.hCursor		= LoadCursor(NULL, IDC_ARROW);
+	winclass.hbrBackground	= (HBRUSH)GetStockObject(BLACK_BRUSH);
+	winclass.lpszMenuName	= NULL; 
+	winclass.lpszClassName	= "SmallMapClass";
+	winclass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+
+	if (!RegisterClass(&winclass)) {
+		g_debugString(__FILE__,__FUNCDNAME__,__LINE__,"注册小地图窗口类失败");
+		return;
+	}
+
+	m_iSmallMapHwnd = CreateWindowEx(0,"SmallMapClass","小地图",WS_CHILD|WS_POPUP|WS_CAPTION|WS_MINIMIZEBOX|WS_VISIBLE,0,0,240,240,m_pHge->System_GetState(HGE_HWND),0,GetModuleHandle(0),0);
+	if (!m_iSmallMapHwnd)
+	{
+		g_debugString(__FILE__,__FUNCDNAME__,__LINE__,"创建小地图窗口失败");
+		return;
+	}
+	ShowWindow(m_iSmallMapHwnd, SW_SHOW);
+	UpdateWindow(m_iSmallMapHwnd);
 }
 
 void App::StartNextScene()

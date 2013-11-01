@@ -5,12 +5,14 @@
 #pragma warning(disable: 4018)
 #pragma warning(disable: 4996)
 
+
 //#define MARKUP_STL
 #include <windows.h>
 //#ifdef _WINDOWS_
 //#undef _WINDOWS_
  #include <atlbase.h>
 //#endif
+#include <atlimage.h>
 
 
 #include <CommDlg.h>
@@ -40,6 +42,8 @@ extern "C"
 #include "lauxlib.h"
 #include "lualib.h"
 }
+
+using namespace ATL;
 
 //设定此标记表示不从xml中读取地图文件，而直接从png中读取整个地图
 #define _LOAD_MAP_FROM_PNG

@@ -32,6 +32,9 @@ public:
 	void StartNextScene();	//开始下一个场景
 
 	void QuitGame(){m_bQuit = true;}
+
+	//小地图
+	CImage& GetSmallMap(){return m_iSmallMap;}
 private:
 	HGE* m_pHge;
 	Block m_iBlock;	//鼠标所在block
@@ -46,5 +49,11 @@ private:
 
 	//画出鼠标位置的方格
 	void DrawMouseRect();
+
+	//小地图子窗口相关
+	HWND m_iSmallMapHwnd;  //小地图窗口句柄
+	void CreateSmallMapWnd();
+	CImage m_iSmallMap;	//小地图图片
 };
 
+LRESULT CALLBACK SmallMapProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
