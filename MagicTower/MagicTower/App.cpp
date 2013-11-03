@@ -486,7 +486,13 @@ LRESULT CALLBACK SmallMapProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	switch(msg)
 	{	
 	case WM_CREATE:
-		App::sInstance().GetSmallMap().Load(TEXT("F:\\Project\\chen-MagicTower\\res\\tex\\SmallMap\\1.png"));
+		{
+			char pBuf[MAX_PATH];
+			char pathConfig[MAX_PATH];
+			GetCurrentDirectory(MAX_PATH,pBuf);
+			sprintf(pathConfig,"%s\\res\\tex\\SmallMap\\1.png",pBuf);
+			App::sInstance().GetSmallMap().Load(pathConfig);
+		}
 		return FALSE;
 	case WM_PAINT:
 		hdc = BeginPaint(hwnd, &ps); 
