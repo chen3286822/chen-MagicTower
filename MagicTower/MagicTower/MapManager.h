@@ -38,6 +38,7 @@ public:
 	inline int GetOffX(){return m_nOffX;}
 	inline int GetOffY(){return m_nOffY;}
 	void SetOffXY(int x,int y);
+	RECT GetMapRect();
 	inline void AddObject(MapObject* mo){m_vObjList.push_back(mo);}
 	inline void AddBlock(Block _block){m_vBlocks.push_back(_block);}
 	inline void SetLevel(int _level){m_nlevel = _level;}

@@ -58,6 +58,8 @@ public:
 	Character* GetFriend(int num);
 	Character* GetCreature(int x,int  y);
 	Character* GetCreature(int num);
+	VCharacter& GetEnemy(){return m_VEnemyList;}
+	VCharacter& GetFriend(){return m_VFriendList;}
 
 	//取得当前回合信息
 	eCampTurn GetCampTurn(){return m_eCampTurn;}

@@ -490,15 +490,94 @@ LRESULT CALLBACK SmallMapProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			char pBuf[MAX_PATH];
 			char pathConfig[MAX_PATH];
 			GetCurrentDirectory(MAX_PATH,pBuf);
-			sprintf(pathConfig,"%s\\res\\tex\\SmallMap\\1.png",pBuf);
-			App::sInstance().GetSmallMap().Load(pathConfig);
+			sprintf(pathConfig,"%s\\res\\tex\\SmallMap\\%d.png",pBuf,MapManager::sInstance().GetCurrentMap()->GetLevel());
+			if(App::sInstance().GetSmallMap().Load(pathConfig) != S_OK)
+				g_debugString(__FILE__,__FUNCDNAME__,__LINE__,"缺少小地图");
+			
+			//更改小地图窗口大小
+			int mapWidth = App::sInstance().GetSmallMap().GetWidth();
+			int mapHeight = App::sInstance().GetSmallMap().GetHeight();
+			RECT wndRect;
+			GetWindowRect(hwnd,&wndRect);
+			RECT clientRect;
+			GetClientRect(hwnd,&clientRect);
+			int clientWidth = mapWidth + (wndRect.right-wndRect.left-clientRect.right);
+			int clientHeight = mapHeight + (wndRect.bottom-wndRect.top-clientRect.bottom);
+			MoveWindow(hwnd,wndRect.left,wndRect.top,clientWidth,clientHeight,true);
+			
+// 			//初始化小地图位置框
+ 			RECT& smallRect = App::sInstance().GetSmallMapRect();
+ 			int offx = MapManager::sInstance().GetCurrentMap()->GetOffX();
+ 			int offy = MapManager::sInstance().GetCurrentMap()->GetOffY();
+ 			smallRect.left = offx*mapWidth/g_nMapWidthNum;
+ 			smallRect.top = offy*mapHeight/g_nMapHeightNum;
+ 			smallRect.right = smallRect.left + (APP_WIDTH/MAP_RECT)*mapWidth/g_nMapWidthNum;
+ 			smallRect.bottom = smallRect.top + (APP_HEIGHT/MAP_RECT)*mapHeight/g_nMapHeightNum;
 		}
 		return FALSE;
 	case WM_PAINT:
-		hdc = BeginPaint(hwnd, &ps); 
-		App::sInstance().GetSmallMap().Draw(hdc,0,0);
-		//App::sInstance().GetSmallMap().ReleaseDC();
-		EndPaint(hwnd, &ps);  
+		{
+			hdc = BeginPaint(hwnd, &ps); 
+
+			//绘制小地图
+			App::sInstance().GetSmallMap().Draw(hdc,0,0);
+		
+			//画小地图框
+			HPEN hPen;
+			HPEN hPenOld;
+			hPen = CreatePen( PS_SOLID, 1, RGB( 255, 255, 255 ));
+			hPenOld = ( HPEN )SelectObject ( hdc, hPen );
+
+			RECT smallRect = App::sInstance().GetSmallMapRect();
+			MoveToEx(hdc, smallRect.left,smallRect.top, NULL );
+			LineTo(hdc, smallRect.right,smallRect.top);
+			MoveToEx(hdc, smallRect.left,smallRect.top, NULL );
+			LineTo(hdc, smallRect.left,smallRect.bottom);
+			MoveToEx(hdc, smallRect.right-1,smallRect.top, NULL );
+			LineTo(hdc, smallRect.right-1,smallRect.bottom);
+			MoveToEx(hdc, smallRect.left,smallRect.bottom-1, NULL );
+			LineTo(hdc, smallRect.right,smallRect.bottom-1);
+
+			SelectObject (hdc , hPenOld);
+			DeleteObject ( hPen );
+
+			//绘制单位坐标点
+			//敌人用红色的点表示
+			HPEN hPenEnemy = CreatePen( PS_SOLID, 2, RGB( 255, 0, 0 ));
+			//友方用绿色的点表示
+			HPEN hPenFriend = CreatePen( PS_SOLID, 2, RGB( 0, 255, 0 ));
+
+			int smallMapWidth = App::sInstance().GetSmallMap().GetWidth();
+			int smallMapHeight = App::sInstance().GetSmallMap().GetHeight();
+			
+			SelectObject ( hdc, hPenEnemy );
+			VCharacter mylist = CreatureManager::sInstance().GetEnemy();
+			VCharacter::iterator it=CreatureManager::sInstance().GetEnemy().begin();
+			VCharacter::iterator it2=CreatureManager::sInstance().GetEnemy().end();
+			for (;it!=CreatureManager::sInstance().GetEnemy().end();it++)
+			{
+				Block chaBlock = (*it)->GetBlock();
+				int startX = chaBlock.xpos*smallMapWidth*MAP_RECT/APP_WIDTH;
+				int startY = chaBlock.ypos*smallMapHeight*MAP_RECT/APP_HEIGHT;
+				MoveToEx(hdc, startX,startY, NULL );
+				LineTo(hdc, startX+1,startY+1);
+			}
+			SelectObject ( hdc, hPenFriend );
+			for (VCharacter::iterator it=CreatureManager::sInstance().GetFriend().begin();it!=CreatureManager::sInstance().GetFriend().end();it++)
+			{
+				Block chaBlock = (*it)->GetBlock();
+				int startX = chaBlock.xpos*smallMapWidth*MAP_RECT/APP_WIDTH;
+				int startY = chaBlock.ypos*smallMapHeight*MAP_RECT/APP_HEIGHT;
+				MoveToEx(hdc, startX,startY, NULL );
+				LineTo(hdc, startX+1,startY+1);
+			}
+
+			SelectObject (hdc , hPenOld);
+			DeleteObject ( hPenEnemy );
+			DeleteObject ( hPenFriend );
+
+			EndPaint(hwnd, &ps);  
+		}
 		return FALSE;
 	}
 	return DefWindowProc(hwnd, msg, wparam, lparam);

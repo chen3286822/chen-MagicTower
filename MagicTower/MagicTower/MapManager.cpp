@@ -116,6 +116,22 @@ void Map::SetOffXY(int x,int y)
 	m_nOffX = x;
 	m_nOffY = y;
 
+	if (!App::sInstance().GetSmallMap().IsNull())
+	{
+		int mapWidth = App::sInstance().GetSmallMap().GetWidth();
+		int mapHeight = App::sInstance().GetSmallMap().GetHeight();
+		RECT& smallRect = App::sInstance().GetSmallMapRect();
+		smallRect.left = m_nOffX*mapWidth/g_nMapWidthNum;
+		smallRect.top = m_nOffY*mapHeight/g_nMapHeightNum;
+		smallRect.right = smallRect.left + (APP_WIDTH/MAP_RECT)*mapWidth/g_nMapWidthNum;
+		smallRect.bottom = smallRect.top + (APP_HEIGHT/MAP_RECT)*mapHeight/g_nMapHeightNum;
+		RECT reDrawRect;
+		reDrawRect.top = reDrawRect.left = 0;
+		reDrawRect.right = mapWidth;
+		reDrawRect.bottom = mapHeight;
+		InvalidateRect(App::sInstance().GetSmallMapHWND(),&reDrawRect,TRUE);
+	}
+
 	UISystem::sInstance().ResetPos();
 }
 
@@ -170,6 +186,18 @@ void Map::RenderTitle()
 			App::sInstance().GetHGE()->System_SetState(HGE_HIDEMOUSE,false);
 		}
 	}
+}
+
+RECT Map::GetMapRect()
+{
+	RECT rect;
+	if (m_pMapSpr)
+	{
+		rect.right = (int)(m_pMapSpr->GetWidth());
+		rect.bottom = (int)(m_pMapSpr->GetHeight());
+	}
+	rect.top = rect.left = 0;
+	return rect;
 }
 
 void Map::Update(float dt)

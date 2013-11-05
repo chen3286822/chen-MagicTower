@@ -330,7 +330,7 @@ void Scene::Update(float dt)
 {
 	if (m_bShowPlaceName)
 	{
-		if(m_dwShowTime > 2000)
+		if(m_dwShowTime > 1000)
 			m_bShowPlaceName = false;
 		else
 			m_dwShowTime += (int)(dt*1000);

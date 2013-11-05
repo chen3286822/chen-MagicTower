@@ -35,6 +35,8 @@ public:
 
 	//小地图
 	CImage& GetSmallMap(){return m_iSmallMap;}
+	RECT& GetSmallMapRect(){return m_iWndRect;}
+	HWND GetSmallMapHWND(){return m_iSmallMapHwnd;}
 private:
 	HGE* m_pHge;
 	Block m_iBlock;	//鼠标所在block
@@ -54,6 +56,7 @@ private:
 	HWND m_iSmallMapHwnd;  //小地图窗口句柄
 	void CreateSmallMapWnd();
 	CImage m_iSmallMap;	//小地图图片
+	RECT m_iWndRect;		//大地图显示的区域处于小地图中的范围
 };
 
 LRESULT CALLBACK SmallMapProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
