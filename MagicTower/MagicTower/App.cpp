@@ -480,7 +480,7 @@ bool App::AppUpdate()
 
 LRESULT CALLBACK SmallMapProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
-	int wmId, wmEvent;  
+//	int wmId, wmEvent;  
 	PAINTSTRUCT ps;  
 	HDC hdc; 
 	switch(msg)
@@ -491,6 +491,8 @@ LRESULT CALLBACK SmallMapProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			char pathConfig[MAX_PATH];
 			GetCurrentDirectory(MAX_PATH,pBuf);
 			sprintf(pathConfig,"%s\\res\\tex\\SmallMap\\%d.png",pBuf,MapManager::sInstance().GetCurrentMap()->GetLevel());
+			if(!App::sInstance().GetSmallMap().IsNull())
+				App::sInstance().GetSmallMap().Destroy();
 			if(App::sInstance().GetSmallMap().Load(pathConfig) != S_OK)
 				g_debugString(__FILE__,__FUNCDNAME__,__LINE__,"缺少小地图");
 			
@@ -543,9 +545,9 @@ LRESULT CALLBACK SmallMapProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 			//绘制单位坐标点
 			//敌人用红色的点表示
-			HPEN hPenEnemy = CreatePen( PS_SOLID, 2, RGB( 255, 0, 0 ));
+			HPEN hPenEnemy = CreatePen( PS_SOLID, 4, RGB( 255, 0, 0 ));
 			//友方用绿色的点表示
-			HPEN hPenFriend = CreatePen( PS_SOLID, 2, RGB( 0, 255, 0 ));
+			HPEN hPenFriend = CreatePen( PS_SOLID, 4, RGB( 0, 255, 0 ));
 
 			int smallMapWidth = App::sInstance().GetSmallMap().GetWidth();
 			int smallMapHeight = App::sInstance().GetSmallMap().GetHeight();
@@ -559,16 +561,16 @@ LRESULT CALLBACK SmallMapProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				Block chaBlock = (*it)->GetBlock();
 				int startX = chaBlock.xpos*smallMapWidth*MAP_RECT/APP_WIDTH;
 				int startY = chaBlock.ypos*smallMapHeight*MAP_RECT/APP_HEIGHT;
-				MoveToEx(hdc, startX,startY, NULL );
+				MoveToEx(hdc, startX+1,startY+1, NULL );
 				LineTo(hdc, startX+1,startY+1);
 			}
 			SelectObject ( hdc, hPenFriend );
 			for (VCharacter::iterator it=CreatureManager::sInstance().GetFriend().begin();it!=CreatureManager::sInstance().GetFriend().end();it++)
 			{
 				Block chaBlock = (*it)->GetBlock();
-				int startX = chaBlock.xpos*smallMapWidth*MAP_RECT/APP_WIDTH;
-				int startY = chaBlock.ypos*smallMapHeight*MAP_RECT/APP_HEIGHT;
-				MoveToEx(hdc, startX,startY, NULL );
+				int startX = chaBlock.xpos*smallMapWidth/g_nMapWidthNum;
+				int startY = chaBlock.ypos*smallMapHeight/g_nMapHeightNum;
+				MoveToEx(hdc, startX+1,startY+1, NULL );
 				LineTo(hdc, startX+1,startY+1);
 			}
 
@@ -579,7 +581,73 @@ LRESULT CALLBACK SmallMapProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			EndPaint(hwnd, &ps);  
 		}
 		return FALSE;
+	case WM_MOUSEMOVE:
+	case WM_LBUTTONDOWN:
+		{
+			//必须是按住鼠标拖动才能移动地图框
+			if (msg==WM_MOUSEMOVE && g_getLButtonState(App::sInstance().GetHGE()) != eLButtonState_Hold)
+				return FALSE;
+			
+			//鼠标处于小地图中心一定范围才能移动地图框
+			int xPos = GET_X_LPARAM(lparam); 
+			int yPos = GET_Y_LPARAM(lparam);
+			RECT& smallRect = App::sInstance().GetSmallMapRect();
+			//保存老的框，便于对比是不是要重绘
+			RECT oldRect = App::sInstance().GetSmallMapRect();
+			RECT clientRect;
+			GetClientRect(hwnd,&clientRect);
+			int width = smallRect.right - smallRect.left;
+			int heigth = smallRect.bottom - smallRect.top;
+			//地图框中心点的极限范围
+			RECT limitRect;
+			limitRect.left = clientRect.left + width/2;
+			limitRect.right = clientRect.right - width/2;
+			limitRect.top = clientRect.top + heigth/2;
+			limitRect.bottom = clientRect.bottom - heigth/2;
+			//更新新的地图框中心点
+			POINT newCenter;
+			if (xPos < limitRect.left)
+				newCenter.x = limitRect.left;
+			else if(xPos > limitRect.right)
+				newCenter.x = limitRect.right;
+			else
+				newCenter.x = xPos;
+			if(yPos < limitRect.top)
+				newCenter.y = limitRect.top;
+			else if(yPos > limitRect.bottom)
+				newCenter.y = limitRect.bottom;
+			else
+				newCenter.y = yPos;
+			//修正中心点，使得符合大地图的正确偏移
+			int mapWidth = App::sInstance().GetSmallMap().GetWidth();
+			int mapHeight = App::sInstance().GetSmallMap().GetHeight();
+			int offsetX = newCenter.x*g_nMapWidthNum/mapWidth;
+			int offsetY = newCenter.y*g_nMapHeightNum/mapHeight;
+			newCenter.x = offsetX*mapWidth/g_nMapWidthNum;
+			newCenter.y = offsetY*mapHeight/g_nMapHeightNum;
+			//更新地图框
+			smallRect.left = newCenter.x - width/2;
+			smallRect.right = newCenter.x + width/2;
+			smallRect.top = newCenter.y - heigth/2;
+			smallRect.bottom = newCenter.y + heigth/2;
+			//判断是否要重绘已经通知更新
+			if (oldRect.left == smallRect.left && oldRect.right == smallRect.right &&
+				oldRect.top == smallRect.top && oldRect.bottom == smallRect.bottom)
+			{
+				return FALSE;
+			}
+			//通知大地图
+			MapManager::sInstance().GetCurrentMap()->SetOffXY(smallRect.left*g_nMapWidthNum/mapWidth,smallRect.top*g_nMapHeightNum/mapHeight);
+			RECT bigMapRect;
+			HWND father = App::sInstance().GetHGE()->System_GetState(HGE_HWND);
+			GetClientRect(father,&bigMapRect);
+			InvalidateRect(father,&bigMapRect,FALSE);
+			//重绘小地图
+			InvalidateRect(hwnd,&clientRect,FALSE);
+		}
+		return FALSE;
 	}
+
 	return DefWindowProc(hwnd, msg, wparam, lparam);
 }
 
@@ -611,6 +679,13 @@ void App::CreateSmallMapWnd()
 	}
 	ShowWindow(m_iSmallMapHwnd, SW_SHOW);
 	UpdateWindow(m_iSmallMapHwnd);
+}
+
+void App::ShutDownSmallMap()
+{
+	DestroyWindow(m_iSmallMapHwnd);
+	m_iSmallMapHwnd = NULL;
+	m_iWndRect.top = m_iWndRect.bottom = m_iWndRect.left = m_iWndRect.right = 0;
 }
 
 void App::StartNextScene()

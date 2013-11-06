@@ -8,6 +8,7 @@
 
 //#define MARKUP_STL
 #include <windows.h>
+#include <WindowsX.h>
 //#ifdef _WINDOWS_
 //#undef _WINDOWS_
  #include <atlbase.h>

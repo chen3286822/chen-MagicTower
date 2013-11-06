@@ -129,7 +129,7 @@ void Map::SetOffXY(int x,int y)
 		reDrawRect.top = reDrawRect.left = 0;
 		reDrawRect.right = mapWidth;
 		reDrawRect.bottom = mapHeight;
-		InvalidateRect(App::sInstance().GetSmallMapHWND(),&reDrawRect,TRUE);
+		InvalidateRect(App::sInstance().GetSmallMapHWND(),&reDrawRect,FALSE);
 	}
 
 	UISystem::sInstance().ResetPos();

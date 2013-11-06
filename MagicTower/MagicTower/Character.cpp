@@ -297,6 +297,15 @@ void Character::Update(float delta)
 				m_eActionStage = eActionStage_HandleStage;
 				m_lPathDir.clear();
 
+				//更新小地图人物位置
+				int mapWidth = App::sInstance().GetSmallMap().GetWidth();
+				int mapHeight = App::sInstance().GetSmallMap().GetHeight();
+				RECT reDrawRect;
+				reDrawRect.top = reDrawRect.left = 0;
+				reDrawRect.right = mapWidth;
+				reDrawRect.bottom = mapHeight;
+				InvalidateRect(App::sInstance().GetSmallMapHWND(),&reDrawRect,FALSE);
+
 				//友方单位打开操作界面
 				//处于剧情动作移动时不能打开操作面板
 				if (m_nCamp == eCamp_Friend && m_iAction.m_eAction==eAction_None)

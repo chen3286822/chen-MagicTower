@@ -37,6 +37,7 @@ public:
 	CImage& GetSmallMap(){return m_iSmallMap;}
 	RECT& GetSmallMapRect(){return m_iWndRect;}
 	HWND GetSmallMapHWND(){return m_iSmallMapHwnd;}
+	void ShutDownSmallMap();
 private:
 	HGE* m_pHge;
 	Block m_iBlock;	//Êó±êËùÔÚblock

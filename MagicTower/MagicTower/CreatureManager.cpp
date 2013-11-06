@@ -132,6 +132,8 @@ void CreatureManager::Update(float delta)
 		ActionProcess::sInstance().ClearAction();
 		App::sInstance().SetLayer(eLayer_Scene,true);
 		App::sInstance().StartNextScene();
+		//¹Ø±ÕÐ¡µØÍ¼
+		App::sInstance().ShutDownSmallMap();
 	}
 
 	for (VCharacter::iterator it=m_VEnemyList.begin();it!=m_VEnemyList.end();it++)
