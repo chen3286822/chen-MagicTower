@@ -23,6 +23,13 @@ struct Victory
 	int m_nNum;		//到达特定区域条件的特定单位号
 };
 
+//失败条件描述
+struct Failed
+{
+	eFailCondition m_eConditoin;	//失败类型
+	std::vector<int> m_vNum;	//导致失败的单位号
+};
+
 class Map
 {
 public:
@@ -77,9 +84,13 @@ public:
 	void SetVictoryCondition(int condition,int data=-1,int num=-1);	//设置胜利条件，附带胜利信息，如果连续两次调用，类型一致，则附带信息会合并,num指特定单位号
 	void SetVictory(bool bVictory){m_bVictory = bVictory;}
 	bool GetVictory(){return m_bVictory;}
+	bool CheckVictory(eVictoryCondition condition,int data);		//检查是否胜利
+	//失败条件
+	void SetFailCondition(int condition,int num);	//设置失败条件，num为导致失败的单位号
 	void SetFailed(bool bFailed){m_bFailed = bFailed;}
 	bool GetFailed(){return m_bFailed;}
-	bool CheckVictory(eVictoryCondition condition,int data);		//检查是否胜利
+	bool CheckFail(eFailCondition condition,int num);	//检查是否失败
+
 
 	//触发器相关
 	//添加触发器，触发条件不需要的设为-1
@@ -114,6 +125,7 @@ private:
 	Victory m_iVictory;		//本关的胜利条件
 	bool m_bVictory;			//是否已经胜利
 	bool m_bFailed;			//是否已经失败
+	Failed m_iFailed;			//本关的失败条件
 
 	std::vector<Trigger> m_vTriggers;	//本地图包含的触发器
 };
@@ -133,6 +145,7 @@ public:
 	inline Map* GetCurrentMap(){return GetMap(m_nCurrentLevel);}
 	void Render();
 	void Update(float dt);
+	void Release();
 
 private:
 	std::vector<Map*> m_vMaps;

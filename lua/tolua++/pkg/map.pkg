@@ -9,6 +9,7 @@ public:
 	void SetVictoryCondition(int condition,int data=-1,int num=-1);
 	void SetVictory(bool bVictory);
 	bool GetVictory();
+	void SetFailCondition(int condition,int num);
 	void SetFailed(bool bFailed);
 	bool GetFailed();
 	void AddTrigger(int triggerID,const char* func,int turns,int num1,int num2,int x,int y);

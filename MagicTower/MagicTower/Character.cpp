@@ -515,6 +515,10 @@ void Character::SetFinish(bool _finish)
 		//检查是否移动触发
 		MapManager::sInstance().GetCurrentMap()->IsTriggerLocation(m_nNum);
 
+		//检查是否失败
+		if(MapManager::sInstance().GetCurrentMap()->CheckFail(eFailCondition_AllFriendsDead,-1))
+			MapManager::sInstance().GetCurrentMap()->SetFailed(true);
+
 		//检查是否胜利
 		if(MapManager::sInstance().GetCurrentMap()->CheckVictory(eVictoryCondition_GetToPosition,m_nNum))
 			MapManager::sInstance().GetCurrentMap()->SetVictory(true);

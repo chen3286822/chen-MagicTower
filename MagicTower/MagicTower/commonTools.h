@@ -103,6 +103,14 @@ enum eVictoryCondition
 	eVictoryCondition_GetToPosition,		//到达特定区域
 };
 
+//失败条件
+//回合数到了是直接在回合计数时判断的
+enum eFailCondition
+{
+	eFailCondition_TargetDead,		//特定目标死亡
+	eFailCondition_AllFriendsDead,	//所有友方死亡
+};
+
 //战斗时剧情触发器
 enum eTrigger
 {

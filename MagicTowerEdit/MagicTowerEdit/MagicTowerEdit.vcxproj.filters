@@ -16,6 +16,9 @@
     <ClCompile Include="..\..\MagicTower\MagicTower\Markup.cpp">
       <Filter>Required Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\MagicTower\MagicTower\FontManager.cpp">
+      <Filter>Required Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">

@@ -245,6 +245,13 @@ public:
 						ClearAction();
 					}
 
+					//检查是否满足失败条件
+					if(action.m_pTarget->GetCamp() == eCamp_Friend)
+					{
+						if(MapManager::sInstance().GetCurrentMap()->CheckFail(eFailCondition_TargetDead,action.m_pTarget->GetNum()))
+							MapManager::sInstance().GetCurrentMap()->SetFailed(true);
+					}
+
 					//检查是否满足胜利条件
 					if(MapManager::sInstance().GetCurrentMap()->CheckVictory(eVictoryCondition_KillSpecificEnemy,action.m_pTarget->GetNum()))
 						MapManager::sInstance().GetCurrentMap()->SetVictory(true);

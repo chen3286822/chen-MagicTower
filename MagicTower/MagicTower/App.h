@@ -31,6 +31,9 @@ public:
 	void SetLayer(eLayer layer,bool postScene=false);	//postScene 是否跳转到战后场景
 	void StartNextScene();	//开始下一个场景
 
+	//开始主界面
+	void StartMainWnd();
+
 	void QuitGame(){m_bQuit = true;}
 
 	//小地图

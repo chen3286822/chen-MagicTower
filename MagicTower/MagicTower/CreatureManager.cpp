@@ -125,7 +125,21 @@ void CreatureManager::Update(float delta)
 {
 	ProcessAction();
 
-	//不是出于暂停中，且胜利了，则跳转到战后剧情
+	//不是处于暂停中，且失败了，则返回主界面
+	if (!m_bPause && MapManager::sInstance().GetCurrentMap()->GetFailed() == true)
+	{
+		//清楚剩余的动作
+		ActionProcess::sInstance().ClearAction();
+		//处理数据
+		MapManager::sInstance().GetCurrentMap()->Release();
+		CreatureManager::sInstance().Release();
+		MapManager::sInstance().Release();
+		//关闭小地图
+		App::sInstance().ShutDownSmallMap();
+		App::sInstance().StartMainWnd();
+	}
+
+	//不是处于暂停中，且胜利了，则跳转到战后剧情
 	if (!m_bPause && MapManager::sInstance().GetCurrentMap()->GetVictory() == true)
 	{
 		//清楚剩余的动作

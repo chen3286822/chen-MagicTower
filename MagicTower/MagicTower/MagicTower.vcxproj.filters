@@ -82,6 +82,9 @@
     <ClCompile Include="WndSummary.cpp">
       <Filter>Windows\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="AIMgr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
@@ -187,6 +190,9 @@
       <Filter>Windows\Head Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h" />
+    <ClInclude Include="AIMgr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">

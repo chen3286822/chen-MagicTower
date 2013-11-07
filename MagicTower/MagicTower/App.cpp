@@ -149,13 +149,18 @@ bool App::LoadResource()
 // 	lua_pcall(g_MyLua.GetLuaState(), 0, LUA_MULTRET, 0);
 
 
+	StartMainWnd();
+	return true;
+}
+
+void App::StartMainWnd()
+{
 	m_eCurLayer = eLayer_MainWnd;
 	UISystem::sInstance().PopUpWindow(eWindowID_MainTitle);
 	m_bCheckNextScene = false;
 	m_bPreOrPostScene = true;
 	m_nCurSceneNum = 1;
 	m_bCheckPreFight = false;
-	return true;
 }
 
 void App::Run()
@@ -169,6 +174,7 @@ void App::FreeResource()
 	//gSafeDelete(player);
 	CreatureManager::sInstance().Release();
 	UISystem::sInstance().Release();
+	MapManager::sInstance().Release();
 
 	Scene::sDestroy();
 	SkillManager::sDestroy();

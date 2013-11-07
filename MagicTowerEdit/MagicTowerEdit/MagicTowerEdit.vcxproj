@@ -101,6 +101,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\MagicTower\MagicTower\commonTools.cpp" />
+    <ClCompile Include="..\..\MagicTower\MagicTower\FontManager.cpp" />
     <ClCompile Include="..\..\MagicTower\MagicTower\Markup.cpp" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="main.cpp" />

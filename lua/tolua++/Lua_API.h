@@ -1,6 +1,6 @@
 /*
 ** Lua binding: lua
-** Generated automatically by tolua++-1.0.92 on 10/29/13 15:32:34.
+** Generated automatically by tolua++-1.0.92 on 11/07/13 18:07:32.
 */
 
 #ifndef __cplusplus
@@ -889,6 +889,41 @@ static int tolua_lua_Map_GetVictory00(lua_State* tolua_S)
 #ifndef TOLUA_RELEASE
  tolua_lerror:
  tolua_error(tolua_S,"#ferror in function 'GetVictory'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: SetFailCondition of class  Map */
+#ifndef TOLUA_DISABLE_tolua_lua_Map_SetFailCondition00
+static int tolua_lua_Map_SetFailCondition00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Map",0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,3,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,4,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Map* self = (Map*)  tolua_tousertype(tolua_S,1,0);
+  int condition = ((int)  tolua_tonumber(tolua_S,2,0));
+  int num = ((int)  tolua_tonumber(tolua_S,3,0));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'SetFailCondition'", NULL);
+#endif
+  {
+   self->SetFailCondition(condition,num);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'SetFailCondition'.",&tolua_err);
  return 0;
 #endif
 }
@@ -2283,6 +2318,7 @@ TOLUA_API int tolua_lua_open (lua_State* tolua_S)
    tolua_function(tolua_S,"SetVictoryCondition",tolua_lua_Map_SetVictoryCondition00);
    tolua_function(tolua_S,"SetVictory",tolua_lua_Map_SetVictory00);
    tolua_function(tolua_S,"GetVictory",tolua_lua_Map_GetVictory00);
+   tolua_function(tolua_S,"SetFailCondition",tolua_lua_Map_SetFailCondition00);
    tolua_function(tolua_S,"SetFailed",tolua_lua_Map_SetFailed00);
    tolua_function(tolua_S,"GetFailed",tolua_lua_Map_GetFailed00);
    tolua_function(tolua_S,"AddTrigger",tolua_lua_Map_AddTrigger00);

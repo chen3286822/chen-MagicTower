@@ -69,7 +69,7 @@ void WndMainTitle::Update(float dt)
 			GetCurrentDirectory(MAX_PATH,pBuf);
 			sprintf(pathConfig,"%s\\res\\script\\top.lua",pBuf);
 			g_MyLua.LoadFile(pathConfig);
-			//必须执行inti 函数，否则终止游戏
+			//必须执行init 函数，否则终止游戏
 			g_MyLua.RunFunc(true,"init","");
 
 			//开始执行剧情脚本

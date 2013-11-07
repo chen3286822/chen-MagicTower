@@ -30,6 +30,8 @@ Map::Map()
 	m_iVictory.m_vData.clear();
 	m_iVictory.m_nNum = -1;
 	m_bVictory = false;
+	m_iFailed.m_eConditoin = eFailCondition_AllFriendsDead;
+	m_iFailed.m_vNum.clear();
 	m_bFailed = false;
 }
 
@@ -450,7 +452,7 @@ bool Map::CheckVictory(eVictoryCondition condition,int data)
 	if(m_bVictory)
 		return true;
 
-	if(condition != eVictoryCondition_KillSpecificEnemy)
+	if(condition != m_iVictory.m_eCondition)
 		return false;
 
 	switch(m_iVictory.m_eCondition)
@@ -492,6 +494,69 @@ bool Map::CheckVictory(eVictoryCondition condition,int data)
 				}
 			}
 		}
+	}
+
+	return false;
+}
+
+void Map::SetFailCondition(int condition,int num)
+{
+	switch(condition)
+	{
+	case eFailCondition_TargetDead:
+		{
+			if(m_iFailed.m_eConditoin == eFailCondition_TargetDead)
+			{
+				m_iFailed.m_vNum.push_back(num);
+			}
+			else
+			{
+				m_iFailed.m_eConditoin = eFailCondition_TargetDead;
+				m_iFailed.m_vNum.clear();
+				m_iFailed.m_vNum.push_back(num);
+			}
+		}
+		break;
+	case eFailCondition_AllFriendsDead:
+		{
+			m_iFailed.m_eConditoin = eFailCondition_AllFriendsDead;
+			m_iFailed.m_vNum.clear();
+		}
+		break;
+	}
+}
+
+bool Map::CheckFail(eFailCondition condition,int num)
+{
+	if(m_bFailed)
+		return true;
+
+	if (condition != m_iFailed.m_eConditoin)
+		return false;
+	
+	switch(m_iFailed.m_eConditoin)
+	{
+	case eFailCondition_TargetDead:
+		{
+			//num代表刚刚死亡的友方单位
+			for(std::vector<int>::iterator it=m_iFailed.m_vNum.begin();it!=m_iFailed.m_vNum.end();)
+			{
+				if(*it == num)
+					it = m_iFailed.m_vNum.erase(it);
+				else
+					it++;
+			}
+			//特定单位死完
+			if(m_iFailed.m_vNum.empty())
+				return true;
+		}
+		break;
+	case eFailCondition_AllFriendsDead:
+		{
+			if(CreatureManager::sInstance().IsFriendAllDead())
+				return true;
+		}
+		break;
 	}
 
 	return false;
@@ -691,6 +756,12 @@ MapManager::~MapManager(void)
 	{
 		gSafeDelete((*it));
 	}
+}
+
+void MapManager::Release()
+{
+	m_vMaps.clear();
+	m_nCurrentLevel = 0;
 }
 
 

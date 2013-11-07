@@ -108,6 +108,7 @@
     <ClCompile Include="..\..\lua\tolua++\tolua_map.c" />
     <ClCompile Include="..\..\lua\tolua++\tolua_push.c" />
     <ClCompile Include="..\..\lua\tolua++\tolua_to.c" />
+    <ClCompile Include="AIMgr.cpp" />
     <ClCompile Include="App.cpp" />
     <ClCompile Include="AStar.cpp" />
     <ClCompile Include="Character.cpp" />
@@ -141,6 +142,7 @@
     <ClInclude Include="..\..\lua\tolua++\tolua++.h" />
     <ClInclude Include="..\..\lua\tolua++\tolua_event.h" />
     <ClInclude Include="ActionProcess.h" />
+    <ClInclude Include="AIMgr.h" />
     <ClInclude Include="App.h" />
     <ClInclude Include="AStar.h" />
     <ClInclude Include="BinaryHeap.h" />
