@@ -747,20 +747,26 @@ MapManager::MapManager(void)
 MapManager::~MapManager(void)
 {
 	//释放当前地图资源
-	Map* theMap = GetCurrentMap();
-	if(theMap)
-		theMap->Release();
+// 	Map* theMap = GetCurrentMap();
+// 	if(theMap)
+// 		theMap->Release();
 
 	gSafeDelete(m_pMarkUp);
 	for (std::vector<Map*>::iterator it=m_vMaps.begin();it!=m_vMaps.end();it++)
 	{
+		if((*it))
+			(*it)->Release();
 		gSafeDelete((*it));
 	}
 }
 
 void MapManager::Release()
 {
-	m_vMaps.clear();
+	for (std::vector<Map*>::iterator it=m_vMaps.begin();it!=m_vMaps.end();it++)
+	{
+		(*it)->Release();
+		gSafeDelete((*it));
+	}
 	m_nCurrentLevel = 0;
 }
 
