@@ -1,5 +1,6 @@
 #ifndef AIMGR_H
 #define AIMGR_H
+#include "commonTools.h"
 
 
 class Character;
@@ -13,9 +14,11 @@ public:
 	void SetCurCharacter(Character* cha);
 	Character* GetCurCharacter();
 
+	bool DoAction();
 	bool SelectRoute();
 private:
 	Character* m_pCurAI;
+	eAIStrategy m_eStrategy;	//现行单位的策略
 };
 
 

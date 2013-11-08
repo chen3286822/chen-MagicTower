@@ -33,6 +33,13 @@ struct Items
 typedef std::list<Items> LItems;
 
 
+struct AttackTarget
+{
+	Character* m_iTarget;	//可以攻击到的目标
+	Pair m_iAttakPoint;		//从这个点可以攻击到上面这个目标，指普通攻击
+};
+typedef std::vector<AttackTarget> VAttackTarget;
+
 class CreatureManager : public Singleton<CreatureManager>
 {
 public:
@@ -133,6 +140,9 @@ public:
 	void ClearAction(){m_lActions.clear();}
 	//处理动作
 	void ProcessAction();
+
+	//AI相关
+	VAttackTarget GetAttackTarget(Character* attacker);
 private:
 	VCharacter  m_VFriendList;
 	VCharacter	m_VEnemyList;

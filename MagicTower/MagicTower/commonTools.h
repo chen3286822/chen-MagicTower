@@ -111,6 +111,17 @@ enum eFailCondition
 	eFailCondition_AllFriendsDead,	//所有友方死亡
 };
 
+//AI策略
+//这里的失败胜利目标是相对于玩家来说的
+//失败目标指玩家的某个单位死亡后将会失败
+//胜利目标指敌方的某个单位死亡后将会胜利
+enum eAIStrategy
+{
+	eAIStrategy_AttakTarget,		//优先攻击失败目标
+	eAIStrategy_ProtectSelf,		//优先保护自己
+	eAIStrategy_ProtectTarget,	//优先保护胜利目标
+};
+
 //战斗时剧情触发器
 enum eTrigger
 {

@@ -212,6 +212,16 @@ void CreatureManager::ShowMoveRange(Character* creature)
 		else if(creature->GetCamp() == eCamp_Enemy)
 			color = 0x4FEB2323;
 		std::vector<Block*> range = creature->CreateRange(MapManager::sInstance().GetCurrentMap(),creature->GetMoveAbility());
+		//过滤掉处于移动范围，但实际上过不去的点，比如墙内部的点，中间被墙阻隔		
+		for (std::vector<Block*>::iterator vit=range.begin();vit!=range.end();)
+		{
+			MapManager::sInstance().GetCurrentMap()->SetSpecificRange(range);
+			vector<Block*> path = MapManager::sInstance().GetCurrentMap()->FindPath(creature->GetBlock().xpos,creature->GetBlock().ypos,(*vit)->xpos,(*vit)->ypos);
+			if(path.empty())
+				vit = range.erase(vit);
+			else
+				vit++;
+		}
 		for (std::vector<Block*>::iterator it=range.begin();it!=range.end();it++)
 		{
 			//画方格表示可以移动
@@ -1364,4 +1374,41 @@ void CreatureManager::ProcessAction()
 		}
 		m_eState = eActionState_PickAction;
 	}
+}
+
+VAttackTarget CreatureManager::GetAttackTarget(Character* attacker)
+{
+	VAttackTarget targets;
+	targets.clear();
+
+	if(!attacker)
+		return targets;
+
+	//初始化一张地图表，用于过滤掉探测过的地图块
+	int width = 0;
+	int height = 0;
+	MapManager::sInstance().GetCurrentMap()->GetWidthLength(width,height);
+	int** surveyMap = new int*[width];
+	for(int i=0;i<width;i++)
+	{
+		surveyMap[i] = new int[height];
+		for(int j=0;j<height;j++)
+			surveyMap[i][j] = false;
+	}
+
+	//攻击者的移动范围
+	std::vector<Block*> range = attacker->CreateRange(MapManager::sInstance().GetCurrentMap(),attacker->GetMoveAbility());
+	for (std::vector<Block*>::iterator it=range.begin();it!=range.end();it++)
+	{
+
+	}
+
+	for (int i=0;i<width;i++)
+	{
+		if(surveyMap)
+			gSafeDeleteArray(surveyMap[i]);
+	}
+	gSafeDeleteArray(surveyMap);
+
+	return targets;
 }
