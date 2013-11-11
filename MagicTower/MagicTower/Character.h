@@ -83,6 +83,7 @@ public:
 //	int GetTarget(){return m_nTar;}
 //	int& GetCaster() {return m_nSrc;}
 	bool CanHitTarget(Character* target);	//是否可以攻击目标
+	bool CanHitPoint(int x, int y);		//是否可以攻击到目标点
 	bool CanSkillHitTarget(Character* target);	//技能是否可以击中目标
 //	void GeginHit();
 
@@ -101,6 +102,7 @@ public:
 	void Appear(int dir,int x,int y);		//隐藏单位出现
 
 	//动作
+	void Walk(eNotification notify,int time);
 	void TowardToAttacker(eNotification notify,Character* target,int time);
 	void Attack(eNotification notify,Character* target,int time);
 	void Crit(eNotification notify,Character* target,int time);

@@ -431,13 +431,17 @@ void CreatureManager::Strategy()
 			int yMove = enemy->GetMoveAbility() - xMove;
 			int xDir = (g_RandomInt(0,1)==0)?-1:1;
 			int yDir = (g_RandomInt(0,1)==0)?-1:1;
-			eErrorCode errorCode = enemy->Move(enemy->GetBlock().xpos+xMove*xDir,enemy->GetBlock().ypos+yMove*yDir);
-
-			//测试
-			if (errorCode != eErrorCode_Success)
-			{
-				enemy->SetFinish(true);
-			}
+// 			eErrorCode errorCode = enemy->Move(enemy->GetBlock().xpos+xMove*xDir,enemy->GetBlock().ypos+yMove*yDir);
+// 
+// 			//测试
+// 			if (errorCode != eErrorCode_Success)
+// 			{
+// 				enemy->SetFinish(true);
+// 			}
+			DWORD data = enemy->GetBlock().xpos+xMove*xDir + ((enemy->GetBlock().ypos+yMove*yDir) << 8);
+			ActionProcess* process = ActionProcess::sInstancePtr();
+			process->PushAction(eNotify_Walk,enemy,NULL,data);
+			process->PushAction(eNotify_FinishAttack,enemy,NULL,0);
 		}
 
 	}
@@ -1388,20 +1392,77 @@ VAttackTarget CreatureManager::GetAttackTarget(Character* attacker)
 	int width = 0;
 	int height = 0;
 	MapManager::sInstance().GetCurrentMap()->GetWidthLength(width,height);
-	int** surveyMap = new int*[width];
+	bool** surveyMap = new bool*[width];
 	for(int i=0;i<width;i++)
 	{
-		surveyMap[i] = new int[height];
+		surveyMap[i] = new bool[height];
 		for(int j=0;j<height;j++)
 			surveyMap[i][j] = false;
 	}
 
 	//攻击者的移动范围
 	std::vector<Block*> range = attacker->CreateRange(MapManager::sInstance().GetCurrentMap(),attacker->GetMoveAbility());
+	//过滤掉处于移动范围，但实际上过不去的点，比如墙内部的点，中间被墙阻隔		
+	for (std::vector<Block*>::iterator vit=range.begin();vit!=range.end();)
+	{
+		MapManager::sInstance().GetCurrentMap()->SetSpecificRange(range);
+		vector<Block*> path = MapManager::sInstance().GetCurrentMap()->FindPath(attacker->GetBlock().xpos,attacker->GetBlock().ypos,(*vit)->xpos,(*vit)->ypos);
+		if(path.empty())
+			vit = range.erase(vit);
+		else
+			vit++;
+	}
+	//对于每个可移动点，查找攻击范围内的敌方
 	for (std::vector<Block*>::iterator it=range.begin();it!=range.end();it++)
 	{
+		//攻击范围类型
+		for (MAttackRange::iterator mit=m_mAttackRange.begin();mit!=m_mAttackRange.end();mit++)
+		{
+			if(mit->first == attacker->GetAttackRange())
+			{
+				for (vector<int>::iterator it2=mit->second.begin();it2!=mit->second.end();it2++)
+				{
+					int x = m_vPair[*it2].x + attacker->GetBlock().xpos;
+					int y = m_vPair[*it2].y + attacker->GetBlock().ypos;
+					if(surveyMap[x][y] == true)
+						continue;
+					Character* target = GetCreature(x,y);
+					if(target)				
+					{
+						//如果目标添加过了，则判断是否需要更新攻击点
+						VAttackTarget::iterator vtit=targets.begin();
+						for(;vtit!=targets.end();vtit++)
+						{
+							if(vtit->m_iTarget == target)
+							{
+								//判断这次找到的点是否比上次的攻击点更优
+								//主要标准是是否会被反击到
+								if(target->CanHitPoint((*it)->xpos,(*it)->ypos) == false)
+								{
+									vtit->m_iAttakPoint.x = (*it)->xpos;
+									vtit->m_iAttakPoint.y = (*it)->ypos;
+								}
+								break;
+							}
+						}
 
+						//目标没有添加过
+						if(vtit == targets.end() &&((target->GetCamp()==eCamp_Friend && attacker->GetCamp()==eCamp_Enemy) ||
+							(target->GetCamp() == eCamp_Enemy && attacker->GetCamp()==eCamp_Friend)))
+						{
+							AttackTarget attackTarget;
+							attackTarget.m_iTarget = target;
+							attackTarget.m_iAttakPoint.x = x;
+							attackTarget.m_iAttakPoint.y = y;
+							targets.push_back(attackTarget);
+						}
+					}
+					surveyMap[x][y] = true;
+				}
+			}
+		}
 	}
+
 
 	for (int i=0;i<width;i++)
 	{

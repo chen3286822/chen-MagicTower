@@ -297,6 +297,13 @@ void Character::Update(float delta)
 				m_eActionStage = eActionStage_HandleStage;
 				m_lPathDir.clear();
 
+				//如果是AI的移动动作，则修改行动时间为0，方便进行下个动作
+				if(m_eNotify == eNotify_Walk)
+				{
+					m_nActionTime = 0;
+					ActionProcess::sInstance().TimeUp(0);
+				}
+
 				//更新小地图人物位置
 				int mapWidth = App::sInstance().GetSmallMap().GetWidth();
 				int mapHeight = App::sInstance().GetSmallMap().GetHeight();
@@ -737,6 +744,21 @@ void Character::Move(eDirection dir)
 // 	return eNotify_CannotBeAttacked;
 // }
 
+void Character::Walk(eNotification nofity,int time)
+{
+	int x = time & 0x00FF;
+	int y = time >> 8;
+	m_nActionTime = 99999999;		//设置时间很大，用于在达到目的地时修改为0，给移动充分的时间
+	m_eNotify = nofity;
+	eErrorCode errorCode = Move(x,y);
+	if (errorCode != eErrorCode_Success)
+	{
+		m_nActionTime = 0;
+		m_eNotify = eNotify_Success;
+		ActionProcess::sInstance().TimeUp(0);
+	}
+}
+
 void Character::TowardToAttacker(eNotification notify,Character* target,int time)
 {
 	if (m_eCharState == eCharacterState_Stand)
@@ -975,6 +997,28 @@ bool Character::CanHitTarget(Character* target)
 				tarX = vPairPoint[*it].x + m_iBlock.xpos;
 				tarY = vPairPoint[*it].y + m_iBlock.ypos;
 				if(target->GetBlock().xpos == tarX && target->GetBlock().ypos == tarY)
+				{
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+
+bool Character::CanHitPoint(int x, int y)
+{
+	int tarX = 0,tarY = 0;
+	VPair vPairPoint = CreatureManager::sInstance().GetRangePoint();
+	for (MAttackRange::iterator mit=CreatureManager::sInstance().GetAttackRange().begin();mit!=CreatureManager::sInstance().GetAttackRange().end();mit++)
+	{
+		if(mit->first == m_eAttackRange)
+		{
+			for (vector<int>::iterator it=mit->second.begin();it!=mit->second.end();it++)
+			{
+				tarX = vPairPoint[*it].x + m_iBlock.xpos;
+				tarY = vPairPoint[*it].y + m_iBlock.ypos;
+				if(x == tarX && y == tarY)
 				{
 					return true;
 				}

@@ -234,6 +234,7 @@ enum eAttackState
 enum eNotification
 {
 	eNotify_Success = 0,
+	eNotify_Walk,			//走路,time 域是目标点的组合,x+y<<8
 	eNotify_TowardToAttacker,
 	eNotify_Crit,
 	eNotify_Attack,
