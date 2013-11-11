@@ -49,7 +49,7 @@ public:
 
 	void PushAction(eNotification notify,Character* cast,Character* target,DWORD time)
 	{
-		if(!cast || !target)
+		if(!cast)
 			return;
 		m_lAction.push_back(Action(notify,cast,target,time));
 
@@ -87,6 +87,20 @@ public:
 				Action action = m_lAction.front();
 				switch (action.m_eNotify)
 				{
+				case eNotify_Walk:
+					{
+						int x = action.m_dwTime & 0x00FF;
+						int y = action.m_dwTime >> 8;
+						//正处于这个位置
+						if(x == action.m_pCast->GetBlock().xpos && y == action.m_pCast->GetBlock().ypos)
+							m_eActionState = eActionState_End;
+						else
+						{
+							action.m_pCast->Walk(eNotify_Walk,action.m_dwTime);
+							m_eActionState = eActionState_Process;
+						}
+					}
+					break;
 				case eNotify_TowardToAttacker:
 					{
 						action.m_pCast->TowardToAttacker(eNotify_TowardToAttacker,action.m_pTarget,action.m_dwTime);
@@ -206,6 +220,11 @@ public:
 			Action action = m_lAction.front();
 			switch (action.m_eNotify)
 			{
+			case eNotify_Walk:
+				{
+					action.m_pCast->ResetFrame();
+				}
+				break;
 			case eNotify_TowardToAttacker:
 				{
 					action.m_pCast->GetCharacterState() = eCharacterState_Stand;
