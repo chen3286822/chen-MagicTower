@@ -45,10 +45,10 @@ int AIMgr::SelectDamageSkill(Character* target,POINT attackPoint)
 	{
 		SkillInfo skill = ConfigManager::sInstance().GetSkillInfo().find(*it)->second;
 		//mp不足
-		if(m_pCurAI->GetMP() < skill->m_nCost)
+		if(m_pCurAI->GetMP() < skill.m_nCost)
 			continue;
 		//伤害型技能
-		if(skill->m_nSkillType == 1)
+		if(skill.m_nSkillType == 1)
 		{
 			//判断是否可以攻击到
 			if(abs(target->GetBlock().xpos-attackPoint.x) + abs(target->GetBlock().ypos-attackPoint.y) <= skill.m_nCastRange)
@@ -65,7 +65,7 @@ int AIMgr::SelectDamageSkill(Character* target,POINT attackPoint)
 	return expectedSkill;
 }
 
-int AIMgr::GetDamageToTarget(Character* target,int& attack)
+int AIMgr::GetDamageToTarget(Character* target,int& attack,POINT attackPoint)
 {
 	if(!m_pCurAI || !target)
 		return 0;
@@ -73,11 +73,11 @@ int AIMgr::GetDamageToTarget(Character* target,int& attack)
 	int defend = target->GetDefend();
 	float dodge = target->GetDodge();
 	float crit = m_pCurAI->GetCrit();
-	int attack = m_pCurAI->GetAttack();
+	int attacks = m_pCurAI->GetAttack();
 	int skillDefend = target->GetSkillDefend();
 	//预期造成的物理伤害
-	int expectedDamage = (1-dodge)*(crit*(attack*2-defend) + (1-crit)*(attack-defend));
-	int skillID = SelectDamageSkill(target);
+	int expectedDamage = (1-dodge)*(crit*(attacks*2-defend) + (1-crit)*(attacks-defend));
+	int skillID = SelectDamageSkill(target,attackPoint);
 	if(skillID == -1)
 	{
 		attack = -1;
@@ -96,13 +96,13 @@ int AIMgr::GetDamageToTarget(Character* target,int& attack)
 	return expectedDamage;
 }
 
-bool AIMgr::CanKillTarget(Character* target,int& attack)
+bool AIMgr::CanKillTarget(Character* target,int& attack,POINT attackPoint)
 {
 	if(!m_pCurAI || !target)
 		return false;
 
 	int attackType = -1;
-	int expectedDamage = GetDamageToTarget(target,attackType);
+	int expectedDamage = GetDamageToTarget(target,attackType,attackPoint);
 	if(expectedDamage >= target->GetHP())
 	{
 		attack = attackType;
@@ -202,7 +202,7 @@ bool AIMgr::DoAction()
 			//如果可以直接攻击到终极目标的话
 			if(bUltraTarCanHit)
 			{
-				DWORD data = attackPoint.x + attackPoint.y << 8;
+				DWORD data = attackPoint.x + (attackPoint.y << 8);
 				process->PushAction(eNotify_Walk,m_pCurAI,NULL,data);
 				CreatureManager::sInstance().PreAttackAndPushAction(m_pCurAI,ultraTarget);
 			}
@@ -213,7 +213,10 @@ bool AIMgr::DoAction()
 				for (VAttackTarget::iterator it=targets.begin();it!=targets.end();it++)
 				{
 					attackType = -1;
-					if(CanKillTarget((*it).m_iTarget,attackType) == true)
+					POINT point;
+					point.x = (*it).m_iAttakPoint.x;
+					point.y = (*it).m_iAttakPoint.y;
+					if(CanKillTarget((*it).m_iTarget,attackType,point) == true)
 					{
 						bUltraTarCanHit = true;
 						attackPoint.x = (*it).m_iAttakPoint.x;
@@ -225,7 +228,7 @@ bool AIMgr::DoAction()
 				//找到了
 				if(bUltraTarCanHit)
 				{
-					DWORD data = attackPoint.x + attackPoint.y << 8;
+					DWORD data = attackPoint.x + (attackPoint.y << 8);
 					process->PushAction(eNotify_Walk,m_pCurAI,NULL,data);
 					if(attackType == -1)
 						CreatureManager::sInstance().PreAttackAndPushAction(m_pCurAI,ultraTarget);
@@ -242,8 +245,11 @@ bool AIMgr::DoAction()
 					int expectedHigeDamage = 0;
 					for (VAttackTarget::iterator it=targets.begin();it!=targets.end();it++)
 					{
+						POINT point;
+						point.x = (*it).m_iAttakPoint.x;
+						point.y = (*it).m_iAttakPoint.y;
 						attackType = -1;
-						int expectedDamage = GetDamageToTarget((*it).m_iTarget,attackType);
+						int expectedDamage = GetDamageToTarget((*it).m_iTarget,attackType,point);
 						if(expectedHigeDamage < expectedDamage)
 						{
 							expectedHigeDamage = expectedDamage;
@@ -252,7 +258,7 @@ bool AIMgr::DoAction()
 							ultraTarget = (*it).m_iTarget;
 						}
 					}
-					DWORD data = attackPoint.x + attackPoint.y << 8;
+					DWORD data = attackPoint.x + (attackPoint.y << 8);
 					process->PushAction(eNotify_Walk,m_pCurAI,NULL,data);
 					if(attackType == -1)
 						CreatureManager::sInstance().PreAttackAndPushAction(m_pCurAI,ultraTarget);
