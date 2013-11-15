@@ -508,6 +508,7 @@ void Character::ResetFrame()
 void Character::SetFinish(bool _finish)
 {
 	m_bFinishAct = _finish;
+	m_eActionStage = eActionStage_WaitStage;
 	if (m_bFinishAct)
 	{
 		m_pAnimation->SetColor(0xFF59636C);

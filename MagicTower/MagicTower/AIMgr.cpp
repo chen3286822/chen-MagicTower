@@ -185,6 +185,12 @@ bool AIMgr::DoAction()
 			if (targets.empty())
 			{
 				SelectRoute(ultraTarget);
+				//使用增益技能
+				//这里暂时不用
+				
+				ActionProcess* process = ActionProcess::sInstancePtr();
+				process->PushAction(eNotify_FinishAttack,m_pCurAI,NULL,0);
+				m_pCurAI = NULL;
 				return true;
 			}
 			//在所有可攻击敌人中发现终极目标
@@ -290,6 +296,38 @@ bool AIMgr::SelectRoute(Character* target)
 	if (!m_pCurAI)
 		return false;
 
-	
+	//首先将单位假象为行动范围为整个地图
+	//然后寻找到目标点之间的路径
+	//然后根据自身真实的行动能力，向着路径移动
+
+	//**这里有一点需要注意，就是终点是一个单位占据的点，故寻路时需要先把该点的占据状态改为空，寻路完成后再改回来，否则找不到路径
+	setOccupied(MapManager::sInstance().GetCurrentMap()->GetBlock(target->GetBlock().xpos,target->GetBlock().ypos)->attri,0);
+
+	std::vector<Block*> range = m_pCurAI->CreateRange(MapManager::sInstance().GetCurrentMap(),0,false,true);
+	MapManager::sInstance().GetCurrentMap()->SetSpecificRange(range);
+	std::vector<Block*> path = MapManager::sInstance().GetCurrentMap()->FindPath(m_pCurAI->GetBlock().xpos,m_pCurAI->GetBlock().ypos,target->GetBlock().xpos,target->GetBlock().ypos);
+
+	//寻路完成后，将终点占据状态改回来，以免发生异常
+	setOccupied(MapManager::sInstance().GetCurrentMap()->GetBlock(target->GetBlock().xpos,target->GetBlock().ypos)->attri,1);
+
+	//真实的路径上的终点，是考虑单位移动能力的
+	Block* lastBlock = NULL;
+	for (std::vector<Block*>::reverse_iterator it=path.rbegin();it!=path.rend();it++)
+	{
+		int length = abs((*it)->xpos - m_pCurAI->GetBlock().xpos) + abs((*it)->ypos - m_pCurAI->GetBlock().ypos);
+		if(length <= m_pCurAI->GetMoveAbility())
+		{
+			lastBlock = *it;
+			break;
+		}
+	}
+	//没有到目标的路径
+	if(!lastBlock)
+		return false;
+
+	//push walk动作
+	ActionProcess* process = ActionProcess::sInstancePtr();
+	DWORD data = lastBlock->xpos + (lastBlock->ypos << 8);
+	process->PushAction(eNotify_Walk,m_pCurAI,NULL,data);
 	return true;
 }

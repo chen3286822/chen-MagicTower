@@ -7,6 +7,7 @@
 #include "WndDialog.h"
 #include "WndSummary.h"
 #include "ActionProcess.h"
+#include "AIMgr.h"
 
 CreatureManager::CreatureManager()
 {
@@ -137,6 +138,7 @@ void CreatureManager::Update(float delta)
 		//关闭小地图
 		App::sInstance().ShutDownSmallMap();
 		App::sInstance().StartMainWnd();
+		return;
 	}
 
 	//不是处于暂停中，且胜利了，则跳转到战后剧情
@@ -180,15 +182,15 @@ void CreatureManager::Update(float delta)
 	if(m_nActionCreatureNum != -1)
 	{
 		Character* cha = GetEnemy(m_nActionCreatureNum);
-		if(cha->GetFinish())
+		if(!cha || cha->GetFinish())
 			m_nActionCreatureNum = -1;
 
-		//测试用
-		if (cha->GetCamp() == eCamp_Enemy && cha->GetActionStage() == eActionStage_HandleStage)
-		{
-			m_nActionCreatureNum = -1;
-			cha->SetFinish(true);
-		}
+// 		//测试用
+// 		if (cha->GetCamp() == eCamp_Enemy && cha->GetActionStage() == eActionStage_HandleStage)
+// 		{
+// 			m_nActionCreatureNum = -1;
+// 			cha->SetFinish(true);
+// 		}
 	}
 
 	if( !(UISystem::sInstance().IsInAnyControl()))
@@ -424,13 +426,15 @@ void CreatureManager::Strategy()
 			return;
 		if(enemy->GetActionStage() == eActionStage_WaitStage)
 		{
-			enemy->SetActionStage(eActionStage_MoveStage);
-			m_nActionCreatureNum = enemy->GetNum();
-			//m_nSelectNum = m_nActionCreatureNum;
-			int xMove = g_RandomInt(0,enemy->GetMoveAbility());
-			int yMove = enemy->GetMoveAbility() - xMove;
-			int xDir = (g_RandomInt(0,1)==0)?-1:1;
-			int yDir = (g_RandomInt(0,1)==0)?-1:1;
+			g_AIMgr.SetCurCharacter(enemy);
+			g_AIMgr.DoAction();
+// 			enemy->SetActionStage(eActionStage_MoveStage);
+ 			m_nActionCreatureNum = enemy->GetNum();
+// 			//m_nSelectNum = m_nActionCreatureNum;
+// 			int xMove = g_RandomInt(0,enemy->GetMoveAbility());
+// 			int yMove = enemy->GetMoveAbility() - xMove;
+// 			int xDir = (g_RandomInt(0,1)==0)?-1:1;
+// 			int yDir = (g_RandomInt(0,1)==0)?-1:1;
 // 			eErrorCode errorCode = enemy->Move(enemy->GetBlock().xpos+xMove*xDir,enemy->GetBlock().ypos+yMove*yDir);
 // 
 // 			//测试
@@ -438,10 +442,10 @@ void CreatureManager::Strategy()
 // 			{
 // 				enemy->SetFinish(true);
 // 			}
-			DWORD data = enemy->GetBlock().xpos+xMove*xDir + ((enemy->GetBlock().ypos+yMove*yDir) << 8);
-			ActionProcess* process = ActionProcess::sInstancePtr();
-			process->PushAction(eNotify_Walk,enemy,NULL,data);
-			process->PushAction(eNotify_FinishAttack,enemy,NULL,0);
+// 			DWORD data = enemy->GetBlock().xpos+xMove*xDir + ((enemy->GetBlock().ypos+yMove*yDir) << 8);
+// 			ActionProcess* process = ActionProcess::sInstancePtr();
+// 			process->PushAction(eNotify_Walk,enemy,NULL,data);
+// 			process->PushAction(eNotify_FinishAttack,enemy,NULL,0);
 		}
 
 	}
@@ -1412,6 +1416,8 @@ VAttackTarget CreatureManager::GetAttackTarget(Character* attacker)
 		else
 			vit++;
 	}
+	//添加自动当前位置，表示单位可以不移动而攻击敌人
+	range.push_back(MapManager::sInstance().GetCurrentMap()->GetBlock(attacker->GetBlock().xpos,attacker->GetBlock().ypos));
 	//对于每个可移动点，查找攻击范围内的敌方
 	for (std::vector<Block*>::iterator it=range.begin();it!=range.end();it++)
 	{
@@ -1422,8 +1428,8 @@ VAttackTarget CreatureManager::GetAttackTarget(Character* attacker)
 			{
 				for (vector<int>::iterator it2=mit->second.begin();it2!=mit->second.end();it2++)
 				{
-					int x = m_vPair[*it2].x + attacker->GetBlock().xpos;
-					int y = m_vPair[*it2].y + attacker->GetBlock().ypos;
+					int x = m_vPair[*it2].x + (*it)->xpos;
+					int y = m_vPair[*it2].y + (*it)->ypos;
 					if(surveyMap[x][y] == true)
 						continue;
 					Character* target = GetCreature(x,y);
@@ -1452,13 +1458,14 @@ VAttackTarget CreatureManager::GetAttackTarget(Character* attacker)
 						{
 							AttackTarget attackTarget;
 							attackTarget.m_iTarget = target;
-							attackTarget.m_iAttakPoint.x = x;
-							attackTarget.m_iAttakPoint.y = y;
+							attackTarget.m_iAttakPoint.x = (*it)->xpos;
+							attackTarget.m_iAttakPoint.y = (*it)->ypos;
 							targets.push_back(attackTarget);
 						}
 					}
 					surveyMap[x][y] = true;
 				}
+				break;
 			}
 		}
 	}
