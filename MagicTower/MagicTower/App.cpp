@@ -105,7 +105,6 @@ bool App::LoadResource()
 
 
 
-	CreatureManager::sInstance().Init();
 	FontManager::sInstance().InitFont();
 
 	ConfigManager::sInstance().LoadConfig();
@@ -439,7 +438,6 @@ bool App::AppUpdate()
 							m_bCheckPreFight = false;
 							return false;
 						}
-						CreatureManager::sInstance().Init();
 					}
 				}
 				return false;
@@ -690,6 +688,7 @@ void App::CreateSmallMapWnd()
 void App::ShutDownSmallMap()
 {
 	DestroyWindow(m_iSmallMapHwnd);
+	UnregisterClass("SmallMapClass",GetModuleHandle(0));
 	m_iSmallMapHwnd = NULL;
 	m_iWndRect.top = m_iWndRect.bottom = m_iWndRect.left = m_iWndRect.right = 0;
 }

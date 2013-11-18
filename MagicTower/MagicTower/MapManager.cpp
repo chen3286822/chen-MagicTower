@@ -767,6 +767,7 @@ void MapManager::Release()
 		(*it)->Release();
 		gSafeDelete((*it));
 	}
+	m_vMaps.clear();
 	m_nCurrentLevel = 0;
 }
 
@@ -1009,32 +1010,38 @@ Map* MapManager::GetMap(int level)
 
 void MapManager::Render()
 {
-	static int oldLevel = -1;
-	static Map* currentMap = NULL;
-	if (oldLevel != m_nCurrentLevel)
-	{
-		currentMap = GetMap(m_nCurrentLevel);
-		oldLevel = m_nCurrentLevel;
-	}
-	else
-	{
-		if(currentMap!=NULL)
-			currentMap->Render();
-	}
+	Map* currentMap = GetMap(m_nCurrentLevel);
+	if(currentMap!=NULL)
+		currentMap->Render();
+// 	static int oldLevel = -1;
+// 	static Map* currentMap = NULL;
+// 	if (oldLevel != m_nCurrentLevel)
+// 	{
+// 		currentMap = GetMap(m_nCurrentLevel);
+// 		oldLevel = m_nCurrentLevel;
+// 	}
+// 	else
+// 	{
+// 		if(currentMap!=NULL)
+// 			currentMap->Render();
+// 	}
 }
 
 void MapManager::Update(float dt)
 {
-	static int oldLevel = -1;
-	static Map* currentMap = NULL;
-	if (oldLevel != m_nCurrentLevel)
-	{
-		currentMap = GetMap(m_nCurrentLevel);
-		oldLevel = m_nCurrentLevel;
-	}
-	else
-	{
-		if(currentMap!=NULL)
-			currentMap->Update(dt);
-	}
+	Map* currentMap = GetMap(m_nCurrentLevel);
+	if(currentMap!=NULL)
+		currentMap->Update(dt);
+// 	static int oldLevel = -1;
+// 	static Map* currentMap = NULL;
+// 	if (oldLevel != m_nCurrentLevel)
+// 	{
+// 		currentMap = GetMap(m_nCurrentLevel);
+// 		oldLevel = m_nCurrentLevel;
+// 	}
+// 	else
+// 	{
+// 		if(currentMap!=NULL)
+// 			currentMap->Update(dt);
+// 	}
 }

@@ -83,6 +83,8 @@ extern int g_nMapHeight;
 #define MAP_RECT		48
 #define MAP_OFF_X	0
 #define MAP_OFF_Y	0
+#define MAX_MAP_WIDTH_NUM 64
+#define MAX_MAP_LENGTH_NUM 64
 
 #define KEY_NUM 36
 

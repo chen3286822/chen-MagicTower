@@ -106,10 +106,10 @@ public:
 	void CalculateHurt(Character* cast,Character* target,bool bCrit=false);
 	//计算攻击结果(命中与否)
 	void CalculateResult(int src,int tar);
-	//预先计算攻击并且推送动作
-	void PreAttackAndPushAction(Character* cast,Character* target);
+	//预先计算攻击并且推送动作,data表示附加数据，比如攻击者在将来某个点会攻击，这时data存储的是将来的那个点，反击时则使用这个点来判断
+	void PreAttackAndPushAction(Character* cast,Character* target,DWORD data=0);
 	//预先计算技能并且推送动作
-	void PreSkillAndPushAction(Character* cast,Character* target);
+	void PreSkillAndPushAction(Character* cast,Character* target,DWORD data=0);
 	VCharacter&	GetSkillTargets(){return m_vSkillTargets;}
 	
 
@@ -129,7 +129,7 @@ public:
 	//移除一个物品
 	void RemoveItem(int id);
 	//预先计算物品并且推送动作
-	void PreItemAndPushAction(Character* cast,Character* target);
+	void PreItemAndPushAction(Character* cast,Character* target,DWORD data=0);
 
 	//战斗剧情相关
 	//暂停正常游戏流程
@@ -142,7 +142,10 @@ public:
 	void ProcessAction();
 
 	//AI相关
+	//取得攻击者可以攻击到的所有目标以及发起攻击的点
 	VAttackTarget GetAttackTarget(Character* attacker);
+	//找出移动范围内所有不会被攻击致死的点，没有表示任何点都不会致死或者任何点都会致死
+	std::vector<Block*> GetLiveBlock(Character* target);
 private:
 	VCharacter  m_VFriendList;
 	VCharacter	m_VEnemyList;

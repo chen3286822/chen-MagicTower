@@ -1,5 +1,6 @@
 #include "LuaGlobalFunc.h"
 #include "Scene.h"
+#include "AIMgr.h"
 
 static int Max(lua_State* L)
 {
@@ -72,6 +73,8 @@ bool SetCurrentMap(int level)
 	if(MapManager::sInstance().GetCurrentMap())
 	{
 		MapManager::sInstance().GetCurrentMap()->Init();
+		CreatureManager::sInstance().Init();
+		g_AIMgr.Init();
 		return true;
 	}
 

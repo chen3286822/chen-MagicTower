@@ -164,6 +164,10 @@ public:
 	void PushAction(NewAction action);
 	NewAction GetAction(){return m_iAction;}
 	bool IsInAction();
+
+	//AI
+	void SetAIStrategy(int strategy);
+	eAIStrategy GetAIStrategy(){return m_eStrategy;}
 private:
 	hgeAnimation* m_pAnimation;
 	std::map<int,HTEXTURE> m_mCharTex; //存储单位的各个图片动作
@@ -244,6 +248,9 @@ private:
 
 	//装备
 	Item m_iEquip[eEquipGrid_TotalEquip];
+
+	//AI
+	eAIStrategy m_eStrategy;
 };
 
 

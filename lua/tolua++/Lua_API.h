@@ -1,6 +1,6 @@
 /*
 ** Lua binding: lua
-** Generated automatically by tolua++-1.0.92 on 11/07/13 18:07:32.
+** Generated automatically by tolua++-1.0.92 on 11/18/13 18:24:51.
 */
 
 #ifndef __cplusplus
@@ -1942,6 +1942,39 @@ static int tolua_lua_Character_RemoveEquip00(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* method: SetAIStrategy of class  Character */
+#ifndef TOLUA_DISABLE_tolua_lua_Character_SetAIStrategy00
+static int tolua_lua_Character_SetAIStrategy00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Character",0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,3,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Character* self = (Character*)  tolua_tousertype(tolua_S,1,0);
+  int strategy = ((int)  tolua_tonumber(tolua_S,2,0));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'SetAIStrategy'", NULL);
+#endif
+  {
+   self->SetAIStrategy(strategy);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'SetAIStrategy'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* method: AddEnemy of class  CreatureManager */
 #ifndef TOLUA_DISABLE_tolua_lua_CreatureManager_AddEnemy00
 static int tolua_lua_CreatureManager_AddEnemy00(lua_State* tolua_S)
@@ -2353,6 +2386,7 @@ TOLUA_API int tolua_lua_open (lua_State* tolua_S)
    tolua_function(tolua_S,"Appear",tolua_lua_Character_Appear00);
    tolua_function(tolua_S,"AddEquip",tolua_lua_Character_AddEquip00);
    tolua_function(tolua_S,"RemoveEquip",tolua_lua_Character_RemoveEquip00);
+   tolua_function(tolua_S,"SetAIStrategy",tolua_lua_Character_SetAIStrategy00);
   tolua_endmodule(tolua_S);
   tolua_cclass(tolua_S,"CreatureManager","CreatureManager","",NULL);
   tolua_beginmodule(tolua_S,"CreatureManager");

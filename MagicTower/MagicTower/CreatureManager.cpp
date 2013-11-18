@@ -94,6 +94,10 @@ void CreatureManager::Init()
 	m_mSkillRange[eSkillRange_Line].assign(neSkillRange_Line,neSkillRange_Line+24);
 
 	m_eCampTurn = eCampTurn_Friend;
+	m_vSkillTargets.clear();
+	m_lItems.clear();
+	m_nActionCreatureNum = -1;
+	m_nSelectNum = -1;
 }
 
 void CreatureManager::Release()
@@ -697,7 +701,7 @@ void CreatureManager::CalculateHurt(Character* cast,Character* target,bool bCrit
 // 		target->Defend();
 // }
 
-void CreatureManager::PreAttackAndPushAction(Character* cast,Character* target)
+void CreatureManager::PreAttackAndPushAction(Character* cast,Character* target,DWORD data)
 {
 	if(!cast || !target)
 		return;
@@ -734,7 +738,15 @@ void CreatureManager::PreAttackAndPushAction(Character* cast,Character* target)
 		if(target->GetCounter())
 		{
 			//是否处于反击范围
-			if(target->CanHitTarget(cast))
+			if(data!=0)
+			{
+				//使用附加数据，表示攻击者是在未来某个点施加攻击动作
+				int x = data & 0x00FF;
+				int y = data >> 8;
+				if(target->CanHitPoint(x,y))
+					bCounter = true;
+			}
+			else if(target->CanHitTarget(cast))
 			{
 				bCounter = true;
 			}
@@ -795,7 +807,7 @@ void CreatureManager::PreAttackAndPushAction(Character* cast,Character* target)
 		process->PushAction(eNotify_FinishAttack,cast,target,0);
 }
 
-void CreatureManager::PreSkillAndPushAction(Character* cast,Character* target)
+void CreatureManager::PreSkillAndPushAction(Character* cast,Character* target,DWORD data)
 {
 	if(!cast || !target)
 		return;
@@ -891,7 +903,7 @@ void CreatureManager::PreSkillAndPushAction(Character* cast,Character* target)
 	process->PushAction(eNotify_FinishAttack,cast,target,0);
 }
 
-void CreatureManager::PreItemAndPushAction(Character* cast,Character* target)
+void CreatureManager::PreItemAndPushAction(Character* cast,Character* target,DWORD data)
 {
 	if(!cast || !target)
 		return;
@@ -1392,17 +1404,16 @@ VAttackTarget CreatureManager::GetAttackTarget(Character* attacker)
 	if(!attacker)
 		return targets;
 
-	//初始化一张地图表，用于过滤掉探测过的地图块
-	int width = 0;
-	int height = 0;
-	MapManager::sInstance().GetCurrentMap()->GetWidthLength(width,height);
-	bool** surveyMap = new bool*[width];
-	for(int i=0;i<width;i++)
-	{
-		surveyMap[i] = new bool[height];
-		for(int j=0;j<height;j++)
-			surveyMap[i][j] = false;
-	}
+// 	//初始化一张地图表，用于过滤掉探测过的地图块
+// 	int width = 0;
+// 	int height = 0;
+// 	MapManager::sInstance().GetCurrentMap()->GetWidthLength(width,height);
+// 	bool surveyMap[MAX_MAP_WIDTH_NUM][MAX_MAP_LENGTH_NUM];
+// 	for(int i=0;i<MAX_MAP_WIDTH_NUM;i++)
+// 	{
+// 		for(int j=0;j<MAX_MAP_LENGTH_NUM;j++)
+// 			surveyMap[i][j] = false;
+// 	}
 
 	//攻击者的移动范围
 	std::vector<Block*> range = attacker->CreateRange(MapManager::sInstance().GetCurrentMap(),attacker->GetMoveAbility());
@@ -1416,7 +1427,7 @@ VAttackTarget CreatureManager::GetAttackTarget(Character* attacker)
 		else
 			vit++;
 	}
-	//添加自动当前位置，表示单位可以不移动而攻击敌人
+	//添加自己当前位置，表示单位可以不移动而攻击敌人
 	range.push_back(MapManager::sInstance().GetCurrentMap()->GetBlock(attacker->GetBlock().xpos,attacker->GetBlock().ypos));
 	//对于每个可移动点，查找攻击范围内的敌方
 	for (std::vector<Block*>::iterator it=range.begin();it!=range.end();it++)
@@ -1430,10 +1441,9 @@ VAttackTarget CreatureManager::GetAttackTarget(Character* attacker)
 				{
 					int x = m_vPair[*it2].x + (*it)->xpos;
 					int y = m_vPair[*it2].y + (*it)->ypos;
-					if(surveyMap[x][y] == true)
-						continue;
 					Character* target = GetCreature(x,y);
-					if(target)				
+					//找到目标，且不是自己
+					if(target && target->GetNum() != attacker->GetNum())				
 					{
 						//如果目标添加过了，则判断是否需要更新攻击点
 						VAttackTarget::iterator vtit=targets.begin();
@@ -1463,20 +1473,67 @@ VAttackTarget CreatureManager::GetAttackTarget(Character* attacker)
 							targets.push_back(attackTarget);
 						}
 					}
-					surveyMap[x][y] = true;
 				}
 				break;
 			}
 		}
 	}
 
-
-	for (int i=0;i<width;i++)
-	{
-		if(surveyMap)
-			gSafeDeleteArray(surveyMap[i]);
-	}
-	gSafeDeleteArray(surveyMap);
-
 	return targets;
+}
+
+std::vector<Block*> CreatureManager::GetLiveBlock(Character* target)
+{
+	std::vector<Block*> vLiveBlocks;
+	vLiveBlocks.clear();
+	if(!target)
+		return vLiveBlocks;
+
+	//自己的移动范围
+	std::vector<Block*> range = target->CreateRange(MapManager::sInstance().GetCurrentMap(),target->GetMoveAbility());
+	//过滤掉处于移动范围，但实际上过不去的点，比如墙内部的点，中间被墙阻隔		
+	for (std::vector<Block*>::iterator vit=range.begin();vit!=range.end();)
+	{
+		MapManager::sInstance().GetCurrentMap()->SetSpecificRange(range);
+		vector<Block*> path = MapManager::sInstance().GetCurrentMap()->FindPath(target->GetBlock().xpos,target->GetBlock().ypos,(*vit)->xpos,(*vit)->ypos);
+		if(path.empty())
+			vit = range.erase(vit);
+		else
+			vit++;
+	}
+	//添加自己当前位置，表示单位可以不移动而不被敌人攻击
+	range.push_back(MapManager::sInstance().GetCurrentMap()->GetBlock(target->GetBlock().xpos,target->GetBlock().ypos));
+
+	//可以致死自己的单位
+	VCharacter vDangerousTar;
+	//对于所有敌人，过滤出哪些可能攻击致死自己的
+	VCharacter& vMyEnemy = (target->GetCamp()==eCamp_Enemy)?GetFriend():GetEnemy();
+	for (VCharacter::iterator it=vMyEnemy.begin();it!=vMyEnemy.end();it++)
+	{
+		int attackType = -1;
+		POINT point;
+		point.x = point.y = 0;	//不需要点
+		if(g_AIMgr.CanKillTarget(target,attackType,point,true) == true)
+			vDangerousTar.push_back(*it);
+	}
+	//没有致死单位，则就不需要特意寻找移动点，所有点都是安全的
+	if(vDangerousTar.empty())
+		return vLiveBlocks;
+
+	//对于自己可以移动的点，判断哪些可以被这些致死单位攻击到
+	for (std::vector<Block*>::iterator bit=range.begin();bit!=range.end();)
+	{
+		VCharacter::iterator it2=vDangerousTar.begin();
+		for (;it2!=vDangerousTar.end();it2++)
+		{
+			if((*it2)->CanHitPoint((*bit)->xpos,(*bit)->ypos))
+			{
+				bit = range.erase(bit);
+				break;
+			}
+		}
+		if(it2 == vDangerousTar.end())
+			bit++;
+	}
+	return range;
 }

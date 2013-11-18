@@ -18,6 +18,12 @@ AIMgr::~AIMgr()
 
 }
 
+void AIMgr::Init()
+{
+	m_pCurAI = NULL;
+	m_eStrategy = eAIStrategy_AttakTarget;
+}
+
 void AIMgr::SetCurCharacter(Character* cha)
 {
 	//已经设置过
@@ -25,6 +31,7 @@ void AIMgr::SetCurCharacter(Character* cha)
 		return;
 
 	m_pCurAI = cha;
+	m_eStrategy = m_pCurAI->GetAIStrategy();
 }
 
 Character* AIMgr::GetCurCharacter()
@@ -32,7 +39,7 @@ Character* AIMgr::GetCurCharacter()
 	return m_pCurAI;
 }
 
-int AIMgr::SelectDamageSkill(Character* target,POINT attackPoint)
+int AIMgr::SelectDamageSkill(Character* target,POINT attackPoint,bool ignoreAttackPoint)
 {
 	if(!m_pCurAI || !target)
 		return -1;
@@ -51,7 +58,7 @@ int AIMgr::SelectDamageSkill(Character* target,POINT attackPoint)
 		if(skill.m_nSkillType == 1)
 		{
 			//判断是否可以攻击到
-			if(abs(target->GetBlock().xpos-attackPoint.x) + abs(target->GetBlock().ypos-attackPoint.y) <= skill.m_nCastRange)
+			if(abs(target->GetBlock().xpos-attackPoint.x) + abs(target->GetBlock().ypos-attackPoint.y) <= skill.m_nCastRange || ignoreAttackPoint)
 			{
 				int skillDamage = skill.m_nAttack - skillDefend;
 				if(skillDamage > expectedSkillDamage)
@@ -65,7 +72,7 @@ int AIMgr::SelectDamageSkill(Character* target,POINT attackPoint)
 	return expectedSkill;
 }
 
-int AIMgr::GetDamageToTarget(Character* target,int& attack,POINT attackPoint)
+int AIMgr::GetDamageToTarget(Character* target,int& attack,POINT attackPoint,bool ignoreAttackPoint)
 {
 	if(!m_pCurAI || !target)
 		return 0;
@@ -77,7 +84,7 @@ int AIMgr::GetDamageToTarget(Character* target,int& attack,POINT attackPoint)
 	int skillDefend = target->GetSkillDefend();
 	//预期造成的物理伤害
 	int expectedDamage = (1-dodge)*(crit*(attacks*2-defend) + (1-crit)*(attacks-defend));
-	int skillID = SelectDamageSkill(target,attackPoint);
+	int skillID = SelectDamageSkill(target,attackPoint,ignoreAttackPoint);
 	if(skillID == -1)
 	{
 		attack = -1;
@@ -96,13 +103,13 @@ int AIMgr::GetDamageToTarget(Character* target,int& attack,POINT attackPoint)
 	return expectedDamage;
 }
 
-bool AIMgr::CanKillTarget(Character* target,int& attack,POINT attackPoint)
+bool AIMgr::CanKillTarget(Character* target,int& attack,POINT attackPoint,bool ignoreAttackPoint)
 {
 	if(!m_pCurAI || !target)
 		return false;
 
 	int attackType = -1;
-	int expectedDamage = GetDamageToTarget(target,attackType,attackPoint);
+	int expectedDamage = GetDamageToTarget(target,attackType,attackPoint,ignoreAttackPoint);
 	if(expectedDamage >= target->GetHP())
 	{
 		attack = attackType;
@@ -126,7 +133,7 @@ bool AIMgr::DoAction()
 	*	如果是优先保护自己策略：
 	*	A、查找自己是否处于敌方目标攻击范围，且是否会被攻击致死(对于不同兵种，采取不同算法计算
 	*	被攻击伤害，魔法系取能释放的最高伤害技能)，会的话，优先选择路线离开，并使用增益魔法；
-	*	不会致死的话，则执行优先攻击目标的A策略
+	*	如果任何路线都可能死或者不会致死的话，则执行优先攻击目标的A策略
 	*	B、自己处于安全区域，则优先等待其他单位前进，使自己处于后方再前进，并优先对自己释放增益魔法后待命
 	*	如果是优先保护目标策略：
 	*	A、检查要保护的目标是否处于被攻击范围，是的话，自己是否可以攻击到最具威胁的单位，可以的话，过去攻击，
@@ -210,7 +217,7 @@ bool AIMgr::DoAction()
 			{
 				DWORD data = attackPoint.x + (attackPoint.y << 8);
 				process->PushAction(eNotify_Walk,m_pCurAI,NULL,data);
-				CreatureManager::sInstance().PreAttackAndPushAction(m_pCurAI,ultraTarget);
+				CreatureManager::sInstance().PreAttackAndPushAction(m_pCurAI,ultraTarget,data);
 			}
 			else
 			{
@@ -237,11 +244,11 @@ bool AIMgr::DoAction()
 					DWORD data = attackPoint.x + (attackPoint.y << 8);
 					process->PushAction(eNotify_Walk,m_pCurAI,NULL,data);
 					if(attackType == -1)
-						CreatureManager::sInstance().PreAttackAndPushAction(m_pCurAI,ultraTarget);
+						CreatureManager::sInstance().PreAttackAndPushAction(m_pCurAI,ultraTarget,data);
 					else
 					{
 						m_pCurAI->GetCastSkill() = attackType;
-						CreatureManager::sInstance().PreSkillAndPushAction(m_pCurAI,ultraTarget);
+						CreatureManager::sInstance().PreSkillAndPushAction(m_pCurAI,ultraTarget,data);
 					}
 				}
 				//依旧没找到，则寻找预期造成伤害最高的
@@ -267,11 +274,11 @@ bool AIMgr::DoAction()
 					DWORD data = attackPoint.x + (attackPoint.y << 8);
 					process->PushAction(eNotify_Walk,m_pCurAI,NULL,data);
 					if(attackType == -1)
-						CreatureManager::sInstance().PreAttackAndPushAction(m_pCurAI,ultraTarget);
+						CreatureManager::sInstance().PreAttackAndPushAction(m_pCurAI,ultraTarget,data);
 					else
 					{
 						m_pCurAI->GetCastSkill() = attackType;
-						CreatureManager::sInstance().PreSkillAndPushAction(m_pCurAI,ultraTarget);
+						CreatureManager::sInstance().PreSkillAndPushAction(m_pCurAI,ultraTarget,data);
 					}
 				}
 			}
@@ -279,7 +286,24 @@ bool AIMgr::DoAction()
 		break;
 	case eAIStrategy_ProtectSelf:
 		{
-
+			//查找自己是否处于敌方目标攻击范围
+			std::vector<Block*> vLiveBlocks = CreatureManager::sInstance().GetLiveBlock(m_pCurAI);
+			if(!vLiveBlocks.empty())
+			{
+				//选择一个生存点进行移动，通常选择第一个点
+				ActionProcess* process = ActionProcess::sInstancePtr();
+				DWORD data = vLiveBlocks[0]->xpos + (vLiveBlocks[0]->ypos << 8);
+				process->PushAction(eNotify_Walk,m_pCurAI,NULL,data);
+				//使用增益魔法
+				//这里暂时不用
+				process->PushAction(eNotify_FinishAttack,m_pCurAI,NULL,0);
+				m_pCurAI = NULL;
+				return true;
+			}
+			else
+			{
+				//在移动范围内是安全的或者都是不安全的，故执行优先攻击策略
+			}
 		}
 		break;
 	case eAIStrategy_ProtectTarget:
