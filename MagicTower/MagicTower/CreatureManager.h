@@ -144,8 +144,8 @@ public:
 	//AI相关
 	//取得攻击者可以攻击到的所有目标以及发起攻击的点
 	VAttackTarget GetAttackTarget(Character* attacker);
-	//找出移动范围内所有不会被攻击致死的点，没有表示任何点都不会致死或者任何点都会致死
-	std::vector<Block*> GetLiveBlock(Character* target);
+	//找出移动范围内所有不会被攻击致死的点，没有表示任何点都会致死,allSafe为true表示自己的移动范围内都是安全的
+	std::vector<Block*> GetLiveBlock(Character* target,bool& allSafe);
 private:
 	VCharacter  m_VFriendList;
 	VCharacter	m_VEnemyList;

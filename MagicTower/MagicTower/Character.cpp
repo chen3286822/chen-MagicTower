@@ -511,6 +511,7 @@ void Character::SetFinish(bool _finish)
 {
 	m_bFinishAct = _finish;
 	m_eActionStage = eActionStage_WaitStage;
+	CreatureManager::sInstance().GetSelectNum() = -1;
 	if (m_bFinishAct)
 	{
 		m_pAnimation->SetColor(0xFF59636C);
@@ -1523,4 +1524,22 @@ Item Character::GetEquip(int grid)
 void Character::SetAIStrategy(int strategy)
 {
 	m_eStrategy = (eAIStrategy)strategy;
+}
+
+std::vector<Block*> Character::GetMoveRange()
+{
+	std::vector<Block*> range = CreateRange(MapManager::sInstance().GetCurrentMap(),GetMoveAbility());
+	//过滤掉处于移动范围，但实际上过不去的点，比如墙内部的点，中间被墙阻隔		
+	for (std::vector<Block*>::iterator vit=range.begin();vit!=range.end();)
+	{
+		MapManager::sInstance().GetCurrentMap()->SetSpecificRange(range);
+		vector<Block*> path = MapManager::sInstance().GetCurrentMap()->FindPath(m_iBlock.xpos,m_iBlock.ypos,(*vit)->xpos,(*vit)->ypos);
+		if(path.empty())
+			vit = range.erase(vit);
+		else
+			vit++;
+	}
+	//添加自己当前位置，表示单位可以不移动而不被敌人攻击
+	range.push_back(MapManager::sInstance().GetCurrentMap()->GetBlock(m_iBlock.xpos,m_iBlock.ypos));
+	return range;
 }

@@ -166,6 +166,8 @@ public:
 	bool IsInAction();
 
 	//AI
+	//取得实际的移动范围
+	std::vector<Block*> GetMoveRange();
 	void SetAIStrategy(int strategy);
 	eAIStrategy GetAIStrategy(){return m_eStrategy;}
 private:

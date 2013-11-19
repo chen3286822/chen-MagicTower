@@ -31,6 +31,29 @@ function PreFight1()
 	local creaMgr = GetCreature();
 	creaMgr:AddFriend(player2);
 
+	local player4 = GetChar();
+	local block4 = tagBlock(11,9);
+	player4:Init(map:GetLevel(),115,103,1,block4);
+	player4:SetCamp(0);
+	player4:SetMoveAbility(4);
+	player4:SetName("уеаи");
+	player4:AddEquip(0,23);
+	player4:AddEquip(1,37);
+	local creaMgr = GetCreature();
+	creaMgr:AddFriend(player4);
+
+	local player5 = GetChar();
+	local block5 = tagBlock(13,9);
+	player5:Init(map:GetLevel(),115,104,1,block5);
+	player5:SetCamp(1);
+	player5:SetMoveAbility(4);
+	player5:SetName("уеаи");
+	player5:AddEquip(0,23);
+	player5:AddEquip(1,37);
+	local creaMgr = GetCreature();
+	player5:SetAIStrategy(1);
+	creaMgr:AddEnemy(player5);
+
 	local player3 = GetChar();
 	local block3 = tagBlock(12,9);
 	player3:Init(map:GetLevel(),115,102,1,block3);
@@ -39,7 +62,7 @@ function PreFight1()
 	player3:SetName("уеаи");
 	player3:AddEquip(0,23);
 	player3:AddEquip(1,37);
-	player3:AddEquip(2,56);
+	--player3:AddEquip(2,56);
 	player3:SetAIStrategy(1);
 	local creaMgr = GetCreature();
 	creaMgr:AddEnemy(player3);

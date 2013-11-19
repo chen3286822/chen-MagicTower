@@ -1416,19 +1416,7 @@ VAttackTarget CreatureManager::GetAttackTarget(Character* attacker)
 // 	}
 
 	//攻击者的移动范围
-	std::vector<Block*> range = attacker->CreateRange(MapManager::sInstance().GetCurrentMap(),attacker->GetMoveAbility());
-	//过滤掉处于移动范围，但实际上过不去的点，比如墙内部的点，中间被墙阻隔		
-	for (std::vector<Block*>::iterator vit=range.begin();vit!=range.end();)
-	{
-		MapManager::sInstance().GetCurrentMap()->SetSpecificRange(range);
-		vector<Block*> path = MapManager::sInstance().GetCurrentMap()->FindPath(attacker->GetBlock().xpos,attacker->GetBlock().ypos,(*vit)->xpos,(*vit)->ypos);
-		if(path.empty())
-			vit = range.erase(vit);
-		else
-			vit++;
-	}
-	//添加自己当前位置，表示单位可以不移动而攻击敌人
-	range.push_back(MapManager::sInstance().GetCurrentMap()->GetBlock(attacker->GetBlock().xpos,attacker->GetBlock().ypos));
+	std::vector<Block*> range = attacker->GetMoveRange();
 	//对于每个可移动点，查找攻击范围内的敌方
 	for (std::vector<Block*>::iterator it=range.begin();it!=range.end();it++)
 	{
@@ -1482,7 +1470,7 @@ VAttackTarget CreatureManager::GetAttackTarget(Character* attacker)
 	return targets;
 }
 
-std::vector<Block*> CreatureManager::GetLiveBlock(Character* target)
+std::vector<Block*> CreatureManager::GetLiveBlock(Character* target,bool& allSafe)
 {
 	std::vector<Block*> vLiveBlocks;
 	vLiveBlocks.clear();
@@ -1490,19 +1478,7 @@ std::vector<Block*> CreatureManager::GetLiveBlock(Character* target)
 		return vLiveBlocks;
 
 	//自己的移动范围
-	std::vector<Block*> range = target->CreateRange(MapManager::sInstance().GetCurrentMap(),target->GetMoveAbility());
-	//过滤掉处于移动范围，但实际上过不去的点，比如墙内部的点，中间被墙阻隔		
-	for (std::vector<Block*>::iterator vit=range.begin();vit!=range.end();)
-	{
-		MapManager::sInstance().GetCurrentMap()->SetSpecificRange(range);
-		vector<Block*> path = MapManager::sInstance().GetCurrentMap()->FindPath(target->GetBlock().xpos,target->GetBlock().ypos,(*vit)->xpos,(*vit)->ypos);
-		if(path.empty())
-			vit = range.erase(vit);
-		else
-			vit++;
-	}
-	//添加自己当前位置，表示单位可以不移动而不被敌人攻击
-	range.push_back(MapManager::sInstance().GetCurrentMap()->GetBlock(target->GetBlock().xpos,target->GetBlock().ypos));
+	std::vector<Block*> range = target->GetMoveRange();
 
 	//可以致死自己的单位
 	VCharacter vDangerousTar;
@@ -1513,7 +1489,7 @@ std::vector<Block*> CreatureManager::GetLiveBlock(Character* target)
 		int attackType = -1;
 		POINT point;
 		point.x = point.y = 0;	//不需要点
-		if(g_AIMgr.CanKillTarget(target,attackType,point,true) == true)
+		if(g_AIMgr.CanKillTarget(*it,target,attackType,point,true) == true)
 			vDangerousTar.push_back(*it);
 	}
 	//没有致死单位，则就不需要特意寻找移动点，所有点都是安全的
@@ -1521,19 +1497,50 @@ std::vector<Block*> CreatureManager::GetLiveBlock(Character* target)
 		return vLiveBlocks;
 
 	//对于自己可以移动的点，判断哪些可以被这些致死单位攻击到
-	for (std::vector<Block*>::iterator bit=range.begin();bit!=range.end();)
+	//g_AIMgr.CanHitPointsOrTarget(vDangerousTar,NULL,range);
+
+	//找到所有敌人的移动攻击范围，与自己的移动范围做差值运算
+	bool surveyMap[MAX_MAP_WIDTH_NUM][MAX_MAP_LENGTH_NUM];
+	memset(surveyMap,false,sizeof(bool)*MAX_MAP_WIDTH_NUM*MAX_MAP_LENGTH_NUM);
+	for (VCharacter::iterator it=vDangerousTar.begin();it!=vDangerousTar.end();it++)
 	{
-		VCharacter::iterator it2=vDangerousTar.begin();
-		for (;it2!=vDangerousTar.end();it2++)
+		std::vector<Block*> range2 = (*it)->GetMoveRange();
+		for (std::vector<Block*>::iterator bit=range2.begin();bit!=range2.end();bit++)
 		{
-			if((*it2)->CanHitPoint((*bit)->xpos,(*bit)->ypos))
+			int tarX = 0,tarY = 0;
+			VPair vPairPoint = CreatureManager::sInstance().GetRangePoint();
+			for (MAttackRange::iterator mit=CreatureManager::sInstance().GetAttackRange().begin();mit!=CreatureManager::sInstance().GetAttackRange().end();mit++)
 			{
-				bit = range.erase(bit);
-				break;
+				if(mit->first == (*it)->GetAttackRange())
+				{
+					for (vector<int>::iterator it2=mit->second.begin();it2!=mit->second.end();it2++)
+					{
+						tarX = vPairPoint[*it2].x + (*bit)->xpos;
+						tarY = vPairPoint[*it2].y + (*bit)->ypos;
+						if(surveyMap[tarX][tarY])
+							continue;
+						surveyMap[tarX][tarY] = true;
+					}
+				}
 			}
 		}
-		if(it2 == vDangerousTar.end())
-			bit++;
+	}
+	bool bAllBlocksSafe = true;
+	for(std::vector<Block*>::iterator it=range.begin();it!=range.end();)
+	{
+		if(surveyMap[(*it)->xpos][(*it)->ypos])
+		{
+			it = range.erase(it);
+			bAllBlocksSafe = false;
+		}
+		else
+			it++;
+	}
+	//虽然有致死单位存在，但是他们打不到自己的移动范围，所以自己是安全的
+	if(bAllBlocksSafe)
+	{
+		allSafe = true;
+		return vLiveBlocks;
 	}
 	return range;
 }
