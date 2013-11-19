@@ -122,6 +122,8 @@ enum eAIStrategy
 	eAIStrategy_AttakTarget,		//优先攻击失败目标
 	eAIStrategy_ProtectSelf,		//优先保护自己
 	eAIStrategy_ProtectTarget,	//优先保护胜利目标
+	eAIStrategy_RunAway,		//向指定点逃跑
+	eAIStrategy_GetTarget,		//获取\攻占某目标(小偷偷取地图上的财宝)
 };
 
 //战斗时剧情触发器

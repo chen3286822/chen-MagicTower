@@ -276,13 +276,13 @@ bool AIMgr::DoAction()
 	*	A、查找自己是否处于敌方目标攻击范围，且是否会被攻击致死(对于不同兵种，采取不同算法计算
 	*	被攻击伤害，魔法系取能释放的最高伤害技能)，会的话，优先选择路线离开，并使用增益魔法；
 	*	如果任何路线都可能死或者不会致死的话，则执行优先攻击目标的策略(破釜沉舟)
-	*	B、自己处于安全区域，则优先等待其他单位前进，使自己处于后方再前进，并优先对自己释放增益魔法后待命
+	*	B、自己处于安全区域，则优先等待其他单位前进，使自己处于后方再前进，并优先对周围队友释放增益魔法后待命
 	*	如果是优先保护目标策略：
 	*	A、检查要保护的目标是否处于被攻击范围，是的话，自己是否可以攻击到最具威胁的单位，可以的话，过去攻击，
 	*	否则选择下一威胁单位，执行上述步骤，都不行的话，向最具威胁单位前进
 	*	B、保护目标处于安全范围则直接靠近，优先向保护目标施放增益魔法，不能的话直接待命
 	*/
-
+	ActionProcess* process = ActionProcess::sInstancePtr();
 	switch(m_eStrategy)
 	{
 	case eAIStrategy_AttakTarget:
@@ -297,17 +297,20 @@ bool AIMgr::DoAction()
 			std::vector<Block*> vLiveBlocks = CreatureManager::sInstance().GetLiveBlock(m_pCurAI,allSafe);
 			if(allSafe)
 			{
-				//安全，采用B策略
+				//由于相对安全，可以辅助强化队友，以攻击敌人给周围队友施放攻击性增益魔法
+				//这里暂时不用
+				//然后待命
+				process->PushAction(eNotify_FinishAttack,m_pCurAI,NULL,0);
+				bResult = true;
 			}
 			else
 			{
 				if(!vLiveBlocks.empty())
 				{
 					//选择一个生存点进行移动，通常选择最后一个点，因为这个点很大可能是自己的原来坐标，淡定不移动才是王道
-					ActionProcess* process = ActionProcess::sInstancePtr();
 					DWORD data = vLiveBlocks.back()->xpos + (vLiveBlocks.back()->ypos << 8);
 					process->PushAction(eNotify_Walk,m_pCurAI,NULL,data);
-					//使用增益魔法
+					//给自己使用防御性增益魔法
 					//这里暂时不用
 					process->PushAction(eNotify_FinishAttack,m_pCurAI,NULL,0);
 					bResult = true;
