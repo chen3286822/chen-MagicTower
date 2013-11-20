@@ -556,15 +556,12 @@ LRESULT CALLBACK SmallMapProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			int smallMapWidth = App::sInstance().GetSmallMap().GetWidth();
 			int smallMapHeight = App::sInstance().GetSmallMap().GetHeight();
 			
-			SelectObject ( hdc, hPenEnemy );
-			VCharacter mylist = CreatureManager::sInstance().GetEnemy();
-			VCharacter::iterator it=CreatureManager::sInstance().GetEnemy().begin();
-			VCharacter::iterator it2=CreatureManager::sInstance().GetEnemy().end();
-			for (;it!=CreatureManager::sInstance().GetEnemy().end();it++)
+			SelectObject ( hdc, hPenEnemy );			
+			for (VCharacter::iterator it=CreatureManager::sInstance().GetEnemy().begin();it!=CreatureManager::sInstance().GetEnemy().end();it++)
 			{
 				Block chaBlock = (*it)->GetBlock();
-				int startX = chaBlock.xpos*smallMapWidth*MAP_RECT/APP_WIDTH;
-				int startY = chaBlock.ypos*smallMapHeight*MAP_RECT/APP_HEIGHT;
+				int startX = chaBlock.xpos*smallMapWidth/g_nMapWidthNum;
+				int startY = chaBlock.ypos*smallMapHeight/g_nMapHeightNum;
 				MoveToEx(hdc, startX+1,startY+1, NULL );
 				LineTo(hdc, startX+1,startY+1);
 			}

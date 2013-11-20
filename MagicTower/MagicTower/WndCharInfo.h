@@ -15,6 +15,7 @@ public:
 
 	void	SetBindChar(Character* bindChar);
 	Character*	GetBindChar(){return m_pBindChar;}
+	virtual void					SetRenderPositon(float _x=-1,float _y=-1);
 private:
 	Character* m_pBindChar;
 	hgeSprite* m_pHead;		//Í·Ïñ

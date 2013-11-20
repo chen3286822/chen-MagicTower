@@ -58,8 +58,14 @@ void	WndCommand::SetBindChar(Character* bindChar)
 	m_pChar = bindChar;
 	if (bindChar)
 	{
-		m_fPosX = bindChar->GetShowX() + 50; 
-		m_fPosY = bindChar->GetShowY();
+		if(m_pChar->GetShowX() + 216 > APP_WIDTH)
+			m_fPosX = m_pChar->GetShowX() - 170;
+		else
+			m_fPosX = m_pChar->GetShowX() + 50; 
+		if(m_pChar->GetShowY() + 170 > APP_HEIGHT)
+			m_fPosY = m_pChar->GetShowY() - 170;
+		else
+			m_fPosY = m_pChar->GetShowY();
 
 		m_pAttackButton->ResetPosition(m_fPosX+m_pAttackButton->OffsetX,m_fPosY+m_pAttackButton->OffsetY);
 		m_pSkillButton->ResetPosition(m_fPosX+m_pSkillButton->OffsetX,m_fPosY+m_pSkillButton->OffsetY);
@@ -77,8 +83,14 @@ void WndCommand::SetRenderPositon(float _x,float _y)
 {
 	if(_x == -1 && _y == -1)
 	{
-		m_fPosX = m_pChar->GetShowX() + 50; 
-		m_fPosY = m_pChar->GetShowY();
+		if(m_pChar->GetShowX() + 216 > APP_WIDTH)
+			m_fPosX = m_pChar->GetShowX() - 170;
+		else
+			m_fPosX = m_pChar->GetShowX() + 50; 
+		if(m_pChar->GetShowY() + 170 > APP_HEIGHT)
+			m_fPosY = m_pChar->GetShowY() - 170;
+		else
+			m_fPosY = m_pChar->GetShowY();
 	}
 	else
 	{

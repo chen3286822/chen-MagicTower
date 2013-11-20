@@ -10,6 +10,7 @@ UIWindow(TexManager::sInstance().GetUITex(eUIID_WndCharInfo),0,0,259,151,0,0)
 	m_pContainer = new hgeGUI;
 	m_pBindChar = NULL;
 	m_pHead = new hgeSprite(0,0,0,FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_WIDTH);
+	m_bNeedResetPos = true;
 }
 
 WndCharInfo::~WndCharInfo()
@@ -22,12 +23,39 @@ void	WndCharInfo::SetBindChar(Character* bindChar)
 	m_pBindChar = bindChar;
 	if (bindChar)
 	{
-		m_fPosX = bindChar->GetShowX() + 50; 
-		m_fPosY = bindChar->GetShowY();
+		if(m_pBindChar->GetShowX() + 307 > APP_WIDTH)
+			m_fPosX = m_pBindChar->GetShowX() - 257;
+		else
+			m_fPosX = m_pBindChar->GetShowX() + 50; 
+		if(m_pBindChar->GetShowY() + 183 > APP_HEIGHT)
+			m_fPosY = m_pBindChar->GetShowY() - 183;
+		else
+			m_fPosY = m_pBindChar->GetShowY();
 
 		m_pHead->SetTexture(TexManager::sInstance().GetTex(bindChar->GetID())[eActionTex_Walk]);
 		m_pHead->SetTextureRect(0,6*FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_WIDTH,FLOAT_PIC_SQUARE_WIDTH);
 	}
+}
+
+void	WndCharInfo::SetRenderPositon(float _x,float _y)
+{
+	if (_x==-1 && _y == -1)
+	{
+		if(m_pBindChar->GetShowX() + 307 > APP_WIDTH)
+			m_fPosX = m_pBindChar->GetShowX() - 257;
+		else
+			m_fPosX = m_pBindChar->GetShowX() + 50; 
+		if(m_pBindChar->GetShowY() + 183 > APP_HEIGHT)
+			m_fPosY = m_pBindChar->GetShowY() - 183;
+		else
+			m_fPosY = m_pBindChar->GetShowY();
+	}
+	else
+	{
+		m_fPosX = _x;
+		m_fPosY = _y;
+	}
+
 }
 
 void WndCharInfo::Render()

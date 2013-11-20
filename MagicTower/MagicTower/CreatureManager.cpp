@@ -171,17 +171,29 @@ void CreatureManager::Update(float delta)
 			(*it)->Update(delta);
 	}
 
+	bool hasRemoved = false;
 	//移除死亡单位
 	for (int i=0;i<m_VEnemyDeadList.size();i++)
 	{
 		RemoveEnemy(m_VEnemyDeadList[i]);
+		hasRemoved = true;
 	}
 	m_VEnemyDeadList.clear();
 	for (int i=0;i<m_VFriendDeadList.size();i++)
 	{
 		RemoveFriend(m_VFriendDeadList[i]);
+		hasRemoved = true;
 	}
 	m_VFriendDeadList.clear();
+
+	if(hasRemoved)
+	{
+		//通知重绘小地图
+		RECT clientRect;
+		HWND hwnd = App::sInstance().GetSmallMapHWND();
+		GetClientRect(hwnd,&clientRect);
+		InvalidateRect(hwnd,&clientRect,FALSE);
+	}
 
 	if(m_nActionCreatureNum != -1)
 	{
@@ -273,6 +285,12 @@ void CreatureManager::ShowAttackRange(Character* creature)
 		currentMap->GetWidthLength(mapWidth,mapLength);
 		int offX = 0,offY = 0;
 
+		DWORD color = 0xFFFFFFFF;
+		if(creature->GetCamp() == eCamp_Friend)
+			color = 0xBF00FF00;
+		else if(creature->GetCamp() == eCamp_Enemy)
+			color = 0xBFFF0000;
+
 		for (MAttackRange::iterator mit=m_mAttackRange.begin();mit!=m_mAttackRange.end();mit++)
 		{
 			if(mit->first == attackRange)
@@ -289,7 +307,7 @@ void CreatureManager::ShowAttackRange(Character* creature)
 					offY = m_vPair[*it].y + charBlock.ypos - mapOffy;
 					if (offX >= 0 && offX < mapWidth && offY >= 0 && offY < mapLength)
 					{					
-						App::sInstance().DrawBox(MAP_OFF_X + offX*MAP_RECT+4,MAP_OFF_Y + offY*MAP_RECT+4,0xBFFF0000,8,MAP_RECT-8,MAP_RECT-8);
+						App::sInstance().DrawBox(MAP_OFF_X + offX*MAP_RECT+4,MAP_OFF_Y + offY*MAP_RECT+4,color,8,MAP_RECT-8,MAP_RECT-8);
 					}
 				}
 			}
