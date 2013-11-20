@@ -106,7 +106,7 @@ void Character::Init(int _Level,int _ID,int _Num,int _Action,Block _block)
 
 	m_iAction.m_eAction = eAction_None;
 
-	m_eStrategy = eAIStrategy_AttakTarget;
+	m_iStrategy.m_eStrategy = eAIStrategy_AttakTarget;
 
 	m_pAnimation->SetMode(HGEANIM_LOOP|HGEANIM_FWD);
 	m_pAnimation->Play();
@@ -1521,9 +1521,10 @@ Item Character::GetEquip(int grid)
 	return m_iEquip[grid];
 }
 
-void Character::SetAIStrategy(int strategy)
+void Character::SetAIStrategy(int strategy,DWORD data)
 {
-	m_eStrategy = (eAIStrategy)strategy;
+	m_iStrategy.m_eStrategy = (eAIStrategy)strategy;
+	m_iStrategy.m_dwData = data;
 }
 
 std::vector<Block*> Character::GetMoveRange()

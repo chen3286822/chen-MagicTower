@@ -63,7 +63,7 @@ function PreFight1()
 	player3:AddEquip(0,23);
 	player3:AddEquip(1,37);
 	--player3:AddEquip(2,56);
-	player3:SetAIStrategy(1);
+	player3:SetAIStrategy(2,104);
 	local creaMgr = GetCreature();
 	creaMgr:AddEnemy(player3);
 

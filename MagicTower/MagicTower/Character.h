@@ -168,8 +168,8 @@ public:
 	//AI
 	//取得实际的移动范围
 	std::vector<Block*> GetMoveRange();
-	void SetAIStrategy(int strategy);
-	eAIStrategy GetAIStrategy(){return m_eStrategy;}
+	void SetAIStrategy(int strategy,DWORD data=-1);
+	AIStrategy GetAIStrategy(){return m_iStrategy;}
 private:
 	hgeAnimation* m_pAnimation;
 	std::map<int,HTEXTURE> m_mCharTex; //存储单位的各个图片动作
@@ -252,7 +252,7 @@ private:
 	Item m_iEquip[eEquipGrid_TotalEquip];
 
 	//AI
-	eAIStrategy m_eStrategy;
+	AIStrategy m_iStrategy;
 };
 
 

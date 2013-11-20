@@ -125,6 +125,12 @@ enum eAIStrategy
 	eAIStrategy_RunAway,		//向指定点逃跑
 	eAIStrategy_GetTarget,		//获取\攻占某目标(小偷偷取地图上的财宝)
 };
+struct AIStrategy
+{
+	eAIStrategy m_eStrategy;	//策略种类
+	DWORD m_dwData;			//附加数据，可以表示单位号，也可以表示为地图坐标的组合，即 x + 10000*y
+};
+
 
 //战斗时剧情触发器
 enum eTrigger

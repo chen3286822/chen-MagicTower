@@ -7,10 +7,21 @@
 
 AIMgr g_AIMgr;
 
+Character* gtar = NULL;
+bool DamageCompare(Character* cha1,Character* cha2)
+{
+	POINT pt;
+	pt.x = pt.y = 0;
+	int attack = -1;
+	int damage1 = g_AIMgr.GetDamageToTarget(cha1,gtar,attack,pt,true);
+	int damage2 = g_AIMgr.GetDamageToTarget(cha2,gtar,attack,pt,true);
+	return (damage1 > damage2);
+}
+
 AIMgr::AIMgr()
 {
 	m_pCurAI = NULL;
-	m_eStrategy = eAIStrategy_AttakTarget;
+	m_iStrategy.m_eStrategy = eAIStrategy_AttakTarget;
 }
 
 AIMgr::~AIMgr()
@@ -21,7 +32,7 @@ AIMgr::~AIMgr()
 void AIMgr::Init()
 {
 	m_pCurAI = NULL;
-	m_eStrategy = eAIStrategy_AttakTarget;
+	m_iStrategy.m_eStrategy = eAIStrategy_AttakTarget;
 }
 
 void AIMgr::SetCurCharacter(Character* cha)
@@ -31,7 +42,7 @@ void AIMgr::SetCurCharacter(Character* cha)
 		return;
 
 	m_pCurAI = cha;
-	m_eStrategy = m_pCurAI->GetAIStrategy();
+	m_iStrategy = m_pCurAI->GetAIStrategy();
 }
 
 Character* AIMgr::GetCurCharacter()
@@ -58,7 +69,7 @@ int AIMgr::SelectDamageSkill(Character* cast,Character* target,POINT attackPoint
 		if(skill.m_nSkillType == 1)
 		{
 			//判断是否可以攻击到
-			if(abs(target->GetBlock().xpos-attackPoint.x) + abs(target->GetBlock().ypos-attackPoint.y) <= skill.m_nCastRange || ignoreAttackPoint)
+			if(ignoreAttackPoint || abs(target->GetBlock().xpos-attackPoint.x) + abs(target->GetBlock().ypos-attackPoint.y) <= skill.m_nCastRange)
 			{
 				int skillDamage = skill.m_nAttack - skillDefend;
 				if(skillDamage > expectedSkillDamage)
@@ -283,7 +294,7 @@ bool AIMgr::DoAction()
 	*	B、保护目标处于安全范围则直接靠近，优先向保护目标施放增益魔法，不能的话直接待命
 	*/
 	ActionProcess* process = ActionProcess::sInstancePtr();
-	switch(m_eStrategy)
+	switch(m_iStrategy.m_eStrategy)
 	{
 	case eAIStrategy_AttakTarget:
 		{
@@ -321,12 +332,73 @@ bool AIMgr::DoAction()
 					bResult = StrategyAttackTarget();
 				}
 			}
-
 		}
 		break;
 	case eAIStrategy_ProtectTarget:
 		{
-
+			//要保护的目标
+			int num = m_iStrategy.m_dwData;
+			Character* target = CreatureManager::sInstance().GetCreature(num);
+			if(!target || 
+				((target->GetCamp()==eCamp_Enemy && m_pCurAI->GetCamp()==eCamp_Friend)||
+				(target->GetCamp()==eCamp_Friend && m_pCurAI->GetCamp()==eCamp_Enemy)))
+			{
+				//没有要保护的目标或者保护的目标处于不同阵营(设置错误)，那么将此单位的策略设为优先攻击型，并结束单位行动
+				m_pCurAI->SetAIStrategy(eAIStrategy_AttakTarget);
+				process->PushAction(eNotify_FinishAttack,m_pCurAI,NULL,0);
+				bResult = true;
+			}
+			else
+			{
+				VCharacter attackers = CreatureManager::sInstance().GetAttackersToTarget(target);
+				if(attackers.empty())
+				{
+					//目标处于安全范围，则向目标靠拢
+					SelectRoute(target);
+					//向目标施放增益魔法
+					//这里暂时不做
+					process->PushAction(eNotify_FinishAttack,m_pCurAI,NULL,0);
+					bResult = true;
+				}
+				else
+				{
+					//有威胁目标，首先按照威胁大小进行排序
+					gtar = target;
+					std::sort(attackers.begin(),attackers.end(),DamageCompare);
+					gtar = NULL;
+					//选择攻击能攻击到的最具威胁的单位
+					bool hasAttacked = false;
+					for (VCharacter::iterator vit=attackers.begin();vit!=attackers.end();vit++)
+					{
+						POINT pt;
+						if(CanHitPointOrTarget(m_pCurAI,(*vit),NULL,pt))
+						{
+							//可以打到，走过去攻击
+							DWORD data = pt.x + (pt.y << 8);
+							process->PushAction(eNotify_Walk,m_pCurAI,NULL,data);
+							
+							int attack = -1;
+							GetDamageToTarget(m_pCurAI,(*vit),attack,pt);
+							if(attack == -1)
+								CreatureManager::sInstance().PreAttackAndPushAction(m_pCurAI,(*vit),data);
+							else
+							{
+								m_pCurAI->GetCastSkill() = attack;
+								CreatureManager::sInstance().PreSkillAndPushAction(m_pCurAI,(*vit),data);
+							}
+							bResult = true;
+							hasAttacked = true;
+							break;
+						}
+					}
+					if(!hasAttacked)
+					{
+						SelectRoute(attackers.front());
+						process->PushAction(eNotify_FinishAttack,m_pCurAI,NULL,0);
+						bResult = true;
+					}
+				}
+			}
 		}
 		break;
 	}
@@ -361,18 +433,29 @@ bool AIMgr::SelectRoute(Character* target)
 
 	//真实的路径上的终点，是考虑单位移动能力的
 	Block* lastBlock = NULL;
-	for (std::vector<Block*>::reverse_iterator it=path.rbegin();it!=path.rend();it++)
+	for (std::vector<Block*>::iterator it=path.begin();it!=path.end();)
 	{
 		int length = abs((*it)->xpos - m_pCurAI->GetBlock().xpos) + abs((*it)->ypos - m_pCurAI->GetBlock().ypos);
-		if(length <= m_pCurAI->GetMoveAbility())
+		if(length > m_pCurAI->GetMoveAbility())
 		{
-			lastBlock = *it;
-			break;
+			it = path.erase(it);
 		}
+		else
+			it++;
 	}
 	//没有到目标的路径
-	if(!lastBlock)
+	if(path.empty())
 		return false;
+
+	lastBlock = path.back();
+	//有路径，但是不能真的走到目标点上了，因为已经被目标占据了
+	if(lastBlock->xpos == target->GetBlock().xpos && lastBlock->ypos == target->GetBlock().ypos)
+	{
+		path.pop_back();
+		if(path.empty())
+			return false;
+		lastBlock = path.back();
+	}
 
 	//push walk动作
 	ActionProcess* process = ActionProcess::sInstancePtr();
@@ -381,66 +464,56 @@ bool AIMgr::SelectRoute(Character* target)
 	return true;
 }
 
-bool AIMgr::CanHitPointsOrTarget(VCharacter cast,Character* target,std::vector<Block*>& points)
+bool AIMgr::CanHitPointOrTarget(Character* cast,Character* target,Block* point,POINT& pt)
 {
-	if(cast.empty())
+	if(!cast)
 		return false;
 
 	bool surveyMap[MAX_MAP_WIDTH_NUM][MAX_MAP_LENGTH_NUM];
 	memset(surveyMap,false,sizeof(bool)*MAX_MAP_WIDTH_NUM*MAX_MAP_LENGTH_NUM);
 
-	bool bPointsAllSafe = true;
-	for(VCharacter::iterator cit=cast.begin();cit!=cast.end();cit++)
-	{
-		std::vector<Block*> range = (*cit)->GetMoveRange();
-		for (std::vector<Block*>::iterator it=range.begin();it!=range.end();it++)
-		{
-			int tarX = 0,tarY = 0;
-			VPair vPairPoint = CreatureManager::sInstance().GetRangePoint();
-			for (MAttackRange::iterator mit=CreatureManager::sInstance().GetAttackRange().begin();mit!=CreatureManager::sInstance().GetAttackRange().end();mit++)
-			{
-				if(mit->first == (*cit)->GetAttackRange())
-				{
-					for (vector<int>::iterator it2=mit->second.begin();it2!=mit->second.end();it2++)
-					{
-						tarX = vPairPoint[*it2].x + (*it)->xpos;
-						tarY = vPairPoint[*it2].y + (*it)->ypos;
 
-						if(surveyMap[tarX][tarY])
-							continue;
-						//判断是否能击中目标
-						if(target)
+	std::vector<Block*> range = cast->GetMoveRange();
+	for (std::vector<Block*>::iterator it=range.begin();it!=range.end();it++)
+	{
+		int tarX = 0,tarY = 0;
+		VPair vPairPoint = CreatureManager::sInstance().GetRangePoint();
+		for (MAttackRange::iterator mit=CreatureManager::sInstance().GetAttackRange().begin();mit!=CreatureManager::sInstance().GetAttackRange().end();mit++)
+		{
+			if(mit->first == cast->GetAttackRange())
+			{
+				for (vector<int>::iterator it2=mit->second.begin();it2!=mit->second.end();it2++)
+				{
+					tarX = vPairPoint[*it2].x + (*it)->xpos;
+					tarY = vPairPoint[*it2].y + (*it)->ypos;
+
+					if(surveyMap[tarX][tarY])
+						continue;
+					//判断是否能击中目标
+					if(target)
+					{
+						if(target->GetBlock().xpos == tarX && target->GetBlock().ypos == tarY)
 						{
-							if(target->GetBlock().xpos == tarX && target->GetBlock().ypos == tarY)
-							{
-								return true;
-							}
+							pt.x = (*it)->xpos;
+							pt.y = (*it)->ypos;
+							return true;
 						}
-						//判断是否能击中点
-						else
-						{
-							std::vector<Block*>::iterator pit=points.begin();
-							for(;pit!=points.end();)
-							{
-								if((*pit)->xpos == tarX && (*pit)->ypos == tarY)
-								{
-									//删除该点
-									pit = points.erase(pit);
-									bPointsAllSafe = false;
-								}
-								else
-									pit++;
-							}						
-						}
-						surveyMap[tarX][tarY] = true;
 					}
+					//判断是否能击中点
+					else
+					{
+						if(point->xpos == tarX && point->ypos == tarY)
+						{
+							pt.x = (*it)->xpos;
+							pt.y = (*it)->ypos;
+							return true;
+						}
+					}
+					surveyMap[tarX][tarY] = true;
 				}
 			}
 		}
 	}
 	
-	if(target)
-		return false;
-	else
-		return bPointsAllSafe;
+	return false;
 }

@@ -1544,3 +1544,20 @@ std::vector<Block*> CreatureManager::GetLiveBlock(Character* target,bool& allSaf
 	}
 	return range;
 }
+
+VCharacter CreatureManager::GetAttackersToTarget(Character* target)
+{
+	VCharacter attackers;
+	if(!target)
+		return attackers;
+
+	//取得所有可以攻击到目标的单位
+	VCharacter& chaList = (target->GetCamp()==eCamp_Friend)?GetEnemy():GetFriend();
+	for (VCharacter::iterator vit=chaList.begin();vit!=chaList.end();vit++)
+	{
+		POINT pt;
+		if(g_AIMgr.CanHitPointOrTarget((*vit),target,NULL,pt))
+			attackers.push_back((*vit));
+	}
+	return attackers;
+}

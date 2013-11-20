@@ -2,8 +2,8 @@
 #define AIMGR_H
 #include "commonTools.h"
 
-
 class Character;
+bool DamageCompare(Character* cha1,Character* cha2);
 class AIMgr
 {
 public:
@@ -27,11 +27,11 @@ public:
 	int GetDamageToTarget(Character* cast,Character* target,int& attack,POINT attackPoint,bool ignoreAttackPoint=false);	
 	//是否可以击杀单位，attack是-1则表示是普通攻击，其他值表示是技能伤害,ignoreAttackPoint为true则表示只是为了测试伤害够不够，而不考虑实际是否打得到目标
 	bool CanKillTarget(Character* cast,Character* target,int& attack,POINT attackPoint,bool ignoreAttackPoint=false);	
-	//测试一些单位在其移动范围内是否能打到目标点或是另一个单位，如果传递的是点集合，则会修改该集合，去除掉可以被攻击到的点，只要points被剔除过，则返回true
-	bool CanHitPointsOrTarget(std::vector<Character*> cast,Character* target,std::vector<Block*>& points);
+	//测试单位在其移动范围内是否能打到目标点或是另一个单位,pt 返回可以击中时cast的位置
+	bool CanHitPointOrTarget(Character* cast,Character* target,Block* point,POINT& pt);
 private:
 	Character* m_pCurAI;
-	eAIStrategy m_eStrategy;	//现行单位的策略
+	AIStrategy m_iStrategy;	//现行单位的策略
 
 	bool StrategyAttackTarget();
 };
