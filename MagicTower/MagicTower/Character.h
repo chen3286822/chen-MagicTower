@@ -77,6 +77,9 @@ public:
 	std::vector<Block*> CreateRange(Map* map,int range,bool bAllBlockInclude=false,bool bNoMoveAbilityLimit=false);	//bAllBlockInclude :是否包含所有格子，不管是否被占据
 
 	void CancelMove();	//取消移动，回到原来位置
+	//计算单位目前可以移动的范围
+	void CalMoveRange();
+	std::vector<Block*> GetMoveRange(){return m_vMoveRange;}
 
 	//战斗相关
 //	void SetTarget(int _tar){m_nTar = _tar;}
@@ -166,8 +169,6 @@ public:
 	bool IsInAction();
 
 	//AI
-	//取得实际的移动范围
-	std::vector<Block*> GetMoveRange();
 	void SetAIStrategy(int strategy,DWORD data=-1);
 	AIStrategy GetAIStrategy(){return m_iStrategy;}
 private:
@@ -194,6 +195,7 @@ private:
 	int m_nLeftDistance;	//剩余需要移动的格子数
 
 	eAttackRange m_eAttackRange;	//单位攻击范围类型
+	std::vector<Block*> m_vMoveRange;	//单位可以移动的范围
 //	int m_nSrc; //攻击自己的单位
 //	int m_nTar;	//攻击目标
 	eAttackState m_eAttackState; //攻击子状态，用于处理攻击流程

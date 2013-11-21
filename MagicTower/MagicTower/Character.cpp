@@ -27,6 +27,7 @@ Character::Character(void)
 	m_eAttackRange = (eAttackRange)(g_RandomInt(0,eAttackRange_Arrow));
 	m_vDefaultSkillList.clear();
 	m_vNewSkillList.clear();
+	m_vMoveRange.clear();
 }
 
 Character::~Character(void)
@@ -106,6 +107,9 @@ void Character::Init(int _Level,int _ID,int _Num,int _Action,Block _block)
 
 	m_iAction.m_eAction = eAction_None;
 
+// 	m_MoveAbility = 4;
+// 	CalMoveRange();
+
 	m_iStrategy.m_eStrategy = eAIStrategy_AttakTarget;
 
 	m_pAnimation->SetMode(HGEANIM_LOOP|HGEANIM_FWD);
@@ -159,6 +163,22 @@ float Character::GetShowY()
 		offy = theMap->GetOffY();
 	}
 	return m_fYPos - offy*MAP_RECT;
+}
+
+void Character::CalMoveRange()
+{
+	std::vector<Block*> range = CreateRange(MapManager::sInstance().GetCurrentMap(),GetMoveAbility());
+	//过滤掉处于移动范围，但实际上过不去的点，比如墙内部的点，中间被墙阻隔		
+	for (std::vector<Block*>::iterator vit=range.begin();vit!=range.end();)
+	{
+		MapManager::sInstance().GetCurrentMap()->SetSpecificRange(range);
+		vector<Block*> path = MapManager::sInstance().GetCurrentMap()->FindPath(GetBlock().xpos,GetBlock().ypos,(*vit)->xpos,(*vit)->ypos);
+		if(path.empty())
+			vit = range.erase(vit);
+		else
+			vit++;
+	}
+	m_vMoveRange = range;
 }
 
 void Character::Update(float delta)
@@ -298,6 +318,9 @@ void Character::Update(float delta)
 				//m_bFinishAct = true;
 				m_eActionStage = eActionStage_HandleStage;
 				m_lPathDir.clear();
+
+				//到达目的地，修改移动范围
+				CalMoveRange();
 
 				//如果是AI的移动动作，则修改行动时间为0，方便进行下个动作
 				if(m_eNotify == eNotify_Walk)
@@ -563,13 +586,15 @@ void Character::CancelMove()
 	m_fYPos = MAP_OFF_Y+MAP_RECT*m_iBlock.ypos;
 	m_fStartX = m_fXPos;
 	m_fStartY = m_fYPos;
+
+	//重新计算移动范围
+	CalMoveRange();
 }
 
 void	Character::SetMoveAbility(int _ability)
 {
 		m_nMoveAbility = _ability;
-// 		if (map)
-// 			CreateMoveRange(map);
+		CalMoveRange();
 }
 
 std::vector<Block*> Character::CreateRange(Map* map,int _range,bool bAllBlockInclude,bool bNoMoveAbilityLimit)
@@ -619,6 +644,53 @@ std::vector<Block*> Character::CreateRange(Map* map,int _range,bool bAllBlockInc
 					}
 				}
 			}
+		}
+
+		//辅助数组，判断该地图块是否被探测过
+		bool surveyMap[MAX_MAP_WIDTH_NUM][MAX_MAP_LENGTH_NUM];
+		memset(surveyMap,false,sizeof(bool)*MAX_MAP_WIDTH_NUM*MAX_MAP_WIDTH_NUM);
+		//辅助数组，保存到达每个点的消耗
+		int costMap[MAX_MAP_WIDTH_NUM][MAX_MAP_LENGTH_NUM];
+		memset(costMap,0,sizeof(int)*MAX_MAP_WIDTH_NUM*MAX_MAP_WIDTH_NUM)
+		//存储将要探测的地图块
+		std::list<Block*> lBlocks;
+		lBlocks.push_back(map->GetBlock(m_iBlock.xpos,m_iBlock.ypos));
+		surveyMap[m_iBlock.xpos][m_iBlock.ypos] = true;
+		//对于lBlocks中的每个地图块，判断其上下左右4个节点，如果到达该节点的消耗小于等于单位移动力的话，则表示可以到达
+		Pair pt[4] = {Pair(0,-1),Pair(0,1),Pair(-1,0),Pair(1,0)};
+		while (!lBlocks.empty())
+		{
+			Block* testBlock = lBlocks.front();
+			for(int i=0;i<4;i++)
+			{
+				//存在该点，或者该点不是阻挡点
+				if(!map->GetBlockOccupied(testBlock->xpos+pt[i].x,testBlock->ypos+pt[i].y))
+				{
+					//该点被探测过，那么现在的消耗是不是更小，而且不会超过单位移动力
+					if(surveyMap[testBlock->xpos+pt[i].x][testBlock->ypos+pt[i].y])
+					{
+						if(costMap[testBlock->xpos][testBlock->ypos]+1 < costMap[testBlock->xpos+pt[i].x][testBlock->ypos+pt[i].y] && costMap[testBlock->xpos][testBlock->ypos]+1 <= m_nMoveAbility)
+						{
+							costMap[testBlock->xpos+pt[i].x][testBlock->ypos+pt[i].y] = costMap[testBlock->xpos][testBlock->ypos]+1;
+							lBlocks.push_back(map->GetBlock(testBlock->xpos+pt[i].x,testBlock->ypos+pt[i].y));
+							//如果没有添加过该点，则添加之
+							range.push_back(map->GetBlock(testBlock->xpos+pt[i].x,testBlock->ypos+pt[i].y));
+						}
+					}
+					else
+					{
+						costMap[testBlock->xpos+pt[i].x][testBlock->ypos+pt[i].y] = costMap[testBlock->xpos][testBlock->ypos]+1;
+						surveyMap[testBlock->xpos+pt[i].x][testBlock->ypos+pt[i].y] = true;
+						if(costMap[testBlock->xpos+pt[i].x][testBlock->ypos+pt[i].y] <= m_nMoveAbility)
+						{
+							lBlocks.push_back(map->GetBlock(testBlock->xpos+pt[i].x,testBlock->ypos+pt[i].y));
+							range.push_back(map->GetBlock(testBlock->xpos+pt[i].x,testBlock->ypos+pt[i].y));
+						}
+					}
+				}
+			}
+
+			lBlocks.pop_front();
 		}
 	}
 	return range;
@@ -1525,22 +1597,4 @@ void Character::SetAIStrategy(int strategy,DWORD data)
 {
 	m_iStrategy.m_eStrategy = (eAIStrategy)strategy;
 	m_iStrategy.m_dwData = data;
-}
-
-std::vector<Block*> Character::GetMoveRange()
-{
-	std::vector<Block*> range = CreateRange(MapManager::sInstance().GetCurrentMap(),GetMoveAbility());
-	//过滤掉处于移动范围，但实际上过不去的点，比如墙内部的点，中间被墙阻隔		
-	for (std::vector<Block*>::iterator vit=range.begin();vit!=range.end();)
-	{
-		MapManager::sInstance().GetCurrentMap()->SetSpecificRange(range);
-		vector<Block*> path = MapManager::sInstance().GetCurrentMap()->FindPath(m_iBlock.xpos,m_iBlock.ypos,(*vit)->xpos,(*vit)->ypos);
-		if(path.empty())
-			vit = range.erase(vit);
-		else
-			vit++;
-	}
-	//添加自己当前位置，表示单位可以不移动而不被敌人攻击
-	range.push_back(MapManager::sInstance().GetCurrentMap()->GetBlock(m_iBlock.xpos,m_iBlock.ypos));
-	return range;
 }

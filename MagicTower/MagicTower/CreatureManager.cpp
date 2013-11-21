@@ -229,17 +229,18 @@ void CreatureManager::ShowMoveRange(Character* creature)
 			color = 0x4F3737DF;
 		else if(creature->GetCamp() == eCamp_Enemy)
 			color = 0x4FEB2323;
-		std::vector<Block*> range = creature->CreateRange(MapManager::sInstance().GetCurrentMap(),creature->GetMoveAbility());
-		//过滤掉处于移动范围，但实际上过不去的点，比如墙内部的点，中间被墙阻隔		
-		for (std::vector<Block*>::iterator vit=range.begin();vit!=range.end();)
-		{
-			MapManager::sInstance().GetCurrentMap()->SetSpecificRange(range);
-			vector<Block*> path = MapManager::sInstance().GetCurrentMap()->FindPath(creature->GetBlock().xpos,creature->GetBlock().ypos,(*vit)->xpos,(*vit)->ypos);
-			if(path.empty())
-				vit = range.erase(vit);
-			else
-				vit++;
-		}
+// 		std::vector<Block*> range = creature->CreateRange(MapManager::sInstance().GetCurrentMap(),creature->GetMoveAbility());
+// 		//过滤掉处于移动范围，但实际上过不去的点，比如墙内部的点，中间被墙阻隔		
+// 		for (std::vector<Block*>::iterator vit=range.begin();vit!=range.end();)
+// 		{
+// 			MapManager::sInstance().GetCurrentMap()->SetSpecificRange(range);
+// 			vector<Block*> path = MapManager::sInstance().GetCurrentMap()->FindPath(creature->GetBlock().xpos,creature->GetBlock().ypos,(*vit)->xpos,(*vit)->ypos);
+// 			if(path.empty())
+// 				vit = range.erase(vit);
+// 			else
+// 				vit++;
+// 		}
+		std::vector<Block*> range = creature->GetMoveRange();
 		for (std::vector<Block*>::iterator it=range.begin();it!=range.end();it++)
 		{
 			//画方格表示可以移动
