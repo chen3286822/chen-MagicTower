@@ -1,6 +1,6 @@
 /*
 ** Lua binding: lua
-** Generated automatically by tolua++-1.0.92 on 11/20/13 10:49:43.
+** Generated automatically by tolua++-1.0.92 on 11/22/13 18:17:05.
 */
 
 #ifndef __cplusplus
@@ -1952,7 +1952,8 @@ static int tolua_lua_Character_SetAIStrategy00(lua_State* tolua_S)
      !tolua_isusertype(tolua_S,1,"Character",0,&tolua_err) ||
      !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
      !tolua_isnumber(tolua_S,3,1,&tolua_err) ||
-     !tolua_isnoobj(tolua_S,4,&tolua_err)
+     !tolua_isnumber(tolua_S,4,1,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,5,&tolua_err)
  )
   goto tolua_lerror;
  else
@@ -1960,12 +1961,13 @@ static int tolua_lua_Character_SetAIStrategy00(lua_State* tolua_S)
  {
   Character* self = (Character*)  tolua_tousertype(tolua_S,1,0);
   int strategy = ((int)  tolua_tonumber(tolua_S,2,0));
-  unsigned long data = (( unsigned long)  tolua_tonumber(tolua_S,3,-1));
+  unsigned long data1 = (( unsigned long)  tolua_tonumber(tolua_S,3,-1));
+  unsigned long data2 = (( unsigned long)  tolua_tonumber(tolua_S,4,-1));
 #ifndef TOLUA_RELEASE
   if (!self) tolua_error(tolua_S,"invalid 'self' in function 'SetAIStrategy'", NULL);
 #endif
   {
-   self->SetAIStrategy(strategy,data);
+   self->SetAIStrategy(strategy,data1,data2);
   }
  }
  return 0;

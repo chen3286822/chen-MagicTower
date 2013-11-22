@@ -168,7 +168,7 @@ public:
 	bool IsInAction();
 
 	//AI
-	void SetAIStrategy(int strategy,DWORD data=-1);
+	void SetAIStrategy(int strategy,DWORD data1=-1,DWORD data2=-1);
 	AIStrategy GetAIStrategy(){return m_iStrategy;}
 private:
 	hgeAnimation* m_pAnimation;

@@ -1598,8 +1598,9 @@ Item Character::GetEquip(int grid)
 	return m_iEquip[grid];
 }
 
-void Character::SetAIStrategy(int strategy,DWORD data)
+void Character::SetAIStrategy(int strategy,DWORD data1,DWORD data2)
 {
 	m_iStrategy.m_eStrategy = (eAIStrategy)strategy;
-	m_iStrategy.m_dwData = data;
+	m_iStrategy.m_dwData1 = data1;
+	m_iStrategy.m_dwData2 = data2;
 }

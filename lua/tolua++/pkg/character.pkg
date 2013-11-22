@@ -26,5 +26,5 @@ public:
 	void AddEquip(int grid,int equipID);
 	void RemoveEquip(int grid);
 	
-	void SetAIStrategy(int strategy,DWORD data=-1);
+	void SetAIStrategy(int strategy,DWORD data1=-1,DWORD data2=-1);
 }

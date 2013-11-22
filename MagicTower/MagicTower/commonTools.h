@@ -112,6 +112,7 @@ enum eFailCondition
 {
 	eFailCondition_TargetDead,		//特定目标死亡
 	eFailCondition_AllFriendsDead,	//所有友方死亡
+	eFailCondition_TargetRunAway,	//目标成功逃亡
 };
 
 //AI策略
@@ -129,7 +130,8 @@ enum eAIStrategy
 struct AIStrategy
 {
 	eAIStrategy m_eStrategy;	//策略种类
-	DWORD m_dwData;			//附加数据，可以表示单位号，也可以表示为地图坐标的组合，即 x + 10000*y
+	DWORD m_dwData1;			//附加数据1，可以表示单位号，也可以表示为地图坐标的组合，即 x + 10000*y
+	DWORD m_dwData2;			//附加数据2，可以作为获取目标策略中的目标类型，1表示目标为据点，2表示目标为宝箱
 };
 
 
