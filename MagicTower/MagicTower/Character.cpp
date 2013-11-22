@@ -27,7 +27,6 @@ Character::Character(void)
 	m_eAttackRange = (eAttackRange)(g_RandomInt(0,eAttackRange_Arrow));
 	m_vDefaultSkillList.clear();
 	m_vNewSkillList.clear();
-	m_vMoveRange.clear();
 }
 
 Character::~Character(void)
@@ -165,20 +164,20 @@ float Character::GetShowY()
 	return m_fYPos - offy*MAP_RECT;
 }
 
-void Character::CalMoveRange()
+std::vector<Block*> Character::CalMoveRange()
 {
 	std::vector<Block*> range = CreateRange(MapManager::sInstance().GetCurrentMap(),GetMoveAbility());
 	//过滤掉处于移动范围，但实际上过不去的点，比如墙内部的点，中间被墙阻隔		
-	for (std::vector<Block*>::iterator vit=range.begin();vit!=range.end();)
-	{
-		MapManager::sInstance().GetCurrentMap()->SetSpecificRange(range);
-		vector<Block*> path = MapManager::sInstance().GetCurrentMap()->FindPath(GetBlock().xpos,GetBlock().ypos,(*vit)->xpos,(*vit)->ypos);
-		if(path.empty())
-			vit = range.erase(vit);
-		else
-			vit++;
-	}
-	m_vMoveRange = range;
+// 	for (std::vector<Block*>::iterator vit=range.begin();vit!=range.end();)
+// 	{
+// 		MapManager::sInstance().GetCurrentMap()->SetSpecificRange(range);
+// 		vector<Block*> path = MapManager::sInstance().GetCurrentMap()->FindPath(GetBlock().xpos,GetBlock().ypos,(*vit)->xpos,(*vit)->ypos);
+// 		if(path.empty())
+// 			vit = range.erase(vit);
+// 		else
+// 			vit++;
+// 	}
+	return range;
 }
 
 void Character::Update(float delta)
@@ -318,9 +317,6 @@ void Character::Update(float delta)
 				//m_bFinishAct = true;
 				m_eActionStage = eActionStage_HandleStage;
 				m_lPathDir.clear();
-
-				//到达目的地，修改移动范围
-				CalMoveRange();
 
 				//如果是AI的移动动作，则修改行动时间为0，方便进行下个动作
 				if(m_eNotify == eNotify_Walk)
@@ -586,15 +582,11 @@ void Character::CancelMove()
 	m_fYPos = MAP_OFF_Y+MAP_RECT*m_iBlock.ypos;
 	m_fStartX = m_fXPos;
 	m_fStartY = m_fYPos;
-
-	//重新计算移动范围
-	CalMoveRange();
 }
 
 void	Character::SetMoveAbility(int _ability)
 {
 		m_nMoveAbility = _ability;
-		CalMoveRange();
 }
 
 std::vector<Block*> Character::CreateRange(Map* map,int _range,bool bAllBlockInclude,bool bNoMoveAbilityLimit)
@@ -622,75 +614,88 @@ std::vector<Block*> Character::CreateRange(Map* map,int _range,bool bAllBlockInc
 		}
 		else
 		{
-			for (int i=m_iBlock.xpos-_range;i<=m_iBlock.xpos+_range;i++)
+			//辅助数组，判断该地图块是否被探测过
+			bool surveyMap[MAX_MAP_WIDTH_NUM][MAX_MAP_LENGTH_NUM];
+			memset(surveyMap,false,sizeof(bool)*MAX_MAP_WIDTH_NUM*MAX_MAP_WIDTH_NUM);
+			//辅助数组，判断地图块是否在lBlocks中
+			bool inBlock[MAX_MAP_WIDTH_NUM][MAX_MAP_LENGTH_NUM];
+			memset(inBlock,false,sizeof(bool)*MAX_MAP_WIDTH_NUM*MAX_MAP_WIDTH_NUM);
+			//辅助数组，保存到达每个点的消耗
+			int costMap[MAX_MAP_WIDTH_NUM][MAX_MAP_LENGTH_NUM];
+			memset(costMap,0,sizeof(int)*MAX_MAP_WIDTH_NUM*MAX_MAP_WIDTH_NUM);
+			//存储将要探测的地图块
+			std::priority_queue<PriorityBlock> qBlocks;
+			qBlocks.push(PriorityBlock(map->GetBlock(m_iBlock.xpos,m_iBlock.ypos),0));
+			costMap[m_iBlock.xpos][m_iBlock.ypos] = 0;
+			inBlock[m_iBlock.xpos][m_iBlock.ypos] = true;
+			//对于lBlocks中的每个地图块，判断其上下左右4个节点，如果到达该节点的消耗小于等于单位移动力的话，则表示可以到达
+			Pair pt[4] = {Pair(0,-1),Pair(0,1),Pair(-1,0),Pair(1,0)};
+			int cost = 1;
+			while (!qBlocks.empty())
 			{
-				if(i >= 0 && i< mapWidth)
+				PriorityBlock testBlock = qBlocks.top();
+
+				range.push_back(testBlock.m_iBlock);
+
+				qBlocks.pop();
+				inBlock[testBlock.m_iBlock->xpos][testBlock.m_iBlock->ypos] = false;
+				surveyMap[testBlock.m_iBlock->xpos][testBlock.m_iBlock->ypos] = true;
+
+				for(int i=0;i<4;i++)
 				{
-					for (int j=m_iBlock.ypos-_range;j<=m_iBlock.ypos+_range;j++)
+					int x = testBlock.m_iBlock->xpos+pt[i].x;
+					int y = testBlock.m_iBlock->ypos+pt[i].y;
+					//超过地图范围的不考虑
+					if(x < 0 || x >= mapWidth || y < 0 || y >= mapLength)
+						continue;
+					//存在该点，或者该点不是阻挡点且没有被探测过
+					if(!surveyMap[x][y] && (!map->GetBlockOccupied(x,y)||bAllBlockInclude))
 					{
-						if (j >= 0 && j < mapLength)
+						//该点在lBlocks中，那么现在的消耗更小，而且不会超过单位移动力
+						//因为优先队列是将优先级最高的放在队列头，而这里是要优先取消耗最小的，故采用消耗的负数作为优先级存储
+						if(inBlock[x][y])
 						{
-							offX = abs(i - m_iBlock.xpos);
-							offY = abs(j - m_iBlock.ypos);
-							if(offX + offY > _range)
-								continue;
-							if(!bAllBlockInclude && (i==m_iBlock.xpos && j==m_iBlock.ypos))
-								continue;
-							if (!map->GetBlockOccupied(i,j) || bAllBlockInclude)
+							if(costMap[testBlock.m_iBlock->xpos][testBlock.m_iBlock->ypos]+cost > costMap[x][y] && costMap[testBlock.m_iBlock->xpos][testBlock.m_iBlock->ypos]+cost <= _range)
 							{
-								range.push_back(map->GetBlock(i,j));
+								//更新其在队列中的位置
+								qBlocks = g_updatePriorityQueue((costMap[testBlock.m_iBlock->xpos][testBlock.m_iBlock->ypos]+cost)*-1,PriorityBlock(map->GetBlock(x,y),0),qBlocks);
+							}
+						}
+						else
+						{
+							costMap[x][y] = costMap[testBlock.m_iBlock->xpos][testBlock.m_iBlock->ypos]+cost;					
+							//surveyMap[testBlock->xpos+pt[i].x][testBlock->ypos+pt[i].y] = true;
+							if(costMap[x][y] <= _range)
+							{
+								qBlocks.push(PriorityBlock(map->GetBlock(x,y),costMap[x][y]*-1));
+								inBlock[x][y] = true;
 							}
 						}
 					}
-				}
+				}	
 			}
-		}
-
-		//辅助数组，判断该地图块是否被探测过
-		bool surveyMap[MAX_MAP_WIDTH_NUM][MAX_MAP_LENGTH_NUM];
-		memset(surveyMap,false,sizeof(bool)*MAX_MAP_WIDTH_NUM*MAX_MAP_WIDTH_NUM);
-		//辅助数组，保存到达每个点的消耗
-		int costMap[MAX_MAP_WIDTH_NUM][MAX_MAP_LENGTH_NUM];
-		memset(costMap,0,sizeof(int)*MAX_MAP_WIDTH_NUM*MAX_MAP_WIDTH_NUM)
-		//存储将要探测的地图块
-		std::list<Block*> lBlocks;
-		lBlocks.push_back(map->GetBlock(m_iBlock.xpos,m_iBlock.ypos));
-		surveyMap[m_iBlock.xpos][m_iBlock.ypos] = true;
-		//对于lBlocks中的每个地图块，判断其上下左右4个节点，如果到达该节点的消耗小于等于单位移动力的话，则表示可以到达
-		Pair pt[4] = {Pair(0,-1),Pair(0,1),Pair(-1,0),Pair(1,0)};
-		while (!lBlocks.empty())
-		{
-			Block* testBlock = lBlocks.front();
-			for(int i=0;i<4;i++)
-			{
-				//存在该点，或者该点不是阻挡点
-				if(!map->GetBlockOccupied(testBlock->xpos+pt[i].x,testBlock->ypos+pt[i].y))
-				{
-					//该点被探测过，那么现在的消耗是不是更小，而且不会超过单位移动力
-					if(surveyMap[testBlock->xpos+pt[i].x][testBlock->ypos+pt[i].y])
-					{
-						if(costMap[testBlock->xpos][testBlock->ypos]+1 < costMap[testBlock->xpos+pt[i].x][testBlock->ypos+pt[i].y] && costMap[testBlock->xpos][testBlock->ypos]+1 <= m_nMoveAbility)
-						{
-							costMap[testBlock->xpos+pt[i].x][testBlock->ypos+pt[i].y] = costMap[testBlock->xpos][testBlock->ypos]+1;
-							lBlocks.push_back(map->GetBlock(testBlock->xpos+pt[i].x,testBlock->ypos+pt[i].y));
-							//如果没有添加过该点，则添加之
-							range.push_back(map->GetBlock(testBlock->xpos+pt[i].x,testBlock->ypos+pt[i].y));
-						}
-					}
-					else
-					{
-						costMap[testBlock->xpos+pt[i].x][testBlock->ypos+pt[i].y] = costMap[testBlock->xpos][testBlock->ypos]+1;
-						surveyMap[testBlock->xpos+pt[i].x][testBlock->ypos+pt[i].y] = true;
-						if(costMap[testBlock->xpos+pt[i].x][testBlock->ypos+pt[i].y] <= m_nMoveAbility)
-						{
-							lBlocks.push_back(map->GetBlock(testBlock->xpos+pt[i].x,testBlock->ypos+pt[i].y));
-							range.push_back(map->GetBlock(testBlock->xpos+pt[i].x,testBlock->ypos+pt[i].y));
-						}
-					}
-				}
-			}
-
-			lBlocks.pop_front();
+// 			for (int i=m_iBlock.xpos-_range;i<=m_iBlock.xpos+_range;i++)
+// 			{
+// 				if(i >= 0 && i< mapWidth)
+// 				{
+// 					for (int j=m_iBlock.ypos-_range;j<=m_iBlock.ypos+_range;j++)
+// 					{
+// 						if (j >= 0 && j < mapLength)
+// 						{
+// 							offX = abs(i - m_iBlock.xpos);
+// 							offY = abs(j - m_iBlock.ypos);
+// 							if(offX + offY > _range)
+// 								continue;
+// 							if(!bAllBlockInclude && (i==m_iBlock.xpos && j==m_iBlock.ypos))
+// 								continue;
+// 							if (!map->GetBlockOccupied(i,j) || bAllBlockInclude)
+// 							{
+// 								range.push_back(map->GetBlock(i,j));
+// 							}
+// 						}
+// 					}
+// 				}
+// 			}
 		}
 	}
 	return range;

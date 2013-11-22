@@ -28,6 +28,7 @@
 #include <string.h>
 #include <vector>
 #include <list>
+#include <queue>
 #include <map>
 #include <algorithm>
 #include "Singleton.h"
@@ -478,6 +479,26 @@ struct tagBlock
 };
 typedef struct tagBlock Block;
 
+struct PriorityBlock
+{
+	Block* m_iBlock;
+	int m_nCost;
+	PriorityBlock()
+	{
+		m_iBlock = NULL;
+		m_nCost = 0;
+	}
+	PriorityBlock(Block* block,int cost)
+	{
+		m_iBlock = block;
+		m_nCost = cost;
+	}
+	friend bool operator<(PriorityBlock n1,PriorityBlock n2)
+	{
+		return n1.m_nCost < n2.m_nCost;
+	}
+};
+
 struct tagConfig
 {
 	int level;
@@ -492,6 +513,7 @@ struct tagConfig
 };
 typedef struct tagConfig Config;
 
+std::priority_queue<PriorityBlock> g_updatePriorityQueue(int newPriority,PriorityBlock pronode,std::priority_queue<PriorityBlock>& origQueue);//更新优先队列中某个元素的优先级
 void g_resetGlobalMapValues(int widthNum,int heigthNum);
 eKeyState g_getKeyState(HGE* hge,int Key);
 std::map<std::string,std::string> g_parseConfigFile(const std::string file);

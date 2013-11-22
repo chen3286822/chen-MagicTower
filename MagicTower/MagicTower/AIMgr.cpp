@@ -473,7 +473,7 @@ bool AIMgr::CanHitPointOrTarget(Character* cast,Character* target,Block* point,P
 	memset(surveyMap,false,sizeof(bool)*MAX_MAP_WIDTH_NUM*MAX_MAP_LENGTH_NUM);
 
 
-	std::vector<Block*> range = cast->GetMoveRange();
+	std::vector<Block*> range = cast->CalMoveRange();
 	for (std::vector<Block*>::iterator it=range.begin();it!=range.end();it++)
 	{
 		int tarX = 0,tarY = 0;

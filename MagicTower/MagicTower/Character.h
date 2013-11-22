@@ -78,8 +78,7 @@ public:
 
 	void CancelMove();	//取消移动，回到原来位置
 	//计算单位目前可以移动的范围
-	void CalMoveRange();
-	std::vector<Block*> GetMoveRange(){return m_vMoveRange;}
+	std::vector<Block*> CalMoveRange();
 
 	//战斗相关
 //	void SetTarget(int _tar){m_nTar = _tar;}
@@ -195,7 +194,6 @@ private:
 	int m_nLeftDistance;	//剩余需要移动的格子数
 
 	eAttackRange m_eAttackRange;	//单位攻击范围类型
-	std::vector<Block*> m_vMoveRange;	//单位可以移动的范围
 //	int m_nSrc; //攻击自己的单位
 //	int m_nTar;	//攻击目标
 	eAttackState m_eAttackState; //攻击子状态，用于处理攻击流程

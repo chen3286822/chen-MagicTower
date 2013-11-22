@@ -240,7 +240,7 @@ void CreatureManager::ShowMoveRange(Character* creature)
 // 			else
 // 				vit++;
 // 		}
-		std::vector<Block*> range = creature->GetMoveRange();
+		std::vector<Block*> range = creature->CalMoveRange();
 		for (std::vector<Block*>::iterator it=range.begin();it!=range.end();it++)
 		{
 			//画方格表示可以移动
@@ -1236,6 +1236,8 @@ void CreatureManager::ProcessSelectCreature()
 	if(m_nSelectNum >= 0)
 	{
 		Character* selectChar = GetCreature(m_nSelectNum);
+		if(!selectChar)
+			return;
 		if((selectChar->GetCamp() == eCamp_Enemy) || (selectChar->GetCamp()==eCamp_Friend && selectChar->GetCharacterState()==eCharacterState_Stand && selectChar->GetActionStage() ==eActionStage_MoveStage))
 			ShowMoveRange(selectChar);
 		if(selectChar->GetCamp() == eCamp_Enemy || (selectChar->GetCamp()==eCamp_Friend && (selectChar->GetActionStage()==eActionStage_AttackStage)))
@@ -1435,7 +1437,7 @@ VAttackTarget CreatureManager::GetAttackTarget(Character* attacker)
 // 	}
 
 	//攻击者的移动范围
-	std::vector<Block*> range = attacker->GetMoveRange();
+	std::vector<Block*> range = attacker->CalMoveRange();
 	//对于每个可移动点，查找攻击范围内的敌方
 	for (std::vector<Block*>::iterator it=range.begin();it!=range.end();it++)
 	{
@@ -1497,7 +1499,7 @@ std::vector<Block*> CreatureManager::GetLiveBlock(Character* target,bool& allSaf
 		return vLiveBlocks;
 
 	//自己的移动范围
-	std::vector<Block*> range = target->GetMoveRange();
+	std::vector<Block*> range = target->CalMoveRange();
 
 	//可以致死自己的单位
 	VCharacter vDangerousTar;
@@ -1523,7 +1525,7 @@ std::vector<Block*> CreatureManager::GetLiveBlock(Character* target,bool& allSaf
 	memset(surveyMap,false,sizeof(bool)*MAX_MAP_WIDTH_NUM*MAX_MAP_LENGTH_NUM);
 	for (VCharacter::iterator it=vDangerousTar.begin();it!=vDangerousTar.end();it++)
 	{
-		std::vector<Block*> range2 = (*it)->GetMoveRange();
+		std::vector<Block*> range2 = (*it)->CalMoveRange();
 		for (std::vector<Block*>::iterator bit=range2.begin();bit!=range2.end();bit++)
 		{
 			int tarX = 0,tarY = 0;

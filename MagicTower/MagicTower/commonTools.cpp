@@ -20,6 +20,31 @@ const unsigned char GfxFont::g_byAlphaLevel[65] =
 	208,212,216,220,224,228,232,236,240,244,248,252,255
 };
 
+std::priority_queue<PriorityBlock> g_updatePriorityQueue(int newPriority,PriorityBlock pronode,std::priority_queue<PriorityBlock>& origQueue)
+{
+	if(pronode.m_iBlock->xpos==origQueue.top().m_iBlock->xpos && pronode.m_iBlock->ypos==origQueue.top().m_iBlock->ypos)
+	{
+		origQueue.top().m_nCost = newPriority;
+		return origQueue;
+	}
+	std::priority_queue<PriorityBlock> newQueue;
+	while (!origQueue.empty())
+	{
+		PriorityBlock temp = origQueue.top();
+		origQueue.pop();
+		if(temp.m_iBlock->xpos!= pronode.m_iBlock->xpos || temp.m_iBlock->ypos!=pronode.m_iBlock->ypos)
+		{
+			newQueue.push(temp);
+		}
+		else
+		{
+			temp.m_nCost = newPriority;
+			newQueue.push(temp);
+		}
+	}
+	return newQueue; 
+}
+
 void g_resetGlobalMapValues(int widthNum,int heigthNum)
 {
 	g_nMapWidthNum  = widthNum;
