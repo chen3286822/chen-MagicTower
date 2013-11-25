@@ -1,6 +1,5 @@
 #include "AIMgr.h"
 #include "Character.h"
-#include "CreatureManager.h"
 #include "MapManager.h"
 #include "ActionProcess.h"
 #include "ConfigManager.h"
@@ -22,6 +21,7 @@ AIMgr::AIMgr()
 {
 	m_pCurAI = NULL;
 	m_iStrategy.m_eStrategy = eAIStrategy_AttakTarget;
+	m_lMessage.clear();
 }
 
 AIMgr::~AIMgr()
@@ -177,7 +177,8 @@ bool AIMgr::StrategyAttackTarget()
 	//攻击范围内没有敌方单位，选择向终极目标移动
 	if (targets.empty())
 	{
-		SelectRoute(ultraTarget);
+		bool canReachTarget = false;
+		SelectRoute(ultraTarget,canReachTarget);
 		//使用增益技能
 		//这里暂时不用
 
@@ -276,6 +277,38 @@ bool AIMgr::DoAction()
 	if(!m_pCurAI)
 		return bResult;
 
+	ActionProcess* process = ActionProcess::sInstancePtr();
+
+	//首先判断执行行动的AI是否有通知需要执行
+	for (std::list<AIMessage>::iterator it=m_lMessage.begin();it!=m_lMessage.end();it++)
+	{
+		if(it->m_nNum == m_pCurAI->GetNum())
+		{
+			switch(it->m_eNofity)
+			{
+			case eAINotify_MoveAway:
+				{
+					//向旁边移动，让出位置
+					std::vector<Block*> range = m_pCurAI->CreateRange(MapManager::sInstance().GetCurrentMap(),m_pCurAI->GetMoveAbility());
+					for (std::vector<Block*>::reverse_iterator rit=range.rbegin();rit!=range.rend();rit++)
+					{
+						if((*rit)->xpos != m_pCurAI->GetBlock().xpos && (*rit)->ypos != m_pCurAI->GetBlock().ypos)
+						{
+							DWORD data = (*rit)->xpos + ((*rit)->ypos << 8);
+							process->PushAction(eNotify_Walk,m_pCurAI,NULL,data);
+							break;
+						}
+					}
+					process->PushAction(eNotify_FinishAttack,m_pCurAI,NULL,0);
+					m_pCurAI = NULL;
+					return true;
+				}
+				break;
+			}
+			break;
+		}
+	}
+
 	//根据策略确定行动
 	/*
 	*	如果是优先攻击目标策略（如果失败条件是己方全死，则目标单位就是列表中第一个单位）：
@@ -305,7 +338,7 @@ bool AIMgr::DoAction()
 	*	若胜利条件是特定单位死亡，是自己则修改为优先保护自己策略，是他人则修改为优先保护目标策略；其他则修改为优先攻击目标策略
 	*	
 	*/
-	ActionProcess* process = ActionProcess::sInstancePtr();
+
 	switch(m_iStrategy.m_eStrategy)
 	{
 	case eAIStrategy_AttakTarget:
@@ -366,7 +399,8 @@ bool AIMgr::DoAction()
 				if(attackers.empty())
 				{
 					//目标处于安全范围，则向目标靠拢
-					SelectRoute(target);
+					bool canReachTarget = false;
+					SelectRoute(target,canReachTarget);
 					//向目标施放增益魔法
 					//这里暂时不做
 					process->PushAction(eNotify_FinishAttack,m_pCurAI,NULL,0);
@@ -405,7 +439,8 @@ bool AIMgr::DoAction()
 					}
 					if(!hasAttacked)
 					{
-						SelectRoute(attackers.front());
+						bool canReachTarget = false;
+						SelectRoute(attackers.front(),canReachTarget);
 						process->PushAction(eNotify_FinishAttack,m_pCurAI,NULL,0);
 						bResult = true;
 					}
@@ -415,7 +450,72 @@ bool AIMgr::DoAction()
 		break;
 	case eAIStrategy_RunAway:
 		{
+			//检测是否可以直接到达目标点
+			Pair pt = Pair(m_iStrategy.m_dwData1%10000,m_iStrategy.m_dwData1/10000);
+			bool canReachTarget = false;
+			SelectRoute(NULL,canReachTarget,pt,true);
+			if (canReachTarget)
+			{
+				//不能直接到达目标点，则先往目标点移动
+				SelectRoute(NULL,canReachTarget,pt);
+				process->PushAction(eNotify_FinishAttack,m_pCurAI,NULL,0);
+				bResult = true;
+			}
+			else
+			{
+				//能直接到达，则检测目标点上是否有敌方或者友方
+				Character* target = CreatureManager::sInstance().GetCreature(pt.x,pt.y);
+				if (target)
+				{
+					//敌方，则攻击之
+					if(IsTheyAreOpposite(m_pCurAI,target))
+					{
+						AttackTarget atkTarget = CreatureManager::sInstance().GetAttackTarget(m_pCurAI,target);
+						if(atkTarget.m_iTarget)
+						{
+							//可以攻击到，过去攻击
+							POINT pot;
+							pot.x = atkTarget.m_iAttakPoint.x;
+							pot.y = atkTarget.m_iAttakPoint.y;
+							DWORD data = pot.x + (pot.y << 8);
+							process->PushAction(eNotify_Walk,m_pCurAI,NULL,data);
 
+							int attack = -1;
+							GetDamageToTarget(m_pCurAI,(*vit),attack,pt);
+							if(attack == -1)
+								CreatureManager::sInstance().PreAttackAndPushAction(m_pCurAI,target,data);
+							else
+							{
+								m_pCurAI->GetCastSkill() = attack;
+								CreatureManager::sInstance().PreSkillAndPushAction(m_pCurAI,target,data);
+							}
+							bResult = true;
+						}
+						else
+						{
+							//攻击不到，那么先移动到附近，并待命
+							SelectRoute(NULL,canReachTarget,pt);
+							process->PushAction(eNotify_FinishAttack,m_pCurAI,NULL,0);
+							bResult = true;
+						}
+					}
+					else
+					{
+						//通知友方离开位置，自己暂时待命
+						NotifyMessage(eAINotify_MoveAway,target->GetNum());
+						process->PushAction(eNotify_FinishAttack,m_pCurAI,NULL,0);
+						bResult = true;
+					}
+				}
+				else
+				{
+					//直接走上，坐等玩家失败
+					DWORD data = pt.x + (pt.y << 8);
+					process->PushAction(eNotify_Walk,m_pCurAI,NULL,data);
+					process->PushAction(eNotify_FinishAttack,m_pCurAI,NULL,0);
+					bResult = true;
+				}
+			}
 		}
 		break;
 	}
@@ -429,31 +529,56 @@ bool AIMgr::DoAction()
 	return bResult;
 }
 
-bool AIMgr::SelectRoute(Character* target)
+bool AIMgr::IsTheyAreOpposite(Character* cha1,Character* cha2)
+{
+	if(!cha1 || !cha2)
+		return false;
+
+	if ((cha1->GetCamp() == eCamp_Enemy && cha2->GetCamp() == eCamp_Friend) || 
+		(cha2->GetCamp() == eCamp_Enemy && cha1->GetCamp() == eCamp_Friend))
+	{
+		return true;
+	}
+	return false;
+}
+
+bool AIMgr::SelectRoute(Character* target,bool& canReachTarget,Pair pt,bool notMove)
 {
 	if (!m_pCurAI)
 		return false;
+
+	//如果target为空，则向目标点前进
+	Pair destination;
+	if(!target)
+		destination = pt;
+	else
+	{
+		destination.x = target->GetBlock().xpos;
+		destination.y = target->GetBlock().ypos;
+	}
 
 	//首先将单位假象为行动范围为整个地图
 	//然后寻找到目标点之间的路径
 	//然后根据自身真实的行动能力，向着路径移动
 
 	//**这里有一点需要注意，就是终点是一个单位占据的点，故寻路时需要先把该点的占据状态改为空，寻路完成后再改回来，否则找不到路径
-	setOccupied(MapManager::sInstance().GetCurrentMap()->GetBlock(target->GetBlock().xpos,target->GetBlock().ypos)->attri,0);
+	bool origState = IsOccupied(MapManager::sInstance().GetCurrentMap()->GetBlock(destination.x,destination.y)->attri);
+	setOccupied(MapManager::sInstance().GetCurrentMap()->GetBlock(destination.x,destination.y)->attri,0);
 
 	std::vector<Block*> range = m_pCurAI->CreateRange(MapManager::sInstance().GetCurrentMap(),0,false,true);
 	MapManager::sInstance().GetCurrentMap()->SetSpecificRange(range);
-	std::vector<Block*> path = MapManager::sInstance().GetCurrentMap()->FindPath(m_pCurAI->GetBlock().xpos,m_pCurAI->GetBlock().ypos,target->GetBlock().xpos,target->GetBlock().ypos);
+	std::vector<Block*> path = MapManager::sInstance().GetCurrentMap()->FindPath(m_pCurAI->GetBlock().xpos,m_pCurAI->GetBlock().ypos,destination.x,destination.y);
 
 	//寻路完成后，将终点占据状态改回来，以免发生异常
-	setOccupied(MapManager::sInstance().GetCurrentMap()->GetBlock(target->GetBlock().xpos,target->GetBlock().ypos)->attri,1);
+	setOccupied(MapManager::sInstance().GetCurrentMap()->GetBlock(destination.x,destination.y)->attri,origState);
 
 	//真实的路径上的终点，是考虑单位移动能力的
 	Block* lastBlock = NULL;
+	int cost = 0;
 	for (std::vector<Block*>::iterator it=path.begin();it!=path.end();)
 	{
-		int length = abs((*it)->xpos - m_pCurAI->GetBlock().xpos) + abs((*it)->ypos - m_pCurAI->GetBlock().ypos);
-		if(length > m_pCurAI->GetMoveAbility())
+		cost++;
+		if(cost > m_pCurAI->GetMoveAbility())
 		{
 			it = path.erase(it);
 		}
@@ -465,19 +590,27 @@ bool AIMgr::SelectRoute(Character* target)
 		return false;
 
 	lastBlock = path.back();
-	//有路径，但是不能真的走到目标点上了，因为已经被目标占据了
-	if(lastBlock->xpos == target->GetBlock().xpos && lastBlock->ypos == target->GetBlock().ypos)
-	{
-		path.pop_back();
-		if(path.empty())
-			return false;
-		lastBlock = path.back();
-	}
+	if(lastBlock->xpos == destination.x && lastBlock->ypos == destination.y)
+		canReachTarget = true;
 
-	//push walk动作
-	ActionProcess* process = ActionProcess::sInstancePtr();
-	DWORD data = lastBlock->xpos + (lastBlock->ypos << 8);
-	process->PushAction(eNotify_Walk,m_pCurAI,NULL,data);
+	if(!notMove)
+	{
+		//有路径，但是不能真的走到目标点上了，因为已经被目标占据了
+		if(target || origState)
+		{
+			if(lastBlock->xpos == target->GetBlock().xpos && lastBlock->ypos == target->GetBlock().ypos)
+			{
+				path.pop_back();
+				if(path.empty())
+					return false;
+				lastBlock = path.back();
+			}
+		}
+		//push walk动作
+		ActionProcess* process = ActionProcess::sInstancePtr();
+		DWORD data = lastBlock->xpos + (lastBlock->ypos << 8);
+		process->PushAction(eNotify_Walk,m_pCurAI,NULL,data);
+	}
 	return true;
 }
 

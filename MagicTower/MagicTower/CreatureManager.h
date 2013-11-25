@@ -20,6 +20,12 @@ struct Pair
 		x = _x;
 		y = _y;
 	}
+	Pair& operator =(Pair& pt)
+	{
+		x = pt.x;
+		y = pt.y;
+		return *this;
+	}
 };
 typedef std::vector<Pair> VPair;
 typedef std::map<eAttackRange,std::vector<int> > MAttackRange;
@@ -142,6 +148,8 @@ public:
 	void ProcessAction();
 
 	//AI相关
+	//取得攻击者可以攻击到指定目标的目标点
+	AttackTarget GetAttackTarget(Character* attacker,Character* target);
 	//取得攻击者可以攻击到的所有目标以及发起攻击的点
 	VAttackTarget GetAttackTarget(Character* attacker);
 	//取得所有可以攻击到目标的单位

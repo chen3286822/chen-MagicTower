@@ -1417,6 +1417,55 @@ void CreatureManager::ProcessAction()
 	}
 }
 
+AttackTarget GetAttackTarget(Character* attacker,Character* target)
+{
+	AttackTarget atkTarget;
+	atkTarget.m_iTarget = NULL;
+
+	if(!atkTarget || !target)
+		return atkTarget;
+
+	//攻击者的移动范围
+	std::vector<Block*> range = attacker->CalMoveRange();
+	//对于每个可移动点，查找攻击范围内的敌方
+	for (std::vector<Block*>::iterator it=range.begin();it!=range.end();it++)
+	{
+		//攻击范围类型
+		for (MAttackRange::iterator mit=m_mAttackRange.begin();mit!=m_mAttackRange.end();mit++)
+		{
+			if(mit->first == attacker->GetAttackRange())
+			{
+				for (vector<int>::iterator it2=mit->second.begin();it2!=mit->second.end();it2++)
+				{
+					int x = m_vPair[*it2].x + (*it)->xpos;
+					int y = m_vPair[*it2].y + (*it)->ypos;
+					if(x!= target->GetBlock().xpos || y!=target->GetBlock().ypos)
+						continue;
+
+					//是否已经找到了攻击点，且现在的点更好，即不会被反击
+					if(atkTarget.m_iTarget)
+					{
+						if(target->CanHitPoint((*it)->xpos,(*it)->ypos) == false)
+						{
+							atkTarget.m_iAttakPoint.x = (*it)->xpos;
+							atkTarget.m_iAttakPoint.y = (*it)->ypos;
+							//找到一个不被反击点就够了
+							return atkTarget;
+						}
+					}
+					else
+					{
+						atkTarget.m_iTarget = target;
+						atkTarget.m_iAttakPoint.x = (*it)->xpos;
+						atkTarget.m_iAttakPoint.y = (*it)->ypos;
+					}
+				}
+			}
+		}
+	}
+	return atkTarget;
+}
+
 VAttackTarget CreatureManager::GetAttackTarget(Character* attacker)
 {
 	VAttackTarget targets;
